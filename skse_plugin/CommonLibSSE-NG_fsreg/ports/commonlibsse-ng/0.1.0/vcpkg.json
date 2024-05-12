@@ -1,0 +1,16 @@
+{
+  "name": "commonlibsse-ng",
+  "version": "0.1.0",
+  "description": "A reverse engineered resource for developing SKSE plugins, supporting portable plugins that work across AE, SE, and VR.",
+  "homepage": "https://github.com/CharmedBaryon/CommonLibSSE-NG",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "fmt",
+    "rapidcsv",
+    "spdlog",
+    "xbyak"
+  ]
+}

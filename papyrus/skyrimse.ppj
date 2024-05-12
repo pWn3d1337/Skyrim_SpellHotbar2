@@ -1,0 +1,58 @@
+<?xml version='1.0'?>
+<PapyrusProject xmlns="PapyrusProject.xsd" 
+    Flags="TESV_Papyrus_Flags.flg" 
+    Game="sse"
+    Anonymize="true" 
+    Output="F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\Scripts" 
+    Optimize="false" 
+    Release="false" 
+    Zip="false"
+    Package="false"
+    Final="false">
+    <Variables>
+        <!-- Set the name of your mod: -->
+        <Variable Name="ModName" Value="Spell Hotbar 2" />
+        <!-- The folder where you store all of your mods -->
+        <Variable Name="ModsFolder" Value="F:\Skyrim Dev\ADT\mods" />
+    </Variables>
+    <Imports>
+        <!--<Import>F:\Skyrim Dev\Papyrus_Include\UIExtensions_1.2\scripts\source</Import>
+        <Import>@ModsFolder\IWant Widgets NG\Scripts\Source</Import>
+        <Import>@ModsFolder\iWant Widgets\Source\Scripts</Import>-->
+        <Import>@ModsFolder\powerofthrees Papyrus Extender\Source\scripts</Import>
+        <Import>@ModsFolder\PapyrusUtil SE - Modders Scripting Utility Functions\Scripts\Source</Import>
+        <Import>@ModsFolder\JContainers SE\scripts\source</Import>
+        <!-- <Import>@ModsFolder\SkyUI SDK\Source\Scripts</Import> -->
+        <!--Import>@ModsFolder\MCM SDK\Source\Scripts</Import-->
+        <Import>F:\Skyrim Dev\Papyrus_Include\SkyUI_5.1_SDK\Scripts\Source</Import>
+        <!-- <Import>@ModsFolder\SKSE64\Scripts\Source</Import> -->
+        <Import>@ModsFolder\Skyrim Script Extender (SKSE64)\Scripts\Source</Import>
+    </Imports>
+    <Folders>
+        <!-- Relative path to folder containing .psc Papyrus source code files for this project -->
+        <Folder>./Scripts/Source</Folder>
+    </Folders>
+    <!-- The following section is for .bsa archives. You can enable it by setting Package="true" in the PapyrusProject -->
+    <Packages Output=".">
+        <Package Name="@ModName" RootDir=".">
+            <Match In="Scripts">*.pex</Match>
+            <!-- <Match In="interface\translations">*.txt</Match> -->
+        </Package>
+        <!-- If you have any texture files, uncomment the following to create a Textures .bsa archive with texture files -->
+        <!-- <Package Name="@ModName - Textures" RootDir=".">
+            <Include>*.dds</Include>
+        </Package> -->
+    </Packages>
+    <!-- The following section is for .zip archive. You can enable it by setting Zip="true" in the PapyrusProject -->
+    <ZipFiles Output="Build">
+        <ZipFile Name="@ModName" RootDir="." Compression="deflate">
+            <Include>@ModName.esp</Include>
+            <Include NoRecurse="true">*.bsa</Include>
+            <Match In="Scripts\Source">*.psc</Match>
+        </ZipFile>
+    </ZipFiles>
+    <!-- This will remove any *.bsa files in this directory *after* the build, if there are any. Set UseInBuild="false" to disable. -->
+    <PostBuildEvent Description="Post-Build Remove BSA Files" UseInBuild="true">
+        <Command>del /s /q /f *.bsa</Command>
+    </PostBuildEvent>
+</PapyrusProject>

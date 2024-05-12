@@ -1,0 +1,4 @@
+build_off
+build
+.vs
+vcpkg_installed

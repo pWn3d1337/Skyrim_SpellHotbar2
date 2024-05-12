@@ -1,0 +1,421 @@
+Scriptname SpellHotbarInitQuestScript extends Quest  
+
+FormList Property SpellHotbar_Keybinds Auto
+GlobalVariable Property SpellHotbar_Keybind_NextBar Auto
+GlobalVariable Property SpellHotbar_Keybind_PreviousBar Auto
+GlobalVariable Property SpellHotbar_SpellAnimationType Auto
+GlobalVariable Property SpellHotbar_VampireLordUseEquipMode Auto
+
+Sound Property mag_fail Auto
+Actor Property playerref Auto
+Sound Property UISkillsBackward Auto
+Sound Property UISkillsForward Auto
+EquipSlot Property voice_slot Auto
+
+Sound Property SpellHotbar_NextSpell_ChargeSound Auto
+Sound Property SpellHotbar_NextSpell_ReleaseSound Auto
+Sound Property SpellHotbar_NextSpell_CastLoopSound Auto
+
+Spell Property SpellHotbar_unbind_spell Auto
+
+Race Property VampireLordRace Auto
+Race Property WerewolfBeastRace Auto
+
+GlobalVariable Property SpellHotbar_isCastingConcSpell Auto
+
+Import PO3_SKSEFunctions
+
+; vars
+bool loop_sound_playing = false
+int loop_sound_instance = -1
+bool is_casting_conc_spell = false
+Spell current_conc_spell = None
+int current_conc_button = -1
+int current_conc_index = -1
+
+Function _registerKey(Int spellId)
+	int currentBind = (SpellHotbar_Keybinds.GetAt(spellId) as GlobalVariable).GetValueInt()
+	if currentBind > 1
+		RegisterForKey(currentBind)
+	EndIf
+EndFunction
+
+Function DEBUG_lean_spell(int formId)
+	Spell sp = Game.GetFormFromFile(formId,"Skyrim.esm") as Spell
+	playerref.AddSpell(sp)
+EndFunction
+
+Function DEBUG_lean_spell2(int formId, string pluginfile)
+	Spell sp = Game.GetFormFromFile(formId,pluginfile) as Spell
+	playerref.AddSpell(sp, false)
+EndFunction
+
+Function DEBUG_init_keybinds()
+	int index = 0
+	While (index < 12)
+		rebindSpellKey(index, index+2)	
+		index += 1
+	EndWhile
+	rebindNextBarKey(77)
+	rebindPreviousBarKey(75)
+	DEBUG_lean_spell(0x12FD0) ; Firebolt
+	DEBUG_lean_spell(0x1C789) ; Fireball
+	DEBUG_lean_spell(0x7A82B) ; Fire Storm
+	DEBUG_lean_spell(0x7E8E4) ; Blizzard
+
+	DEBUG_lean_spell2(0x043324, "Skyrim.esm")
+	DEBUG_lean_spell2(0x05AD5C, "Skyrim.esm")
+	DEBUG_lean_spell2(0x043323, "Skyrim.esm")
+	DEBUG_lean_spell2(0x05AD5D, "Skyrim.esm")
+	DEBUG_lean_spell2(0x017731, "Dragonborn.esm")
+	DEBUG_lean_spell2(0x0211EE, "Skyrim.esm")
+	DEBUG_lean_spell2(0x051B16, "Skyrim.esm")
+	DEBUG_lean_spell2(0x01A4CC, "Skyrim.esm")
+	DEBUG_lean_spell2(0x109111, "Skyrim.esm")
+	DEBUG_lean_spell2(0x05D175, "Skyrim.esm")
+	DEBUG_lean_spell2(0x0177AF, "Dragonborn.esm")
+	DEBUG_lean_spell2(0x0211EF, "Skyrim.esm")
+	DEBUG_lean_spell2(0x05AD5E, "Skyrim.esm")
+	DEBUG_lean_spell2(0x05AD5F, "Skyrim.esm")
+	DEBUG_lean_spell2(0x0CDB70, "Skyrim.esm")
+	DEBUG_lean_spell2(0x0B62E6, "Skyrim.esm")
+	DEBUG_lean_spell2(0x0DA746, "Skyrim.esm")
+
+	;Vampire Lord
+	DEBUG_lean_spell2(0x00283b, "Dawnguard.esm")
+	DEBUG_lean_spell2(0x01462a, "Dawnguard.esm")
+
+	;Werewolf
+	DEBUG_lean_spell(0x92C48)
+	DEBUG_lean_spell(0xA1A3E)
+	
+EndFunction
+
+Event OnInit()
+	; Register all Keybinds
+	int i = 0
+	While (i < 12)
+		_registerKey(i)
+		i += 1
+	EndWhile
+
+	If !playerref.HasSpell(SpellHotbar_unbind_spell)
+		playerref.AddSpell(SpellHotbar_unbind_spell, false)
+	EndIf
+
+	;TODO disable this for release
+	;DEBUG_init_keybinds()
+EndEvent
+
+Event OnUpdate()
+	If Input.IsKeyPressed(current_conc_button) 
+		CastConcentrationSpell(playerref)
+	Else
+		StopConcentrationCast(playerref)
+	EndIf
+EndEvent
+
+Function rebindNextBarKey(int newKeyCode)
+	if SpellHotbar_Keybind_NextBar.GetValueInt() > 1
+		UnregisterForKey(SpellHotbar_Keybind_NextBar.GetValueInt())
+	EndIf
+	if newKeyCode > 1
+		RegisterForKey(newKeyCode)
+	EndIf
+	SpellHotbar_Keybind_NextBar.SetValueInt(newKeyCode)
+EndFunction
+
+Function rebindPreviousBarKey(int newKeyCode)
+	if SpellHotbar_Keybind_PreviousBar.GetValueInt() > 1
+		UnregisterForKey(SpellHotbar_Keybind_PreviousBar.GetValueInt())
+	EndIf
+	if newKeyCode > 1
+		RegisterForKey(newKeyCode)
+	EndIf
+	SpellHotbar_Keybind_PreviousBar.SetValueInt(newKeyCode)
+EndFunction
+
+Int Function rebindSpellKey(Int spellId, Int newKeyCode)
+
+	int currentBind = (SpellHotbar_Keybinds.GetAt(spellId) as GlobalVariable).GetValueInt()
+	if currentBind > 1
+		UnregisterForKey(currentBind)
+	EndIf
+	if newKeyCode > 1
+		RegisterForKey(newKeyCode)
+	EndIf
+	(SpellHotbar_Keybinds.GetAt(spellId) as GlobalVariable).SetValueInt(newKeyCode)
+	return newKeyCode
+
+EndFunction
+
+int Function getSpellIDforKey(int KeyCode)
+	if KeyCode > 1
+		int i = 0
+		While (i < 12) ; only handle the 12 main spell binds
+			int bind_i = (SpellHotbar_Keybinds.GetAt(i) as GlobalVariable).GetValueInt()
+			if bind_i == keyCode
+				return i
+			EndIf
+			i += 1
+		EndWhile
+	EndIF
+	return -1
+EndFunction
+
+bool Function isSpellKey(Int KeyCode)
+	return getSpellIDforKey(KeyCode) >= 0 ; || KeyCode == SpellHotbar_Keybind_BindSpell.GetValueInt()
+EndFunction
+
+int Function unbindSpellWithKey(Int KeyCode)
+	int i = 0
+	While (i < 14) ; also allow unbind prev/next keys
+		int bind_i = (SpellHotbar_Keybinds.GetAt(i) as GlobalVariable).GetValueInt()
+		if bind_i == keyCode
+			UnregisterForKey(bind_i)
+			(SpellHotbar_Keybinds.GetAt(i) as GlobalVariable).SetValueInt(-1) 
+			return i
+		EndIf
+		i += 1
+	EndWhile
+	return -1
+EndFunction
+
+bool Function isVampireLord(Actor pc)
+	return pc.GetRace() == VampireLordRace
+EndFunction
+
+bool Function isWerewolf(Actor pc)
+	return pc.GetRace() == WerewolfBeastRace
+EndFunction
+
+bool Function isTransformed(Actor pc)
+	return isVampireLord(pc) || isWerewolf(pc) || Spellhotbar.isTransformedFavMenuBind()
+EndFunction
+
+Function SetSoundDescriptorsForNextSpell(Spell sp)
+	MagicEffect effect = sp.GetNthEffectMagicEffect(0)
+	SoundDescriptor chargeSound = GetMagicEffectSound(effect, 1)
+	SoundDescriptor releaseSound = GetMagicEffectSound(effect, 3)
+	SoundDescriptor castLoopSound = GetMagicEffectSound(effect, 4)
+	
+	If chargeSound
+		SetSoundDescriptor(SpellHotbar_NextSpell_ChargeSound, chargeSound)
+	EndIf
+	
+	If releaseSound
+		SetSoundDescriptor(SpellHotbar_NextSpell_ReleaseSound, releaseSound)
+	EndIf
+	
+	If castLoopSound
+		SetSoundDescriptor(SpellHotbar_NextSpell_CastLoopSound, castLoopSound)
+	EndIf
+EndFunction
+
+bool Function playShoutCastAnim(Actor pc, float cast_time)
+	int charge_sound_instance = SpellHotbar_NextSpell_ChargeSound.Play(pc)
+	Debug.SendAnimationEvent(pc, "ShoutStart")
+	Utility.Wait(cast_time)
+	Debug.SendAnimationEvent(pc, "MT_BreathExhaleShort")
+	Sound.StopInstance(charge_sound_instance)
+	;this is to give the cast release animation enough time to play
+	Utility.Wait(0.25) ; 0.075 
+	return pc.GetAnimationVariableBool("IsShouting")
+EndFunction
+
+Function CastRegularSpell(Actor pc, Spell spell_var, int pressed_slot)
+	int cost = spell_var.GetEffectiveMagickaCost(pc)
+	If pc.GetActorValue("Magicka") as Int >= cost
+		float cast_time = SpellHotbar.setupCastAndGetCasttime(spell_var)
+		Spell fxspell = Game.GetFormFromFile(0x816, "SpellHotbar.esp") as Spell
+		fxspell.Cast(pc)
+		SetSoundDescriptorsForNextSpell(spell_var)
+		SpellHotbar.highlightSlot(pressed_slot, false, cast_time+1.0)
+		
+		SpellHotbar.setPlayerGCD(cast_time + 1.75) ; add 1.75s for the actual cast anim
+		If playShoutCastAnim(pc, cast_time)
+			SpellHotbar_NextSpell_ReleaseSound.Play(pc)
+			;spell_var.Cast(pc)
+			SpellHotbar.castSpell(spell_var)
+			pc.DamageActorValue("Magicka", cost)
+			SpellHotbar.triggerSkillCooldown(spell_var)
+		EndIf
+	Else
+		; player is oom
+		mag_fail.Play(playerref)
+		playerref.DamageActorValue("Magicka", 0.01) ; trigger UI bar
+		SpellHotbar.highlightSlot(pressed_slot, True, 1.0)
+	EndIf
+EndFunction
+
+
+bool Function isCastingBlocked(Actor pc)
+	; check if player can currently cast depending on animation and menu state
+	return !Game.IsFightingControlsEnabled() || !Game.IsMovementControlsEnabled() || Utility.IsInMenuMode() || UI.IsMenuOpen("Dialogue Menu") || pc.IsSwimming() || pc.IsSprinting() || pc.GetAnimationVariableBool("bInJumpState") || pc.GetAnimationVariableBool("bBowDrawn") || pc.IsOnMount()
+EndFunction
+
+Function CastConcentrationSpell(Actor pc)
+	
+	int cost = current_conc_spell.GetEffectiveMagickaCost(pc)
+	If isCastingBlocked(pc)
+		StopConcentrationCast(pc)
+		Return
+	EndIf
+
+	If pc.GetActorValue("Magicka") as Int >= cost
+		float cast_time = SpellHotbar.setupCastAndGetCasttime(current_conc_spell)
+		SpellHotbar.highlightSlot(current_conc_index, false, 1.0)
+
+		Debug.SendAnimationEvent(pc, "ShoutStart")
+		if SpellHotbar_isCastingConcSpell.GetValueInt() <= 0
+			; Only use casttime on start of loop
+			if cast_time < 0.25
+				cast_time = 0.25
+			EndIf
+			Utility.Wait(cast_time)
+		EndIf
+
+		If !loop_sound_playing
+			Sound.StopInstance(loop_sound_instance)
+			loop_sound_instance = SpellHotbar_NextSpell_CastLoopSound.Play(pc)
+			loop_sound_playing = true
+		EndIf
+			
+		Debug.SendAnimationEvent(pc, "MT_BreathExhaleLong")
+		If (SpellHotbar_isCastingConcSpell.GetValueInt() <= 0) || ((SpellHotbar_isCastingConcSpell.GetValueInt() > 0) && !IsCasting(pc, current_conc_spell))
+			If pc.GetAnimationVariableBool("IsShouting")
+				SpellHotbar_isCastingConcSpell.SetValueInt(1)
+				;current_conc_spell.Cast(pc)
+				SpellHotbar.castSpell(current_conc_spell)
+			EndIf
+		EndIf
+		
+		pc.DamageActorValue("Magicka", cost/2)
+
+		If Input.IsKeyPressed(current_conc_button)
+			RegisterForSingleUpdate(0.5)
+		Else	
+			StopConcentrationCast(pc)
+		EndIf
+
+	Else
+		StopConcentrationCast(pc)
+		mag_fail.Play(playerref)
+	Endif		
+	
+EndFunction
+
+Function StopConcentrationCast(Actor pc)
+	SpellHotbar_isCastingConcSpell.SetValueInt(0)
+	SpellHotbar_SpellAnimationType.SetValueInt(0)
+	Sound.StopInstance(loop_sound_instance)
+	loop_sound_playing = false
+	current_conc_spell = None
+	current_conc_button = -1
+	current_conc_index = -1
+	pc.InterruptCast()
+	Debug.SendAnimationEvent(pc, "ShoutStop")
+EndFunction
+
+Event OnKeyDown(Int KeyCode)
+	int pressed_slot = getSpellIDforKey(KeyCode)
+
+	if !isCastingBlocked(playerref) && (pressed_slot >= 0)
+		Form slotted_skill = SpellHotbar.getSlottedSpell(pressed_slot)
+
+		if(slotted_skill && (SpellHotbar_isCastingConcSpell.GetValueInt()<=0) && !SpellHotbar.isPlayerOnCD(slotted_skill) && playerref.HasSpell(slotted_skill))
+			Spell spell_var = slotted_skill as Spell
+			Shout voice_shout = slotted_skill as Shout
+
+			if spell_var
+				if spell_var.GetEquipType() == voice_slot
+					; power
+					playerref.EquipSpell(spell_var, 2)
+					Input.HoldKey(Input.GetMappedKey("Shout"))
+					SpellHotbar.setPlayerGCD(1.5)
+					SpellHotbar.highlightSlot(pressed_slot, false, 0.5)
+				Else
+					if (SpellHotbar_VampireLordUseEquipMode.GetValueInt() > 0) && isVampireLord(playerref)
+
+						Spell mh_spell = playerref.GetEquippedSpell(0)
+						If (mh_spell != None)
+							; if we have a mainhand spell player is in cast mode
+							playerref.EquipSpell(spell_var, 1)	
+							SpellHotbar.highlightSlot(pressed_slot, false, 0.5)
+						Else
+							; No equipping spells in melee mode
+							SpellHotbar.highlightSlot(pressed_slot, true, 0.5)
+							mag_fail.Play(playerref)
+						EndIf
+					Else
+						; regular spell
+						SetSoundDescriptorsForNextSpell(spell_var)
+						MagicEffect eff = spell_var.GetNthEffectMagicEffect(0)
+						if (eff.GetCastingType() == 2) ; is conc spell?
+							current_conc_spell = spell_var
+							current_conc_button = KeyCode
+							current_conc_index = pressed_slot
+							CastConcentrationSpell(playerref)
+						Else
+							; single cast
+							CastRegularSpell(playerref, spell_var, pressed_slot)
+						EndIf
+					EndIf
+				EndIf
+			ElseIf voice_shout
+				playerref.EquipShout(voice_shout)
+				Input.HoldKey(Input.GetMappedKey("Shout"))
+				SpellHotbar.setPlayerGCD(2.0)
+				SpellHotbar.highlightSlot(pressed_slot, false, 0.5)
+			Else
+				;Debug.Notification("No Spell Slotted on slot "+ pressed_slot)
+				SpellHotbar.highlightSlot(pressed_slot, true, 0.5)
+				;mag_fail.Play(playerref)
+			EndIf
+		Else
+			; highlight pressed slot red
+			SpellHotbar.highlightSlot(pressed_slot, true, 1.0)
+			;mag_fail.Play(playerref)
+		EndIf
+
+	ElseIf ((UI.IsMenuOpen("MagicMenu") || (isTransformed(playerref) && UI.IsMenuOpen("FavoritesMenu") )) && !UI.IsTextInputEnabled() && pressed_slot >=0)
+		Form f = SpellHotbar.getCurrentSelectedSpellInMenu()
+		Spell sp = f as Spell
+		Shout sh = f as Shout
+		if sp || sh
+			int t = 0
+			if isVampireLord(playerref)
+				t = 1
+			ElseIf isWerewolf(playerref)
+				t = 2
+			ElseIf Spellhotbar.isTransformedFavMenuBind()
+				t = 3
+			EndIf
+
+			slotSpell(pressed_slot, f, t)
+			UISkillsBackward.Play(playerref)
+		Else
+			mag_fail.Play(playerref)
+		EndIf
+	ElseIf (KeyCode == SpellHotbar_Keybind_NextBar.GetValueInt() && UI.IsMenuOpen("MagicMenu") && !UI.IsTextInputEnabled())
+		SpellHotbar.bindMenuMoveBarRight()
+		UISkillsForward.Play(playerref)
+
+	ElseIf (KeyCode == SpellHotbar_Keybind_PreviousBar.GetValueInt() && UI.IsMenuOpen("MagicMenu") && !UI.IsTextInputEnabled())
+		SpellHotbar.bindMenuMoveBarLeft()
+		UISkillsForward.Play(playerref)
+	EndIf
+EndEvent
+
+Event OnKeyUp(int KeyCode, float duration)
+	If getSpellIDforKey(KeyCode) >= 0
+		Input.ReleaseKey(Input.GetMappedKey("Shout"))
+	EndIf
+EndEvent
+
+Function slotSpell(int slot, Form frm, int type)
+	bool ok = SpellHotbar.slotSpell(frm, slot, type);
+	if !ok
+		Debug.MessageBox("Error Slotting Spell, check SKSE/SpellHotbar.log")
+	EndIf
+EndFunction
