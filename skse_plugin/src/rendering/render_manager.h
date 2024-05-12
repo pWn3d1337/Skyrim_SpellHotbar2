@@ -93,13 +93,14 @@ namespace SpellHotbar {
         static TextureImage & load_texture(std::string path);
 
         static void add_spell_texture(TextureImage & main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename);
-        static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1);
+        static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string& icon_name);
         static void add_cooldown_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1);
         static void init_cooldown_icons(size_t amount);
 
         static void draw_bg(int size, float alpha = 1.0f);
         static bool draw_skill(RE::FormID formID, int size, float alpha = 1.0f);
         static void draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
+        static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size);
         static void draw_slot_overlay(ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);

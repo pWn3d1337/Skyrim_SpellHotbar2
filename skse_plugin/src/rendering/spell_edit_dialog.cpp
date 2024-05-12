@@ -2,6 +2,7 @@
 #include "spell_editor.h"
 #include "imgui.h"
 #include "../rendering/render_manager.h"
+#include "../rendering/texture_csv_loader.h"
 
 namespace SpellHotbar::SpellEditor {
 
@@ -25,9 +26,11 @@ namespace SpellHotbar::SpellEditor {
         return std::make_tuple(screen_size_x, screen_size_y, frame_width);
     }
 
-	void SpellHotbar::SpellEditor::drawEditDialog(const RE::TESForm* form, GameData::Spell_cast_data& dat, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_saved)
+	void SpellHotbar::SpellEditor::drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata &data, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_saved)
 	{
         static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+
+        auto& dat = data.m_spell_data;
 
         auto& io = ImGui::GetIO();
         io.MouseDrawCursor = true;
@@ -89,7 +92,31 @@ namespace SpellHotbar::SpellEditor {
             ImVec2 iconpos = ImGui::GetCursorScreenPos();
             float ic_size = std::round(60.0f * scale_factor);
             ImGui::Dummy(ImVec2(ic_size, ic_size));
-            SpellHotbar::RenderManager::draw_skill_in_editor(form->GetFormID(), iconpos, static_cast<int>(ic_size));
+
+            bool show_reset_button{ false };
+            if (data.m_icon_form > 0) {
+                SpellHotbar::RenderManager::draw_skill_in_editor(data.m_icon_form, iconpos, static_cast<int>(ic_size));
+                show_reset_button = true;
+            }
+            else if (!data.m_icon_str.empty()) {
+                if (TextureCSVLoader::default_icon_names.contains(data.m_icon_str)) {
+                    auto type = TextureCSVLoader::default_icon_names.at(data.m_icon_str);
+                    SpellHotbar::RenderManager::draw_default_icon_in_editor(type, iconpos, static_cast<int>(ic_size));
+                }
+                show_reset_button = true;
+            }
+            else {
+                //default
+                SpellHotbar::RenderManager::draw_skill_in_editor(form->GetFormID(), iconpos, static_cast<int>(ic_size));
+            }
+
+            if (show_reset_button) {
+                ImGui::SameLine();
+                if (ImGui::Button("Reset##icon")) {
+                    data.m_icon_form = 0;
+                    data.m_icon_str = "";
+                }
+            }
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -257,6 +284,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::SameLine();
             if (custom_gcd)
             {
+                dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
                 constexpr float inc{ 0.5f };
                 constexpr float inc_fast{ 5.0f };
                 constexpr std::string format{ "%.2fs" };
@@ -265,7 +293,7 @@ namespace SpellHotbar::SpellEditor {
                 }
             }
             else {
-                dat.gcd = 0.0f;
+                dat.gcd = -1.0f;
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
                 ImGui::Text("%.2fs", dat_filled.gcd);
                 ImGui::PopStyleColor();
@@ -282,6 +310,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::SameLine();
             if (custom_cd)
             {
+                dat.cooldown = std::clamp(dat.cooldown, 0.0f, 3600.0f);
                 constexpr float inc{ 1.f };
                 constexpr float inc_fast{ 10.0f };
                 constexpr std::string format{ "%.1fs" };
@@ -290,7 +319,7 @@ namespace SpellHotbar::SpellEditor {
                 }
             }
             else {
-                dat.cooldown = 0.0f;
+                dat.cooldown = -1.0f;
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
                 ImGui::Text("%.1fs", dat_filled.cooldown);
                 ImGui::PopStyleColor();
@@ -442,12 +471,33 @@ namespace SpellHotbar::SpellEditor {
                 {
                     ImGui::PushID(file_id + n);
 
-                        RE::FormID formid = std::get<0>(file_icons.at(n));
+                    RE::FormID formid = std::get<0>(file_icons.at(n));
+                    const std::string& icon_str = std::get<1>(file_icons.at(n));
 
-                        ImVec2 bpos = ImGui::GetCursorScreenPos();
-                        ImGui::Button("", button_sz);
-                        ImVec2 inner_pos{ bpos.x + inner_pad, bpos.y + inner_pad };
-                    SpellHotbar::RenderManager::draw_skill_in_editor(formid, inner_pos, icon_button_size - 2.0f * inner_pad);
+                    ImVec2 bpos = ImGui::GetCursorScreenPos();
+                    std::string button_label = "##" + name + std::to_string(n);
+                    if (ImGui::Button(button_label.c_str(), button_sz)) {
+                        if (formid > 0) {
+                            data.m_icon_form = formid;
+                            data.m_icon_str = "";
+                        }
+                        else if (!icon_str.empty()) {
+                            data.m_icon_str = icon_str;
+                            data.m_form_id = 0;
+                        }
+                    }
+                    ImVec2 inner_pos{ bpos.x + inner_pad, bpos.y + inner_pad };
+
+                    int icon_size = static_cast<int>(icon_button_size - 2.0f * inner_pad);
+                    if (formid > 0) {
+                        SpellHotbar::RenderManager::draw_skill_in_editor(formid, inner_pos, icon_size);
+                    }
+                    else if(!icon_str.empty()){
+                        if (TextureCSVLoader::default_icon_names.contains(icon_str)) {
+                            auto type = TextureCSVLoader::default_icon_names.at(icon_str);
+                            SpellHotbar::RenderManager::draw_default_icon_in_editor(type, inner_pos, icon_size);
+                        }
+                    }
 
                     float last_button_x2 = ImGui::GetItemRectMax().x;
                     float next_button_x2 = last_button_x2 + style.ItemSpacing.x + button_sz.x; // Expected position if next button was on same line
@@ -462,9 +512,22 @@ namespace SpellHotbar::SpellEditor {
         ImGui::EndChild();
         ImGui::PopStyleVar();
 
+        bool save_enabled{ false };
+
+        //Check if there is something to save
+        bool dat_diff = data.has_different_data(dat_saved);
+        bool icon_change = data.has_icon_data();
+        //logger::info("Changes: {} {}", dat_diff, icon_change);
+
+        save_enabled = dat_diff || icon_change;
+
+        if (!save_enabled) ImGui::BeginDisabled();
         if (ImGui::Button("Save")) {
+            //save changes
             closeEditDialog();
         }
+        if (!save_enabled) ImGui::EndDisabled();
+
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) {
             closeEditDialog();

@@ -5,6 +5,7 @@
 #include "../game_data/game_data.h"
 #include "../rendering/render_manager.h"
 #include "../rendering/spell_edit_dialog.h"
+#include "../game_data/user_custom_spelldata.h"
 
 namespace SpellHotbar::SpellEditor {
 	
@@ -14,7 +15,7 @@ namespace SpellHotbar::SpellEditor {
     std::vector<RE::TESForm*> list_of_skills_filtered;
     const RE::TESForm* edit_form = nullptr;
     //Spell currently beeing edited
-    std::optional<GameData::Spell_cast_data> current_edit_data = std::nullopt;
+    std::optional<GameData::User_custom_spelldata> current_edit_data = std::nullopt;
     //filled default values for current spell
     std::optional<GameData::Spell_cast_data> current_edit_data_filled = std::nullopt;
     //currently saved spell info, at start of editing
@@ -411,9 +412,11 @@ namespace SpellHotbar::SpellEditor {
                 if (button_edit_clicked >=0 && button_edit_clicked < list_of_skills_filtered.size())
                 {
                     edit_form = list_of_skills_filtered[button_edit_clicked];
-                    current_edit_data = GameData::get_spell_data(edit_form, false);
+                    current_edit_data = GameData::User_custom_spelldata(edit_form->GetFormID());
+                    current_edit_data->m_spell_data = GameData::get_spell_data(edit_form, false);
+                    current_edit_data_saved = current_edit_data->m_spell_data;
+
                     current_edit_data_filled = GameData::get_spell_data(edit_form, true);
-                    current_edit_data_saved = GameData::get_spell_data(edit_form, false);
                 }
             }
 

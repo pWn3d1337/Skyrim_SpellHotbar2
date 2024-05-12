@@ -431,7 +431,7 @@ void RenderManager::add_spell_texture(TextureImage& main_texture, RE::FormID for
     sub_vec.emplace_back(std::make_tuple(formID, "", &spell_icons.at(formID)));
 }
 
-void RenderManager::add_default_icon(TextureImage& main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1)
+void RenderManager::add_default_icon(TextureImage& main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string & icon_name)
 {
     SubTextureImage tex_img(main_texture, uv0, uv1);
     auto it = default_icons.find(type);
@@ -440,6 +440,19 @@ void RenderManager::add_default_icon(TextureImage& main_texture, GameData::Defau
     } else {
         default_icons.insert(std::make_pair(type, std::move(tex_img)));
     }
+
+    //add to editor_icon_list
+    if (editor_icon_list.empty()) {
+        editor_icon_list.emplace_back(std::make_tuple("Default Icons", std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>()));
+    }
+    else {
+        auto lastfile = std::get<0>(editor_icon_list.back());
+        if (lastfile != "Default Icons") {
+            editor_icon_list.emplace_back(std::make_tuple("Default Icons", std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>()));
+        }
+    }
+    auto& sub_vec = std::get<1>(editor_icon_list.back());
+    sub_vec.emplace_back(std::make_tuple(0, icon_name, &default_icons.at(type)));
 }
 
 void RenderManager::add_cooldown_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1)
@@ -705,6 +718,17 @@ void RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size
 
         draw_slot_overlay(pos, size);
     }
+}
+
+void RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size)
+{
+    if (default_icons.contains(icon_type)) {
+        auto & img = default_icons.at(icon_type);
+        ImGui::GetWindowDrawList()->AddImage((void*)img.res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img.uv0, img.uv1,
+            ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+
+    }
+    draw_slot_overlay(pos, size);
 }
 
 void RenderManager::draw_slot_overlay(ImVec2 pos, int size, ImU32 col)

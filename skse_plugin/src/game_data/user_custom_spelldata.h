@@ -35,6 +35,10 @@ namespace SpellHotbar::GameData {
 		*/
 		save_flags calc_save_flags() const;
 
+		bool has_different_data(const Spell_cast_data& other);
+
+		bool has_icon_data();
+
 		//Members
 		RE::FormID m_form_id;
 		Spell_cast_data m_spell_data;

@@ -95,4 +95,22 @@ namespace SpellHotbar::GameData {
 		return flags;
 	}
 
+	bool User_custom_spelldata::has_different_data(const Spell_cast_data& other)
+	{
+		logger::info("Self: {}, {}, {}, {}, {}, {}", m_spell_data.gcd, m_spell_data.cooldown, m_spell_data.casttime, m_spell_data.animation, m_spell_data.animation2, m_spell_data.casteffectid);
+		logger::info("Other: {}, {}, {}, {}, {}, {}", other.gcd, other.cooldown, other.casttime, other.animation, other.animation2, other.casteffectid);
+
+		return m_spell_data.gcd != other.gcd ||
+			m_spell_data.cooldown != other.cooldown ||
+			m_spell_data.casttime != other.casttime ||
+			m_spell_data.animation != other.animation ||
+			m_spell_data.animation2 != other.animation2 ||
+			m_spell_data.casteffectid != other.casteffectid;
+	}
+
+	bool User_custom_spelldata::has_icon_data()
+	{
+		return m_icon_form > 0 || !m_icon_str.empty();
+	}
+
 }

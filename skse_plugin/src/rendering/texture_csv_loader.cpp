@@ -154,7 +154,7 @@ namespace SpellHotbar::TextureCSVLoader {
                     std::string str_name = doc.GetCell<std::string>("IconName", i);   
                     if (default_icon_names.contains(str_name)) {
                         auto type = default_icon_names.at(str_name);
-                        RenderManager::add_default_icon(main_tex, type, ImVec2(u0, v0), ImVec2(u1, v1));
+                        RenderManager::add_default_icon(main_tex, type, ImVec2(u0, v0), ImVec2(u1, v1), str_name);
                     } else {
                         logger::warn("Unknown IconName '{}', skipping", str_name);
                     }
