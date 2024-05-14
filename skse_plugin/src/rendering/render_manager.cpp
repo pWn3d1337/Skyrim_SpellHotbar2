@@ -579,10 +579,43 @@ void RenderManager::MessageCallback(SKSE::MessagingInterface::Message* msg)
     }
 }
 
+inline SubTextureImage* lookup_default_icon(RE::FormID formID) {
+    SubTextureImage* ret{ nullptr };
+    // fallback icons
+    auto form = RE::TESForm::LookupByID(formID);
+    GameData::DefaultIconType icon{ GameData::DefaultIconType::UNKNOWN };
+    if (form != nullptr) {
+        icon = GameData::get_fallback_icon_type(form);
+    }
+
+    if (default_icons.contains(icon)) {
+        ret = &default_icons.at(icon);
+    }
+    else {
+        if (default_icons.contains(GameData::DefaultIconType::UNKNOWN)) {
+            ret = &default_icons.at(GameData::DefaultIconType::UNKNOWN);
+        }
+    }
+    return ret;
+}
+
 SubTextureImage* RenderManager::get_tex_for_skill_internal(RE::FormID formID)
 {
     SubTextureImage* ret{ nullptr };
     if (formID != 0) {
+
+
+        if (GameData::user_spell_cast_info.contains(formID)) {
+            auto& dat = GameData::user_spell_cast_info.at(formID);
+            if (dat.has_icon_data()) {
+
+                if (dat.m_icon_form > 0) {
+                
+                    formID = dat.m_icon_form;
+                }
+                //TODO string data
+            }
+        }
 
         if (GameData::is_clear_spell(formID) && default_icons.contains(GameData::DefaultIconType::UNBIND_SLOT)) {
             ret = &default_icons.at(GameData::DefaultIconType::UNBIND_SLOT);
@@ -598,21 +631,7 @@ SubTextureImage* RenderManager::get_tex_for_skill_internal(RE::FormID formID)
             ret = &spell_icons.at(formID);
         }
         else {
-            // fallback icons
-            auto form = RE::TESForm::LookupByID(formID);
-            GameData::DefaultIconType icon{ GameData::DefaultIconType::UNKNOWN };
-            if (form != nullptr) {
-                icon = GameData::get_fallback_icon_type(form);
-            }
-
-            if (default_icons.contains(icon)) {
-                ret =&default_icons.at(icon);
-            }
-            else {
-                if (default_icons.contains(GameData::DefaultIconType::UNKNOWN)) {
-                    ret = &default_icons.at(GameData::DefaultIconType::UNKNOWN);
-                }
-            }
+            ret = lookup_default_icon(formID);
         }
     }
     return ret;

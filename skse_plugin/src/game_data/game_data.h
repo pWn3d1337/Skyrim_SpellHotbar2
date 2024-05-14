@@ -1,8 +1,13 @@
 #pragma once
 #include "../bar/hotbar.h"
 #include "../logger/logger.h"
+#include "spell_cast_data.h"
+#include "user_custom_spelldata.h"
 
 namespace SpellHotbar::GameData {
+
+    class User_custom_spelldata; //forward declaration
+
     enum class EquippedType
     {
         FIST,
@@ -94,24 +99,6 @@ namespace SpellHotbar::GameData {
         bool is_expired(float current_game_time);
     };
 
-    struct Spell_cast_data {
-        float gcd;
-        float cooldown;
-        float casttime;
-        int animation; //single hand cast, or slow cast (for ritual spells)
-        int animation2; //dual cast or fast cast (for ritual spells)
-        uint16_t casteffectid;
-        
-        Spell_cast_data();
-        bool is_empty();
-
-        /*
-        * This fills all defaulted fields with the values from the passed spell
-        */
-        void fill_default_values_from_spell(const RE::SpellItem* spell);
-    };
-
-
     enum class custom_transform_spell_type: uint8_t {
         regular = 0U, //regular inventory
         fav_menu, //use fave menu to bind, but still cast all trough bar
@@ -143,8 +130,13 @@ namespace SpellHotbar::GameData {
 
     extern std::unordered_map<int, std::string> animation_names;
 
+    extern std::unordered_map<RE::FormID, GameData::User_custom_spelldata> user_spell_cast_info;
+
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
+
+    void load_user_spell_data_from_SKSE_save(SKSE::SerializationInterface* a_intfc, uint32_t version);
+    void save_user_spell_data_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
 
     //Called when game data is available
     void onDataLoad();
@@ -239,8 +231,6 @@ namespace SpellHotbar::GameData {
     void advance_cast_timer(float delta);
 
     uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2);
-
-    float get_ritual_conc_anim_prerelease_time(int anim);
 
     GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults = true);
 

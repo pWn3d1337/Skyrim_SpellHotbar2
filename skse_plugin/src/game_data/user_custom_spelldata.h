@@ -1,5 +1,5 @@
 #pragma once
-#include "game_data.h"
+#include "spell_cast_data.h"
 
 namespace SpellHotbar::GameData {
 

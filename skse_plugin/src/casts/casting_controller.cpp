@@ -561,7 +561,7 @@ namespace SpellHotbar::casts::CastingController {
 				bool is_fast_anim = cast_info.m_casttime <= fast_cast_threshold;
 
 				int anim = is_fast_anim ? cast_info.m_animation2 : cast_info.m_animation;
-				float pre_release_anim = GameData::get_ritual_conc_anim_prerelease_time(anim);
+				float pre_release_anim = GameData::Spell_cast_data::get_ritual_conc_anim_prerelease_time(anim);
 
 				GameData::set_animtype_global(anim);
 

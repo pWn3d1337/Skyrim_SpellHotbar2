@@ -61,6 +61,10 @@ set(source_files src/plugin.cpp
                  src/rendering/spell_edit_dialog.cpp
                  src/game_data/user_custom_spelldata.h
                  src/game_data/user_custom_spelldata.cpp
+                 src/game_data/user_data_io.h
+                 src/game_data/user_data_io.cpp
+                 src/game_data/spell_cast_data.h
+                 src/game_data/spell_cast_data.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

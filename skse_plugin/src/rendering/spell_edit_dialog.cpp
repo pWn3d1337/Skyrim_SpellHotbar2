@@ -524,6 +524,7 @@ namespace SpellHotbar::SpellEditor {
         if (!save_enabled) ImGui::BeginDisabled();
         if (ImGui::Button("Save")) {
             //save changes
+            GameData::user_spell_cast_info.insert_or_assign(data.m_form_id, data);
             closeEditDialog();
         }
         if (!save_enabled) ImGui::EndDisabled();

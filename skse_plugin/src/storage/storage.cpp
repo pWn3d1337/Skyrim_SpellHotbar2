@@ -52,6 +52,16 @@ namespace SpellHotbar::Storage {
             GameData::save_to_SKSE_save(a_intfc);
         }
 
+        // Save custom spelldata if present
+        if (!GameData::user_spell_cast_info.empty()) {
+            if (!a_intfc->OpenRecord('SDAT', Storage::save_format)) {
+                logger::error("Could not store user spell data values!");
+            }
+            else {
+                GameData::save_user_spell_data_to_SKSE_save(a_intfc);
+            }
+        }
+
     }
 
     void LoadCallback(SKSE::SerializationInterface* a_intfc)
@@ -148,6 +158,10 @@ namespace SpellHotbar::Storage {
             {
                 logger::trace("Reading 'GDAT' data from save...");
                 GameData::load_from_SKSE_save(a_intfc);
+            }
+            else if (type == 'SDAT') {
+                logger::trace("Reading 'SDAT' data from save...");
+                GameData::load_user_spell_data_from_SKSE_save(a_intfc, version);
             }
             else if (SpellHotbar::Bars::hotbars.contains(type))
             {
