@@ -232,7 +232,7 @@ namespace SpellHotbar::GameData {
 
     uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2);
 
-    GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults = true);
+    GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults = true, bool include_custom_user_data = true);
 
     void add_animation_data(const std::string& name, int anim_id);
 }

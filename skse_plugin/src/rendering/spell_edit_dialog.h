@@ -8,5 +8,5 @@ namespace SpellHotbar::SpellEditor {
 
 	extern std::vector<SubTextureImage*> available_icons;
 
-	void drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata& dat, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_saved);
+	void drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata& dat, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_unfilled, GameData::Spell_cast_data& dat_saved);
 }

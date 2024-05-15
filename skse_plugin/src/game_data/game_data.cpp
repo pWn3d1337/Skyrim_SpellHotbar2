@@ -903,7 +903,7 @@ namespace SpellHotbar::GameData {
          }
      }
 
-     GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults)
+     GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults, bool include_custom_user_data)
      {
          GameData::Spell_cast_data data;
          RE::FormID id = spell->GetFormID();
@@ -913,9 +913,11 @@ namespace SpellHotbar::GameData {
          }
 
          //fill in custom user data
-         if (user_spell_cast_info.contains(id)) {
-             auto &user_data = user_spell_cast_info.at(id);
-             data.fill_and_override_from_non_default_values(user_data.m_spell_data);
+         if (include_custom_user_data) {
+             if (user_spell_cast_info.contains(id)) {
+                 auto& user_data = user_spell_cast_info.at(id);
+                 data.fill_and_override_from_non_default_values(user_data.m_spell_data);
+             }
          }
 
          //Fill default values

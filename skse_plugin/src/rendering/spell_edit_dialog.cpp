@@ -14,11 +14,8 @@ namespace SpellHotbar::SpellEditor {
         auto& io = ImGui::GetIO();
         const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
 
-        /*
-        * Fill 95% of screen, with 4:3 dimensions, centered on screen
-        */
-        float frame_height = screen_size_y * 0.5f;
-        float frame_width = frame_height * 4.0f / 3.0f;
+        float frame_height = screen_size_y * 0.75f;
+        float frame_width = frame_height * 16.0f / 9.0f;
 
         ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
         ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.5f));
@@ -26,7 +23,7 @@ namespace SpellHotbar::SpellEditor {
         return std::make_tuple(screen_size_x, screen_size_y, frame_width);
     }
 
-	void SpellHotbar::SpellEditor::drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata &data, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_saved)
+	void SpellHotbar::SpellEditor::drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata &data, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_unfilled, GameData::Spell_cast_data& dat_saved)
 	{
         static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
@@ -55,7 +52,8 @@ namespace SpellHotbar::SpellEditor {
         static ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
             | ImGuiTableFlags_ScrollY;
 
-        constexpr int child_window_height = 500;
+        //constexpr int child_window_height = 500;
+        float child_window_height = ImGui::GetContentRegionAvail().y * 0.9f;
 
         constexpr ImU32 col_gray = IM_COL32(127, 127, 127, 255);
 
@@ -242,6 +240,17 @@ namespace SpellHotbar::SpellEditor {
 
             //GameData::get_cast_effect_id
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+
+                static bool custom_casteffect = false;
+                ImGui::Checkbox("##chk_casteffect", &custom_casteffect);
+                ImGui::SameLine();
+
+
+                if (!custom_casteffect) {
+                    ImGui::BeginDisabled();
+                    dat.casteffectid = dat_filled.casteffectid;
+                }
+
                 const char* preview_text = nullptr;
                 if (dat.casteffectid >= 0 && dat.casteffectid < GameData::spell_casteffect_art.size()) {
                     auto& effect_dat = GameData::spell_casteffect_art.at(dat.casteffectid);
@@ -265,6 +274,8 @@ namespace SpellHotbar::SpellEditor {
                     }
                     ImGui::EndCombo();
                 }
+                if (!custom_casteffect) ImGui::EndDisabled();
+
             }
             else {
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
@@ -363,6 +374,16 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TableNextColumn();
             
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+
+                static bool custom_anim = false;
+                ImGui::Checkbox("##chk_anim", &custom_anim);
+                ImGui::SameLine();
+
+                if (!custom_anim) {
+                    ImGui::BeginDisabled();
+                    dat.animation = dat_filled.animation;
+                }
+
                 const char* anim_text = nullptr;
                 auto& list_of_anims = SpellEditor::get_list_of_anims();
 
@@ -390,6 +411,10 @@ namespace SpellHotbar::SpellEditor {
                     }
                     ImGui::EndCombo();
                 }
+
+                if (!custom_anim) {
+                    ImGui::EndDisabled();
+                }
             }
             else {
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
@@ -404,6 +429,16 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TableNextColumn();
 
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+
+                static bool custom_anim2 = false;
+                ImGui::Checkbox("##chk_anim2", &custom_anim2);
+                ImGui::SameLine();
+
+                if (!custom_anim2) {
+                    ImGui::BeginDisabled();
+                    dat.animation2 = dat_filled.animation2;
+                }
+
                 const char* anim_text2 = nullptr;
                 auto& list_of_anims = SpellEditor::get_list_of_anims();
 
@@ -430,6 +465,9 @@ namespace SpellHotbar::SpellEditor {
                         }
                     }
                     ImGui::EndCombo();
+                }
+                if (!custom_anim2) {
+                    ImGui::EndDisabled();
                 }
             } 
             else {

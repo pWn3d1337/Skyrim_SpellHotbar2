@@ -43,7 +43,6 @@ namespace SpellHotbar::GameData {
 	User_custom_spelldata User_custom_spelldata::deserialize(SKSE::SerializationInterface* serializer, uint32_t version)
 	{
 		bool ok{ true };
-
 		RE::FormID form_id{ 0 };
 		save_flags flags{ save_flags::none };
 		ok = serializer->ReadRecordData(&form_id, sizeof(RE::FormID));
@@ -51,6 +50,8 @@ namespace SpellHotbar::GameData {
 			logger::error("Error during loading User_custom_spelldata (formID)");
 			return User_custom_spelldata(0);
 		}
+		serializer->ResolveFormID(form_id, form_id);
+
 		ok = serializer->ReadRecordData(&flags, sizeof(save_flags));
 		if (!ok) {
 			logger::error("Error during loading User_custom_spelldata (flags)");
@@ -68,7 +69,11 @@ namespace SpellHotbar::GameData {
 		if (ok && (flags & save_flags::animation)) ok = serializer->ReadRecordData(&data.m_spell_data.animation, sizeof(int));
 		if (ok && (flags & save_flags::animation2)) ok = serializer->ReadRecordData(&data.m_spell_data.animation2, sizeof(int));
 		if (ok && (flags & save_flags::casteffectid)) ok = serializer->ReadRecordData(&data.m_spell_data.casteffectid, sizeof(uint16_t));
-		if (ok && (flags & save_flags::icon_form)) ok = serializer->ReadRecordData(&data.m_icon_form, sizeof(RE::FormID));
+		if (ok && (flags & save_flags::icon_form))
+		{
+			ok = serializer->ReadRecordData(&data.m_icon_form, sizeof(RE::FormID));
+			if (ok) ok = serializer->ResolveFormID(data.m_icon_form, data.m_icon_form);
+		}
 					
 		if (ok && (flags & save_flags::icon_str)) {
 			uint16_t len{ 0U };

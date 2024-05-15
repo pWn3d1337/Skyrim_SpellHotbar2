@@ -18,6 +18,8 @@ namespace SpellHotbar::SpellEditor {
     std::optional<GameData::User_custom_spelldata> current_edit_data = std::nullopt;
     //filled default values for current spell
     std::optional<GameData::Spell_cast_data> current_edit_data_filled = std::nullopt;
+    //Not filled values from spell, only csv data
+    std::optional<GameData::Spell_cast_data> current_edit_data_unfilled = std::nullopt;
     //currently saved spell info, at start of editing
     std::optional<GameData::Spell_cast_data> current_edit_data_saved = std::nullopt;
     std::vector<int> list_of_anims;
@@ -35,6 +37,7 @@ namespace SpellHotbar::SpellEditor {
         column_id_Anim,
         column_id_Anim2,
         column_id_Edit,
+        column_id_Reset,
 
         column_count
     };
@@ -139,6 +142,7 @@ namespace SpellHotbar::SpellEditor {
             edit_form = nullptr;
             current_edit_data.reset();
             current_edit_data_filled.reset();
+            current_edit_data_unfilled.reset();
             current_edit_data_saved.reset();
             load_spells();
             load_anims();
@@ -155,7 +159,7 @@ namespace SpellHotbar::SpellEditor {
     void renderEditor()
     {
         if (edit_form) {
-            drawEditDialog(edit_form, current_edit_data.value(), current_edit_data_filled.value(), current_edit_data_saved.value());
+            drawEditDialog(edit_form, current_edit_data.value(), current_edit_data_filled.value(), current_edit_data_unfilled.value(), current_edit_data_saved.value());
         }
         else {
             drawTableFrame();
@@ -318,7 +322,8 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TableSetupColumn("Casttime", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Casttime);
             ImGui::TableSetupColumn("Anim", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim);
             ImGui::TableSetupColumn("Anim2", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim2);
-            ImGui::TableSetupColumn("Edit Spell", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Edit);
+            ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Edit);
+            ImGui::TableSetupColumn("Reset", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Reset);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -404,6 +409,13 @@ namespace SpellHotbar::SpellEditor {
                         button_edit_clicked = row_n;
                     }
 
+                    ImGui::TableNextColumn();
+                    if (GameData::user_spell_cast_info.contains(item->GetFormID())) {
+                        if (ImGui::SmallButton("Reset")) {
+                            //button_edit_clicked = row_n;
+                        }
+                    }
+
                     ImGui::PopID();
                 }
             ImGui::EndTable();
@@ -413,10 +425,21 @@ namespace SpellHotbar::SpellEditor {
                 {
                     edit_form = list_of_skills_filtered[button_edit_clicked];
                     current_edit_data = GameData::User_custom_spelldata(edit_form->GetFormID());
-                    current_edit_data->m_spell_data = GameData::get_spell_data(edit_form, false);
+                    current_edit_data->m_spell_data = GameData::get_spell_data(edit_form, false, true);
+
+                    if (GameData::user_spell_cast_info.contains(edit_form->GetFormID())) {
+                        //also set custom icon if present
+                        auto& user_dat = GameData::user_spell_cast_info.at(edit_form->GetFormID());
+                        if (user_dat.has_icon_data()) {
+                            current_edit_data->m_icon_form = user_dat.m_icon_form;
+                            current_edit_data->m_icon_str = user_dat.m_icon_str;
+                        }
+                    }
+
                     current_edit_data_saved = current_edit_data->m_spell_data;
 
-                    current_edit_data_filled = GameData::get_spell_data(edit_form, true);
+                    current_edit_data_filled = GameData::get_spell_data(edit_form, true, false);
+                    current_edit_data_unfilled = GameData::get_spell_data(edit_form, false, false);
                 }
             }
 
@@ -431,6 +454,7 @@ namespace SpellHotbar::SpellEditor {
         current_edit_data.reset();
         current_edit_data_saved.reset();
         current_edit_data_filled.reset();
+        current_edit_data_unfilled.reset();
     }
 
     std::vector<int>& get_list_of_anims()
