@@ -272,6 +272,11 @@ void RenderManager::close_key_blocking_frames()
     close_spell_editor();
 }
 
+bool RenderManager::has_custom_icon(RE::FormID form_id)
+{
+    return spell_icons.contains(form_id);
+}
+
 std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>>& RenderManager::get_editor_icon_list()
 {
     return editor_icon_list;

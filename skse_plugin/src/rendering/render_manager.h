@@ -119,6 +119,8 @@ namespace SpellHotbar {
         static bool should_block_game_key_inputs();
         static void close_key_blocking_frames();
 
+        static bool has_custom_icon(RE::FormID form_id);
+
         static std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>>& get_editor_icon_list();
     };
 }

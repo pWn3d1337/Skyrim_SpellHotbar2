@@ -71,8 +71,8 @@ namespace SpellHotbar::SpellEditor {
         return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
     }
 
-    void update_filter(const std::string filter_text) {
-        if (filter_text.empty()) {
+    void update_filter(const std::string filter_text, bool filter_predefined, bool filter_custom_dat) {
+        if (filter_text.empty() && !filter_predefined && !filter_custom_dat) {
             list_of_skills_filtered = list_of_skills;
         }
         else {
@@ -80,11 +80,42 @@ namespace SpellHotbar::SpellEditor {
             list_of_skills_filtered.reserve(list_of_skills.size());
             for (size_t i = 0U; i < list_of_skills.size(); i++) {
 
-                //Check if name matches filter
-                const std::string name = list_of_skills[i]->GetName();
-                if (name.find(filter_text) != std::string::npos) {
-                    list_of_skills_filtered.emplace_back(list_of_skills[i]);
+                bool match_text{ false };
+                bool match_filter_predef{ false };
+                bool match_filter_custom_dat{ false };
+
+                if (!filter_text.empty()) {
+                    //Check if name matches filter
+                    const std::string name = list_of_skills[i]->GetName();
+                    if (name.find(filter_text) != std::string::npos) {
+                        match_text = true;
+                    }
                 }
+                else {
+                    match_text = true;
+                }
+
+                if (filter_predefined) {
+                    if(!GameData::spell_cast_info.contains(list_of_skills[i]->GetFormID()) &&
+                       !RenderManager::has_custom_icon(list_of_skills[i]->GetFormID())) {
+
+                        match_filter_predef = true;
+                    }
+                }
+                else {
+                    match_filter_predef = true;
+                }
+
+                if (filter_custom_dat) {
+                    if (GameData::user_spell_cast_info.contains(list_of_skills[i]->GetFormID())) {
+                        match_filter_custom_dat = true;
+                    }
+                }
+                else {
+                    match_filter_custom_dat = true;
+                }
+
+                if (match_text && match_filter_predef && match_filter_custom_dat) list_of_skills_filtered.emplace_back(list_of_skills[i]);
             }
         }
     }
@@ -122,7 +153,7 @@ namespace SpellHotbar::SpellEditor {
                 list_of_skills.push_back(shout);
             }
 
-            update_filter("");
+            update_filter("", false, false);
         }
     }
 
@@ -297,6 +328,18 @@ namespace SpellHotbar::SpellEditor {
 
         ImGui::InputTextWithHint("Filter", "Filter spell names containing text", filter_buf, filter_buf_size, filter_input_flags);
 
+        ImGui::SameLine();
+        static bool filter_user_data = false;
+        if (ImGui::Checkbox("Edited Only", &filter_user_data)) {
+            filter_dirty = true;
+        };
+
+        ImGui::SameLine();
+        static bool filter_predefined_data = false;
+        if (ImGui::Checkbox("No Predefined data", &filter_predefined_data)) {
+            filter_dirty = true;
+        }
+
         static ImGuiTableFlags flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
             | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
@@ -335,14 +378,14 @@ namespace SpellHotbar::SpellEditor {
                     std::sort(list_of_skills.begin(), list_of_skills.end(), compare_entries_for_sort);
                     sort_specs->SpecsDirty = false;
 
-                    update_filter(filter_buf);
+                    update_filter(filter_buf, filter_predefined_data, filter_user_data);
                     filter_dirty = false;
                 }
             }
 
             //apply filtering
             if (filter_dirty) {
-                update_filter(filter_buf);
+                update_filter(filter_buf, filter_predefined_data, filter_user_data);
                 filter_dirty = false;
             }
 
@@ -410,9 +453,30 @@ namespace SpellHotbar::SpellEditor {
                     }
 
                     ImGui::TableNextColumn();
+
                     if (GameData::user_spell_cast_info.contains(item->GetFormID())) {
                         if (ImGui::SmallButton("Reset")) {
-                            //button_edit_clicked = row_n;
+                            ImGui::OpenPopup("Reset?");
+                        }
+
+                        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+                        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+                        if (ImGui::BeginPopupModal("Reset?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+                        {
+                            ImGui::Text("Reset all edits to '%s'.", item->GetName());
+                            ImGui::Separator();
+
+                            if (ImGui::Button("Ok", ImVec2(120, 0))) {
+                                if (GameData::user_spell_cast_info.contains(item->GetFormID())) {
+                                    GameData::user_spell_cast_info.erase(item->GetFormID());
+                                }
+                                ImGui::CloseCurrentPopup();
+                            }
+                            ImGui::SetItemDefaultFocus();
+                            ImGui::SameLine();
+                            if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+                            ImGui::EndPopup();
                         }
                     }
 
