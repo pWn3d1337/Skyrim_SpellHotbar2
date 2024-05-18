@@ -3,3 +3,4 @@ build
 .vs
 vcpkg_installed
 /python_scripts/.idea
+/SWF_Generator/.idea
