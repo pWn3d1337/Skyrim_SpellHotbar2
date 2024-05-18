@@ -101,6 +101,9 @@ namespace SpellHotbar::SpellEditor {
                     auto type = TextureCSVLoader::default_icon_names.at(data.m_icon_str);
                     SpellHotbar::RenderManager::draw_default_icon_in_editor(type, iconpos, static_cast<int>(ic_size));
                 }
+                else {
+                    SpellHotbar::RenderManager::draw_extra_icon_in_editor(data.m_icon_str, iconpos, static_cast<int>(ic_size));
+                }
                 show_reset_button = true;
             }
             else {
@@ -236,9 +239,6 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("Cast Effect");
             ImGui::TableNextColumn();
 
-            //ImGui::Combo("", &dat.casteffectid, [](void* data, int n) { return ((const char**)data)[n]; }, GameData::spell_casteffect_art, GameData::spell_casteffect_art.size());
-
-            //GameData::get_cast_effect_id
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
 
                 static bool custom_casteffect = false;
@@ -288,7 +288,6 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TableNextColumn();
             ImGui::TextUnformatted("Globald Cooldown");
             ImGui::TableNextColumn();
-            //ImGui::TextUnformatted("TODO");
 
             static bool custom_gcd = false;
             ImGui::Checkbox("##chk_gcd", &custom_gcd);
@@ -521,7 +520,7 @@ namespace SpellHotbar::SpellEditor {
                         }
                         else if (!icon_str.empty()) {
                             data.m_icon_str = icon_str;
-                            data.m_form_id = 0;
+                            data.m_icon_form = 0;
                         }
                     }
                     ImVec2 inner_pos{ bpos.x + inner_pad, bpos.y + inner_pad };
@@ -534,6 +533,9 @@ namespace SpellHotbar::SpellEditor {
                         if (TextureCSVLoader::default_icon_names.contains(icon_str)) {
                             auto type = TextureCSVLoader::default_icon_names.at(icon_str);
                             SpellHotbar::RenderManager::draw_default_icon_in_editor(type, inner_pos, icon_size);
+                        }
+                        else {
+                            SpellHotbar::RenderManager::draw_extra_icon_in_editor(icon_str, inner_pos, icon_size);
                         }
                     }
 

@@ -818,13 +818,6 @@ namespace SpellHotbar::casts::CastingController {
 		auto pc = RE::PlayerCharacter::GetSingleton();
 		if (!pc) return false;
 
-		//TODO remove?
-		/*uint16_t anim = 0U;
-		auto spell_data = SpellHotbar::GameData::spell_cast_info.find(spell->GetFormID());
-		if (spell_data != SpellHotbar::GameData::spell_cast_info.end()) {
-			anim = spell_data->second.animation;
-		}*/
-
 		RE::MagicSystem::CastingSource castsource = SpellHotbar::GameData::global_casting_source ? static_cast<RE::MagicSystem::CastingSource>(std::clamp(static_cast<int>(SpellHotbar::GameData::global_casting_source->value), 0, 3)) : RE::MagicSystem::CastingSource::kOther;
 
 		auto playerMagicCaster = pc->GetMagicCaster(castsource);

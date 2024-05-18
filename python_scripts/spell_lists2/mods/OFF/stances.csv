@@ -1,0 +1,5 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Wolf Stance	0x000800	SpellHotbar_Stances.esp		-1	-1	-1	0
+Tiger Stance	0x000801	SpellHotbar_Stances.esp		-1	-1	-1	0
+Stag Stance	0x000802	SpellHotbar_Stances.esp		-1	-1	-1	0
+Bear Stance	0x000803	SpellHotbar_Stances.esp		-1	-1	-1	0

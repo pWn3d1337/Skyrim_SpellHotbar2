@@ -1,0 +1,20 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Necrotic Flames	0x000817	Desecration.esp	IllusionGreen	-1	-1	-1	0
+Necrotic Fire Bolt	0x000814	Desecration.esp	IllusionGreen	-1	-1	-1	1
+Necrotic Burn Touch	0x000828	Desecration.esp	IllusionGreen	-1	-1	-1	11
+Necrotic Fire Rune	0x000888	Desecration.esp	IllusionGreen	-1	-1	-1	3
+Necrotic Fire Ball	0x000819	Desecration.esp	IllusionGreen	-1	-1	-1	5
+Necrotic Flame Cloak	0x00081C	Desecration.esp	IllusionGreen	-1	-1	-1	2
+Greater Necrotic Flames	0x00082D	Desecration.esp	IllusionGreen	-1	-1	-1	0
+Necrotic Flame Touch	0x00082F	Desecration.esp	IllusionGreen	-1	-1	-1	11
+Necrotic Combustion	0x000825	Desecration.esp	IllusionGreen	-1	-1	-1	4
+Wall of Necrotic Flames	0x000821	Desecration.esp	IllusionGreen	-1	-1	-1	0
+Necrotic Fire Grasp	0x000835	Desecration.esp	IllusionGreen	-1	-1	-1	11
+Greater Necrotic Fire Rune	0x00088B	Desecration.esp	IllusionGreen	-1	-1	-1	3
+Necrotic Devastation	0x00082A	Desecration.esp	IllusionGreen	-1	-1	-1	13
+Necrotic Flame Tempest	0x000831	Desecration.esp	IllusionGreen	-1	-1	-1	0
+Necrotic Fire Storm	0x00081E	Desecration.esp	IllusionGreen	-1	-1	-1	2
+Necrotic Scorch	0x000833	Desecration.esp	IllusionGreen	-1	-1	-1	11
+Conjure Necrotic Flame Atronach	0x000959	Desecration.esp	ConjurationSummon	-1	-1	-1	3
+Conjure Necrotic Flame Monarch	0x00095A	Desecration.esp	ConjurationSummon	-1	-1	-1	3
+Necrotic Fire Body	0x0009BF	Desecration.esp	IllusionGreen	-1	-1	-1	0

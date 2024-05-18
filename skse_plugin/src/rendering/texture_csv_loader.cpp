@@ -9,7 +9,7 @@ namespace SpellHotbar::TextureCSVLoader {
 
     namespace fs = std::filesystem;
 
-    static std::unordered_map<std::string, GameData::DefaultIconType> const default_icon_names = {
+    std::unordered_map<std::string, GameData::DefaultIconType> const default_icon_names = {
         {"UNKNOWN", GameData::DefaultIconType::UNKNOWN},
         {"BAR_EMPTY", GameData::DefaultIconType::BAR_EMPTY},
         {"BAR_OVERLAY", GameData::DefaultIconType::BAR_OVERLAY},
@@ -111,7 +111,7 @@ namespace SpellHotbar::TextureCSVLoader {
 
         // check the column names
         bool spell_icons = is_spell_icon_file(doc);
-        bool default_icons = is_default_icon_file(doc);
+        bool default_icons = is_default_icon_file(doc); //also used for extra icons
         bool cooldown_icons = is_cooldown_icon_file(doc);
 
         if (!spell_icons && !default_icons && !cooldown_icons) {
@@ -156,7 +156,7 @@ namespace SpellHotbar::TextureCSVLoader {
                         auto type = default_icon_names.at(str_name);
                         RenderManager::add_default_icon(main_tex, type, ImVec2(u0, v0), ImVec2(u1, v1), str_name);
                     } else {
-                        logger::warn("Unknown IconName '{}', skipping", str_name);
+                        RenderManager::add_extra_icon(main_tex, str_name, ImVec2(u0, v0), ImVec2(u1, v1), filename);
                     }
                 } else if (cooldown_icons) {
                     RenderManager::add_cooldown_icon(main_tex, ImVec2(u0, v0), ImVec2(u1, v1));

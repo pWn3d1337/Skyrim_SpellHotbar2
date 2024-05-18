@@ -1,0 +1,20 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Arclight Sparks	0x00082D	Arclight.esp	RestorationGold	-1	-1	-1	0
+Arclight Bolt	0x000829	Arclight.esp	RestorationGold	-1	-1	-1	4
+Arclight Touch	0x000836	Arclight.esp	RestorationGold	-1	-1	-1	11
+Arclight Rune	0x000831	Arclight.esp	RestorationGold	-1	-1	-1	3
+Arclight Chain	0x000834	Arclight.esp	RestorationGold	-1	-1	-1	4
+Arclight Aura	0x000825	Arclight.esp	RestorationGold	-1	-1	-1	2
+Arclight Contact	0x00082B	Arclight.esp	RestorationGold	-1	-1	-1	11
+Arclight Wall	0x000837	Arclight.esp	RestorationGold	-1	-1	-1	0
+Arclight Flash	0x000833	Arclight.esp	RestorationGold	-1	-1	-1	4
+Arclight Wave	0x000838	Arclight.esp	RestorationGold	-1	-1	-1	5
+Arclight Grasp	0x00082F	Arclight.esp	RestorationGold	-1	-1	-1	11
+Arclight Charged Rune	0x000832	Arclight.esp	RestorationGold	-1	-1	-1	3
+Arclight Discharge	0x00082C	Arclight.esp	RestorationGold	-1	-1	-1	13
+Arclight Detonation	0x000835	Arclight.esp	RestorationGold	-1	15s	1,75	2
+Arclight Palm	0x00082A	Arclight.esp	RestorationGold	-1	-1	-1	11
+Arclight Storm	0x0008F2	Arclight.esp	RestorationGold	-1	-1	-1	0
+Conjure Arclight Atronach	0x000980	Arclight.esp	ConjurationSummon	-1	-1	-1	3
+Conjure Arclight Monarch	0x000981	Arclight.esp	ConjurationSummon	-1	-1	-1	3
+Arclight Body	0x000827	Arclight.esp	RestorationGold	-1	-1	-1	0

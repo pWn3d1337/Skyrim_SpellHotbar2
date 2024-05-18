@@ -377,11 +377,6 @@ void RenderManager::load_gamedata_dependant_resources() {
 }
 
 void RenderManager::reload_resouces() {
-    //Handled
-    // std::vector<TextureImage> loaded_textures;
-    // std::unordered_map<RE::FormID, SubTextureImage> spell_icons;
-    // std::unordered_map<GameData::DefaultIconType, SubTextureImage> default_icons;
-    // std::vector<SubTextureImage> cooldown_icons;
 
     //TODO fonts, reloading fonts in imgui is not that simple
     logger::info("Clearing all Resources...");
@@ -439,12 +434,7 @@ void RenderManager::add_spell_texture(TextureImage& main_texture, RE::FormID for
 void RenderManager::add_default_icon(TextureImage& main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string & icon_name)
 {
     SubTextureImage tex_img(main_texture, uv0, uv1);
-    auto it = default_icons.find(type);
-    if (it != default_icons.end()) {
-        it->second = std::move(tex_img);
-    } else {
-        default_icons.insert(std::make_pair(type, std::move(tex_img)));
-    }
+    default_icons.insert_or_assign(type, std::move(tex_img));
 
     //add to editor_icon_list
     if (editor_icon_list.empty()) {
@@ -458,6 +448,27 @@ void RenderManager::add_default_icon(TextureImage& main_texture, GameData::Defau
     }
     auto& sub_vec = std::get<1>(editor_icon_list.back());
     sub_vec.emplace_back(std::make_tuple(0, icon_name, &default_icons.at(type)));
+}
+
+void RenderManager::add_extra_icon(TextureImage& main_texture, const std::string& icon_name, ImVec2 uv0, ImVec2 uv1, const std::string& filename)
+{
+    SubTextureImage tex_img(main_texture, uv0, uv1);
+
+    const std::string icon_key = filename + "_" + icon_name;
+    extra_icons.insert_or_assign(icon_key, std::move(tex_img));
+
+    //add to editor_icon_list
+    if (editor_icon_list.empty()) {
+        editor_icon_list.emplace_back(std::make_tuple(filename, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>()));
+    }
+    else {
+        auto lastfile = std::get<0>(editor_icon_list.back());
+        if (lastfile != filename) {
+            editor_icon_list.emplace_back(std::make_tuple(filename, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>()));
+        }
+    }
+    auto& sub_vec = std::get<1>(editor_icon_list.back());
+    sub_vec.emplace_back(std::make_tuple(0, icon_key, &extra_icons.at(icon_key)));
 }
 
 void RenderManager::add_cooldown_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1)
@@ -615,10 +626,21 @@ SubTextureImage* RenderManager::get_tex_for_skill_internal(RE::FormID formID)
             if (dat.has_icon_data()) {
 
                 if (dat.m_icon_form > 0) {
-                
+
                     formID = dat.m_icon_form;
+                    if (spell_icons.contains(formID)) {
+                        return &spell_icons.at(formID);
+                    }
                 }
-                //TODO string data
+                else if (!dat.m_icon_str.empty()) {
+                    if (TextureCSVLoader::default_icon_names.contains(dat.m_icon_str)) {
+                        auto def_icon = TextureCSVLoader::default_icon_names.at(dat.m_icon_str);
+                        return &default_icons.at(def_icon);
+                    }
+                    else if (extra_icons.contains(dat.m_icon_str)) {
+                        return &extra_icons.at(dat.m_icon_str);
+                    }
+                }
             }
         }
 
@@ -748,6 +770,17 @@ void RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType icon_t
 {
     if (default_icons.contains(icon_type)) {
         auto & img = default_icons.at(icon_type);
+        ImGui::GetWindowDrawList()->AddImage((void*)img.res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img.uv0, img.uv1,
+            ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+
+    }
+    draw_slot_overlay(pos, size);
+}
+
+void RenderManager::draw_extra_icon_in_editor(const std::string& key, ImVec2 pos, int size)
+{
+    if (extra_icons.contains(key)) {
+        auto& img = extra_icons.at(key);
         ImGui::GetWindowDrawList()->AddImage((void*)img.res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img.uv0, img.uv1,
             ImColor(1.0f, 1.0f, 1.0f, 1.0f));
 

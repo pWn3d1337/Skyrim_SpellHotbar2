@@ -660,14 +660,18 @@ namespace SpellHotbar::GameData {
     size_t get_cast_effect_id(const std::string& key)
     {
         size_t ret{0};
-        if (spell_effects_key_indices) {
-            if (spell_effects_key_indices.get()->contains(key)) {
-                ret = spell_effects_key_indices.get()->at(key);
-            } else {
-                logger::warn("Unknown Casteffect: {}", key);
+        if (!key.empty()) {
+            if (spell_effects_key_indices) {
+                if (spell_effects_key_indices.get()->contains(key)) {
+                    ret = spell_effects_key_indices.get()->at(key);
+                }
+                else {
+                    logger::warn("Unknown Casteffect: {}", key);
+                }
             }
-        } else {
-            logger::error("Spell effect key index map is called at incorrect time!");
+            else {
+                logger::error("Spell effect key index map is called at incorrect time!");
+            }
         }
         return ret;
     }

@@ -1,0 +1,23 @@
+Input_anims	Output_2h	Output_1h	Output_male	Output_female
+magcast_runbackward.hkx	2hm_runbackward.hkx	1hm_runbackward.hkx	male\mt_runbackward.hkx	female\mt_runbackward.hkx
+magcast_runbackwrdleft.hkx	2hm_runbackwardleft.hkx	1hm_runbackwardleft.hkx	male\mt_runbackwardleft.hkx	female\mt_runbackwardleft.hkx
+magcast_runbckwrdright.hkx	2hm_runbackwardright.hkx	1hm_runbackwardright.hkx	male\mt_runbackwardright.hkx	female\mt_runbackwardright.hkx
+magcast_runforward.hkx	2hm_runforward.hkx	1hm_runforward.hkx	male\mt_runforward.hkx	female\mt_runforward.hkx
+magcast_runforwardleft.hkx	2hm_runforwardleft.hkx	1hm_runforwardleft.hkx	male\mt_runforwardleft.hkx	female\mt_runforwardleft.hkx
+magcast_runfrwrdright.hkx	2hm_runforwardright.hkx	1hm_runforwardright.hkx	male\mt_runforwardright.hkx	female\mt_runforwardright.hkx
+magcast_runleft.hkx	2hm_runleft.hkx	1hm_runleft.hkx	male\mt_runleft.hkx	female\mt_runleft.hkx
+magcast_runright.hkx	2hm_runright.hkx	1hm_runright.hkx	male\mt_runright.hkx	female\mt_runright.hkx
+magcast_runstrafeleft.hkx	2hm_runstrafeleft.hkx	1hm_runstrafeleft.hkx		
+magcast_runstraferight.hkx	2hm_runstraferight.hkx	1hm_runstraferight.hkx		
+magcast_turnleft180.hkx	2hm_turnleft180.hkx	1hm_turnleft180.hkx	mt_turnleft180.hkx	
+magcast_turnleft60.hkx	2hm_turnleft60.hkx	1hm_turnleft60.hkx	mt_turnleft60.hkx	
+magcast_turnright180.hkx	2hm_turnright180.hkx	1hm_turnright180.hkx	mt_turnright180.hkx	
+magcast_turnright60.hkx	2hm_turnright60.hkx	1hm_turnright60.hkx	mt_turnright60.hkx	
+magcast_walkbackward.hkx	2hm_walkbackward.hkx	1hm_walkbackward.hkx	male\mt_walkbackward.hkx	female\mt_walkbackward.hkx
+magcast_walkbckwrdleft.hkx	2hm_walkbackwardleft.hkx	1hm_walkbackwardleft.hkx	male\mt_walkbackwardleft.hkx	female\mt_walkbackwardleft.hkx
+magcast_walkbckwrdrht.hkx	2hm_walkbackwardright.hkx	1hm_walkbackwardright.hkx	male\mt_walkbackwardright.hkx	female\mt_walkbackwardright.hkx
+magcast_walkforward.hkx	2hm_walkforward.hkx	1hm_walkforward.hkx	male\mt_walkforward.hkx	female\mt_walkforward.hkx
+magcast_walkforwrdleft.hkx	2hm_walkforwardleft.hkx	1hm_walkforwardleft.hkx	male\mt_walkforwardleft.hkx	female\mt_walkforwardleft.hkx
+magcast_walkfrwrdright.hkx	2hm_walkforwardright.hkx	1hm_walkforwardright.hkx	male\mt_walkforwardright.hkx	female\mt_walkforwardright.hkx
+magcast_walkleft.hkx	2hm_walkleft.hkx	1hm_walkleft.hkx	male\mt_walkleft.hkx	female\mt_walkleft.hkx
+magcast_walkright.hkx	2hm_walkright.hkx	1hm_walkright.hkx	male\mt_walkright.hkx	female\mt_walkright.hkx

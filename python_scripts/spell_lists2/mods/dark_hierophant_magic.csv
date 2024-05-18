@@ -1,0 +1,11 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Grand Cross	0x820	Ghostlight.esl	AlterationShield	-1	-1	-1	5
+Ordinance of Light	0x821	Ghostlight.esl	AlterationShield	-1	-1	-1	3
+Absolution	0x822	Ghostlight.esl	AlterationShield	-1	-1	-1	0
+Retribution	0x823	Ghostlight.esl	AlterationShield	-1	-1	-1	13
+Penance	0x824	Ghostlight.esl	AlterationShield	-1	-1	-1	4
+Inhibition	0x829	Ghostlight.esl	AlterationShield	-1	-1	-1	2
+Mass Inhibition	0x82A	Ghostlight.esl	AlterationShield	-1	-1	-1	2
+Penance Arm	0x893	Ghostlight.esl	AlterationShield	-1	-1	-1	15
+Penance Aura Fanning	0x826	Ghostlight.esl	AlterationShield	-1	-1	-1	3
+Penance Aura Shielding	0x827	Ghostlight.esl	AlterationShield	-1	-1	-1	2

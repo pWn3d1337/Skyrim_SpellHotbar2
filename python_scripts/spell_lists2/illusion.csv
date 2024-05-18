@@ -1,0 +1,20 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Clairvoyance	0x021143	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	-1
+Courage	0x04dee8	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10011
+Fury	0x04deeb	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10004
+Calm	0x04dee9	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10011
+Fear	0x04deea	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10004
+Muffle	0x08f3eb	Skyrim.esm	RestorationBlue	-1	-1	-1	-1	10008
+Frenzy	0x04deee	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10004
+Frenzy Rune	0x0177b7	Dragonborn.esm	IllusionRed	-1	-1	-1	-1	10003
+Orum's Aquatic Escape	0x000851	ccbgssse014-spellpack01.esl	RestorationBlue	-1	-1	-1	-1	10008
+Rally	0x04deec	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10011
+Fenrik's Welcome	0x00084F	ccbgssse014-spellpack01.esl	RestorationBlue	-1	-1	-1	-1	10008
+Invisibility	0x027eb6	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10008
+Pacify	0x04deed	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10005
+Rout	0x04deef	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10005
+Call to Arms	0x07e8dd	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10002
+Harmony	0x07e8db	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10002
+Hysteria	0x07e8de	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10002
+Mayhem	0x07e8da	Skyrim.esm	IllusionRed	-1	-1	-1	-1	10002
+Vision of the Tenth Eye	0x0b323e	Skyrim.esm	IllusionGreen	-1	-1	-1	-1	10009

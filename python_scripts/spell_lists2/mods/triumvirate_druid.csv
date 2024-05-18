@@ -1,0 +1,16 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Call Raven	0x181F3B	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Call Rattlesnakes	0x15460A	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Call Gray Wolf	0x168A23	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Call Snow Leopard	0x168A25	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Call Hound of Hircine	0x27009A	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Druidcraft	0x28E6E9	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	3
+Force of Nature	0x28E6EB	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	2
+Wildshape	0x191252	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	8
+Impenetrable Grove	0x2A7C1B	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Chase the Horizon	0x28E6E7	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	8s	1,75	8
+Spirit of the Oak	0x27F3B0	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	8
+Parasitic Growth	0x27F3B2	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	4
+Spirit of Thornbriar	0x27F3B8	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	2
+Bramble Growth	0x27F3B4	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	0
+Spirit of the Sun	0x27F3B6	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	10s	1,75	8

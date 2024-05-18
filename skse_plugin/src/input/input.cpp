@@ -510,7 +510,7 @@ namespace SpellHotbar::Input {
         bool inJumpState{ false };
         bool bowDrawn{ false };
         pc->GetGraphVariableBool("bInJumpState"sv, inJumpState);
-        pc->GetGraphVariableBool("bInJumpState"sv, bowDrawn);
+        pc->GetGraphVariableBool("bInJumpState"sv, bowDrawn); //TODO look for bow anim
 
         return !(as->IsSprinting() || as->IsSwimming() || pc->IsOnMount() || inJumpState || bowDrawn);
     }

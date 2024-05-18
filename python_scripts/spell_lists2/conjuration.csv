@@ -1,0 +1,59 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Bound Dagger	0x01ce06	Dragonborn.esm	ConjurationSummon	-1	-1	-1	-1	10015
+Bound Sword	0x0211eb	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10015
+Conjure Familiar	0x0640b6	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Skeleton Minion	0x00085B	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Undying Ghost	0x00085E	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Zombie	0x000804	ccbgssse003-zombies.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Raise Zombie	0x07E8E1	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10004
+Bound Battleaxe	0x0211EC	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10015
+Conjure Boneman	0x0045ba	Dawnguard.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Flame Atronach	0x0204C3	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Foul Zombie	0x000806	ccbgssse003-zombies.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Haunting Spirit	0x000868	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Skeleton Marksman	0x000856	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Flaming Familiar	0x09CE26	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Reanimate Corpse	0x065BD7	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10004
+Soul Split	0x000874	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10001
+Soul Trap	0x04DBA4	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10011
+Summon Arvak	0x00c600	Dawnguard.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Summon Daedric Horse	0x000B62	ccbgssse067-daedinv.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Banish Daedra	0x06D22C	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Banish Undead	0x00086A	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Bound Bow	0x0211ED	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10015
+Bound Quiver	0x00080C	ccbgssse002-exoticarrows.esl	ConjurationSummon	-1	-1	-1	-1	10008
+Conjure Ash Spawn	0x01cdf6	Dragonborn.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dark Seducer Archer	0x000870	ccbgssse025-advdsgs.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dark Seducer Warrior	0x000A0B	ccbgssse025-advdsgs.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Frost Atronach	0x0204C4	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Golden Saint Archer	0x00086F	ccbgssse025-advdsgs.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Golden Saint Warrior	0x0008CB	ccbgssse025-advdsgs.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Mistman	0x0045b8	Dawnguard.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Putrid Zombie	0x000805	ccbgssse003-zombies.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Seeker	0x033c66	Dragonborn.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Skeleton Champion	0x000877	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Tomb Guardian	0x000854	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Necromancer's Ritual	0x000869	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10002
+Revenant	0x096D94	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10004
+Conjure Ash Guardian	0x017782	Dragonborn.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Command Daedra	0x06F953	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Ayleid Lich	0x147D95	ccbgssse067-daedinv.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Cursed Spectre	0x000870	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dragon Priest	0x10FC16	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dremora Lord	0x10DDEC	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Malignant Zombie	0x000807	ccbgssse003-zombies.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Skeleton Warlock	0x00084E	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Storm Atronach	0x0204C5	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Wrathman	0x0045b3	Dawnguard.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Dread Zombie	0x096D95	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10004
+Expel Daedra	0x06F952	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Pride of Hirstaang	0x000852	ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Ancient Deathpriest	0x000852	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Bone Colossus	0x000861	ccVSVSSE003-NecroArts.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Staada	0x19D3FA	ccbgssse025-advdsgs.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Flame Thrall	0x07E5D5	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Dead Thrall	0x07E8DF	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10004
+Frost Thrall	0x07E5D6	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Storm Thrall	0x07E5D7	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Summon Arniel's Shade	0x06A153	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Summon Unbound Dremora	0x099F39	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003

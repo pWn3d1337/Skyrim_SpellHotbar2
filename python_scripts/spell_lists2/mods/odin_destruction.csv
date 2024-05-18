@@ -1,0 +1,22 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Taldam’s Scorcher	0x1D3482	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	0
+Arctic Blast	0x1D347B	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	0
+Lightning Grasp	0x1E279F	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	0
+Firehand	0x2A304F	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	11
+Frosthand	0x2A3051	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	11
+Stormhand	0x07C83B	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	11
+Flame Darts	0x1D347E	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	0
+Ice Shards	0x027F2E	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	0
+Charged Storm	0x024E49	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	0
+Blazing Strikes	0x26B43B	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	2
+Freezing Strikes	0x26B441	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	2
+Shocking Strikes	0x26B443	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	2
+Wildfire	0x1D858B	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	0
+Arctic Frost	0x1E78AD	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	0
+Thundering Grasp	0x1E27A7	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	0
+Firebloom	0x1D8588	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	3
+Frostbloom	0x1DD697	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	3
+Shockbloom	0x1DD699	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	3
+Flame Tempest	0x1CE36C	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	0
+Black Winter	0x1CE374	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	0
+Lightning Fury	0x1C4166	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	0

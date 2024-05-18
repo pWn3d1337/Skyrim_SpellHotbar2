@@ -1,0 +1,32 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Dispel Magic	0x00BB25	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	2
+Ghostwalk	0x00AAE8	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	8
+Pale Shadow	0x08558A	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Backlash	0x1132DA	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	1
+Curse of the Silent	0x017509	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Illusory Flames	0x03682F	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	0
+Mind Vision	0x0378A9	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Shared Trauma	0x00C0AC	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Thoughtsteal	0x00BB22	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Blood for Blood	0x127FA7	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	4
+Compelling Whispers	0x058655	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	0
+Evil Twin	0x037332	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	0
+Figment of Pain	0x043CE1	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Illusory Pyre	0x032C8B	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	5
+Shadowbond	0x031C4D	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Empathic Agony	0x0A4EF7	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	5
+Enslave the Weak	0x0306AC	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	4
+Mimic's Cloak	0x1274CF	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	2
+Mind Control	0x0378AE	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Seidstone	0x03789F	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	3
+Vanish	0x037E24	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	9
+Harrowing Dirge	0x0C74EA	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	4
+Hidden Cobra	0x046DC4	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	4
+Last Word	0x0416BF	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	4
+Magicka Void	0x00B5B7	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	5
+Mirror Entity	0x037E1A	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	4
+Pull From Eternity	0x085B03	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	4
+Scream of Pain	0x0321BA	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	2
+Shroudwalk	0x0DD94B	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	9
+Spectral Warband	0x085579	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	3
+Wyrd	0x05E21C	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	1,75	2

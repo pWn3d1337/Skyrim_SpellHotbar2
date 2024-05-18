@@ -1,0 +1,63 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Adrenaline Rush	0x0e40ce	Skyrim.esm		-1	-1	-1	0	0
+Ancestor's Wrath	0x0e40d4	Skyrim.esm		-1	-1	-1	0	0
+Battle Cry	0x0e40c3	Skyrim.esm		-1	-1	-1	0	0
+Beast Form	0x092c48	Skyrim.esm		-1	-1	-1	0	0
+Berserker Rage	0x0aa026	Skyrim.esm		-1	-1	-1	0	0
+Command Animal	0x0e40cf	Skyrim.esm		-1	-1	-1	0	0
+Dragonskin	0x0aa022	Skyrim.esm		-1	-1	-1	0	0
+Embrace of Shadows	0x088821	Skyrim.esm		-1	-1	-1	0	0
+Highborn	0x0e40c8	Skyrim.esm		-1	-1	-1	0	0
+Histskin	0x0e40d5	Skyrim.esm		-1	-1	-1	0	0
+Mora's Agony	0x031842	Dragonborn.esm		-1	-1	-1	0	0
+Mora's Boon	0x01e7f7	Dragonborn.esm		-1	-1	-1	0	0
+Mora's Grasp	0x031844	Dragonborn.esm		-1	-1	-1	0	0
+Nightingale Strife	0x0f1987	Skyrim.esm		-1	-1	-1	0	0
+Nightingale Subterfuge	0x0f1986	Skyrim.esm		-1	-1	-1	0	0
+Secret of Arcana	0x01e7fd	Dragonborn.esm		-1	-1	-1	0	0
+Secret of Protection	0x01e800	Dragonborn.esm		-1	-1	-1	0	0
+Secret of Strength	0x01e7fa	Dragonborn.esm		-1	-1	-1	0	0
+Shadowcloak of Nocturnal	0x017122	Skyrim.esm		-1	-1	-1	0	0
+Summon Karstaag	0x024812	Dragonborn.esm		-1	-1	-1	0	0
+Summon Karstaag	0x029709	Dragonborn.esm		-1	-1	-1	0	0
+Summon Karstaag	0x02970a	Dragonborn.esm		-1	-1	-1	0	0
+Summon Spectral Assassin	0x0618c6	Skyrim.esm		-1	-1	-1	0	0
+The Ritual Stone	0x0e7329	Skyrim.esm		-1	-1	-1	0	0
+The Serpent Stone	0x0e5f61	Skyrim.esm		-1	-1	-1	0	0
+The Shadow Stone	0x0e732a	Skyrim.esm		-1	-1	-1	0	0
+The Tower Stone	0x0e7328	Skyrim.esm		-1	-1	-1	0	0
+Vampire's Seduction	0x0c4de2	Skyrim.esm		-1	-1	-1	0	0
+Vampire's Servant	0x0ed0a4	Skyrim.esm		-1	-1	-1	0	0
+Vampire's Servant	0x0ed0a5	Skyrim.esm		-1	-1	-1	0	0
+Vampire's Servant	0x0ed0a6	Skyrim.esm		-1	-1	-1	0	0
+Vampire's Servant	0x0ed0a7	Skyrim.esm		-1	-1	-1	0	0
+Voice of the Emperor	0x0e40ca	Skyrim.esm		-1	-1	-1	0	0
+Bones of the Earth	0x01df9f	Dragonborn.esm		-1	-1	-1	0	0
+Conjure Werebear	0x01dfa4	Dragonborn.esm		-1	-1	-1	0	0
+Conjure Werebear	0x0322b2	Dragonborn.esm		-1	-1	-1	0	0
+North Wind	0x01dfa5	Dragonborn.esm		-1	-1	-1	0	0
+Root of Power	0x01dfab	Dragonborn.esm		-1	-1	-1	0	0
+Sun Flare	0x01df9c	Dragonborn.esm		-1	-1	-1	0	0
+Waters of Life	0x01dfa7	Dragonborn.esm		-1	-1	-1	0	0
+Bardic Knowledge	0x029f12	Dragonborn.esm		-1	-1	-1	0	0
+Black Market	0x01eec6	Dragonborn.esm		-1	-1	-1	0	0
+Breath of Nchuak	0x03b00d	Dragonborn.esm		-1	-1	-1	0	0
+Frostmoon Instinct	0x035b1b	Dragonborn.esm		-1	-1	-1	0	0
+Howl of the Pack	0x0cf79d	Skyrim.esm		-1	-1	-1	0	0
+Night Eye	0x0aa01d	Skyrim.esm		-1	-1	-1	0	0
+Secret Servant	0x01ff21	Dragonborn.esm		-1	-1	-1	0	0
+Vampire's Sight	0x0c4de1	Skyrim.esm		-1	-1	-1	0	0
+Vampire Lord	0x00283b	Dawnguard.esm		-1	-1	-1	0	0
+Mist Form	0x0038ba	Dawnguard.esm		-1	-1	-1	0	0
+Detect All Creatures	0x0038b8	Dawnguard.esm		-1	-1	-1	0	0
+Supernatural Reflexes	0x0038bc	Dawnguard.esm		-1	-1	-1	0	0
+Vampiric Grip	0x0038b7	Dawnguard.esm		-1	-1	-1	0	0
+Summon Gargoyle	0x016909	Dawnguard.esm		-1	-1	-1	0	0
+Corpse Curse	0x008a6f	Dawnguard.esm		-1	-1	-1	0	0
+Bats	0x0038b9	Dawnguard.esm		-1	-1	-1	0	0
+Raise Dead	0x00ba54	Dawnguard.esm		-1	-1	-1	0	0
+Raise Dead	0x013ec8	Dawnguard.esm		-1	-1	-1	0	0
+Raise Dead	0x013ec9	Dawnguard.esm		-1	-1	-1	0	0
+Raise Dead	0x013eca	Dawnguard.esm		-1	-1	-1	0	0
+Raise Dead	0x013ecb	Dawnguard.esm		-1	-1	-1	0	0
+Revert Form	0x00cd5c	Dawnguard.esm		-1	-1	-1	0	0

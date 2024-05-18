@@ -1,0 +1,28 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2	Shouttext
+Animal Allegiance	0x05fc77 	Skyrim.esm		-1	-1	-1	0	0	R1
+Aura Whisper	0x07097b 	Skyrim.esm		-1	-1	-1	0	0	L1
+Battle Fury	0x02ad09 	Dragonborn.esm		-1	-1	-1	0	0	Mi
+Become Ethereal	0x032920	Skyrim.esm		-1	-1	-1	0	0	F2
+Bend Will	0x0179d8	Dragonborn.esm		-1	-1	-1	0	0	Go
+Call Dragon	0x046b8c	Skyrim.esm		-1	-1	-1	0	0	Od
+Call of Valor	0x05196a	Skyrim.esm		-1	-1	-1	0	0	Hu
+Clear Skies	0x03cd34	Skyrim.esm		-1	-1	-1	0	0	Lo
+Cyclone	0x0200c0	Dragonborn.esm		-1	-1	-1	0	0	Ve
+Disarm	0x070981	Skyrim.esm		-1	-1	-1	0	0	Zu
+Dismay	0x02395a	Skyrim.esm		-1	-1	-1	0	0	F1
+Dragon Aspect	0x01df92	Dragonborn.esm		-1	-1	-1	0	0	Mu
+Dragonrend	0x044250	Skyrim.esm		-1	-1	-1	0	0	J8
+Drain Vitality	0x008a62	Dawnguard.esm		-1	-1	-1	0	0	Kr
+Elemental Fury	0x032921	Skyrim.esm		-1	-1	-1	0	0	Su
+Fire Breath	0x03f9ea	Skyrim.esm		-1	-1	-1	0	0	Yo
+Frost Breath	0x05d16b	Skyrim.esm		-1	-1	-1	0	0	Fo
+Ice Form	0x070980	Skyrim.esm		-1	-1	-1	0	0	3z
+Kyne's Peace	0x07097e	Skyrim.esm		-1	-1	-1	0	0	K1
+Marked for Death	0x07097c	Skyrim.esm		-1	-1	-1	0	0	Kr
+Slow Time	0x048ac9	Skyrim.esm		-1	-1	-1	0	0	T3
+Soul Tear	0x007cb6	Dawnguard.esm		-1	-1	-1	0	0	R3
+Storm Call	0x07097d	Skyrim.esm		-1	-1	-1	0	0	St
+Summon Durnehviir	0x0030d2	Dawnguard.esm		-1	-1	-1	0	0	D6
+Throw Voice	0x07097f	Skyrim.esm		-1	-1	-1	0	0	Zu
+Unrelenting Force	0x013e07	Skyrim.esm		-1	-1	-1	0	0	Fu
+Whirlwind Sprint	0x02f7ba	Skyrim.esm		-1	-1	-1	0	0	Wu

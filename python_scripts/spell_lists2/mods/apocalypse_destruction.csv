@@ -1,0 +1,32 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Crackle	0x109653	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	4
+Hailstone	0x02E634	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	-1	4
+Unbound Fire	0x085594	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	-1	4
+Creeping Cold	0x0279BD	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	-1	0
+Dragon's Teeth	0x024361	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	-1	5
+Fracture	0x0279C0	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	-1	4
+Inferno	0x022DAB	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	1,75s	2
+Rift Bolt	0x0253C2	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	4
+Thundercrack	0x07C83B	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	4
+Bolide	0x0294CD	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	-1	4
+Electrosphere	0x001879	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	5
+Frost Nova	0x1347EE	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	-1	2
+Ice Shiv	0x024B44	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	-1	4
+Incendiary Flow	0x085910	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	-1	3
+Scattershock	0x024E49	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	0,25s	0
+Bombardment	0x0294D4	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	0,25s	0
+Lightning Strike	0x002878	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	4
+Scorching Hands	0x02388C	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	-1	0,25s	0
+Shattering Crystal	0x108627	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	1,75s	3
+Shock Nova	0x00186D	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	-1	2
+Sleet Storm	0x027F2E	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	0,25s	0
+Apocalypse	0x023316	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	7s	1,75s	4
+Cyclonic Rift	0x02D068	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	1,75s	3
+Fingers of the Mountain	0x0137BE	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	-1	1,75s	2
+Flamestrike	0x02E0C0	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	10s	1,75s	3
+Forbidden Sun	0x044264	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	10s	1,75s	5
+Frozen Orb	0x020A58	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	10s	1,75s	5
+Howling Blast	0x083A2C	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	-1	1,75s	0
+Static Dome	0x083A22	Apocalypse - Magic of Skyrim.esp	DestructionShock	-1	10s	1,75s	3
+Twister	0x02D5DB	Apocalypse - Magic of Skyrim.esp	DestructionFrost	-1	10s	1,75s	3
+Volcano	0x04733C	Apocalypse - Magic of Skyrim.esp	DestructionFire	-1	10s	1,75s	3

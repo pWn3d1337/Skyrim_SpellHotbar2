@@ -1,0 +1,23 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
+Spider Touch	0x251EB2	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	11
+Viperbolt	0x256FCE	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	4
+Shield of Daybreak	0x25C0E3	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	2
+Slay Living	0x003E0F	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	3
+Troll's Blood	0x251EA5	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	2
+Black Hand	0x26121C	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	0
+Poison Strikes	0x251EC9	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	2
+Hallowed Strikes	0x251EC5	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	2
+Rilm's Cure	0x251EAF	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	8
+Viperblast	0x2D5AD9	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	5
+Sun Storm	0x247C89	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	0
+Toxic Cloud	0x247C86	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	5
+Accelerated Decay	0x256FD4	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	4
+Circle of Death	0x01220F	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	3
+Shield of Sanctuary	0x25C0E6	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	2
+Energy Leech	0x251E98	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	0
+Strength Leech	0x251EA0	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	0
+Radiate Energies	0x01FCCE	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	8
+Enervate	0x0159D8	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	4
+Purifying Dawn	0x247C8C	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	8s	1,75	2
+Poison Nova	0x159B3D	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	5s	1,75	2
+Splendor	0x251EAB	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	1,75	2
