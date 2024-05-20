@@ -65,7 +65,7 @@ EndEvent
 
 Event OnPageReset(string page)
     if page == "Keybinds"
-        oid_spellkeybinds = new int[18]
+        oid_spellkeybinds = new int[19]
         SetCursorFillMode(LEFT_TO_RIGHT)
         AddHeaderOption("Skill Bindings")
         AddHeaderOption("")
@@ -92,6 +92,7 @@ Event OnPageReset(string page)
 		oid_spellkeybinds[15] = AddKeyMapOption("Bar Modifier 2", SpellHotbar.getKeyBind(15))
 		oid_spellkeybinds[16] = AddKeyMapOption("Bar Modifier 3", SpellHotbar.getKeyBind(16))
 		oid_spellkeybinds[17] = AddKeyMapOption("Dual Casting Modifier", SpellHotbar.getKeyBind(17))
+		oid_spellkeybinds[18] = AddKeyMapOption("Show Bar Modifier", SpellHotbar.getKeyBind(18))
 
     ElseIf page == "Settings"
         AddHeaderOption("Bar Configuration")
@@ -315,7 +316,7 @@ State LoadPresetState
 		if index > 0
 			string preset = known_presets[index]
 			if ShowMessage("Load settings from preset '" + preset +"'?", true, "$Yes", "$No")
-				if (loadSettingsFromPreset(preset))
+				if (loadSettingsFromPreset(preset, True))
 					SetMenuOptionValueST(preset)
 				EndIf
 			EndIf
@@ -379,7 +380,7 @@ State LoadBarsState
 	EndEvent
 EndState
 
-bool Function loadSettingsFromPreset(string preset_name)
+bool Function loadSettingsFromPreset(string preset_name, bool show_errors)
 	int data = JValue.readFromFile(JContainers.userDirectory() + user_presets_path + preset_name)
 	if data == 0
 		data = JValue.readFromFile(presets_root + preset_name)
@@ -390,33 +391,36 @@ bool Function loadSettingsFromPreset(string preset_name)
 	
 		int i = 0
 		While (i < 12)
-			int keyCode = JMap.getInt(data, "keybind." + i)
+			int keyCode = JMap.getInt(data, "keybind." + i, -1)
 			SpellHotbar.setKeyBind(i, keyCode)
 			i += 1
 		EndWhile
 
-		SpellHotbar.setKeyBind(12, JMap.getInt(data, "keybind.next"))
-		SpellHotbar.setKeyBind(13, JMap.getInt(data, "keybind.prev"))
+		SpellHotbar.setKeyBind(12, JMap.getInt(data, "keybind.next", -1))
+		SpellHotbar.setKeyBind(13, JMap.getInt(data, "keybind.prev", -1))
 
-		SpellHotbar.setKeyBind(14, JMap.getInt(data, "keybind.modifier.1"))
-		SpellHotbar.setKeyBind(15, JMap.getInt(data, "keybind.modifier.2"))
-		SpellHotbar.setKeyBind(16, JMap.getInt(data, "keybind.modifier.3"))
+		SpellHotbar.setKeyBind(14, JMap.getInt(data, "keybind.modifier.1", -1))
+		SpellHotbar.setKeyBind(15, JMap.getInt(data, "keybind.modifier.2", -1))
+		SpellHotbar.setKeyBind(16, JMap.getInt(data, "keybind.modifier.3", -1))
+
+		SpellHotbar.setKeyBind(17, JMap.getInt(data, "keybind.modifier.dual_cast", -1))
+		SpellHotbar.setKeyBind(18, JMap.getInt(data, "keybind.modifier.show_bar", -1))
 
 		bool disable_non_modifier_bar = JMap.getInt(data, "settings.disable_non_mod_bar") > 0
 		if (disable_non_modifier_bar != SpellHotbar.isNonModBarDisabled())
 			SpellHotbar.toggleDisableNonModBar();
 		EndIf
 
-		SpellHotbar.setNumberOfSlots(JMap.getInt(data, "settings.number_of_slots"))
+		SpellHotbar.setNumberOfSlots(JMap.getInt(data, "settings.number_of_slots", 12))
 
-		SpellHotbar.setSlotScale(JMap.getFlt(data, "settings.slot_scale"))
+		SpellHotbar.setSlotScale(JMap.getFlt(data, "settings.slot_scale", 1.0))
 		SpellHotbar.setOffsetX(JMap.getInt(data, "settings.offset_x") as float)
 		SpellHotbar.setOffsetY(JMap.getInt(data, "settings.offset_y") as float)
-		SpellHotbar.setSlotSpacing(JMap.getInt(data, "settings.slot_spacing") as float)
+		SpellHotbar.setSlotSpacing(JMap.getInt(data, "settings.slot_spacing", 8) as float)
 
-		SpellHotbar.setHudBarShowMode(JMap.getInt(data, "settings.hud_show_mode"))
-		SpellHotbar.setHudBarShowModeVampireLord(JMap.getInt(data, "settings.hud_show_mode_vampire_lord"))
-		SpellHotbar.setHudBarShowModeWerewolf(JMap.getInt(data, "settings.hud_show_mode_werewolf"))
+		SpellHotbar.setHudBarShowMode(JMap.getInt(data, "settings.hud_show_mode", 4))
+		SpellHotbar.setHudBarShowModeVampireLord(JMap.getInt(data, "settings.hud_show_mode_vampire_lord",2))
+		SpellHotbar.setHudBarShowModeWerewolf(JMap.getInt(data, "settings.hud_show_mode_werewolf",1))
 
 		bool defaultBarWhenSheathed = JMap.getInt(data, "settings.use_default_bar_when_sheathed") > 0
 		if (defaultBarWhenSheathed != SpellHotbar.isDefaultBarWhenSheathed())
@@ -430,91 +434,91 @@ bool Function loadSettingsFromPreset(string preset_name)
 
 		bool bar_enabled = false
 
-		bar_enabled = JMap.getInt(data, "bar.1296124239.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1296124239.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1296124239))
 			SpellHotbar.toggleBarEnabled(1296124239)
 		EndIf
 		SpellHotbar.setInheritMode(1296124239, JMap.getInt(data, "bar.1296124239.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1296387141.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1296387141.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1296387141))
 			SpellHotbar.toggleBarEnabled(1296387141)
 		EndIf
 		SpellHotbar.setInheritMode(1296387141, JMap.getInt(data, "bar.1296387141.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1296387142.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1296387142.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1296387142))
 			SpellHotbar.toggleBarEnabled(1296387142)
 		EndIf
 		SpellHotbar.setInheritMode(1296387142, JMap.getInt(data, "bar.1296387142.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826823492.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826823492.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826823492))
 			SpellHotbar.toggleBarEnabled(826823492)
 		EndIf
 		SpellHotbar.setInheritMode(826823492, JMap.getInt(data, "bar.826823492.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826823493.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826823493.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826823493))
 			SpellHotbar.toggleBarEnabled(826823493)
 		EndIf
 		SpellHotbar.setInheritMode(826823493, JMap.getInt(data, "bar.826823493.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826823504.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826823504.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826823504))
 			SpellHotbar.toggleBarEnabled(826823504)
 		EndIf
 		SpellHotbar.setInheritMode(826823504, JMap.getInt(data, "bar.826823504.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826823505.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826823505.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826823505))
 			SpellHotbar.toggleBarEnabled(826823505)
 		EndIf
 		SpellHotbar.setInheritMode(826823505, JMap.getInt(data, "bar.826823505.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826819671.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826819671.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826819671))
 			SpellHotbar.toggleBarEnabled(826819671)
 		EndIf
 		SpellHotbar.setInheritMode(826819671, JMap.getInt(data, "bar.826819671.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.826819672.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.826819672.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(826819672))
 			SpellHotbar.toggleBarEnabled(826819672)
 		EndIf
 		SpellHotbar.setInheritMode(826819672, JMap.getInt(data, "bar.826819672.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.843599428.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.843599428.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(843599428))
 			SpellHotbar.toggleBarEnabled(843599428)
 		EndIf
 		SpellHotbar.setInheritMode(843599428, JMap.getInt(data, "bar.843599428.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.843599429.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.843599429.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(843599429))
 			SpellHotbar.toggleBarEnabled(843599429)
 		EndIf
 		SpellHotbar.setInheritMode(843599429, JMap.getInt(data, "bar.843599429.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1380861764.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1380861764.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1380861764))
 			SpellHotbar.toggleBarEnabled(1380861764)
 		EndIf
 		SpellHotbar.setInheritMode(1380861764, JMap.getInt(data, "bar.1380861764.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1380861765.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1380861765.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1380861765))
 			SpellHotbar.toggleBarEnabled(1380861765)
 		EndIf
 		SpellHotbar.setInheritMode(1380861765, JMap.getInt(data, "bar.1380861765.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1296123715.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1296123715.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1296123715))
 			SpellHotbar.toggleBarEnabled(1296123715)
 		EndIf
 		SpellHotbar.setInheritMode(1296123715, JMap.getInt(data, "bar.1296123715.inherit"))
 
-		bar_enabled = JMap.getInt(data, "bar.1296123716.enabled") > 0
+		bar_enabled = JMap.getInt(data, "bar.1296123716.enabled",1) > 0
 		if (bar_enabled != SpellHotbar.getBarEnabled(1296123716))
 			SpellHotbar.toggleBarEnabled(1296123716)
 		EndIf
@@ -522,7 +526,10 @@ bool Function loadSettingsFromPreset(string preset_name)
 
 		return True
 	Else
-		ShowMessage("There has been a problem while loading the file, no settings changed", false)
+		If (show_errors)
+			;Debug.Notification("Could not load json file")
+			ShowMessage("There has been a problem while loading the file, no settings changed", false)
+		EndIf
 		return False
 	EndIf
 EndFunction
@@ -542,6 +549,8 @@ Function saveSettingsAsPreset(string preset_name)
 	JMap.setInt(data, "keybind.modifier.1", SpellHotbar.getKeyBind(14))
 	JMap.setInt(data, "keybind.modifier.2", SpellHotbar.getKeyBind(15))
 	JMap.setInt(data, "keybind.modifier.3", SpellHotbar.getKeyBind(16))
+	JMap.setInt(data, "keybind.modifier.dual_cast", SpellHotbar.getKeyBind(17))
+	JMap.setInt(data, "keybind.modifier.show_bar", SpellHotbar.getKeyBind(18))
 	
 	JMap.setInt(data, "settings.disable_non_mod_bar", SpellHotbar.isNonModBarDisabled() as int)
 

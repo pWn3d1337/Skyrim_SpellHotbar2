@@ -1,16 +1,16 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Eye of the All-Maker	0x3A0127	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	9
-Stave of Ferocity	0x3A013E	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	15
-Fissure	0x423DB0	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	3
-Stave of Binding	0x3AF45F	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	15
-Sacred Hearth	0x2ACD25	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	10s	1,75	3
-Create Water Totem	0x3BE79F	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	3
-Create Tree Totem	0x3C38C5	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	3
-Summon Wind Fylgja	0x35E384	Triumvirate - Mage Archetypes.esp	DestructionFrost	-1	-1	-1	2
-Create Earth Totem	0x35E36E	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	3
-Summon Sun Fylgja	0x3BE7AA	Triumvirate - Mage Archetypes.esp	DestructionFire	-1	-1	1,75	2
-Visions of Opportunity	0x363496	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	8
-Spirit Fire	0x3A0125	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	3
-Visions of Healing	0x3AF459	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	8
-Spirit Storm	0x3B9685	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	0
-Shield of Awe	0x3AF461	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	15s	1,75	3
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Eye of the All-Maker	0x3A0127	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10009
+Stave of Ferocity	0x3A013E	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10015
+Fissure	0x423DB0	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10003
+Stave of Binding	0x3AF45F	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10015
+Sacred Hearth	0x2ACD25	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10003
+Create Water Totem	0x3BE79F	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	-1	10003
+Create Tree Totem	0x3C38C5	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	-1	10003
+Summon Wind Fylgja	0x35E384	Triumvirate - Mage Archetypes.esp	DestructionFrost	-1	-1	-1	-1	10002
+Create Earth Totem	0x35E36E	Triumvirate - Mage Archetypes.esp	RestorationBlue	-1	-1	-1	-1	10003
+Summon Sun Fylgja	0x3BE7AA	Triumvirate - Mage Archetypes.esp	DestructionFire	-1	-1	-1	-1	10002
+Visions of Opportunity	0x363496	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10008
+Spirit Fire	0x3A0125	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10003
+Visions of Healing	0x3AF459	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10008
+Spirit Storm	0x3B9685	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	-1
+Shield of Awe	0x3AF461	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10003

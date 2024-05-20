@@ -4,28 +4,31 @@
 namespace SpellHotbar::Input {
 
 	std::array<KeyBind, 12> key_spells{
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 2},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 3},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 4},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 5},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 6},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 7},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 8},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 9},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 10},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 11},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 12},
-		KeyBind{RE::INPUT_DEVICE::kKeyboard, 13}
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //2
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //3
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //4
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //5
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //6
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //7
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //8
+		KeyBind{RE::INPUT_DEVICE::kNone, 0},  //9
+		KeyBind{RE::INPUT_DEVICE::kNone, 0}, //10
+		KeyBind{RE::INPUT_DEVICE::kNone, 0}, //11
+		KeyBind{RE::INPUT_DEVICE::kNone, 0}, //12
+		KeyBind{RE::INPUT_DEVICE::kNone, 0}  //13
 	};
 
-	KeyBind key_prev {RE::INPUT_DEVICE::kKeyboard, 75};
-	KeyBind key_next {RE::INPUT_DEVICE::kKeyboard,77};
+	KeyBind key_prev {RE::INPUT_DEVICE::kNone, 0}; //75
+	KeyBind key_next {RE::INPUT_DEVICE::kNone, 0};  //77
 
-	KeyModifier mod_ctrl(RE::INPUT_DEVICE::kKeyboard, 29, 157);
-	KeyModifier mod_shift(RE::INPUT_DEVICE::kKeyboard, 42, 54);
-	KeyModifier mod_alt(RE::INPUT_DEVICE::kKeyboard, 56, 184);
+	KeyModifier mod_1(RE::INPUT_DEVICE::kNone, 0, 0); //ctrl 29, 157
+	KeyModifier mod_2(RE::INPUT_DEVICE::kNone, 0, 0); //shift 42, 54
+	KeyModifier mod_3(RE::INPUT_DEVICE::kNone, 0, 0);  //alt 56, 184
 
 	KeyModifier mod_dual_cast(RE::INPUT_DEVICE::kNone, 0, 0);
+	KeyModifier mod_show_bar(RE::INPUT_DEVICE::kNone, 0, 0);
+
+	KeyModifier mod_alt(RE::INPUT_DEVICE::kKeyboard, 56, 184);  //fixed modifier, used for gui
 
 	inline void _check_unbind(KeyBind & bind, int code) {
 		if (bind.get_dx_scancode() == code) {
@@ -46,9 +49,10 @@ namespace SpellHotbar::Input {
 		}
 		_check_unbind(key_next, code);
 		_check_unbind(key_prev, code);
-		_check_unbind(mod_ctrl, code);
-		_check_unbind(mod_shift, code);
-		_check_unbind(mod_alt, code);
+		_check_unbind(mod_1, code);
+		_check_unbind(mod_2, code);
+		_check_unbind(mod_3, code);
+		_check_unbind(mod_show_bar, code);
 	}
 
 	int rebind_key(int slot, int code)
@@ -66,21 +70,25 @@ namespace SpellHotbar::Input {
 			key_prev.assign_from_dx_scancode(code);
 			return key_prev.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_1) {
-			mod_ctrl.rebind(code);
-			return mod_ctrl.get_dx_scancode();
+		else if (slot == keybind_id::modifier_1) {
+			mod_1.rebind(code);
+			return mod_1.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_2) {
-			mod_shift.rebind(code);
-			return mod_shift.get_dx_scancode();
+		else if (slot == keybind_id::modifier_2) {
+			mod_2.rebind(code);
+			return mod_2.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_3) {
-			mod_alt.rebind(code);
-			return mod_alt.get_dx_scancode();
+		else if (slot == keybind_id::modifier_3) {
+			mod_3.rebind(code);
+			return mod_3.get_dx_scancode();
 		}
 		else if (slot == keybind_id::dual_casting_mod) {
 			mod_dual_cast.rebind(code);
 			return mod_dual_cast.get_dx_scancode();
+		}
+		else if (slot == keybind_id::show_bar_mod) {
+			mod_show_bar.rebind(code);
+			return mod_show_bar.get_dx_scancode();
 		}
 
 		return 0;
@@ -97,17 +105,20 @@ namespace SpellHotbar::Input {
 		else if (slot == keybind_id::ui_prev) {
 			return key_prev.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_1) {
-			return mod_ctrl.get_dx_scancode();
+		else if (slot == keybind_id::modifier_1) {
+			return mod_1.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_2) {
-			return mod_shift.get_dx_scancode();
+		else if (slot == keybind_id::modifier_2) {
+			return mod_2.get_dx_scancode();
 		}
-		else if (slot == keybind_id::mod_3) {
-			return mod_alt.get_dx_scancode();
+		else if (slot == keybind_id::modifier_3) {
+			return mod_3.get_dx_scancode();
 		}
 		else if (slot == keybind_id::dual_casting_mod) {
 			return mod_dual_cast.get_dx_scancode();
+		}
+		else if (slot == keybind_id::show_bar_mod) {
+			return mod_show_bar.get_dx_scancode();
 		}
 		return 0;
 	}

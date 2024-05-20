@@ -3,7 +3,7 @@
 #include "Shlobj.h"
 
 
-namespace SpellHotbar::GameData {
+namespace SpellHotbar::Storage::IO {
 
     constexpr std::string_view user_dir{ "My Games/Skyrim Special Edition/SpellHotbar/" };
 

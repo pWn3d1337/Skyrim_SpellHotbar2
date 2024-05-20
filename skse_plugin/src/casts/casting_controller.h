@@ -42,6 +42,9 @@ namespace SpellHotbar::casts::CastingController {
 		inline void updateGCD(float new_val) {
 			m_gcd = -m_cast_timer + new_val;
 		}
+
+		void apply_cooldown();
+
 	protected:
 		RE::TESForm* m_form;
 		float m_cast_timer;

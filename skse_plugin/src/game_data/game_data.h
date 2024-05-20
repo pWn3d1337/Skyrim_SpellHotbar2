@@ -169,6 +169,8 @@ namespace SpellHotbar::GameData {
 
     void purge_expired_gametime_cooldowns();
 
+    bool is_skill_on_cd(RE::FormID skill);
+
     std::tuple<float, float> get_gametime_cooldown(float curr_game_time, RE::FormID skill);
 
     std::string resolve_spellname(RE::FormID formID);
@@ -235,5 +237,7 @@ namespace SpellHotbar::GameData {
     GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults = true, bool include_custom_user_data = true);
 
     void add_animation_data(const std::string& name, int anim_id);
+
+    bool form_has_special_icon(RE::TESForm* form);
 }
 

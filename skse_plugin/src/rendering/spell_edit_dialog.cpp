@@ -6,6 +6,41 @@
 
 namespace SpellHotbar::SpellEditor {
 
+    bool initialized{ false };
+    bool custom_casteffect { false };
+    bool custom_gcd { false };
+    bool custom_cd { false };
+    bool custom_casttime { false };
+    bool custom_anim { false };
+    bool custom_anim2 { false };
+
+    void check_init(GameData::User_custom_spelldata& data, GameData::Spell_cast_data& dat_unfilled) {
+        if (!initialized) {
+            auto& dat = data.m_spell_data;
+
+            custom_casteffect = dat.casteffectid != dat_unfilled.casteffectid;
+            custom_gcd = dat.gcd != dat_unfilled.gcd;
+            custom_cd = dat.cooldown != dat_unfilled.cooldown;
+            custom_casttime = dat.casttime != dat_unfilled.casttime;
+            custom_anim = dat.animation != dat_unfilled.animation;
+            custom_anim2 = dat.animation2 != dat_unfilled.animation2;
+
+            initialized = true;
+        }
+    }
+
+    void close() {
+        initialized = false;
+        custom_casteffect = false;
+        custom_gcd = false;
+        custom_cd = false;
+        custom_casttime = false;
+        custom_anim = false;
+        custom_anim2 = false;
+
+        closeEditDialog();
+    }
+
     /*
     * return screen_size_x, screen_size_y, window_width
     */
@@ -26,6 +61,7 @@ namespace SpellHotbar::SpellEditor {
 	void SpellHotbar::SpellEditor::drawEditDialog(const RE::TESForm* form, GameData::User_custom_spelldata &data, GameData::Spell_cast_data& dat_filled, GameData::Spell_cast_data& dat_unfilled, GameData::Spell_cast_data& dat_saved)
 	{
         static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+        check_init(data, dat_unfilled);
 
         auto& dat = data.m_spell_data;
 
@@ -143,6 +179,8 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("Type");
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
+            bool is_greater_power{ false };
+            bool is_shout{ false };
             if (spell) {
                 switch (spell->GetSpellType()) {
                 case RE::MagicSystem::SpellType::kSpell:
@@ -150,6 +188,7 @@ namespace SpellHotbar::SpellEditor {
                     break;
                 case RE::MagicSystem::SpellType::kPower:
                     ImGui::TextUnformatted("Greater Power");
+                    is_greater_power = true;
                     break;
                 case RE::MagicSystem::SpellType::kLesserPower:
                     ImGui::TextUnformatted("Lesser Power");
@@ -159,8 +198,10 @@ namespace SpellHotbar::SpellEditor {
                 }
             }
             else if (shout) {
+                is_shout = true;
                 if (shout->formFlags & RE::TESShout::RecordFlags::kTreatSpellsAsPowers) {
                     ImGui::TextUnformatted("Shout (Power)");
+                    is_greater_power = true;
                 }
                 else {
                     ImGui::TextUnformatted("Shout");
@@ -241,10 +282,8 @@ namespace SpellHotbar::SpellEditor {
 
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
 
-                static bool custom_casteffect = false;
                 ImGui::Checkbox("##chk_casteffect", &custom_casteffect);
                 ImGui::SameLine();
-
 
                 if (!custom_casteffect) {
                     ImGui::BeginDisabled();
@@ -289,17 +328,20 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("Globald Cooldown");
             ImGui::TableNextColumn();
 
-            static bool custom_gcd = false;
-            ImGui::Checkbox("##chk_gcd", &custom_gcd);
-            ImGui::SameLine();
-            if (custom_gcd)
-            {
-                dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
-                constexpr float inc{ 0.5f };
-                constexpr float inc_fast{ 5.0f };
-                constexpr std::string format{ "%.2fs" };
-                if (ImGui::InputScalar("", ImGuiDataType_Float, &dat.gcd, &inc, &inc_fast, format.c_str())) {
+            //disabled for now
+            bool custom_gcd_enabled{ false };
+            if (custom_gcd_enabled) {
+                ImGui::Checkbox("##chk_gcd", &custom_gcd);
+                ImGui::SameLine();
+                if (custom_gcd)
+                {
                     dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
+                    constexpr float inc{ 0.5f };
+                    constexpr float inc_fast{ 5.0f };
+                    constexpr std::string format{ "%.2fs" };
+                    if (ImGui::InputScalar("", ImGuiDataType_Float, &dat.gcd, &inc, &inc_fast, format.c_str())) {
+                        dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
+                    }
                 }
             }
             else {
@@ -315,23 +357,29 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("Cooldown");
             ImGui::TableNextColumn();
 
-            static bool custom_cd = false;
-            ImGui::Checkbox("##chk_cd", &custom_cd);
-            ImGui::SameLine();
-            if (custom_cd)
-            {
-                dat.cooldown = std::clamp(dat.cooldown, 0.0f, 3600.0f);
-                constexpr float inc{ 1.f };
-                constexpr float inc_fast{ 10.0f };
-                constexpr std::string format{ "%.1fs" };
-                if (ImGui::InputScalar("", ImGuiDataType_Float, &dat.cooldown, &inc, &inc_fast, format.c_str())) {
-                    dat.cooldown = std::clamp(dat.cooldown, 0.0f, 3600.0f);
+            bool no_cd = true;
+            static float input_cd_value{ 0.0f }; //in seconds
+            constexpr float seconds_to_days = 1.0f / (60.0f * 60.0f * 24.0f);
+            if (!is_greater_power && !is_shout) {
+                ImGui::Checkbox("##chk_cd", &custom_cd);
+                ImGui::SameLine();
+                if (custom_cd)
+                {
+                    no_cd = false;
+                    input_cd_value = std::clamp(input_cd_value, 0.0f, 4320.0f);
+                    constexpr float inc{ 1.f };
+                    constexpr float inc_fast{ 10.0f };
+                    constexpr std::string format{ "%.1fs" };
+                    if (ImGui::InputScalar("", ImGuiDataType_Float, &input_cd_value, &inc, &inc_fast, format.c_str())) {
+                        input_cd_value = std::clamp(input_cd_value, 0.0f, 4320.0f);
+                        dat.cooldown = input_cd_value * seconds_to_days;
+                    }
                 }
             }
-            else {
+            if (no_cd) {
                 dat.cooldown = -1.0f;
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
-                ImGui::Text("%.1fs", dat_filled.cooldown);
+                ImGui::Text("%.1fs", dat_filled.cooldown * (1.0f/seconds_to_days));
                 ImGui::PopStyleColor();
             }
 
@@ -343,7 +391,6 @@ namespace SpellHotbar::SpellEditor {
 
             bool no_ct = true;
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
-                static bool custom_casttime = false;
                 ImGui::Checkbox("##chk_ct", &custom_casttime);
                 ImGui::SameLine();
                 if (custom_casttime)
@@ -374,7 +421,6 @@ namespace SpellHotbar::SpellEditor {
             
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
 
-                static bool custom_anim = false;
                 ImGui::Checkbox("##chk_anim", &custom_anim);
                 ImGui::SameLine();
 
@@ -429,7 +475,6 @@ namespace SpellHotbar::SpellEditor {
 
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
 
-                static bool custom_anim2 = false;
                 ImGui::Checkbox("##chk_anim2", &custom_anim2);
                 ImGui::SameLine();
 
@@ -564,14 +609,22 @@ namespace SpellHotbar::SpellEditor {
         if (!save_enabled) ImGui::BeginDisabled();
         if (ImGui::Button("Save")) {
             //save changes
-            GameData::user_spell_cast_info.insert_or_assign(data.m_form_id, data);
-            closeEditDialog();
+
+            if (data.has_different_data(dat_unfilled) || data.has_icon_data()) {
+                GameData::user_spell_cast_info.insert_or_assign(data.m_form_id, data);
+            }
+            else {
+                if (GameData::user_spell_cast_info.contains(data.m_form_id)) {
+                    GameData::user_spell_cast_info.erase(data.m_form_id);
+                }
+            }
+            close();
         }
         if (!save_enabled) ImGui::EndDisabled();
 
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) {
-            closeEditDialog();
+            close();
         }
 
         ImGui::End();

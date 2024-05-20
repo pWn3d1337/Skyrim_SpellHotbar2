@@ -173,13 +173,13 @@ namespace SpellHotbar::GameData {
 
             switch (mod) {
                 case SpellHotbar::key_modifier::ctrl:
-                    key_text = key_names.at(Input::mod_ctrl.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_1.get_dx_scancode()).second + "-" + key_text;
                     break;
                 case SpellHotbar::key_modifier::shift:
-                    key_text = key_names.at(Input::mod_shift.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_2.get_dx_scancode()).second + "-" + key_text;
                     break;
                 case SpellHotbar::key_modifier::alt:
-                    key_text = key_names.at(Input::mod_alt.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_3.get_dx_scancode()).second + "-" + key_text;
                     break;
                 default:
                     break;
@@ -334,9 +334,13 @@ namespace SpellHotbar::GameData {
             return std::make_tuple(false, fast_fade);
         }
 
-        if (Bars::disable_non_modifier_bar && !(Input::mod_ctrl.isDown() || Input::mod_shift.isDown() || Input::mod_alt.isDown())) {
+        if (Bars::disable_non_modifier_bar && !(Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown())) {
             //Main bar not used -> hide
             return std::make_tuple(false, fast_fade);
+        }
+
+        if (Input::mod_show_bar.isValidBound() && Input::mod_show_bar.isDown()) {
+            return std::make_tuple(true, fast_fade);
         }
 
         auto* pc = RE::PlayerCharacter::GetSingleton();
@@ -613,6 +617,22 @@ namespace SpellHotbar::GameData {
         } else {
             logger::warn("Could not purge cooldowns, calendar was null");
         }
+    }
+
+    bool is_skill_on_cd(RE::FormID skill)
+    {
+        bool ret{ false };
+        RE::Calendar* cal = RE::Calendar::GetSingleton();
+        if (cal) {
+            float game_time = cal->GetCurrentGameTime();
+
+            if (gametime_cooldowns.contains(skill)) {
+                auto& cd_info = gametime_cooldowns.at(skill);
+                ret = !cd_info.is_expired(game_time);
+            }
+        }
+
+        return ret;
     }
 
     std::tuple<float, float> get_gametime_cooldown(float curr_game_time, RE::FormID skill)
@@ -929,8 +949,10 @@ namespace SpellHotbar::GameData {
              if (spell->GetFormType() == RE::FormType::Spell) {
                  data.fill_default_values_from_spell(spell->As<RE::SpellItem>());
              }
+             else if (spell->GetFormType() == RE::FormType::Shout) {
+                 data.fill_default_values_from_shout(spell->As<RE::TESShout>());
+             }
          }
-         //TODO shouts
 
          return data;
      }
@@ -938,6 +960,11 @@ namespace SpellHotbar::GameData {
      void add_animation_data(const std::string& name, int anim_id)
      {
          animation_names.insert_or_assign(anim_id, name);
+     }
+
+     bool form_has_special_icon(RE::TESForm* form)
+     {
+         return form == spellhotbar_toggle_dualcast || form == spellhotbar_unbind_slot;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

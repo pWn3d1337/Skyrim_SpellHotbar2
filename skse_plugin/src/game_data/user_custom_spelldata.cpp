@@ -114,10 +114,6 @@ namespace SpellHotbar::GameData {
 
 	bool User_custom_spelldata::has_different_data(const Spell_cast_data& other)
 	{
-		//TODO remove comment
-		//logger::info("Self: {}, {}, {}, {}, {}, {}", m_spell_data.gcd, m_spell_data.cooldown, m_spell_data.casttime, m_spell_data.animation, m_spell_data.animation2, m_spell_data.casteffectid);
-		//logger::info("Other: {}, {}, {}, {}, {}, {}", other.gcd, other.cooldown, other.casttime, other.animation, other.animation2, other.casteffectid);
-
 		return m_spell_data.gcd != other.gcd ||
 			m_spell_data.cooldown != other.cooldown ||
 			m_spell_data.casttime != other.casttime ||

@@ -1,16 +1,16 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Conjure Gremlin	0x22E31F	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Temple Grim	0x22E322	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Ravagor	0x22E324	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Magister	0x22E326	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Leviathan	0x22E328	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	15s	1,75	3
-Eldritch Blast	0x19B465	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	4
-Balefire	0x1A0577	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	7
-Witch Bolt	0x1AF89A	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	5
-Cloudkill	0x1A0588	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	3
-Hurl Into Oblivion	0x1AF898	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	10s	1,75	3
-Weaken	0x22411C	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	7
-Frailty	0x224119	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	7
-Iron Maiden	0x224110	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	7
-Life Tap	0x21EFFF	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	7
-Decrepify	0x224113	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	10s	1,75	7
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Conjure Gremlin	0x22E31F	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Temple Grim	0x22E322	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Ravagor	0x22E324	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Magister	0x22E326	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Leviathan	0x22E328	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Eldritch Blast	0x19B465	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Balefire	0x1A0577	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007
+Witch Bolt	0x1AF89A	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Cloudkill	0x1A0588	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10003
+Hurl Into Oblivion	0x1AF898	Triumvirate - Mage Archetypes.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Weaken	0x22411C	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007
+Frailty	0x224119	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007
+Iron Maiden	0x224110	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007
+Life Tap	0x21EFFF	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007
+Decrepify	0x224113	Triumvirate - Mage Archetypes.esp	IllusionGreen	-1	-1	-1	-1	10007

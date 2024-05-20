@@ -1,30 +1,30 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Crying Eye	0x229634	Odin - Skyrim Magic Overhaul.esp	AlterationShield	-1	-1	-1	4
-Command	0x20AFC9	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	4
-Simulacrum	0x08558A	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	4
-Hush	0x2C169F	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	4
-Tevral's Sensor	0x2CB8BD	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	9
-Soothe	0x17B5C2	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	5
-Panic	0x17B5C9	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	5
-Subjugate	0x17B5D1	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	5
-Greater Simulacrum	0x233865	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	5
-Mute	0x21F3FD	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	5
-Discordant Wail	0x224526	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	4
-Captivate	0x21F411	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	8
-Expose Weakness	0x2C67B5	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	4
-Calming Rune	0x233852	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	3
-Fear Rune	0x22E74E	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	3
-Command Rune	0x233854	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	3
-Rage	0x17B5B3	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	5
-Dominate	0x2100D4	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	5
-Shadow Legion	0x21A2EB	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	5
-Bravery	0x17B5BB	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	5
-Wizard Rend	0x21F405	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	4
-Purge Magic	0x27569C	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	4
-Dirge	0x224524	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	5
-Cloak Other	0x22452A	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	9
-Expose Spirit	0x2CB8C6	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	4
-Propaganda	0x2100DF	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	10s	1,75	2
-Death Howl	0x224522	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	10s	1,75	2
-Shadow Weave	0x0DD94B	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	10s	1,75	9
-Vanish	0x037E24	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	10s	1,75	9
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Crying Eye	0x229634	Odin - Skyrim Magic Overhaul.esp	AlterationShield	-1	-1	-1	-1	10004
+Command	0x20AFC9	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Simulacrum	0x08558A	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10004
+Hush	0x2C169F	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10004
+Tevral's Sensor	0x2CB8BD	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10009
+Soothe	0x17B5C2	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
+Panic	0x17B5C9	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10005
+Subjugate	0x17B5D1	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Greater Simulacrum	0x233865	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10005
+Mute	0x21F3FD	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10005
+Discordant Wail	0x224526	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10004
+Captivate	0x21F411	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10008
+Expose Weakness	0x2C67B5	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
+Calming Rune	0x233852	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10003
+Fear Rune	0x22E74E	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10003
+Command Rune	0x233854	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Rage	0x17B5B3	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10005
+Dominate	0x2100D4	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Legion	0x21A2EB	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10005
+Bravery	0x17B5BB	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
+Wizard Rend	0x21F405	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10004
+Purge Magic	0x27569C	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10004
+Dirge	0x224524	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10005
+Cloak Other	0x22452A	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10009
+Expose Spirit	0x2CB8C6	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
+Propaganda	0x2100DF	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Death Howl	0x224522	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10002
+Shadow Weave	0x0DD94B	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10009
+Vanish	0x037E24	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10009

@@ -123,6 +123,7 @@ ImVec2 drag_window_pos = ImVec2(0,0);
 float drag_window_width = 0.0f;
 ImVec2 drag_window_start_pos = ImVec2(0, 0);
 float drag_window_start_width = 0;
+bar_anchor_point drag_anchor_point = bar_anchor_point::BOTTOM;
 
 void update_highlight(float delta) {
     if (highlight_time > 0.0F) {
@@ -243,6 +244,7 @@ void RenderManager::start_bar_dragging()
     drag_window_width = 0.0f;
     drag_window_start_pos = ImVec2(0, 0);
     drag_window_start_width = 0;
+    drag_anchor_point = bar_anchor_point::BOTTOM;
 }
 
 bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened(); }
@@ -250,6 +252,11 @@ bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame |
 void RenderManager::stop_bar_dragging()
 { 
     show_drag_frame = false;
+}
+
+bool RenderManager::is_dragging_bar()
+{
+    return show_drag_frame;
 }
 
 void RenderManager::open_spell_editor()
@@ -538,7 +545,7 @@ void RenderManager::D3DInitHook::thunk() {
         logger::error("ImGui initialization failed (Win32)");
         return;
     } else {
-        ImGui_ImplWin32_EnableAlphaCompositing(sd.outputWindow);
+        //ImGui_ImplWin32_EnableAlphaCompositing(sd.outputWindow);
     }
     //TODO think about this casts
     if (!ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)context)) {
@@ -871,9 +878,9 @@ inline std::tuple<float, float, float> calculate_menu_window_size(bool include_i
 }
 
 /*
-* return screen_size_x, screen_size_y, window_width
+* return screen_size_x, screen_size_y, window_width, window_height
 */
-inline std::tuple<float, float,float> calculate_hud_window_size()
+inline std::tuple<float, float, float, float> calculate_hud_window_size()
 {
     auto& io = ImGui::GetIO();
     const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
@@ -892,7 +899,7 @@ inline std::tuple<float, float,float> calculate_hud_window_size()
     float window_width = (slot_h + spacing.x) * static_cast<float>(Bars::barsize-1) + slot_h + inner_spacing.x *4;
 
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
-    return std::make_tuple(screen_size_x, screen_size_y, window_width);
+    return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
 
 void draw_drag_menu() {
@@ -902,10 +909,10 @@ void draw_drag_menu() {
     auto& io = ImGui::GetIO();
     io.MouseDrawCursor = true;
 
-    auto [screen_size_x, screen_size_y, window_width] = calculate_hud_window_size();
+    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
     if (!drag_frame_initialized) {
         ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                        screen_size_y*0.8f + Bars::offset_y)); //- slot_h * 2.5f
+                                        screen_size_y*1.0f - window_height + Bars::offset_y)); //- slot_h * 2.5f
     }
     ImGui::SetNextWindowBgAlpha(0.65F);
 
@@ -1018,7 +1025,7 @@ void RenderManager::draw() {
                 static constexpr ImGuiWindowFlags window_flag =
                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;  // ImGuiWindowFlags_NoBackground
 
-                bool render_icons = !Bars::disable_non_modifier_bar || Input::mod_ctrl.isDown() || Input::mod_shift.isDown() || Input::mod_alt.isDown();
+                bool render_icons = !Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown();
 
                 auto [screen_size_x, screen_size_y, window_width] = calculate_menu_window_size(render_icons);
 
@@ -1124,10 +1131,10 @@ void RenderManager::draw() {
                 static constexpr ImGuiWindowFlags window_flag =
                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
 
-                auto [screen_size_x, screen_size_y, window_width] = calculate_hud_window_size();
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
 
                 ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                               screen_size_y * 0.8f + Bars::offset_y)); //- slot_h * 2.5f 
+                                               screen_size_y * 1.0f - window_height + Bars::offset_y)); //- slot_h * 2.5f 
                 ImGui::SetNextWindowBgAlpha(0.65F);
 
                 ImGui::Begin("SpellHotbarHUD", nullptr, window_flag);
@@ -1154,13 +1161,13 @@ void RenderManager::draw() {
                     switch (m)
                     {
                     case SpellHotbar::key_modifier::ctrl:
-                        mod_text = GameData::key_names[Input::mod_ctrl.get_dx_scancode()].first;
+                        mod_text = GameData::key_names[Input::mod_1.get_dx_scancode()].first;
                         break;
                     case SpellHotbar::key_modifier::shift:
-                        mod_text = GameData::key_names[Input::mod_shift.get_dx_scancode()].first;
+                        mod_text = GameData::key_names[Input::mod_2.get_dx_scancode()].first;
                         break;
                     case SpellHotbar::key_modifier::alt:
-                        mod_text = GameData::key_names[Input::mod_alt.get_dx_scancode()].first;
+                        mod_text = GameData::key_names[Input::mod_3.get_dx_scancode()].first;
                         break;
                     default:
                         break;

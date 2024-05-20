@@ -47,6 +47,18 @@ namespace SpellHotbar {
 
     inline float get_hud_slot_height(float screensize_y) { return (screensize_y / 13.0f) * Bars::slot_scale; }
 
+    enum class bar_anchor_point : uint8_t {
+        BOTTOM = 0Ui8,
+        LEFT,
+        TOP,
+        RIGHT,
+        BOTTOM_LEFT,
+        TOP_LEFT,
+        BOTTOM_RIGHT,
+        TOP_RIGHT,
+        CENTER
+    };
+
     // Hook render stuff for imgui, mostly copied from wheeler
     class RenderManager {
          struct WndProcHook {
@@ -115,6 +127,7 @@ namespace SpellHotbar {
         static void start_bar_dragging();
         static bool should_block_game_cursor_inputs();
         static void stop_bar_dragging();
+        static bool is_dragging_bar();
 
         static void open_spell_editor();
         static void close_spell_editor();

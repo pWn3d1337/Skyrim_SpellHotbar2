@@ -234,6 +234,14 @@ namespace SpellHotbar::casts::CastingController {
 		//Do nothing by default, but subclasses may need it
 	}
 
+	void BaseCastingInstance::apply_cooldown()
+	{
+		auto data = GameData::get_spell_data(m_form, true, true);
+		if (data.cooldown > 0.0f) {
+			SpellHotbar::GameData::add_gametime_cooldown_with_timescale(m_form->GetFormID(), data.cooldown, true);
+		}
+	}
+
 	bool CastingInstance::update(RE::PlayerCharacter* pc, float delta)
 	{
 		if (is_anim_ok(pc)) {
@@ -255,9 +263,11 @@ namespace SpellHotbar::casts::CastingController {
 			if (should_cast) {
 				stop_charge_sound();
 				play_release_sound();
-				cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand);
+				if (cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand)) {
+					apply_cooldown();
+					pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kMagicka, -m_manacost);
+				}
 				set_casted();
-				pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kMagicka, -m_manacost);
 			}
 		}
 		else {
@@ -455,6 +465,7 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::reset_animation_vars();
 				pc->NotifyAnimationGraph(get_cancel_anim());
 				play_release_sound();
+				apply_cooldown();
 			}
 
 		}
@@ -730,9 +741,10 @@ namespace SpellHotbar::casts::CastingController {
 
 	void try_finish_power_cast(RE::FormID formID)
 	{
-		if (current_cast && current_cast->get_form() && current_cast->get_form()->formID == formID) 
+		if (current_cast && current_cast->get_form() && current_cast->get_form()->formID == formID)
 		{
 			current_cast->set_casted();
+			current_cast->apply_cooldown();
 		}
 	}
 

@@ -1,18 +1,18 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Conjure Clannfear	0x18C58C	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	3
-Entropic Life	0x1A09D0	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	0
-Power of the Master	0x01857E	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	2
-Exhume Wolf	0x1BF04F	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Conjure Daedroth	0x18C58E	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Feline Familiar	0x1A5AEA	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Conjure Gloom Wraith	0x0D4349	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Soul Harvest	0x1AFCFD	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	2
-Entropic Armor	0x1A09CB	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	0
-Conjure Sanctified Wraith	0x1916A5	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Conjure Houndmaster	0x1967B9	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	3
-Conjure Ursine Familiar	0x1A5AD7	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Conjure Dread Shade	0x1916B1	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	3
-Soul Cloak	0x140B03	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	2
-Entropic Power	0x1A5AED	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	0
-Daedric Thrall	0x1A5AF3	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	10s	1,75	3
-Conjure Kyrkrim	0x100032	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	1,75	3
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Conjure Clannfear	0x18C58C	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Entropic Life	0x1A09D0	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Power of the Master	0x01857E	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Exhume Wolf	0x1BF04F	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Conjure Daedroth	0x18C58E	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Feline Familiar	0x1A5AEA	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Conjure Gloom Wraith	0x0D4349	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Soul Harvest	0x1AFCFD	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Entropic Armor	0x1A09CB	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Sanctified Wraith	0x1916A5	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Conjure Houndmaster	0x1967B9	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Ursine Familiar	0x1A5AD7	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Conjure Dread Shade	0x1916B1	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10003
+Soul Cloak	0x140B03	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Entropic Power	0x1A5AED	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Daedric Thrall	0x1A5AF3	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Kyrkrim	0x100032	Odin - Skyrim Magic Overhaul.esp	ConjurationSummon	-1	-1	-1	-1	10003

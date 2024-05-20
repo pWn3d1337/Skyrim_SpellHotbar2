@@ -18,6 +18,11 @@ namespace SpellHotbar::GameData {
         */
         void fill_default_values_from_spell(const RE::SpellItem* spell);
 
+        /*
+        * This fills all defaulted fields with the values from the passed shout
+        */
+        void fill_default_values_from_shout(const RE::TESShout* shout);
+
         /**
         * override all members by the passed other struct if they are not default
         */

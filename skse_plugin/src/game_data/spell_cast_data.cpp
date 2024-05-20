@@ -22,8 +22,12 @@ namespace SpellHotbar::GameData {
             gcd = 0.0f;
         }
         if (cooldown < 0.0f) {
-            //TODO check for power and set to 24h
-            cooldown = 0.0f;
+            if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower) {
+                cooldown = 1.0f;
+            }
+            else {
+                cooldown = 0.0f;
+            }
         }
         if (animation < 0) {
             animation = Spell_cast_data::chose_default_anim_for_spell(spell, -1, false);
@@ -32,6 +36,25 @@ namespace SpellHotbar::GameData {
             animation2 = Spell_cast_data::chose_default_anim_for_spell(spell, -1, true);
         }
 
+    }
+
+    void Spell_cast_data::fill_default_values_from_shout(const RE::TESShout* shout)
+    {
+        if (casttime < 0.0f) {
+            casttime = 0.0f;
+        }
+        if (gcd < 0.0f) {
+            gcd = 0.0f;
+        }
+        if (cooldown < 0.0f) {
+            cooldown = 0.0f;
+        }
+        if (animation < 0) {
+            animation = -1;
+        }
+        if (animation2 < 0) {
+            animation2 = -1;
+        }
     }
 
     void Spell_cast_data::fill_and_override_from_non_default_values(const Spell_cast_data& other)

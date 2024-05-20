@@ -9,6 +9,7 @@ import pandas as pd
 import math
 import json
 
+mod_folder_path = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2")
 mod_root_path = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\SKSE\Plugins\SpellHotbar")
 
 # only needed when creating icon swf for I4
@@ -447,13 +448,13 @@ def create_i4_icons(spell_list: list[str], icon_root: list[str], output_path: Pa
             df = pd.concat([df, df_temp])
 
     if "Shouttext" not in df.columns:
-        df["Shouttext"] = ""
+        df["Shouttext"] = np.nan
 
     if "Ranktext" not in df.columns:
-        df["Ranktext"] = ""
+        df["Ranktext"] = np.nan
 
     if add_unbind_slot:
-        df_temp = pd.DataFrame([["Unbind Slot", "0x000810", "SpellHotbar.esp", "", -1, -1, -1, 0, np.nan, np.nan]])
+        df_temp = pd.DataFrame([["Unbind Slot", "0x000810", "SpellHotbar.esp", "", -1, -1, -1, -1, -1, np.nan, np.nan]])
         df_temp.columns = ["Name", "FormID", "Plugin", "Casteffect", "GCD", "Cooldown", "Casttime", "Animation",
                            "Animation2", "Shouttext", "Ranktext"]
         df = pd.concat([df, df_temp])
@@ -478,6 +479,9 @@ def create_i4_icons(spell_list: list[str], icon_root: list[str], output_path: Pa
 
         if not pd.isna(row["Ranktext"]):
             file_suffix = file_suffix + f"_{row['Ranktext']}"
+
+        if file_suffix in ["_", "__"]:
+            file_suffix = ""
 
         entry = {
             "match": {
@@ -655,7 +659,7 @@ if __name__ == "__main__":
 
     tmp_icons_dir = r"F:\Skyrim Dev\WORK\TMP\icons"
     if False:
-        swf_path = "F:\\Skyrim Dev\\ADT\\mods\\Spell Hotbar\\Interface\\SpellHotbar\\spell_icons.swf"
+        swf_path = str(mod_folder_path / "Interface/SpellHotbar/spell_icons.swf")
         create_i4_icons(spell_lists, icon_root_folders + default_icons_folders,
                         mod_root_path / "../InventoryInjector/SpellHotbar.json",
                         alpha_mask,
@@ -663,14 +667,14 @@ if __name__ == "__main__":
                         add_unbind_slot=True)
 
     # mods: vulcano
-    #   stitch_mod("vulcano")
-    #   stitch_mod("arclight")
-    #   stitch_mod("desecration")
-    #   stitch_mod("triumvirate_druid")
-    #   stitch_mod("triumvirate_cleric")
-    #   stitch_mod("triumvirate_shadow_mage")
-    #   stitch_mod("triumvirate_warlock")
-    #   stitch_mod("triumvirate_shaman")
+    #stitch_mod("vulcano")
+    #stitch_mod("arclight")
+    #stitch_mod("desecration")
+    #stitch_mod("triumvirate_druid")
+    #stitch_mod("triumvirate_cleric")
+    #stitch_mod("triumvirate_shadow_mage")
+    #stitch_mod("triumvirate_warlock")
+    #stitch_mod("triumvirate_shaman")
 
     # i4 icons mods:
     if False:
@@ -692,22 +696,18 @@ if __name__ == "__main__":
                              alphamask_empty=False, alphamask_overlay=False, alphamask_highlight=False,
                              add_school_icon=True)
 
-    # stitch_mod("thunderchild")
-    # i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
+    #stitch_mod("thunderchild")
+    #i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
 
-    # stitch_mod("sonic_magic")
-    # stitch_mod("storm_calling_magic2")
+    #stitch_mod("sonic_magic")
+    #stitch_mod("storm_calling_magic2")
 
-    # i4_mod("sonic_magic", tmp_icons_dir, esp_name="Shockwave")
-    # i4_mod("storm_calling_magic2", tmp_icons_dir, esp_name="StormCalling")
+    #i4_mod("sonic_magic", tmp_icons_dir, esp_name="Shockwave")
+    #i4_mod("storm_calling_magic2", tmp_icons_dir, esp_name="StormCalling")
 
-    # stitch_mod("astral_magic_2")
-    # i4_mod("astral_magic_2", tmp_icons_dir, esp_name="Astral")
+    #stitch_mod("astral_magic_2")
+    #i4_mod("astral_magic_2", tmp_icons_dir, esp_name="Astral")
 
-    #stitch_mod("apocalypse_alteration")
-    #stitch_mod("apocalypse_conjuration")
-    #stitch_mod("apocalypse_destruction")
-    #stitch_mod("apocalypse_illusion")
 
     a_schools = ["alteration", "conjuration", "destruction", "illusion", "restoration"]
     apoc_spell_lists = [rf"{project_root}\spell_lists2\mods\apocalypse_{s}.csv" for s in a_schools]
@@ -742,4 +742,7 @@ if __name__ == "__main__":
     #stitch_mod("dark_hierophant_magic")
     #i4_mod("dark_hierophant_magic", tmp_icons_dir, esp_name="Ghostlight")
 
-    stitch_extra_icons(rf"{project_root}\extra_icons", mod_root_path / "images/extra_icons", alpha_mask)
+    #stitch_extra_icons(rf"{project_root}\extra_icons", mod_root_path / "images/extra_icons", alpha_mask)
+
+    #stitch_mod("andromeda")
+    #i4_mod("andromeda", tmp_icons_dir, esp_name="Andromeda - Unique Standing Stones of Skyrim")

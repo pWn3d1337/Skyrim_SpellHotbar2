@@ -1,7 +1,7 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Amplifier	0x000823	shockwave.esl	IllusionRed	-1	-1	-1	2
-Muffler	0x000824	shockwave.esl	RestorationBlue	-1	-1	-1	8
-Resona	0x000820	shockwave.esl	AlterationShield	-1	-1	-1	0
-Reverba	0x000800	shockwave.esl	RestorationBlue	-1	-1	-1	5
-Novasphere	0x00081F	shockwave.esl	RestorationBlue	-1	-1	-1	5
-Mega Reverba	0x000809	shockwave.esl	IllusionRed	-1	5s	1,75	13
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Amplifier	0x000823	shockwave.esl	IllusionRed	-1	-1	-1	-1	10002
+Muffler	0x000824	shockwave.esl	RestorationBlue	-1	-1	-1	-1	10008
+Resona	0x000820	shockwave.esl	AlterationShield	-1	-1	-1	-1	-1
+Reverba	0x000800	shockwave.esl	RestorationBlue	-1	-1	-1	-1	10005
+Novasphere	0x00081F	shockwave.esl	RestorationBlue	-1	-1	-1	-1	10005
+Mega Reverba	0x000809	shockwave.esl	IllusionRed	-1	-1	-1	-1	10013

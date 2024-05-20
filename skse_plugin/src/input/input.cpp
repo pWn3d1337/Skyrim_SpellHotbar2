@@ -103,12 +103,13 @@ namespace SpellHotbar::Input {
                     }
                     if (bEvent->GetIDCode() == 56 || bEvent->GetIDCode() == 184) {
                         io.AddKeyEvent(ImGuiKey_ModAlt, bEvent->IsPressed());
+                        mod_alt.update(bEvent);
                     }
-
-                    mod_ctrl.update(bEvent);
-                    mod_shift.update(bEvent);
-                    mod_alt.update(bEvent);
+                    mod_1.update(bEvent);
+                    mod_2.update(bEvent);
+                    mod_3.update(bEvent);
                     mod_dual_cast.update(bEvent);
+                    mod_show_bar.update(bEvent);
 
                     //update all keybind states
                     for (size_t i = 0; i < key_spells.size(); ++i) {
@@ -128,6 +129,11 @@ namespace SpellHotbar::Input {
                         if (RenderManager::should_block_game_cursor_inputs()) {
                             captureEvent = true;
                         }
+                    }
+
+                    if (!captureEvent && RenderManager::is_dragging_bar() && bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard && bEvent->GetIDCode() == 1) {
+                        RenderManager::stop_bar_dragging();
+                        captureEvent = true;
                     }
 
                     //Block control inputs when a special frame is opened (SpellEditor)
@@ -173,150 +179,108 @@ namespace SpellHotbar::Input {
                     }
 
                     if (!captureEvent) {
-                        //if (bEvent->IsDown()) {
-                            bool handled{ false };
-                            if (!Bars::disable_non_modifier_bar || Input::mod_ctrl.isDown() || Input::mod_shift.isDown() || Input::mod_alt.isDown()) {
-                                for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
-                                    const auto& bind = key_spells[i];
+                        bool handled{ false };
+                        if (!Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown()) {
+                            for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
+                                const auto& bind = key_spells[i];
 
-                                    if (bind.matches(bEvent))
+                                if (bind.matches(bEvent))
+                                {
+                                    if (in_binding_menu())
                                     {
-                                        if (in_binding_menu())
-                                        {
-                                            if (bEvent->IsDown()) {
-                                                handled = true;
-                                                RE::TESForm* form = get_current_selected_spell_in_menu();
-                                                if (form) {
-                                                    slot_spell(form, i);
-                                                }
+                                        if (bEvent->IsDown()) {
+                                            handled = true;
+                                            RE::TESForm* form = get_current_selected_spell_in_menu();
+                                            if (form) {
+                                                slot_spell(form, i);
                                             }
                                         }
-                                        else if (in_ingame_state())
-                                        {
-                                            if (bEvent->IsDown()) {
-                                                handled = true;
-                                                auto [formID, slottype, hand] = GameData::get_current_spell_info_in_slot(i);
+                                    }
+                                    else if (in_ingame_state())
+                                    {
+                                        if (bEvent->IsDown()) {
+                                            handled = true;
+                                            auto [formID, slottype, hand] = GameData::get_current_spell_info_in_slot(i);
 
-                                                if (allowed_to_cast() && casts::CastingController::can_start_new_cast()) {
-                                                    if (formID > 0) {
-                                                        auto form = RE::TESForm::LookupByID(formID);
+                                            if (allowed_to_instantcast(formID) && casts::CastingController::can_start_new_cast()) {
+                                                if (formID > 0) {
+                                                    auto form = RE::TESForm::LookupByID(formID);
 
-                                                        if (slottype == slot_type::spell) {
+                                                    if (slottype == slot_type::spell) {
+                                                        if (allowed_to_cast(formID)) {
                                                             bool success = casts::CastingController::try_start_cast(form, bind, i, hand);
                                                             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
-
                                                         }
-                                                        else if (slottype == slot_type::shout || slottype == slot_type::lesser_power || slottype == slot_type::power)
-                                                        {
+                                                        else {
+                                                            SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                                                        }
+                                                    }
+                                                    else if (slottype == slot_type::shout || slottype == slot_type::lesser_power || slottype == slot_type::power)
+                                                    {
+                                                        bool can_start{ true };
+                                                        if (slottype == slot_type::shout) {
+                                                            if (!allowed_to_cast(formID)) can_start = false;
+                                                        }
+
+                                                        if (can_start) {
                                                             //Start a shout
-                                                            if (!addEvent) { //do not accidentaly create another event -> memory leak?
+                                                            if (!addEvent) { //do not accidentaly create another event
 
                                                                 if (casts::CastingController::try_cast_power(form, bind, i, hand)) {
                                                                     addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 1.0f, 0.0f); //default shout key
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                    else {
-                                                        //slot not bound
-                                                        SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25, true);
+                                                        else {
+                                                            SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                                                        }
                                                     }
                                                 }
                                                 else {
-                                                    //error highlight
-                                                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                                                    //slot not bound
+                                                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25, true);
                                                 }
                                             }
-                                            else if (bEvent->IsUp()) {
-                                                handled = true;
-                                                //check for release of power/shout key release event
-                                                if (casts::CastingController::is_currently_using_power()) {
+                                            else {
+                                                //error highlight
+                                                SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                                            }
+                                        }
+                                        else if (bEvent->IsUp()) {
+                                            handled = true;
+                                            //check for release of power/shout key release event
+                                            if (casts::CastingController::is_currently_using_power()) {
 
-                                                    float ct = casts::CastingController::get_current_casttime();
-                                                    if (!addEvent) {
-                                                        addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 0.0f, ct); //default shout key
-                                                    }
+                                                float ct = casts::CastingController::get_current_casttime();
+                                                if (!addEvent) {
+                                                    addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 0.0f, ct); //default shout key
                                                 }
                                             }
-                                            if (handled && (mod_ctrl.isDown() || mod_shift.isDown() || mod_alt.isDown())) {
-                                                //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
-                                                captureEvent = true;
-                                            }
+                                        }
+                                        if (handled && (mod_1.isDown() || mod_2.isDown() || mod_3.isDown())) {
+                                            //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
+                                            captureEvent = true;
                                         }
                                     }
                                 }
                             }
-                            if (!handled && in_binding_menu())
-                            {
-                                if (key_next.matches(bEvent) && bEvent->IsDown()) {
-                                    handled = true;
-                                    Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
-                                    RE::PlaySound(sound_UISkillsForward);
-                                }
-                                else if (key_prev.matches(bEvent) && bEvent->IsDown()) {
-                                    handled = true;
-                                    Bars::menu_bar_id = Bars::getPreviousMenuBar(Bars::menu_bar_id);
-                                    RE::PlaySound(sound_UISkillsBackward);
-                                }
+                        }
+                        if (!handled && in_binding_menu())
+                        {
+                            if (key_next.matches(bEvent) && bEvent->IsDown()) {
+                                handled = true;
+                                Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
+                                RE::PlaySound(sound_UISkillsForward);
                             }
-                        //}
-                    
+                            else if (key_prev.matches(bEvent) && bEvent->IsDown()) {
+                                handled = true;
+                                Bars::menu_bar_id = Bars::getPreviousMenuBar(Bars::menu_bar_id);
+                                RE::PlaySound(sound_UISkillsBackward);
+                            }
+                        }
+
                     }
 
-                    /*/
-                    else if (bEvent->device == RE::INPUT_DEVICE::kKeyboard) {
-                        if (RenderManager::should_block_game_cursor_inputs() && bEvent->GetIDCode() == 1) {  // ESC button
-                            RenderManager::stop_bar_dragging();
-                            captureEvent = true;
-                        }
-                        if (bEvent->GetIDCode() == 3 && bEvent->IsDown()) { //number2
-                            auto pc = RE::PlayerCharacter::GetSingleton();
-                            if (pc) {
-                                pc->NotifyAnimationGraph("ShoutStart");
-                                RE::BSSoundHandle h;
-  
-                                RE::TESForm* frm = GameData::get_form_from_file(0x2DD29, "Skyrim.esm"); //Lightning bolt,  0x12FD0- Firebolt
-                                RE::SpellItem* spell = frm->As<RE::SpellItem>();
-                                
-                                if (casts::CastingController::start_cast(spell, 1.5f)) {
-                                    logger::info("Starting Cast");
-                                }
-                            }
-                        }
-                        else if (bEvent->GetIDCode() == 4 && bEvent->IsDown()) {
-                            auto pc = RE::PlayerCharacter::GetSingleton();
-                            if (pc) {
-                                pc->NotifyAnimationGraph("RitualSpellStart");
-                                if (casts::CastingController::start_ritual_cast(nullptr, 5.0f)) {
-                                    logger::info("Starting Ritual Cast");
-                                }
-                            }
-                        }
-                        else if (bEvent->GetIDCode() == 7) { //number6
-                            auto pc = RE::PlayerCharacter::GetSingleton();
-                            if (pc) {
-                                if (bEvent->IsDown()) {
-
-                                    auto& dat = pc->GetActorRuntimeData();
-                                    dat.selectedPower = GameData::get_form_from_file(0x3F9EA, "Skyrim.esm");
-
-                                    if (!addEvent) { //do not accidentaly create another event -> memory leak
-                                        addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 1.0f, 0.0f); //default shout key
-                                    }
-                                }
-                                else if(bEvent->IsUp()) {
-                                    float ct = casts::CastingController::get_current_casttime();
-                                    if (!addEvent) {
-                                        addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 0.0f, ct); //default shout key
-                                    }
-                                }
-                            }
-                        }
-                        else if (shoutkey > 0 && bEvent->GetIDCode() == shoutkey) {
-                            std::string usrevent = std::string(bEvent->userEvent.c_str());
-                            logger::info("KeyEvent {}: {} {}", bEvent->GetIDCode(), bEvent->value, usrevent);
-                        }
-                    }*/
                 }
             }
 
@@ -492,27 +456,40 @@ namespace SpellHotbar::Input {
         return static_cast<int>(code) + offset;
     }
 
-    bool allowed_to_cast()
+    bool allowed_to_instantcast(RE::FormID skill)
     {
         auto pc = RE::PlayerCharacter::GetSingleton();
         if (!pc || !pc->Is3DLoaded()) {
             return false;
         }
-        
+
+        if (GameData::is_skill_on_cd(skill)) {
+            return false;
+        }
+
         const auto* control_map = RE::ControlMap::GetSingleton();
         if (!control_map || !control_map->IsMovementControlsEnabled() || !control_map->IsFightingControlsEnabled())
         {
             return false;
         }
 
-        auto as = pc->AsActorState();
+        return !pc->IsOnMount();
+    }
 
-        bool inJumpState{ false };
-        bool bowDrawn{ false };
-        pc->GetGraphVariableBool("bInJumpState"sv, inJumpState);
-        pc->GetGraphVariableBool("bInJumpState"sv, bowDrawn); //TODO look for bow anim
+    bool allowed_to_cast(RE::FormID skill)
+    {
+        auto pc = RE::PlayerCharacter::GetSingleton();
+        if (allowed_to_instantcast(skill) && pc) {
+            auto as = pc->AsActorState();
 
-        return !(as->IsSprinting() || as->IsSwimming() || pc->IsOnMount() || inJumpState || bowDrawn);
+            bool inJumpState{ false };
+            //bool bowDrawn{ false };
+            pc->GetGraphVariableBool("bInJumpState"sv, inJumpState);
+            //pc->GetGraphVariableBool("bInJumpState"sv, bowDrawn); //TODO look for bow anim
+
+            return !(as->IsSprinting() || as->IsSwimming() || inJumpState); //|| bowDrawn);
+        }
+        else return false;
     }
 
     RE::TESForm* get_current_selected_spell_in_menu()

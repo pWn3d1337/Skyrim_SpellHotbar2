@@ -5,6 +5,8 @@ Actor Property playerref Auto
 Spell Property SpellHotbar_unbind_spell Auto
 Spell Property SpellHotbar_toggle_dual_cast_spell Auto
 
+SpellHotbarMCM Property SpellHotbar_MCM Auto
+
 Function DEBUG_lean_spell(int formId)
 	Spell sp = Game.GetFormFromFile(formId,"Skyrim.esm") as Spell
 	playerref.AddSpell(sp, false)
@@ -76,4 +78,5 @@ Event OnInit()
 
 	;TODO disable this for release
 	DEBUG_Lean_Spells()
+	SpellHotbar_MCM.loadSettingsFromPreset("auto_profile.json", true)
 EndEvent

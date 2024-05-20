@@ -197,15 +197,15 @@ namespace SpellHotbar::Bars {
     {
         key_modifier keymod {key_modifier::none};
 
-        if (Input::mod_ctrl.isValidBound() && Input::mod_ctrl.isDown())
+        if (Input::mod_1.isValidBound() && Input::mod_1.isDown())
         {
             keymod = key_modifier::ctrl;
         }
-        else if (Input::mod_shift.isValidBound() && Input::mod_shift.isDown())
+        else if (Input::mod_2.isValidBound() && Input::mod_2.isDown())
         {
             keymod = key_modifier::shift;
         }
-        else if (Input::mod_alt.isValidBound() && Input::mod_alt.isDown())
+        else if (Input::mod_3.isValidBound() && Input::mod_3.isDown())
         {
             keymod = key_modifier::alt;
         }

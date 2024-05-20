@@ -18,10 +18,11 @@ namespace SpellHotbar::Input {
 		spell_12 = 11,
 		ui_next = 12,
 		ui_prev = 13,
-		mod_1 = 14,
-		mod_2 = 15,
-		mod_3 = 16,
+		modifier_1 = 14,
+		modifier_2 = 15,
+		modifier_3 = 16,
 		dual_casting_mod = 17,
+		show_bar_mod = 18,
 		num_keys
 	};
 
@@ -30,11 +31,14 @@ namespace SpellHotbar::Input {
 	extern KeyBind key_prev;
 	extern KeyBind key_next;
 
-	extern KeyModifier mod_ctrl;
-	extern KeyModifier mod_shift;
-	extern KeyModifier mod_alt;
+	extern KeyModifier mod_1;
+	extern KeyModifier mod_2;
+	extern KeyModifier mod_3;
 
 	extern KeyModifier mod_dual_cast;
+	extern KeyModifier mod_show_bar;
+
+	extern KeyModifier mod_alt;
 
 	int rebind_key(int slot, int code);
 	int get_keybind(int slot);

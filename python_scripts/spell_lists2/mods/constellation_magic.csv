@@ -1,5 +1,5 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation
-Stardust	0x000815	Supernova.esl	IllusionRed	-1	-1	-1	13
-Celestial Rays	0x000814	Supernova.esl	IllusionRed	-1	-1	-1	13
-Supernova	0x000812	Supernova.esl	IllusionRed	-1	-1	-1	13
-Gravity Diamond	0x000817	Supernova.esl	IllusionRed	-1	-1	-1	4
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Stardust	0x000815	Supernova.esl	IllusionRed	-1	-1	-1	-1	10013
+Celestial Rays	0x000814	Supernova.esl	IllusionRed	-1	-1	-1	-1	10013
+Supernova	0x000812	Supernova.esl	IllusionRed	-1	-1	-1	-1	10013
+Gravity Diamond	0x000817	Supernova.esl	IllusionRed	-1	-1	-1	-1	10004

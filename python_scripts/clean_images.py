@@ -58,3 +58,5 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/dark_hierophant_magic", f"{output_dir_root}/modded_spell_icons/dark_hierophant_magic", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/extra_icons", f"{output_dir_root}/extra_icons", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/andromeda", f"{output_dir_root}/modded_spell_icons/andromeda", subdirs=False)

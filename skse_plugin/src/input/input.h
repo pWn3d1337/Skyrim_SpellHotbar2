@@ -19,10 +19,16 @@ namespace SpellHotbar::Input {
 	std::tuple<RE::INPUT_DEVICE, uint8_t> dx_scan_code_to_input(int dx_scancode);
 	int input_to_dx_scancode(RE::INPUT_DEVICE device, uint8_t code);
 
+
+	/**
+	* allowed to use powers, less restrictive than regular casts
+	*/
+	bool allowed_to_instantcast(RE::FormID skill);
+
 	/**
 	* Assumes to be called after in_ingame_state, checks for additional player based restrictions (mounted, swimming, ...)
 	*/
-	bool allowed_to_cast();
+	bool allowed_to_cast(RE::FormID skill);
 
 	RE::TESForm* get_current_selected_spell_in_menu();
 

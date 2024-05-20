@@ -11,6 +11,9 @@ namespace SpellHotbar::SpellEditor {
 	
     bool show_frame = false;
 
+    bool filter_predefined_data = false;
+    bool filter_user_data = false;
+
     std::vector<RE::TESForm*> list_of_skills;
     std::vector<RE::TESForm*> list_of_skills_filtered;
     const RE::TESForm* edit_form = nullptr;
@@ -97,7 +100,8 @@ namespace SpellHotbar::SpellEditor {
 
                 if (filter_predefined) {
                     if(!GameData::spell_cast_info.contains(list_of_skills[i]->GetFormID()) &&
-                       !RenderManager::has_custom_icon(list_of_skills[i]->GetFormID())) {
+                       !RenderManager::has_custom_icon(list_of_skills[i]->GetFormID()) &&
+                       !GameData::form_has_special_icon(list_of_skills[i])) {
 
                         match_filter_predef = true;
                     }
@@ -153,7 +157,7 @@ namespace SpellHotbar::SpellEditor {
                 list_of_skills.push_back(shout);
             }
 
-            update_filter("", false, false);
+            update_filter("", filter_predefined_data, filter_user_data);
         }
     }
 
@@ -184,7 +188,16 @@ namespace SpellHotbar::SpellEditor {
     void hide()
     {
         show_frame = false;
-        //TODO cleanup
+
+        edit_form = nullptr;
+        current_edit_data.reset();
+        current_edit_data_filled.reset();
+        current_edit_data_unfilled.reset();
+        current_edit_data_saved.reset();
+
+        list_of_skills.clear();
+        list_of_skills_filtered.clear();
+        list_of_anims.clear();
     }
 
     void renderEditor()
@@ -199,11 +212,7 @@ namespace SpellHotbar::SpellEditor {
 
     inline SpellHotbar::GameData::Spell_cast_data _get_spell_data(const RE::TESForm* form) {
         SpellHotbar::GameData::Spell_cast_data data;
-        if (form->GetFormType() == RE::FormType::Spell) {
-            data = GameData::get_spell_data(form->As<RE::SpellItem>());
-        }
-        //TODO shouts
-
+        data = GameData::get_spell_data(form);
         return data;
     }
 
@@ -329,13 +338,11 @@ namespace SpellHotbar::SpellEditor {
         ImGui::InputTextWithHint("Filter", "Filter spell names containing text", filter_buf, filter_buf_size, filter_input_flags);
 
         ImGui::SameLine();
-        static bool filter_user_data = false;
         if (ImGui::Checkbox("Edited Only", &filter_user_data)) {
             filter_dirty = true;
         };
 
         ImGui::SameLine();
-        static bool filter_predefined_data = false;
         if (ImGui::Checkbox("No Predefined data", &filter_predefined_data)) {
             filter_dirty = true;
         }
@@ -394,7 +401,8 @@ namespace SpellHotbar::SpellEditor {
             // Demonstrate using clipper for large vertical lists
             ImGuiListClipper clipper;
             clipper.Begin(static_cast<int>(list_of_skills_filtered.size()));
-            while (clipper.Step())
+            while (clipper.Step()) 
+            {
                 for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
                 {
                     // Display a data item
@@ -431,12 +439,13 @@ namespace SpellHotbar::SpellEditor {
 
                     ImGui::TableNextColumn();
                     ImGui::Text("%d", data.casteffectid);
-                        
+
                     ImGui::TableNextColumn();
                     ImGui::Text("%.2f", data.gcd);
 
+                    float constexpr days_to_seconds = 24.0f * 60.0f * 60.0f;
                     ImGui::TableNextColumn();
-                    ImGui::Text("%.2f", data.cooldown);
+                    ImGui::Text("%.2f", data.cooldown * days_to_seconds);
 
                     ImGui::TableNextColumn();
                     ImGui::Text("%.2f", data.casttime);
@@ -482,6 +491,7 @@ namespace SpellHotbar::SpellEditor {
 
                     ImGui::PopID();
                 }
+            }
             ImGui::EndTable();
 
             if (button_edit_clicked > -1) {
