@@ -125,6 +125,17 @@ ImVec2 drag_window_start_pos = ImVec2(0, 0);
 float drag_window_start_width = 0;
 bar_anchor_point drag_anchor_point = bar_anchor_point::BOTTOM;
 
+float SpellHotbar::RenderManager::scale_to_resolution(float normalized_value)
+{
+    auto & io = ImGui::GetIO();
+    return normalized_value * io.DisplaySize.y / 1080.0f;
+}
+float SpellHotbar::RenderManager::scale_from_resolution(float scaled_value)
+{
+    auto& io = ImGui::GetIO();
+    return scaled_value / io.DisplaySize.y * 1080.0f;
+}
+
 void update_highlight(float delta) {
     if (highlight_time > 0.0F) {
         highlight_time -= delta;

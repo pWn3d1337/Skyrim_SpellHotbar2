@@ -137,5 +137,8 @@ namespace SpellHotbar {
         static bool has_custom_icon(RE::FormID form_id);
 
         static std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>>& get_editor_icon_list();
+
+        static float scale_to_resolution(float normalized_value);
+        static float scale_from_resolution(float scaled_value);
     };
 }

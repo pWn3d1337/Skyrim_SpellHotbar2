@@ -114,9 +114,9 @@ Event OnPageReset(string page)
         AddEmptyOption()
 
         AddSliderOptionST("SlotScale", "Slot Scale", SpellHotbar.getSlotScale(), "{2}")
-        AddSliderOptionST("BarOffsetX", "Offset X", SpellHotbar.getOffsetX())
+        AddSliderOptionST("BarOffsetX", "Offset X", SpellHotbar.getOffsetX(false))
 		AddSliderOptionST("SlotSpacing", "Slot Spacing", SpellHotbar.getSlotSpacing())
-        AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY())
+        AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))
 
     ElseIf (page == "Bars")
 
@@ -414,8 +414,8 @@ bool Function loadSettingsFromPreset(string preset_name, bool show_errors)
 		SpellHotbar.setNumberOfSlots(JMap.getInt(data, "settings.number_of_slots", 12))
 
 		SpellHotbar.setSlotScale(JMap.getFlt(data, "settings.slot_scale", 1.0))
-		SpellHotbar.setOffsetX(JMap.getInt(data, "settings.offset_x") as float)
-		SpellHotbar.setOffsetY(JMap.getInt(data, "settings.offset_y") as float)
+		SpellHotbar.setOffsetX(JMap.getInt(data, "settings.offset_x") as float, true)
+		SpellHotbar.setOffsetY(JMap.getInt(data, "settings.offset_y") as float, true)
 		SpellHotbar.setSlotSpacing(JMap.getInt(data, "settings.slot_spacing", 8) as float)
 
 		SpellHotbar.setHudBarShowMode(JMap.getInt(data, "settings.hud_show_mode", 4))
@@ -557,8 +557,8 @@ Function saveSettingsAsPreset(string preset_name)
 	JMap.setInt(data, "settings.number_of_slots", 	SpellHotbar.getNumberOfSlots())
 
 	JMap.setFlt(data, "settings.slot_scale", SpellHotbar.getSlotScale())
-	JMap.setInt(data, "settings.offset_x", SpellHotbar.getOffsetX() as int)
-	JMap.setInt(data, "settings.offset_y", SpellHotbar.getOffsetY() as int)
+	JMap.setInt(data, "settings.offset_x", SpellHotbar.getOffsetX(true) as int)
+	JMap.setInt(data, "settings.offset_y", SpellHotbar.getOffsetY(true) as int)
 	JMap.setInt(data, "settings.slot_spacing", SpellHotbar.getSlotSpacing() as int)
 
 	JMap.setInt(data, "settings.hud_show_mode", SpellHotbar.getHudBarShowMode())
@@ -734,13 +734,13 @@ EndState
 
 State BarOffsetX
     Event OnSliderOpenST()
-        SetSliderDialogStartValue(SpellHotbar.getOffsetX())
+        SetSliderDialogStartValue(SpellHotbar.getOffsetX(false))
         SetSliderDialogDefaultValue(0.0)
         SetSliderDialogRange(-2000.0, 2000.0)
         SetSliderDialogInterval(1.0)
     EndEvent
     Event OnSliderAcceptST(float a_value)
-        SetSliderOptionValueST(SpellHotbar.setOffsetX(a_value));
+        SetSliderOptionValueST(SpellHotbar.setOffsetX(a_value, false));
     EndEvent
     Event OnHighlightST()
         SetInfoText("Move the bar in X direction");
@@ -749,13 +749,13 @@ EndState
 
 State BarOffsetY
     Event OnSliderOpenST()
-        SetSliderDialogStartValue(SpellHotbar.getOffsetY())
+        SetSliderDialogStartValue(SpellHotbar.getOffsetY(false))
         SetSliderDialogDefaultValue(0.0)
         SetSliderDialogRange(-2000.0, 2000.0)
         SetSliderDialogInterval(1.0)
     EndEvent
     Event OnSliderAcceptST(float a_value)
-        SetSliderOptionValueST(SpellHotbar.setOffsetY(a_value));
+        SetSliderOptionValueST(SpellHotbar.setOffsetY(a_value, false));
     EndEvent
     Event OnHighlightST()
         SetInfoText("Move the bar in Y direction");

@@ -4,10 +4,10 @@ int function getNumberOfSlots() global native
 int function setNumberOfSlots(int num) global native
 float function getSlotScale() global native
 float function setSlotScale(float scale) global native
-float function getOffsetX() global native
-float function setOffsetX(float value) global native
-float function getOffsetY() global native
-float function setOffsetY(float value) global native
+float function getOffsetX(bool rescale) global native
+float function setOffsetX(float value, bool rescale) global native
+float function getOffsetY(bool rescale) global native
+float function setOffsetY(float value, bool rescale) global native
 int function getInheritMode(int id) global native
 int function setInheritMode(int id, int mode) global native
 bool function getBarEnabled(int id) native global

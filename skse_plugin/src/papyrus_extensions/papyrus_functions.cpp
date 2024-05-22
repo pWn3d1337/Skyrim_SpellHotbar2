@@ -29,22 +29,44 @@ float set_slot_scale(RE::StaticFunctionTag*, float scale)
     return SpellHotbar::Bars::slot_scale = scale;
 }
 
-float get_offset_x(RE::StaticFunctionTag*)
+float get_offset_x(RE::StaticFunctionTag*, bool rescale)
 {
+    if (rescale) {
+        return SpellHotbar::RenderManager::scale_from_resolution(SpellHotbar::Bars::offset_x);
+    }
+    else {
+        return SpellHotbar::Bars::offset_x;
+    }
+}
+float set_offset_x(RE::StaticFunctionTag*, float value, bool rescale)
+{
+    if (rescale) {
+        SpellHotbar::Bars::offset_x = SpellHotbar::RenderManager::scale_to_resolution(value);
+    }
+    else {
+        SpellHotbar::Bars::offset_x = value;
+    }
     return SpellHotbar::Bars::offset_x;
 }
-float set_offset_x(RE::StaticFunctionTag*, float value)
-{
-    return SpellHotbar::Bars::offset_x = value;
-}
 
-float get_offset_y(RE::StaticFunctionTag*)
+float get_offset_y(RE::StaticFunctionTag*, bool rescale)
 {
-    return SpellHotbar::Bars::offset_y;
+    if (rescale) {
+        return SpellHotbar::RenderManager::scale_from_resolution(SpellHotbar::Bars::offset_y);
+    }
+    else {
+        return SpellHotbar::Bars::offset_y;
+    }
 }
-float set_offset_y(RE::StaticFunctionTag*, float value)
+float set_offset_y(RE::StaticFunctionTag*, float value, bool rescale)
 {
-    return SpellHotbar::Bars::offset_y = value;
+    if (rescale) {
+        SpellHotbar::Bars::offset_y = SpellHotbar::RenderManager::scale_to_resolution(value);
+    }
+    else {
+        SpellHotbar::Bars::offset_y = value;
+    }
+    return SpellHotbar::Bars::offset_y;
 }
 
 bool is_transformed_with_fav_menu_binding(RE::StaticFunctionTag*) {
