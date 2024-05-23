@@ -3,6 +3,7 @@
 #include "../rendering/render_manager.h"
 #include "../bar/hotbars.h"
 #include "../bar/hotbar.h"
+#include "../input/keybinds.h"
 
 namespace SpellHotbar::Storage {
 
@@ -18,8 +19,12 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&Bars::disable_non_modifier_bar, sizeof(bool));
 
             a_intfc->WriteRecordData(&Bars::slot_scale, sizeof(float));
-            a_intfc->WriteRecordData(&Bars::offset_x, sizeof(float));
-            a_intfc->WriteRecordData(&Bars::offset_y, sizeof(float));
+
+            float offset_x_out = RenderManager::scale_from_resolution(Bars::offset_x);
+            a_intfc->WriteRecordData(&offset_x_out, sizeof(float));
+
+            float offset_y_out = RenderManager::scale_from_resolution(Bars::offset_y);
+            a_intfc->WriteRecordData(&offset_y_out, sizeof(float));
 
             uint8_t spacing = static_cast<uint8_t>(Bars::slot_spacing);
             a_intfc->WriteRecordData(&spacing, sizeof(uint8_t));
@@ -38,6 +43,16 @@ namespace SpellHotbar::Storage {
 
             a_intfc->WriteRecordData(&Bars::use_default_bar_when_sheathed, sizeof(bool));
             a_intfc->WriteRecordData(&Bars::disable_menu_rendering, sizeof(bool));
+
+            //write keybinds, make saves compatible when new binds are added
+            uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
+            a_intfc->WriteRecordData(&num_keybinds, sizeof(uint8_t));
+
+            for (uint8_t i = 0U; i < num_keybinds; i++) {
+                int16_t key = static_cast<int16_t>(Input::get_keybind(i)); //key can be -1 and >255, we need 2bytes
+                a_intfc->WriteRecordData(&key, sizeof(int16_t));
+            }
+
         }
 
         for (const auto& [k, v]: SpellHotbar::Bars::hotbars)
@@ -77,82 +92,106 @@ namespace SpellHotbar::Storage {
         while (a_intfc->GetNextRecordInfo(type, version, length)) {
             if (type == 'HOTB')
             {
+                //HOTB is now variable length
                 logger::trace("Reading 'HOTB' data from save...");
-                if (length != ((sizeof(bool) * 3) + (sizeof(uint8_t) * 6) + (sizeof(float)* 3) )) {
-                    logger::error("Invalid Record data length for 'HOTB'");
+                //if (length != ((sizeof(bool) * 3) + (sizeof(uint8_t) * 6) + (sizeof(float)* 3) )) {
+                //    logger::error("Invalid Record data length for 'HOTB'");
+                //}
+                //else
+                //{
+                if (!a_intfc->ReadRecordData(&Bars::barsize, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_size!");
+                    break;
                 }
-                else
-                {
-                    if (!a_intfc->ReadRecordData(&Bars::barsize, sizeof(uint8_t))) {
-                        logger::error("Failed to read bar_size!");
-                        break;
-                    }
-                    if (!a_intfc->ReadRecordData(&Bars::disable_non_modifier_bar, sizeof(bool))) {
-                        logger::error("Failed to read disable_non_modifier_bar!");
-                        break;
-                    }
-                    if (!a_intfc->ReadRecordData(&Bars::slot_scale, sizeof(float))) {
-                        logger::error("Failed to read slot_scale!");
-                        break;
-                    }
-                    if (!a_intfc->ReadRecordData(&Bars::offset_x, sizeof(float))) {
-                        logger::error("Failed to read offset_x!");
-                        break;
-                    }
-                    if (!a_intfc->ReadRecordData(&Bars::offset_y, sizeof(float))) {
-                        logger::error("Failed to read offset_y!");
-                        break;
-                    }
-                    uint8_t spacing{0};
-                    if (!a_intfc->ReadRecordData(&spacing, sizeof(uint8_t))) {
-                        logger::error("Failed to read slot_spacing!");
-                        break;
-                    } else {
-                        Bars::slot_spacing = static_cast<int>(spacing);
-                    }
-
-                    uint8_t text_show{0};
-                    if (!a_intfc->ReadRecordData(&text_show, sizeof(uint8_t))) {
-                        logger::error("Failed to read text_show_setting!");
-                        break;
-                    } else {
-                        Bars::text_show_setting = Bars::text_show_mode(std::clamp(text_show, 0Ui8, 2Ui8));
-                    }
-
-                    uint8_t bar_show{0};
-                    if (!a_intfc->ReadRecordData(&bar_show, sizeof(uint8_t))) {
-                        logger::error("Failed to read bar_show_setting!");
-                        break;
-                    } else {
-                        Bars::bar_show_setting = Bars::bar_show_mode(std::clamp(bar_show, 0Ui8, 5Ui8));
-                    }
-
-                    uint8_t bar_show_vl{0};
-                    if (!a_intfc->ReadRecordData(&bar_show_vl, sizeof(uint8_t))) {
-                        logger::error("Failed to read bar_show_setting vampire_lord!");
-                        break;
-                    } else {
-                        Bars::bar_show_setting_vampire_lord = Bars::bar_show_mode(std::clamp(bar_show_vl, 0Ui8, 2Ui8));
-                    }
-
-                    uint8_t bar_show_ww{0};
-                    if (!a_intfc->ReadRecordData(&bar_show_ww, sizeof(uint8_t))) {
-                        logger::error("Failed to read bar_show_setting werewolf!");
-                        break;
-                    } else {
-                        Bars::bar_show_setting_werewolf = Bars::bar_show_mode(std::clamp(bar_show_ww, 0Ui8, 2Ui8));
-                    }
-
-                    if (!a_intfc->ReadRecordData(&Bars::use_default_bar_when_sheathed, sizeof(bool))) {
-                        logger::error("Failed to read use_default_bar_when_sheathed!");
-                        break;
-                    }
-
-                    if (!a_intfc->ReadRecordData(&Bars::disable_menu_rendering, sizeof(bool))) {
-                        logger::error("Failed to read disable_menu_rendering!");
-                        break;
-                    }
+                if (!a_intfc->ReadRecordData(&Bars::disable_non_modifier_bar, sizeof(bool))) {
+                    logger::error("Failed to read disable_non_modifier_bar!");
+                    break;
                 }
+                if (!a_intfc->ReadRecordData(&Bars::slot_scale, sizeof(float))) {
+                    logger::error("Failed to read slot_scale!");
+                    break;
+                }
+                float read_offset_x{ 0.0f };
+                if (!a_intfc->ReadRecordData(&read_offset_x, sizeof(float))) {
+                    logger::error("Failed to read offset_x!");
+                    break;
+                }
+                else {
+                    Bars::offset_x = RenderManager::scale_to_resolution(read_offset_x);
+                }
+                float read_offset_y{ 0.0f };
+                if (!a_intfc->ReadRecordData(&read_offset_y, sizeof(float))) {
+                    logger::error("Failed to read offset_y!");
+                    break;
+                }
+                else {
+                    Bars::offset_y = RenderManager::scale_to_resolution(read_offset_y);
+                }
+                uint8_t spacing{0};
+                if (!a_intfc->ReadRecordData(&spacing, sizeof(uint8_t))) {
+                    logger::error("Failed to read slot_spacing!");
+                    break;
+                } else {
+                    Bars::slot_spacing = static_cast<int>(spacing);
+                }
+
+                uint8_t text_show{0};
+                if (!a_intfc->ReadRecordData(&text_show, sizeof(uint8_t))) {
+                    logger::error("Failed to read text_show_setting!");
+                    break;
+                } else {
+                    Bars::text_show_setting = Bars::text_show_mode(std::clamp(text_show, 0Ui8, 2Ui8));
+                }
+
+                uint8_t bar_show{0};
+                if (!a_intfc->ReadRecordData(&bar_show, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_show_setting!");
+                    break;
+                } else {
+                    Bars::bar_show_setting = Bars::bar_show_mode(std::clamp(bar_show, 0Ui8, 5Ui8));
+                }
+
+                uint8_t bar_show_vl{0};
+                if (!a_intfc->ReadRecordData(&bar_show_vl, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_show_setting vampire_lord!");
+                    break;
+                } else {
+                    Bars::bar_show_setting_vampire_lord = Bars::bar_show_mode(std::clamp(bar_show_vl, 0Ui8, 2Ui8));
+                }
+
+                uint8_t bar_show_ww{0};
+                if (!a_intfc->ReadRecordData(&bar_show_ww, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_show_setting werewolf!");
+                    break;
+                } else {
+                    Bars::bar_show_setting_werewolf = Bars::bar_show_mode(std::clamp(bar_show_ww, 0Ui8, 2Ui8));
+                }
+
+                if (!a_intfc->ReadRecordData(&Bars::use_default_bar_when_sheathed, sizeof(bool))) {
+                    logger::error("Failed to read use_default_bar_when_sheathed!");
+                    break;
+                }
+
+                if (!a_intfc->ReadRecordData(&Bars::disable_menu_rendering, sizeof(bool))) {
+                    logger::error("Failed to read disable_menu_rendering!");
+                    break;
+                }
+
+                //read num keybinds, make saves compatible when new binds are added
+                uint8_t num_keybinds{ 0U };
+                a_intfc->ReadRecordData(&num_keybinds, sizeof(uint8_t));
+
+                for (uint8_t i = 0U; i < num_keybinds; i++) {
+                    int16_t key{ -1 };
+                    a_intfc->ReadRecordData(&key, sizeof(int16_t));
+                    Input::rebind_key(i, key, false);
+                }
+                //assign keys with -1 that might have not been saved due older version
+                while (num_keybinds < static_cast<uint8_t>(Input::keybind_id::num_keys)) {
+                    Input::rebind_key(num_keybinds, -1, false);
+                    num_keybinds++;
+                }
+                //}
             }
             else if (type =='GDAT')
             {

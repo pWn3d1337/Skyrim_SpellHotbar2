@@ -17,7 +17,7 @@ string presets_root = "Data/SKSE/Plugins/SpellHotbar/presets/"
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
 string user_presets_path = "SpellHotbar/presets/"
 string user_bars_path = "SpellHotbar/bars/"
-int presets_json_format = 1
+int presets_json_format = 2
 
 ; SCRIPT VERSION
 int function GetVersion()
@@ -387,8 +387,8 @@ bool Function loadSettingsFromPreset(string preset_name, bool show_errors)
 	EndIf
 	if data > 0
 		;Not used yet
-		;int saved_version = JMap.getInt(data, "version")
-	
+		;int saved_version = JMap.getInt(data, "version", 0)
+
 		int i = 0
 		While (i < 12)
 			int keyCode = JMap.getInt(data, "keybind." + i, -1)

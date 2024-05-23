@@ -40,6 +40,6 @@ namespace SpellHotbar::Input {
 
 	extern KeyModifier mod_alt;
 
-	int rebind_key(int slot, int code);
+	int rebind_key(int slot, int code, bool check_conflicts = true);
 	int get_keybind(int slot);
 }

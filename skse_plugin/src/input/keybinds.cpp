@@ -55,9 +55,9 @@ namespace SpellHotbar::Input {
 		_check_unbind(mod_show_bar, code);
 	}
 
-	int rebind_key(int slot, int code)
+	int rebind_key(int slot, int code, bool check_conflicts)
 	{
-		unbind_if_already_used(code);
+		if (check_conflicts) unbind_if_already_used(code);
 		if (slot >= 0 && slot <= keybind_id::spell_12) {
 			key_spells[slot].assign_from_dx_scancode(code);
 			return key_spells[slot].get_dx_scancode();
