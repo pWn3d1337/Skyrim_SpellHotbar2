@@ -13,7 +13,7 @@ namespace SpellHotbar::GameData {
         if (casttime < 0.0f) {
             casttime = spell->GetChargeTime();
         }
-        if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+        if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell || spell->GetSpellType() == RE::MagicSystem::SpellType::kScroll) {
             //min casttime of 0.25f for actual spells
             casttime = std::max(0.25f, casttime);
         }
@@ -98,7 +98,7 @@ namespace SpellHotbar::GameData {
 
         if (anim < 0) {
             size_t ind = anim2 ? 1U : 0U;
-            if (form->GetFormType() == RE::FormType::Spell) {
+            if (form->GetFormType() == RE::FormType::Spell || form->GetFormType() == RE::FormType::Scroll) {
                 const RE::SpellItem* spell = form->As<RE::SpellItem>();
 
                 bool self = spell->GetDelivery() == RE::MagicSystem::Delivery::kSelf;

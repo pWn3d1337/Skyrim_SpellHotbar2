@@ -47,20 +47,9 @@ namespace SpellHotbar {
 
     inline float get_hud_slot_height(float screensize_y) { return (screensize_y / 13.0f) * Bars::slot_scale; }
 
-    enum class bar_anchor_point : uint8_t {
-        BOTTOM = 0Ui8,
-        LEFT,
-        TOP,
-        RIGHT,
-        BOTTOM_LEFT,
-        TOP_LEFT,
-        BOTTOM_RIGHT,
-        TOP_RIGHT,
-        CENTER
-    };
-
     // Hook render stuff for imgui, mostly copied from wheeler
     class RenderManager {
+
          struct WndProcHook {
             static LRESULT thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
             static inline WNDPROC func;
@@ -92,6 +81,9 @@ namespace SpellHotbar {
         static void MessageCallback(SKSE::MessagingInterface::Message* msg);
 
         static SubTextureImage* get_tex_for_skill_internal(RE::FormID formID);
+
+        static constexpr std::string_view tab_scrolls = "SCROLLS";
+        static constexpr std::string_view tab_potions = "POTIONS";
 
     public:
         static bool install();
@@ -140,5 +132,7 @@ namespace SpellHotbar {
 
         static float scale_to_resolution(float normalized_value);
         static float scale_from_resolution(float scaled_value);
+        
+        static bool current_inv_menu_tab_valid_for_hotbar();
     };
 }

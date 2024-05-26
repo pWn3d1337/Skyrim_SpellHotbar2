@@ -78,5 +78,5 @@ Event OnInit()
 
 	;TODO disable this for release
 	DEBUG_Lean_Spells()
-	SpellHotbar_MCM.loadSettingsFromPreset("auto_profile.json", true)
+	SpellHotbar_MCM.loadSettingsFromPreset("auto_profile.json", false, false)
 EndEvent

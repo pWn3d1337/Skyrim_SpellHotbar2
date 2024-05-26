@@ -742,7 +742,7 @@ namespace SpellHotbar::GameData {
             uint32_t bar_id = Bars::getCurrentHotbar_ingame();
             if (Bars::hotbars.contains(bar_id)) {
                 auto& bar = Bars::hotbars.at(bar_id);
-                auto [id, type, hand, inherited] = bar.get_skill_in_bar_with_inheritance(static_cast<int>(index), Bars::get_current_modifier(), false);
+                auto [id, type, consumed, hand, inherited] = bar.get_skill_in_bar_with_inheritance(static_cast<int>(index), Bars::get_current_modifier(), false);
                 ret = id;
                 reth = hand;
                 rett = type;
@@ -946,7 +946,7 @@ namespace SpellHotbar::GameData {
 
          //Fill default values
          if (fill_defaults) {
-             if (spell->GetFormType() == RE::FormType::Spell) {
+             if (spell->GetFormType() == RE::FormType::Spell || spell->GetFormType() == RE::FormType::Scroll) {
                  data.fill_default_values_from_spell(spell->As<RE::SpellItem>());
              }
              else if (spell->GetFormType() == RE::FormType::Shout) {
@@ -965,6 +965,19 @@ namespace SpellHotbar::GameData {
      bool form_has_special_icon(RE::TESForm* form)
      {
          return form == spellhotbar_toggle_dualcast || form == spellhotbar_unbind_slot;
+     }
+
+     int count_item_in_inv(RE::FormID form)
+     {
+         int count{ 0 };
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         if (pc) {
+             auto refs = pc->GetInventoryCounts([form](const RE::TESBoundObject& object) { return object.formID == form; });
+             for (auto& [k, v] : refs) {
+                 count = v;
+             }
+         }
+         return count;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

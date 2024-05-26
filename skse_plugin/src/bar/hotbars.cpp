@@ -28,6 +28,7 @@ namespace SpellHotbar::Bars {
     bar_show_mode bar_show_setting_werewolf;
     bool use_default_bar_when_sheathed;
     bool disable_menu_rendering;
+    anchor_point bar_anchor_point = anchor_point::BOTTOM;
 
     //non-persisten
     uint32_t menu_bar_id;

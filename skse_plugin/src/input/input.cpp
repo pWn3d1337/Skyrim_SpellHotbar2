@@ -100,6 +100,7 @@ namespace SpellHotbar::Input {
                     }
                     if (bEvent->GetIDCode() == 42 || bEvent->GetIDCode() == 54) {
                         io.AddKeyEvent(ImGuiKey_ModShift, bEvent->IsPressed());
+                        //mod_shift.update(bEvent);
                     }
                     if (bEvent->GetIDCode() == 56 || bEvent->GetIDCode() == 184) {
                         io.AddKeyEvent(ImGuiKey_ModAlt, bEvent->IsPressed());
@@ -500,12 +501,25 @@ namespace SpellHotbar::Input {
         if (!SpellHotbar::GameData::hasFavMenuSlotBinding()) {
             // totally stolen from Wheeler
             auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
-            if (!magMenu) return nullptr;
+            auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+            bool valid_tab = false;
+            
+            if (invMenu) {
+                valid_tab = RenderManager::current_inv_menu_tab_valid_for_hotbar();
+            };
+
+            if (!magMenu && !valid_tab) return nullptr;
 
             RE::GFxValue selection;
-            magMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+            if (magMenu) {
+                magMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+            }
+            else if (invMenu) {
+                invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+            }
             if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
                 RE::FormID formID = static_cast<std::uint32_t>(selection.GetNumber());
+                logger::info("Selection: {:08x}", formID);
                 return RE::TESForm::LookupByID(formID);
             }
         }
@@ -580,7 +594,13 @@ namespace SpellHotbar::Input {
         }
         else 
         {
-            return ui->GetMenu(RE::MagicMenu::MENU_NAME).get() != nullptr;
+            auto* magMenu = ui->GetMenu(RE::MagicMenu::MENU_NAME).get();
+            if (magMenu) {
+                return true;
+            }
+            else {
+                return RenderManager::current_inv_menu_tab_valid_for_hotbar();
+            }
         }
     }
 }

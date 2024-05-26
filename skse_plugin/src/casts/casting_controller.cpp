@@ -55,7 +55,7 @@ namespace SpellHotbar::casts::CastingController {
 		m_equip_ability(nullptr),
 		m_casteffect(casteffect)
 	{
-		if (m_form && m_form->GetFormType() == RE::FormType::Spell) {
+		if (m_form && (m_form->GetFormType() == RE::FormType::Spell || m_form->GetFormType() == RE::FormType::Scroll)) {
 			uint32_t size = get_spell()->effects.size();
 			for (uint32_t i = 0U; i < size; ++i) {
 				const auto& eff = get_spell()->effects[i];
@@ -172,6 +172,7 @@ namespace SpellHotbar::casts::CastingController {
 
 	void CastingInstance::on_reset()
 	{
+		BaseCastingInstance::on_reset();
 		auto pc = RE::PlayerCharacter::GetSingleton();
 		if (pc) {
 			/*auto magic_target = pc->GetMagicTarget();
@@ -231,7 +232,21 @@ namespace SpellHotbar::casts::CastingController {
 	void BaseCastingInstance::on_reset()
 	{
 		//called before cast instance is deleted
-		//Do nothing by default, but subclasses may need it
+	}
+
+	void BaseCastingInstance::consume_items()
+	{
+		if (m_form && m_form->GetFormType() == RE::FormType::Scroll) {
+			//consume the scroll
+			auto pc = RE::PlayerCharacter::GetSingleton();
+			if (pc) {
+				RE::FormID id = m_form->GetFormID();
+				auto refs = pc->GetInventory([id](const RE::TESBoundObject& object) { return object.formID == id; });
+				for (auto& [k, v] : refs) {
+					pc->RemoveItem(k, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
+				}
+			}
+		}
 	}
 
 	void BaseCastingInstance::apply_cooldown()
@@ -266,6 +281,7 @@ namespace SpellHotbar::casts::CastingController {
 				if (cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand)) {
 					apply_cooldown();
 					pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kMagicka, -m_manacost);
+					consume_items();
 				}
 				set_casted();
 			}
@@ -466,6 +482,7 @@ namespace SpellHotbar::casts::CastingController {
 				pc->NotifyAnimationGraph(get_cancel_anim());
 				play_release_sound();
 				apply_cooldown();
+				consume_items();
 			}
 
 		}
@@ -617,9 +634,13 @@ namespace SpellHotbar::casts::CastingController {
 				bool is_shouting{ false };
 				pc->GetGraphVariableBool("IsShouting"sv, is_shouting);
 
-				if (!is_shouting && form->GetFormType() == RE::FormType::Spell) {
+				if (!is_shouting && (form->GetFormType() == RE::FormType::Spell || form->GetFormType() == RE::FormType::Scroll)) {
 					RE::SpellItem* spell = form->As<RE::SpellItem>();
-					float manacost = spell->CalculateMagickaCost(pc);
+
+					float manacost{ 0.0f };
+					if (form->GetFormType() == RE::FormType::Spell) {
+						manacost = spell->CalculateMagickaCost(pc);
+					}
 
 					bool dual_cast{ false };
 					if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast() || hand == dual_hand)) && GameData::player_can_dualcast_spell(spell)) {
@@ -871,6 +892,7 @@ namespace SpellHotbar::casts::CastingController {
 
 	void CastingInstancePower::on_reset()
 	{
+		BaseCastingInstance::on_reset();
 		reequip_old_power();
 	}
 
@@ -884,6 +906,7 @@ namespace SpellHotbar::casts::CastingController {
 					dat.selectedPower = m_old_form;
 				}
 				m_reequiped = true;
+				consume_items();
 			}
 		}
 	}

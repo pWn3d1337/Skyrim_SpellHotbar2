@@ -239,5 +239,7 @@ namespace SpellHotbar::GameData {
     void add_animation_data(const std::string& name, int anim_id);
 
     bool form_has_special_icon(RE::TESForm* form);
+
+    int count_item_in_inv(RE::FormID form);
 }
 

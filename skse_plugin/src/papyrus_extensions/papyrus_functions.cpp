@@ -7,6 +7,7 @@
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
 #include "../input/keybinds.h"
+#include "../storage/user_data_io.h"
 
 int get_number_of_slots(RE::StaticFunctionTag*)
 {
@@ -267,6 +268,33 @@ void open_spell_editor(RE::StaticFunctionTag*)
     SpellHotbar::RenderManager::open_spell_editor();
 }
 
+bool load_config(RE::StaticFunctionTag*, std::string filename, bool include_user_dir)
+{
+    return SpellHotbar::Storage::IO::load_preset(filename, include_user_dir);
+}
+
+bool save_config(RE::StaticFunctionTag*, std::string filename)
+{
+    return SpellHotbar::Storage::IO::save_preset(filename);
+}
+
+std::vector<std::string> get_config_presets(RE::StaticFunctionTag*) {
+    return SpellHotbar::Storage::IO::get_config_presets();
+}
+
+std::vector<std::string> get_bars_presets(RE::StaticFunctionTag*) {
+    return SpellHotbar::Storage::IO::get_bar_presets();
+}
+
+int get_bar_anchor_point(RE::StaticFunctionTag*) {
+    return static_cast<int>(SpellHotbar::Bars::bar_anchor_point);
+}
+
+int set_bar_anchor_point(RE::StaticFunctionTag*, int value) {
+    SpellHotbar::Bars::bar_anchor_point = SpellHotbar::Bars::anchor_point(std::clamp(value, 0, static_cast<int>(SpellHotbar::Bars::anchor_point::CENTER)));
+    return static_cast<int>(SpellHotbar::Bars::bar_anchor_point);
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -307,5 +335,12 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("isNonModBarDisabled", "SpellHotbar", is_non_mod_bar_disabled);
     vm->RegisterFunction("toggleDisableNonModBar", "SpellHotbar", toggle_disable_non_mod_bar);
     vm->RegisterFunction("openSpellEditor", "SpellHotbar", open_spell_editor);
+    vm->RegisterFunction("loadConfig", "SpellHotbar", load_config);
+    vm->RegisterFunction("saveConfig", "SpellHotbar", save_config);
+    vm->RegisterFunction("getConfigPresets", "SpellHotbar", get_config_presets);
+    vm->RegisterFunction("getBarsPresets", "SpellHotbar", get_bars_presets);
+    vm->RegisterFunction("getBarAnchorPoint", "SpellHotbar", get_bar_anchor_point);
+    vm->RegisterFunction("setBarAnchorPoint", "SpellHotbar", set_bar_anchor_point);
+
     return true;
 }

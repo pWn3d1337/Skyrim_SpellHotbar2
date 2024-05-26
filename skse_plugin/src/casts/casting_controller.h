@@ -30,6 +30,8 @@ namespace SpellHotbar::casts::CastingController {
 
 		virtual void on_reset();
 
+		void consume_items();
+
 		inline void set_casted() {
 			m_casted = true;
 		}

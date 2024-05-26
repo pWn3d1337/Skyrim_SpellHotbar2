@@ -181,20 +181,21 @@ namespace SpellHotbar
         }
     }
 
-    std::tuple<RE::FormID, slot_type, hand_mode, bool> Hotbar::get_skill_in_bar_with_inheritance(
+    std::tuple<RE::FormID, slot_type, bool, hand_mode, bool> Hotbar::get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited, std::optional<key_modifier> original_mod)
     {
         auto& bar = get_sub_bar(mod).m_slotted_skills[index];
         RE::FormID skill = bar.formID;
         slot_type type = bar.type;
         hand_mode hand = bar.hand;
+        bool consumed = bar.consumed;
 
         if (skill != 0U && this->is_enabled())
         {
             if (hide_clear_spell && GameData::is_clear_spell(skill)) {
-                return std::make_tuple(0U, slot_type::empty, hand_mode::auto_hand, inherited);
+                return std::make_tuple(0U, slot_type::empty, false, hand_mode::auto_hand, inherited);
             } else {
-                return std::make_tuple(skill, type, hand, inherited);
+                return std::make_tuple(skill, type, consumed, hand, inherited);
             }
         } else {
             if (m_parent_bar != 0U && Bars::hotbars.contains(m_parent_bar) && (m_inherit_mode != inherit_mode::none)) {
@@ -206,7 +207,7 @@ namespace SpellHotbar
 
                 return Bars::hotbars.at(m_parent_bar).get_skill_in_bar_with_inheritance(index, original_mod ? original_mod.value() : mod, hide_clear_spell, true);
             } else {
-                return std::make_tuple(0U, slot_type::empty, hand_mode::auto_hand, false);
+                return std::make_tuple(0U, slot_type::empty, false, hand_mode::auto_hand, false);
             }
         }
     }
@@ -230,9 +231,13 @@ namespace SpellHotbar
         //float text_height = ImGui::CalcTextSize("M").y;
 
         for (int i = 0; i < Bars::barsize; i++) {
-            auto [skill_id, skill_type, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
-
+            auto [skill_id, skill_type, consumed, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
             ImVec2 p = ImGui::GetCursorScreenPos();
+
+            size_t count{ 0 };
+            if (consumed) {
+                count = GameData::count_item_in_inv(skill_id);
+            }
 
             if (!RenderManager::draw_skill(skill_id, icon_size)) {
                 RenderManager::draw_bg(icon_size);
@@ -240,6 +245,10 @@ namespace SpellHotbar
                 ImU32 col = IM_COL32_WHITE;
                 if (highlight_slot == i) {
                     col = IM_COL32(255, 255, static_cast<int>(127 + 128 * (1.0 - highlight_factor)), 255);
+                }
+
+                if (consumed && count == 0) {
+                    RenderManager::draw_cd_overlay(p, icon_size, 0.0f, col);
                 }
 
                 RenderManager::draw_slot_overlay(p, icon_size, col);
@@ -267,6 +276,13 @@ namespace SpellHotbar
                 ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
             }
 
+            if (consumed) {
+                //clamp text to 999
+                std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
+                ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
+                ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
+                ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255), text.c_str());
+            }
 
             std::string text = GameData::resolve_spellname(skill_id);
 
@@ -335,9 +351,14 @@ namespace SpellHotbar
         auto pc = RE::PlayerCharacter::GetSingleton();
 
         for (int i = 0; i < Bars::barsize; i++) {
-            auto [skill_id, skill_type, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+            auto [skill_id, skill_type, consumed, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
 
             ImVec2 p = ImGui::GetCursorScreenPos();
+
+            size_t count{ 0 };
+            if (consumed) {
+                count = GameData::count_item_in_inv(skill_id);
+            }
 
             int alpha_i = static_cast<int>(255 * alpha);
             if (!RenderManager::draw_skill(skill_id, icon_size, alpha)) {
@@ -364,10 +385,15 @@ namespace SpellHotbar
                     }
                 }
 
-                float cd_prog =
-                    determine_cd(skill_id, skill_type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
-                if (cd_prog > 0.0f) {
-                    RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255,255,255, alpha_i));
+                if (consumed && count == 0) {
+                    RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
+                }
+                else {
+                    float cd_prog =
+                        determine_cd(skill_id, skill_type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
+                    if (cd_prog > 0.0f) {
+                        RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
+                    }
                 }
                 RenderManager::draw_slot_overlay(p, icon_size, IM_COL32(255,255,255, alpha_i));
             }
@@ -389,6 +415,14 @@ namespace SpellHotbar
             //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
             ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
             RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+
+            if (consumed) {
+                //clamp text to 999
+                std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
+                ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
+                ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
+                ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());
+            }
 
             ImGui::SameLine();
         }
@@ -491,7 +525,7 @@ namespace SpellHotbar
 
     SlottedSkill::SlottedSkill() : SlottedSkill(0U){};
 
-    SlottedSkill::SlottedSkill(RE::FormID id) : formID(id), type(slot_type::empty), hand(hand_mode::auto_hand)
+    SlottedSkill::SlottedSkill(RE::FormID id) : formID(id), type(slot_type::empty), hand(hand_mode::auto_hand), consumed(false)
     { 
         if (formID > 0U)
         {
@@ -503,6 +537,10 @@ namespace SpellHotbar
                 RE::SpellItem* spell{nullptr};
                 if (form) {
                     switch (form->GetFormType()) {
+
+                        case RE::FormType::Scroll:
+                            consumed = true;
+                            //fallthrough, scrolls are also spells
                         case RE::FormType::Spell:
                             spell = form->As<RE::SpellItem>();
                             if (spell) {  // this should not be able to be null
@@ -558,6 +596,8 @@ namespace SpellHotbar
     { 
         type = slot_type::empty;
         formID = 0U;
+        hand = hand_mode::auto_hand;
+        consumed = false;
     }
 
     bool SubBar::is_empty()

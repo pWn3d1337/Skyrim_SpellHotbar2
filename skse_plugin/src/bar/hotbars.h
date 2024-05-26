@@ -2,9 +2,34 @@
 #include "hotbar.h"
 
 namespace SpellHotbar::Bars {
-    enum class bar_show_mode { always = 0, never, combat, drawn_weapon, combat_or_drawn, combat_and_drawn };
+    enum class bar_show_mode
+    { 
+        always = 0,
+        never,
+        combat,
+        drawn_weapon,
+        combat_or_drawn,
+        combat_and_drawn
+    };
 
-    enum text_show_mode : uint8_t { never = 0U, fade, always };
+    enum text_show_mode : uint8_t
+    { 
+        never = 0U,
+        fade,
+        always
+    };
+
+    enum class anchor_point : uint8_t {
+        BOTTOM = 0Ui8,
+        LEFT,
+        TOP,
+        RIGHT,
+        BOTTOM_LEFT,
+        TOP_LEFT,
+        BOTTOM_RIGHT,
+        TOP_RIGHT,
+        CENTER
+    };
 
     extern std::unordered_map<uint32_t, Hotbar> hotbars;
     extern bool disable_non_modifier_bar;
@@ -22,6 +47,8 @@ namespace SpellHotbar::Bars {
 
     extern bool use_default_bar_when_sheathed;
     extern bool disable_menu_rendering;
+
+    extern anchor_point bar_anchor_point;
 
     constexpr uint32_t MAIN_BAR = 'MAIN';
     constexpr uint32_t MAIN_BAR_SNEAK = MAIN_BAR + 1;
@@ -91,4 +118,5 @@ namespace SpellHotbar::Bars {
     bool load_bars_from_json(std::string path);
 
     void add_special_bar(uint32_t name, std::optional<uint32_t> parent = std::nullopt);
+
 }

@@ -40,3 +40,9 @@ int function getKeyBind(int slot) global native
 bool function isNonModBarDisabled() global native
 bool function toggleDisableNonModBar() global native
 function openSpellEditor() native global
+bool function loadConfig(String filenname, bool include_user_dir) native global
+bool function saveConfig(String filenname) native global
+string[] function getConfigPresets() native global
+string[] function getBarsPresets() native global
+int function getBarAnchorPoint() native global
+int function setBarAnchorPoint(int index) native global

@@ -19,8 +19,8 @@
         <!--<Import>F:\Skyrim Dev\Papyrus_Include\UIExtensions_1.2\scripts\source</Import>
         <Import>@ModsFolder\IWant Widgets NG\Scripts\Source</Import>
         <Import>@ModsFolder\iWant Widgets\Source\Scripts</Import>-->
-        <Import>@ModsFolder\powerofthrees Papyrus Extender\Source\scripts</Import>
-        <Import>@ModsFolder\PapyrusUtil SE - Modders Scripting Utility Functions\Scripts\Source</Import>
+        <!--Import>@ModsFolder\powerofthrees Papyrus Extender\Source\scripts</Import-->
+        <!--Import>@ModsFolder\PapyrusUtil SE - Modders Scripting Utility Functions\Scripts\Source</Import-->
         <Import>@ModsFolder\JContainers SE\scripts\source</Import>
         <!-- <Import>@ModsFolder\SkyUI SDK\Source\Scripts</Import> -->
         <!--Import>@ModsFolder\MCM SDK\Source\Scripts</Import-->

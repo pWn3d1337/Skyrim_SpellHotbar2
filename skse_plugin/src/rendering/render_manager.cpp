@@ -123,7 +123,6 @@ ImVec2 drag_window_pos = ImVec2(0,0);
 float drag_window_width = 0.0f;
 ImVec2 drag_window_start_pos = ImVec2(0, 0);
 float drag_window_start_width = 0;
-bar_anchor_point drag_anchor_point = bar_anchor_point::BOTTOM;
 
 float SpellHotbar::RenderManager::scale_to_resolution(float normalized_value)
 {
@@ -134,6 +133,25 @@ float SpellHotbar::RenderManager::scale_from_resolution(float scaled_value)
 {
     auto& io = ImGui::GetIO();
     return scaled_value / io.DisplaySize.y * 1080.0f;
+}
+
+bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
+{
+    auto ui = RE::UI::GetSingleton();
+    if (ui){
+        auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+        if (invMenu) {
+            //get current tab
+            RE::GFxValue selection;
+            invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedEntry.text");
+
+            if (selection.GetType() == RE::GFxValue::ValueType::kString) {
+                std::string tabtype = selection.GetString();
+                return tabtype == tab_scrolls || tabtype == tab_potions;
+            }
+        }
+    }
+    return false;
 }
 
 void update_highlight(float delta) {
@@ -255,7 +273,6 @@ void RenderManager::start_bar_dragging()
     drag_window_width = 0.0f;
     drag_window_start_pos = ImVec2(0, 0);
     drag_window_start_width = 0;
-    drag_anchor_point = bar_anchor_point::BOTTOM;
 }
 
 bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened(); }
@@ -715,52 +732,6 @@ void RenderManager::draw_bg(int size, float alpha)
     }
 }
 
-/*bool RenderManager::draw_skill(RE::FormID formID, int size, float alpha) {
-    constexpr float scale = 1.0f;
-    if (formID != 0) {
-    
-        if (GameData::is_clear_spell(formID) && default_icons.contains(GameData::DefaultIconType::UNBIND_SLOT)) {
-            auto& clear_img = default_icons.at(GameData::DefaultIconType::UNBIND_SLOT);
-            clear_img.draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
-            return true;
-        }
-        else if (GameData::is_toggle_dualcast_spell(formID) && default_icons.contains(GameData::DefaultIconType::DUAL_CAST) && default_icons.contains(GameData::DefaultIconType::SINGLE_CAST)) {
-            GameData::DefaultIconType icon{ GameData::DefaultIconType::SINGLE_CAST};
-            if (GameData::should_dual_cast()) {
-                icon = GameData::DefaultIconType::DUAL_CAST;
-            }
-            auto& cast_img = default_icons.at(icon);
-            cast_img.draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
-            return true;
-        }
-        else if (spell_icons.contains(formID)) {
-            auto& img = spell_icons.at(formID);
-            img.draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
-
-            return true;
-        } else {
-            // fallback icons
-            auto form = RE::TESForm::LookupByID(formID);
-            GameData::DefaultIconType icon{GameData::DefaultIconType::UNKNOWN};
-            if (form != nullptr) {
-                icon = GameData::get_fallback_icon_type(form);
-            }
-
-            if (default_icons.contains(icon)) {
-                auto& sub_image = default_icons.at(icon);
-                sub_image.draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
-                return true;
-            } else {
-                if (default_icons.contains(GameData::DefaultIconType::UNKNOWN)) {
-                    auto& unk_image = default_icons.at(GameData::DefaultIconType::UNKNOWN);
-                    unk_image.draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}*/
 bool RenderManager::draw_skill(RE::FormID formID, int size, float alpha) {
     constexpr float scale = 1.0f;
     SubTextureImage* img = get_tex_for_skill_internal(formID);
@@ -913,6 +884,55 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size()
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
 
+void adjust_window_pos_to_anchor(float screen_size_x, float screen_size_y, float window_width, float window_height, Bars::anchor_point anchor)
+{
+    switch (anchor)
+    {
+    case SpellHotbar::Bars::anchor_point::LEFT:
+        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::TOP:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
+                                       Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::RIGHT:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::BOTTOM_LEFT:
+        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
+                                       screen_size_y - window_height + Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::TOP_LEFT:
+        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
+                                       Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::BOTTOM_RIGHT:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
+                                       screen_size_y - window_height + Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::TOP_RIGHT:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
+                                       Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::CENTER:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        break;
+    case SpellHotbar::Bars::anchor_point::BOTTOM:
+    default:
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
+                                       screen_size_y        - window_height       + Bars::offset_y));
+        break;
+    }
+}
+
+inline
+int wrap_index(int a, int n) {
+    return ((a % n) + n) % n;
+}
+
 void draw_drag_menu() {
     static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
                                                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse;
@@ -922,14 +942,15 @@ void draw_drag_menu() {
 
     auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
     if (!drag_frame_initialized) {
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                        screen_size_y*1.0f - window_height + Bars::offset_y)); //- slot_h * 2.5f
+        adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point);
     }
     ImGui::SetNextWindowBgAlpha(0.65F);
 
     float alpha = 0.5f;
-    SpellHotbar::Hotbar dummy("Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing");
-    ImGui::Begin("Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing", &show_drag_frame, window_flag);
+
+    const std::string text = "Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing";
+    SpellHotbar::Hotbar dummy(text);
+    ImGui::Begin(text.c_str(), &show_drag_frame, window_flag);
 
     drag_window_pos = ImGui::GetWindowPos();
     drag_window_width = ImGui::GetWindowWidth();
@@ -949,7 +970,8 @@ void draw_drag_menu() {
             if (Bars::slot_spacing > 0) {
                 Bars::slot_spacing--;
             }
-        } else {
+        }
+        else {
             if (Bars::slot_scale > 0.1f) {
                 Bars::slot_scale -= scale_diff;
             }
@@ -959,7 +981,8 @@ void draw_drag_menu() {
             if (Bars::slot_spacing < 50) {
                 Bars::slot_spacing++;
             }
-        } else {
+        }
+        else {
             if (Bars::slot_scale < 10.0f) {
                 Bars::slot_scale += scale_diff;
             }
@@ -995,6 +1018,8 @@ void RenderManager::draw() {
     auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
     auto* favMenu = static_cast<RE::FavoritesMenu*>(ui->GetMenu(RE::FavoritesMenu::MENU_NAME).get());
 
+    bool validTabActive = current_inv_menu_tab_valid_for_hotbar();
+
     if (show_drag_frame) {
         // show frame to drag the bar
         draw_drag_menu();
@@ -1023,7 +1048,7 @@ void RenderManager::draw() {
         io.MouseDrawCursor = false;
         //io.WantCaptureMouse = false;
 
-        if (magMenu) {
+        if (magMenu || validTabActive) {
 
             if (!menu_open) {
                 // menu was open first time
@@ -1144,8 +1169,8 @@ void RenderManager::draw() {
 
                 auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
 
-                ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                               screen_size_y * 1.0f - window_height + Bars::offset_y)); //- slot_h * 2.5f 
+                adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point);
+
                 ImGui::SetNextWindowBgAlpha(0.65F);
 
                 ImGui::Begin("SpellHotbarHUD", nullptr, window_flag);
@@ -1165,32 +1190,6 @@ void RenderManager::draw() {
                         //If fading out, do not react to modifier changes visually
                         m = hud_fade_mod;
                     }
-
-                    /*std::string mod_text = "";
-
-                    //Modifier text
-                    switch (m)
-                    {
-                    case SpellHotbar::key_modifier::ctrl:
-                        mod_text = GameData::key_names[Input::mod_1.get_dx_scancode()].first;
-                        break;
-                    case SpellHotbar::key_modifier::shift:
-                        mod_text = GameData::key_names[Input::mod_2.get_dx_scancode()].first;
-                        break;
-                    case SpellHotbar::key_modifier::alt:
-                        mod_text = GameData::key_names[Input::mod_3.get_dx_scancode()].first;
-                        break;
-                    default:
-                        break;
-                    }
-                    std::string text;
-                    if (!mod_text.empty()) {
-                        text = mod_text + " - " + bar.get_name();
-                    }
-                    else {
-                        text = bar.get_name();
-                    }
-                    drawCenteredText(text, alpha* text_alpha);*/
 
                     drawCenteredText(bar.get_name(), alpha* text_alpha);
                     ImGui::PopFont();

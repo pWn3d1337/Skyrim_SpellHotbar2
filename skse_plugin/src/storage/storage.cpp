@@ -29,6 +29,9 @@ namespace SpellHotbar::Storage {
             uint8_t spacing = static_cast<uint8_t>(Bars::slot_spacing);
             a_intfc->WriteRecordData(&spacing, sizeof(uint8_t));
 
+            uint8_t anchor = static_cast<uint8_t>(Bars::bar_anchor_point);
+            a_intfc->WriteRecordData(&anchor, sizeof(uint8_t));
+
             uint8_t text_show = static_cast<uint8_t>(Bars::text_show_setting);
             a_intfc->WriteRecordData(&text_show, sizeof(uint8_t));
 
@@ -43,6 +46,7 @@ namespace SpellHotbar::Storage {
 
             a_intfc->WriteRecordData(&Bars::use_default_bar_when_sheathed, sizeof(bool));
             a_intfc->WriteRecordData(&Bars::disable_menu_rendering, sizeof(bool));
+            a_intfc->WriteRecordData(&Bars::disable_non_modifier_bar, sizeof(bool));
 
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
@@ -135,6 +139,15 @@ namespace SpellHotbar::Storage {
                     Bars::slot_spacing = static_cast<int>(spacing);
                 }
 
+                uint8_t anchor{0};
+                if (!a_intfc->ReadRecordData(&anchor, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar anchor point!");
+                    break;
+                }
+                else {
+                    Bars::bar_anchor_point = Bars::anchor_point(std::clamp(anchor, 0Ui8, static_cast<uint8_t>(Bars::anchor_point::CENTER)));
+                }
+
                 uint8_t text_show{0};
                 if (!a_intfc->ReadRecordData(&text_show, sizeof(uint8_t))) {
                     logger::error("Failed to read text_show_setting!");
@@ -174,6 +187,11 @@ namespace SpellHotbar::Storage {
 
                 if (!a_intfc->ReadRecordData(&Bars::disable_menu_rendering, sizeof(bool))) {
                     logger::error("Failed to read disable_menu_rendering!");
+                    break;
+                }
+
+                if (!a_intfc->ReadRecordData(&Bars::disable_non_modifier_bar, sizeof(bool))) {
+                    logger::error("Failed to read disable_non_modifier_bar!");
                     break;
                 }
 

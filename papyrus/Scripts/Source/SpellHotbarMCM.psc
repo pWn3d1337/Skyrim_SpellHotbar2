@@ -1,6 +1,6 @@
 Scriptname SpellHotbarMCM extends SKI_ConfigBase
   
-import PO3_SKSEFunctions
+;import PO3_SKSEFunctions
 
 SpellHotbarInitQuestScript Property Main Auto
 
@@ -12,6 +12,7 @@ string[] known_bar_presets
 string[] bar_show_options
 string[] bar_show_options_transformed
 string[] text_show_options
+string[] anchor_points
 
 string presets_root = "Data/SKSE/Plugins/SpellHotbar/presets/"
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
@@ -56,6 +57,17 @@ Event OnConfigInit()
 	text_show_options[0] = "Never"
 	text_show_options[1] = "Fade"
 	text_show_options[2] = "Always"
+
+	anchor_points = new String[9]
+	anchor_points[0] = "Bottom"
+	anchor_points[1] = "Left"
+	anchor_points[2] = "Top"
+	anchor_points[3] = "Right"
+	anchor_points[4] = "Bottom Left"
+	anchor_points[5] = "Top Left"
+	anchor_points[6] = "Bottom Right"
+	anchor_points[7] = "Top Right"
+	anchor_points[8] = "Center"
 EndEvent
 
 ; reinit config on update
@@ -117,6 +129,8 @@ Event OnPageReset(string page)
         AddSliderOptionST("BarOffsetX", "Offset X", SpellHotbar.getOffsetX(false))
 		AddSliderOptionST("SlotSpacing", "Slot Spacing", SpellHotbar.getSlotSpacing())
         AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))
+
+		AddMenuOptionST("BarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getBarAnchorPoint()])
 
     ElseIf (page == "Bars")
 
@@ -264,25 +278,11 @@ State ClearBarsState
 EndState
 
 Function checkPresets()
-	string[] cancel = new string[1]
-	cancel[0] = "<cancel>"
-	string[] _presets = MiscUtil.FilesInFolder(presets_root, ".json")
-	string[] _user_presets = MiscUtil.FilesInFolder(JContainers.userDirectory() + user_presets_path, ".json")
-	; need to add the cancel option at index 0
-	string[] presets = PapyrusUtil.MergeStringArray(cancel, _presets)
-	; merge default presets + user presets
-	known_presets = PapyrusUtil.MergeStringArray(presets, _user_presets)
+	known_presets = SpellHotbar.getConfigPresets()
 EndFunction
 
 Function checkBarPresets()
-	string[] cancel = new string[1]
-	cancel[0] = "<cancel>"
-	string[] _presets = MiscUtil.FilesInFolder(bars_root, ".json")
-	string[] _user_presets = MiscUtil.FilesInFolder(JContainers.userDirectory() + user_bars_path, ".json")
-	; need to add the cancel option at index 0
-	string[] presets = PapyrusUtil.MergeStringArray(cancel, _presets)
-	; merge default presets + user presets
-	known_bar_presets = PapyrusUtil.MergeStringArray(presets, _user_presets)
+	known_bar_presets = SpellHotbar.getBarsPresets()
 EndFunction
 
 State SavePresetState
@@ -291,9 +291,10 @@ State SavePresetState
 	EndEvent
 	Event OnInputAcceptST(string name)
 		if name != ""
-			if ShowMessage("Save current settings as '" + name +".json'?", true, "$Yes", "$No")
-				saveSettingsAsPreset(name)
-				SetInputOptionValueST(name)
+			if ShowMessage("Save current settings as '" + name +"'?", true, "$Yes", "$No")
+				if saveSettingsAsPreset(name)
+					SetInputOptionValueST(name)
+				EndIf
 			Endif
 		EndIf
 	EndEvent
@@ -301,7 +302,7 @@ State SavePresetState
         SetInputOptionValueST("")
     EndEvent
     Event OnHighlightST()
-        SetInfoText(".json is added automatically, only enter preset name")
+        SetInfoText("Save current settings as .json preset")
     EndEvent
 EndState
 
@@ -316,7 +317,7 @@ State LoadPresetState
 		if index > 0
 			string preset = known_presets[index]
 			if ShowMessage("Load settings from preset '" + preset +"'?", true, "$Yes", "$No")
-				if (loadSettingsFromPreset(preset, True))
+				if (loadSettingsFromPreset(preset, True, True))
 					SetMenuOptionValueST(preset)
 				EndIf
 			EndIf
@@ -380,242 +381,21 @@ State LoadBarsState
 	EndEvent
 EndState
 
-bool Function loadSettingsFromPreset(string preset_name, bool show_errors)
-	int data = JValue.readFromFile(JContainers.userDirectory() + user_presets_path + preset_name)
-	if data == 0
-		data = JValue.readFromFile(presets_root + preset_name)
+bool Function loadSettingsFromPreset(string preset_name, bool show_errors, bool include_user_dir)
+	bool success = SpellHotbar.loadConfig(preset_name, include_user_dir)
+	If (!success && show_errors )
+		ShowMessage("There has been a problem while loading the file, no settings changed", false)
 	EndIf
-	if data > 0
-		;Not used yet
-		;int saved_version = JMap.getInt(data, "version", 0)
 
-		int i = 0
-		While (i < 12)
-			int keyCode = JMap.getInt(data, "keybind." + i, -1)
-			SpellHotbar.setKeyBind(i, keyCode)
-			i += 1
-		EndWhile
-
-		SpellHotbar.setKeyBind(12, JMap.getInt(data, "keybind.next", -1))
-		SpellHotbar.setKeyBind(13, JMap.getInt(data, "keybind.prev", -1))
-
-		SpellHotbar.setKeyBind(14, JMap.getInt(data, "keybind.modifier.1", -1))
-		SpellHotbar.setKeyBind(15, JMap.getInt(data, "keybind.modifier.2", -1))
-		SpellHotbar.setKeyBind(16, JMap.getInt(data, "keybind.modifier.3", -1))
-
-		SpellHotbar.setKeyBind(17, JMap.getInt(data, "keybind.modifier.dual_cast", -1))
-		SpellHotbar.setKeyBind(18, JMap.getInt(data, "keybind.modifier.show_bar", -1))
-
-		bool disable_non_modifier_bar = JMap.getInt(data, "settings.disable_non_mod_bar") > 0
-		if (disable_non_modifier_bar != SpellHotbar.isNonModBarDisabled())
-			SpellHotbar.toggleDisableNonModBar();
-		EndIf
-
-		SpellHotbar.setNumberOfSlots(JMap.getInt(data, "settings.number_of_slots", 12))
-
-		SpellHotbar.setSlotScale(JMap.getFlt(data, "settings.slot_scale", 1.0))
-		SpellHotbar.setOffsetX(JMap.getInt(data, "settings.offset_x") as float, true)
-		SpellHotbar.setOffsetY(JMap.getInt(data, "settings.offset_y") as float, true)
-		SpellHotbar.setSlotSpacing(JMap.getInt(data, "settings.slot_spacing", 8) as float)
-
-		SpellHotbar.setHudBarShowMode(JMap.getInt(data, "settings.hud_show_mode", 4))
-		SpellHotbar.setHudBarShowModeVampireLord(JMap.getInt(data, "settings.hud_show_mode_vampire_lord",2))
-		SpellHotbar.setHudBarShowModeWerewolf(JMap.getInt(data, "settings.hud_show_mode_werewolf",1))
-
-		bool defaultBarWhenSheathed = JMap.getInt(data, "settings.use_default_bar_when_sheathed") > 0
-		if (defaultBarWhenSheathed != SpellHotbar.isDefaultBarWhenSheathed())
-			SpellHotbar.toggleDefaultBarWhenSheathed()
-		EndIf
-
-		bool disable_MenuRendering = JMap.getInt(data, "settings.disable_menu_rendering") > 0
-		if (disable_MenuRendering != SpellHotbar.isDisableMenuRendering())
-			SpellHotbar.toggleDisableMenuRendering()
-		EndIf
-
-		bool bar_enabled = false
-
-		bar_enabled = JMap.getInt(data, "bar.1296124239.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1296124239))
-			SpellHotbar.toggleBarEnabled(1296124239)
-		EndIf
-		SpellHotbar.setInheritMode(1296124239, JMap.getInt(data, "bar.1296124239.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1296387141.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1296387141))
-			SpellHotbar.toggleBarEnabled(1296387141)
-		EndIf
-		SpellHotbar.setInheritMode(1296387141, JMap.getInt(data, "bar.1296387141.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1296387142.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1296387142))
-			SpellHotbar.toggleBarEnabled(1296387142)
-		EndIf
-		SpellHotbar.setInheritMode(1296387142, JMap.getInt(data, "bar.1296387142.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826823492.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826823492))
-			SpellHotbar.toggleBarEnabled(826823492)
-		EndIf
-		SpellHotbar.setInheritMode(826823492, JMap.getInt(data, "bar.826823492.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826823493.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826823493))
-			SpellHotbar.toggleBarEnabled(826823493)
-		EndIf
-		SpellHotbar.setInheritMode(826823493, JMap.getInt(data, "bar.826823493.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826823504.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826823504))
-			SpellHotbar.toggleBarEnabled(826823504)
-		EndIf
-		SpellHotbar.setInheritMode(826823504, JMap.getInt(data, "bar.826823504.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826823505.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826823505))
-			SpellHotbar.toggleBarEnabled(826823505)
-		EndIf
-		SpellHotbar.setInheritMode(826823505, JMap.getInt(data, "bar.826823505.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826819671.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826819671))
-			SpellHotbar.toggleBarEnabled(826819671)
-		EndIf
-		SpellHotbar.setInheritMode(826819671, JMap.getInt(data, "bar.826819671.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.826819672.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(826819672))
-			SpellHotbar.toggleBarEnabled(826819672)
-		EndIf
-		SpellHotbar.setInheritMode(826819672, JMap.getInt(data, "bar.826819672.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.843599428.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(843599428))
-			SpellHotbar.toggleBarEnabled(843599428)
-		EndIf
-		SpellHotbar.setInheritMode(843599428, JMap.getInt(data, "bar.843599428.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.843599429.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(843599429))
-			SpellHotbar.toggleBarEnabled(843599429)
-		EndIf
-		SpellHotbar.setInheritMode(843599429, JMap.getInt(data, "bar.843599429.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1380861764.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1380861764))
-			SpellHotbar.toggleBarEnabled(1380861764)
-		EndIf
-		SpellHotbar.setInheritMode(1380861764, JMap.getInt(data, "bar.1380861764.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1380861765.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1380861765))
-			SpellHotbar.toggleBarEnabled(1380861765)
-		EndIf
-		SpellHotbar.setInheritMode(1380861765, JMap.getInt(data, "bar.1380861765.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1296123715.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1296123715))
-			SpellHotbar.toggleBarEnabled(1296123715)
-		EndIf
-		SpellHotbar.setInheritMode(1296123715, JMap.getInt(data, "bar.1296123715.inherit"))
-
-		bar_enabled = JMap.getInt(data, "bar.1296123716.enabled",1) > 0
-		if (bar_enabled != SpellHotbar.getBarEnabled(1296123716))
-			SpellHotbar.toggleBarEnabled(1296123716)
-		EndIf
-		SpellHotbar.setInheritMode(1296123716, JMap.getInt(data, "bar.1296123716.inherit"))
-
-		return True
-	Else
-		If (show_errors)
-			;Debug.Notification("Could not load json file")
-			ShowMessage("There has been a problem while loading the file, no settings changed", false)
-		EndIf
-		return False
-	EndIf
+	return success
 EndFunction
 
-Function saveSettingsAsPreset(string preset_name)
-	int data = JMap.object()
-	JMap.setInt(data, "version", presets_json_format)
-
-	int i = 0
-	While (i < 12)
-		JMap.setInt(data, "keybind." + i, SpellHotbar.getKeyBind(i))
-		i += 1
-	EndWhile
-	JMap.setInt(data, "keybind.next", SpellHotbar.getKeyBind(12))
-	JMap.setInt(data, "keybind.prev", SpellHotbar.getKeyBind(13))
-
-	JMap.setInt(data, "keybind.modifier.1", SpellHotbar.getKeyBind(14))
-	JMap.setInt(data, "keybind.modifier.2", SpellHotbar.getKeyBind(15))
-	JMap.setInt(data, "keybind.modifier.3", SpellHotbar.getKeyBind(16))
-	JMap.setInt(data, "keybind.modifier.dual_cast", SpellHotbar.getKeyBind(17))
-	JMap.setInt(data, "keybind.modifier.show_bar", SpellHotbar.getKeyBind(18))
-	
-	JMap.setInt(data, "settings.disable_non_mod_bar", SpellHotbar.isNonModBarDisabled() as int)
-
-	JMap.setInt(data, "settings.number_of_slots", 	SpellHotbar.getNumberOfSlots())
-
-	JMap.setFlt(data, "settings.slot_scale", SpellHotbar.getSlotScale())
-	JMap.setInt(data, "settings.offset_x", SpellHotbar.getOffsetX(true) as int)
-	JMap.setInt(data, "settings.offset_y", SpellHotbar.getOffsetY(true) as int)
-	JMap.setInt(data, "settings.slot_spacing", SpellHotbar.getSlotSpacing() as int)
-
-	JMap.setInt(data, "settings.hud_show_mode", SpellHotbar.getHudBarShowMode())
-	JMap.setInt(data, "settings.hud_show_mode_vampire_lord", SpellHotbar.getHudBarShowModeVampireLord())
-	JMap.setInt(data, "settings.hud_show_mode_werewolf", SpellHotbar.getHudBarShowModeWerewolf())
-
-	JMap.setInt(data, "settings.use_default_bar_when_sheathed", SpellHotbar.isDefaultBarWhenSheathed() as int)
-	JMap.setInt(data, "settings.disable_menu_rendering", SpellHotbar.isDisableMenuRendering() as int)
-
-	JMap.setInt(data, "bar.1296124239.enabled", SpellHotbar.getBarEnabled(1296124239) as int)
-	JMap.setInt(data, "bar.1296124239.inherit", SpellHotbar.getInheritMode(1296124239))
-		
-	JMap.setInt(data, "bar.1296387141.enabled", SpellHotbar.getBarEnabled(1296387141) as int)
-	JMap.setInt(data, "bar.1296387141.inherit", SpellHotbar.getInheritMode(1296387141))
-	
-	JMap.setInt(data, "bar.1296387142.enabled", SpellHotbar.getBarEnabled(1296387142) as int)
-	JMap.setInt(data, "bar.1296387142.inherit", SpellHotbar.getInheritMode(1296387142))
-	
-	JMap.setInt(data, "bar.826823492.enabled", SpellHotbar.getBarEnabled(826823492) as int)
-	JMap.setInt(data, "bar.826823492.inherit", SpellHotbar.getInheritMode(826823492))
-	
-	JMap.setInt(data, "bar.826823493.enabled", SpellHotbar.getBarEnabled(826823493) as int)
-	JMap.setInt(data, "bar.826823493.inherit", SpellHotbar.getInheritMode(826823493))
-	
-	JMap.setInt(data, "bar.826823504.enabled", SpellHotbar.getBarEnabled(826823504) as int)
-	JMap.setInt(data, "bar.826823504.inherit", SpellHotbar.getInheritMode(826823504))
-	
-	JMap.setInt(data, "bar.826823505.enabled", SpellHotbar.getBarEnabled(826823505) as int)
-	JMap.setInt(data, "bar.826823505.inherit", SpellHotbar.getInheritMode(826823505))
-	
-	JMap.setInt(data, "bar.826819671.enabled", SpellHotbar.getBarEnabled(826819671) as int)
-	JMap.setInt(data, "bar.826819671.inherit", SpellHotbar.getInheritMode(826819671))
-	
-	JMap.setInt(data, "bar.826819672.enabled", SpellHotbar.getBarEnabled(826819672) as int)
-	JMap.setInt(data, "bar.826819672.inherit", SpellHotbar.getInheritMode(826819672))
-	
-	JMap.setInt(data, "bar.843599428.enabled", SpellHotbar.getBarEnabled(843599428) as int)
-	JMap.setInt(data, "bar.843599428.inherit", SpellHotbar.getInheritMode(843599428))
-	
-	JMap.setInt(data, "bar.843599429.enabled", SpellHotbar.getBarEnabled(843599429) as int)
-	JMap.setInt(data, "bar.843599429.inherit", SpellHotbar.getInheritMode(843599429))
-	
-	JMap.setInt(data, "bar.1380861764.enabled", SpellHotbar.getBarEnabled(1380861764) as int)
-	JMap.setInt(data, "bar.1380861764.inherit", SpellHotbar.getInheritMode(1380861764))
-	
-	JMap.setInt(data, "bar.1380861765.enabled", SpellHotbar.getBarEnabled(1380861765) as int)
-	JMap.setInt(data, "bar.1380861765.inherit", SpellHotbar.getInheritMode(1380861765))
-	
-	JMap.setInt(data, "bar.1296123715.enabled", SpellHotbar.getBarEnabled(1296123715) as int)
-	JMap.setInt(data, "bar.1296123715.inherit", SpellHotbar.getInheritMode(1296123715))
-	
-	JMap.setInt(data, "bar.1296123716.enabled", SpellHotbar.getBarEnabled(1296123716) as int)
-	JMap.setInt(data, "bar.1296123716.inherit", SpellHotbar.getInheritMode(1296123716))
-
-	;presets_root + preset_name + ".json"
-	string filepath = JContainers.userDirectory() + user_presets_path + preset_name + ".json"
-	JValue.writeToFile(data, filepath)
+bool Function saveSettingsAsPreset(string preset_name)
+	bool success = SpellHotbar.saveConfig(preset_name)
+	If (!success)
+		ShowMessage("There has been a problem while saving the file", false)
+	EndIf
+	return success
 EndFunction
 
 State SlotsPerBar
@@ -837,6 +617,24 @@ Event OnOptionHighlight(int option)
         i += 1
     EndWhile
 EndEvent
+
+State BarAnchorPoint
+	Event OnMenuOpenST()
+		SetMenuDialogOptions(anchor_points)
+		SetMenuDialogStartIndex(SpellHotbar.getBarAnchorPoint())
+		SetMenuDialogDefaultIndex(0)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		SetMenuOptionValueST(anchor_points[SpellHotbar.setBarAnchorPoint(index)])
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("Set anchor point for bar position offset.")
+	EndEvent
+	
+	Event OnDefaultST()
+		SetMenuOptionValueST(anchor_points[SpellHotbar.setBarAnchorPoint(0)])
+	EndEvent
+EndState
 
 ; Bar toggle states
 ; Auto generated from pythons script

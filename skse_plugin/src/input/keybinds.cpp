@@ -29,6 +29,7 @@ namespace SpellHotbar::Input {
 	KeyModifier mod_show_bar(RE::INPUT_DEVICE::kNone, 0, 0);
 
 	KeyModifier mod_alt(RE::INPUT_DEVICE::kKeyboard, 56, 184);  //fixed modifier, used for gui
+	//KeyModifier mod_shift(RE::INPUT_DEVICE::kKeyboard, 42, 54);  //fixed modifier, used for gui
 
 	inline void _check_unbind(KeyBind & bind, int code) {
 		if (bind.get_dx_scancode() == code) {

@@ -41,6 +41,7 @@ struct SlottedSkill
     RE::FormID formID;
     slot_type type;
     hand_mode hand;
+    bool consumed;
 
     SlottedSkill(RE::FormID id);
     SlottedSkill();
@@ -100,8 +101,8 @@ public:
 
     int set_inherit_mode(int value);
 
-    /* return skillid and if it was inherited */
-    std::tuple<RE::FormID, slot_type, hand_mode, bool> get_skill_in_bar_with_inheritance(
+    /* return skillid, slot_type, consumed?, hand_mode, inherited? */
+    std::tuple<RE::FormID, slot_type, bool, hand_mode, bool> get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited = false, std::optional<key_modifier> original_mod = std::nullopt);
 
     void to_json(rapidjson::Document& doc, uint32_t key, rapidjson::Value& bars);
