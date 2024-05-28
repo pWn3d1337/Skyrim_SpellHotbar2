@@ -637,65 +637,104 @@ namespace SpellHotbar::casts::CastingController {
 				if (!is_shouting && (form->GetFormType() == RE::FormType::Spell || form->GetFormType() == RE::FormType::Scroll)) {
 					RE::SpellItem* spell = form->As<RE::SpellItem>();
 
-					float manacost{ 0.0f };
-					if (form->GetFormType() == RE::FormType::Spell) {
-						manacost = spell->CalculateMagickaCost(pc);
+					//check if spell is still known/enough scrolls in inv
+					bool spell_allowed{true};
+					if (form->GetFormType() == RE::FormType::Spell && !pc->HasSpell(spell)) {
+						spell_allowed = false;
+						RE::DebugNotification("Spell is no longer known!");
 					}
+					else if (form->GetFormType() == RE::FormType::Scroll && GameData::count_item_in_inv(form->GetFormID()) <= 0) {
+						spell_allowed = false;
+						RE::DebugNotification("No more scrolls left!");
+					}
+					
+					if (spell_allowed) {
 
-					bool dual_cast{ false };
-					if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast() || hand == dual_hand)) && GameData::player_can_dualcast_spell(spell)) {
-
-						RE::GameSettingCollection* game_settings = RE::GameSettingCollection::GetSingleton();
-						if (game_settings) {
-							auto setting = game_settings->GetSetting("fMagicDualCastingCostMult");
-							if (setting) {
-								manacost *= setting->GetFloat();
-								dual_cast = true;
-							}
+						float manacost{ 0.0f };
+						if (form->GetFormType() == RE::FormType::Spell) {
+							manacost = spell->CalculateMagickaCost(pc);
 						}
-					}
-					else {
-						if (!spell->IsTwoHanded()  && hand == dual_hand && !dual_cast) {
-							hand = auto_hand;
-						}
-					}
 
-					if (manacost <= pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)) {
-						//set casttime
+						bool dual_cast{ false };
+						if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast() || hand == dual_hand)) && GameData::player_can_dualcast_spell(spell)) {
 
-						auto spell_data = GameData::get_spell_data(spell);
-
-						float casttime = spell_data.casttime;
-
-						CastingInstanceSpellData cast_info{ spell, casttime, manacost, hand, dual_cast, spell_data.animation, spell_data.animation2, spell_data.casteffectid };
-
-						if (spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
-							if (spell->IsTwoHanded()) {
-								return start_ritual_conc_cast(cast_info, keybind, slot);
-							}
-							else
-							{
-								return start_conc_cast(cast_info, keybind, slot);
+							RE::GameSettingCollection* game_settings = RE::GameSettingCollection::GetSingleton();
+							if (game_settings) {
+								auto setting = game_settings->GetSetting("fMagicDualCastingCostMult");
+								if (setting) {
+									manacost *= setting->GetFloat();
+									dual_cast = true;
+								}
 							}
 						}
 						else {
-							if (spell->IsTwoHanded() || dual_cast) {
-								return start_ritual_cast(cast_info);
+							if (!spell->IsTwoHanded() && hand == dual_hand && !dual_cast) {
+								hand = auto_hand;
 							}
-							else
-							{
-								return start_cast(cast_info);
+						}
+
+						if (manacost <= pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)) {
+							//set casttime
+
+							auto spell_data = GameData::get_spell_data(spell);
+
+							float casttime = spell_data.casttime;
+
+							CastingInstanceSpellData cast_info{ spell, casttime, manacost, hand, dual_cast, spell_data.animation, spell_data.animation2, spell_data.casteffectid };
+
+							if (spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+								if (spell->IsTwoHanded()) {
+									return start_ritual_conc_cast(cast_info, keybind, slot);
+								}
+								else
+								{
+									return start_conc_cast(cast_info, keybind, slot);
+								}
 							}
+							else {
+								if (spell->IsTwoHanded() || dual_cast) {
+									return start_ritual_cast(cast_info);
+								}
+								else
+								{
+									return start_cast(cast_info);
+								}
+							}
+						}
+						else {
+							RE::HUDMenu::FlashMeter(RE::ActorValue::kMagicka);
+							RE::PlaySound(Input::sound_MagFail);
 						}
 					}
 					else {
-						RE::HUDMenu::FlashMeter(RE::ActorValue::kMagicka);
 						RE::PlaySound(Input::sound_MagFail);
 					}
+				}
+				else if (!is_shouting && (form->GetFormType() == RE::FormType::AlchemyItem)) {
+					return start_potion_use(form);
 				}
 			}
 		}
 
+		return false;
+	}
+
+	bool start_potion_use(RE::TESForm* alch_item)
+	{
+		if (!current_cast) {
+			auto pc = RE::PlayerCharacter::GetSingleton();
+			if (pc) {
+				if (GameData::count_item_in_inv(alch_item->GetFormID()) > 0) {
+					current_cast = std::make_unique<CastingInstancePotionUse>(alch_item);
+					return true;
+				}
+				else
+				{
+					RE::DebugNotification("No more potions left!");
+					return false;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -928,6 +967,21 @@ namespace SpellHotbar::casts::CastingController {
 	CastingInstanceSpellData::CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animation, int animation2, uint16_t casteffect) :
 		m_spell(spell), m_casttime(casttime), m_manacost(manacost), m_hand(hand), m_dual_cast(dual_cast), m_animation(animation), m_animation2(animation2), m_casteffect(casteffect)
 	{
+	}
+
+	CastingInstancePotionUse::CastingInstancePotionUse(RE::TESForm* form): BaseCastingInstance(form, 0.0f)
+	{
+		m_gcd = 1.0f;
+	}
+
+	bool CastingInstancePotionUse::update(RE::PlayerCharacter* pc, float delta)
+	{
+		if (!casted()) {
+			RE::ActorEquipManager::GetSingleton()->EquipObject(pc, m_form->As<RE::AlchemyItem>());
+			set_casted();
+		}
+		advance_time(delta);
+		return is_gcd_expired();
 	}
 
 }

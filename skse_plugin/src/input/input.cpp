@@ -236,6 +236,10 @@ namespace SpellHotbar::Input {
                                                             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
                                                         }
                                                     }
+                                                    else if (slottype == slot_type::potion) {
+                                                        bool success = casts::CastingController::try_start_cast(form, bind, i, hand);
+                                                        SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
+                                                    }
                                                 }
                                                 else {
                                                     //slot not bound
@@ -519,7 +523,7 @@ namespace SpellHotbar::Input {
             }
             if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
                 RE::FormID formID = static_cast<std::uint32_t>(selection.GetNumber());
-                logger::info("Selection: {:08x}", formID);
+                //logger::info("Selection: {:08x}", formID);
                 return RE::TESForm::LookupByID(formID);
             }
         }

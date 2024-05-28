@@ -576,6 +576,11 @@ namespace SpellHotbar
                             type = slot_type::shout;
                             hand = hand_mode::voice;
                             break;
+                        case RE::FormType::AlchemyItem:
+                            type = slot_type::potion;
+                            hand = hand_mode::voice;
+                            consumed = true;
+                            break;
                         default:
                             type = slot_type::unknown;
                             break;

@@ -181,6 +181,15 @@ namespace SpellHotbar::casts::CastingController {
 	protected:
 	};
 
+	class CastingInstancePotionUse : public BaseCastingInstance {
+	public:
+		CastingInstancePotionUse(RE::TESForm* form);
+		virtual ~CastingInstancePotionUse() = default;
+
+		virtual bool update(RE::PlayerCharacter* pc, float delta) override;
+	protected:
+	};
+
 	/**
 	* Wraps the shared information needed for all spell cast types
 	*/
@@ -206,6 +215,8 @@ namespace SpellHotbar::casts::CastingController {
 	bool try_start_cast(RE::TESForm* form, const Input::KeyBind& keybind, size_t slot, hand_mode hand);
 	
 	bool try_cast_power(RE::TESForm* form, const Input::KeyBind& keybind, size_t slot, hand_mode hand);
+
+	bool start_potion_use(RE::TESForm* alch_item);
 
 	bool is_currently_using_power();
 

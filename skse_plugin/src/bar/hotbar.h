@@ -16,7 +16,8 @@ enum class slot_type: uint8_t {
     spell,
     power,
     lesser_power,
-    shout
+    shout,
+    potion
 };
 
 enum inherit_mode
