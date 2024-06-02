@@ -1,35 +1,36 @@
 Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Fire Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Frost Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Shock Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Calming Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Frenzy Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Paralysis Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Hallowed Oil		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Amplifiy Lethality		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Dimension Door		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Arcane Thesis		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Hawkeye		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Lion’s Arrow		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Make Way for your Lord		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Merciful King		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Conjure Altar		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Spellscribe		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Charge Tap		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Rallying Standard		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Night Eye		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Bait		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Trained Rabbit		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-You Saw Nothing		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Mutiny		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Apotheosis		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Dwarven Autocannon		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Tripwire		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Spot Detection		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Disengage		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Smokescreen		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Laughing Ghost		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Perform		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Release Companion		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Horn of Sovngarde		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
-Merciless Storm		Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Fire Oil	0x058D0F	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Frost Oil	0x058D11	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Shock Oil	0x058D13	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Calming Oil	0x058D22	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Frenzy Oil	0x058D24	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Paralysis Oil	0x058D28	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Hallowed Oil	0x058D26	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Amplify Lethality	0x03E17C	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Dimension Door	0x02BAD4	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Arcane Thesis	0x09E33D	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Hawkeye	0x0D23EF	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Lion’s Arrow	0x117FFF	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Make Way for your Lord	0x0FDAD9	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Merciful King	0x0CC2AF	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Conjure Altar	0x0749C0	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Spellscribe	0x09E331	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Charge Tap	0x03ECBB	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Rallying Standard	0x06A084	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Night Eye	0x0BC4F9	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Bait	0x03173C	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Trained Rabbit	0x032D19	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+You Saw Nothing	0x03486C	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Mutiny	0x0342F8	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Apotheosis	0x184E58	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Dwarven Autocannon	0x056C83	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Tripwire	0x0379A4	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Spot Detection	0x0363B2	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Disengage	0x036EA1	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Smokescreen	0x036EB3	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Laughing Ghost	0x0BFB18	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Perform	0x02077E	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Perform Lesser Power	0x0232F3	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Release Companion	0x023878	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Horn of Sovngarde	0x021260	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1
+Merciless Storm	0x02388C	Ordinator - Perks of Skyrim.esp		-1	-1	-1	-1	-1

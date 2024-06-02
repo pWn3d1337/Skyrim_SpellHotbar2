@@ -11,12 +11,16 @@ def copy_and_clean_image(path_in: Path, path_out: Path):
     cv2.imwrite(str(path_out), img_in)
 
 
-def cleanse_images(input_dir: str, output_dir: str, subdirs: bool = True):
+def cleanse_images(input_dir: str, output_dir: str, subdirs: bool = True, only_new: bool = False):
     path = Path(input_dir)
     out = Path(output_dir)
     for p in path.glob("*/*.png" if subdirs else "*.png"):
         rel_path = p.relative_to(path)
-        copy_and_clean_image(p, out / rel_path)
+        out_path = out / rel_path
+        if only_new and out_path.exists():
+            pass
+        else:
+            copy_and_clean_image(p, out_path)
 
 
 if __name__ == "__main__":
@@ -24,6 +28,8 @@ if __name__ == "__main__":
     output_dir_root = r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts"
 
     #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons")
+    #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons", only_new=True)
+
     #cleanse_images(f"{input_dir_root}/modded_spell_icons", f"{output_dir_root}/modded_spell_icons")
     #cleanse_images(f"{input_dir_root}/icons", f"{output_dir_root}/icons", subdirs=False)
     #cleanse_images(f"{input_dir_root}/icons", f"{output_dir_root}/icons", subdirs=True)
@@ -60,3 +66,5 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/extra_icons", f"{output_dir_root}/extra_icons", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/andromeda", f"{output_dir_root}/modded_spell_icons/andromeda", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/ordinator", f"{output_dir_root}/modded_spell_icons/ordinator", subdirs=False)

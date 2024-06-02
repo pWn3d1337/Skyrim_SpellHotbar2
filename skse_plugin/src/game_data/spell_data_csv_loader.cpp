@@ -3,6 +3,7 @@
 #include "../game_data/game_data.h"
 #include <regex>
 #include "csv_loader.h"
+#include "../rendering/texture_csv_loader.h"
 
 namespace SpellHotbar::SpellDataCSVLoader {
 
@@ -69,6 +70,8 @@ namespace SpellHotbar::SpellDataCSVLoader {
             logger::warn("Could not parse '{}', skipping", path);
         } else {
         
+            bool has_symbol = csv::has_column(doc.GetColumnNames(), "Symbol");
+
             for (size_t i = 0; i < doc.GetRowCount(); i++) {
                 try {
 
@@ -95,6 +98,18 @@ namespace SpellHotbar::SpellDataCSVLoader {
 
                         std::string cast_effect = doc.GetCell<std::string>("Casteffect", i);
                         data.casteffectid = static_cast<uint16_t>(GameData::get_cast_effect_id(cast_effect));
+
+                        if (has_symbol) {
+                            std::string symbol = doc.GetCell<std::string>("Symbol", i);
+                            if (!symbol.empty()) {
+                                if (TextureCSVLoader::default_icon_names.contains(symbol)) {
+                                    data.overlay_icon = TextureCSVLoader::default_icon_names.at(symbol);
+                                }
+                                else {
+                                    logger::warn("Unknown Overlay Symbol: '{}'", symbol);
+                                }
+                            }
+                        }
 
                         // skip saving default spell data
                         if (!data.is_empty()) {

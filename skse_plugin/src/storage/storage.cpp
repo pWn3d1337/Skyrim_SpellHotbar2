@@ -48,6 +48,8 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&Bars::disable_menu_rendering, sizeof(bool));
             a_intfc->WriteRecordData(&Bars::disable_non_modifier_bar, sizeof(bool));
 
+            a_intfc->WriteRecordData(&GameData::potion_gcd, sizeof(float));
+
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
             a_intfc->WriteRecordData(&num_keybinds, sizeof(uint8_t));
@@ -192,6 +194,11 @@ namespace SpellHotbar::Storage {
 
                 if (!a_intfc->ReadRecordData(&Bars::disable_non_modifier_bar, sizeof(bool))) {
                     logger::error("Failed to read disable_non_modifier_bar!");
+                    break;
+                }
+
+                if (!a_intfc->ReadRecordData(&GameData::potion_gcd, sizeof(float))) {
+                    logger::error("Failed to read potion gcd!");
                     break;
                 }
 

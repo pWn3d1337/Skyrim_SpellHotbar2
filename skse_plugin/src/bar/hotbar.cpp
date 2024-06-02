@@ -181,21 +181,41 @@ namespace SpellHotbar
         }
     }
 
-    std::tuple<RE::FormID, slot_type, bool, hand_mode, bool> Hotbar::get_skill_in_bar_with_inheritance(
+    ImU32 Hotbar::calculate_potion_color(RE::Effect* effect)
+    {
+        ImU32 ret = IM_COL32_WHITE;
+        auto bEffect = effect->baseEffect;
+        if (bEffect) {
+            RE::EffectArchetypes::ArchetypeID arch = bEffect->GetArchetype();
+            if (arch == RE::EffectArchetypes::ArchetypeID::kValueModifier || arch == RE::EffectArchetypes::ArchetypeID::kPeakValueModifier) 
+            {
+                RE::ActorValue av = bEffect->data.primaryAV;
+                if (GameData::potion_color_mapping.contains(av)) {
+                    ret = GameData::potion_color_mapping.at(av);
+                }
+            }
+            else if (arch == RE::EffectArchetypes::ArchetypeID::kInvisibility) {
+                if (GameData::potion_color_mapping.contains(RE::ActorValue::kInvisibility)) {
+                    ret = GameData::potion_color_mapping.at(RE::ActorValue::kInvisibility);
+                }
+            }
+
+        }
+
+        return ret;
+    }
+
+    std::tuple<SlottedSkill, bool> Hotbar::get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited, std::optional<key_modifier> original_mod)
     {
-        auto& bar = get_sub_bar(mod).m_slotted_skills[index];
-        RE::FormID skill = bar.formID;
-        slot_type type = bar.type;
-        hand_mode hand = bar.hand;
-        bool consumed = bar.consumed;
+        auto skill = get_sub_bar(mod).m_slotted_skills[index];
 
-        if (skill != 0U && this->is_enabled())
+        if (skill.formID != 0U && this->is_enabled())
         {
-            if (hide_clear_spell && GameData::is_clear_spell(skill)) {
-                return std::make_tuple(0U, slot_type::empty, false, hand_mode::auto_hand, inherited);
+            if (hide_clear_spell && GameData::is_clear_spell(skill.formID)) {
+                return std::make_tuple(SlottedSkill(), inherited);
             } else {
-                return std::make_tuple(skill, type, consumed, hand, inherited);
+                return std::make_tuple(skill, inherited);
             }
         } else {
             if (m_parent_bar != 0U && Bars::hotbars.contains(m_parent_bar) && (m_inherit_mode != inherit_mode::none)) {
@@ -207,7 +227,7 @@ namespace SpellHotbar
 
                 return Bars::hotbars.at(m_parent_bar).get_skill_in_bar_with_inheritance(index, original_mod ? original_mod.value() : mod, hide_clear_spell, true);
             } else {
-                return std::make_tuple(0U, slot_type::empty, false, hand_mode::auto_hand, false);
+                return std::make_tuple(SlottedSkill(), false);
             }
         }
     }
@@ -231,23 +251,34 @@ namespace SpellHotbar
         //float text_height = ImGui::CalcTextSize("M").y;
 
         for (int i = 0; i < Bars::barsize; i++) {
-            auto [skill_id, skill_type, consumed, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
+            auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
+
+            GameData::Spell_cast_data skill_dat;
+            auto form = RE::TESForm::LookupByID(skill.formID);
+            if (form) {
+                skill_dat = GameData::get_spell_data(form, true, true);
+            }
+
             ImVec2 p = ImGui::GetCursorScreenPos();
 
             size_t count{ 0 };
-            if (consumed) {
-                count = GameData::count_item_in_inv(skill_id);
+            if (skill.consumed != consumed_type::none) {
+                count = GameData::count_item_in_inv(skill.formID);
             }
 
-            if (!RenderManager::draw_skill(skill_id, icon_size)) {
+            if (!RenderManager::draw_skill(skill.formID, icon_size, skill.color)) {
                 RenderManager::draw_bg(icon_size);
             } else {
+                if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
+                    RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
+                }
+
                 ImU32 col = IM_COL32_WHITE;
                 if (highlight_slot == i) {
                     col = IM_COL32(255, 255, static_cast<int>(127 + 128 * (1.0 - highlight_factor)), 255);
                 }
 
-                if (consumed && count == 0) {
+                if (skill.consumed!=consumed_type::none && count == 0) {
                     RenderManager::draw_cd_overlay(p, icon_size, 0.0f, col);
                 }
 
@@ -261,22 +292,22 @@ namespace SpellHotbar
             ImVec2 tex_pos(p.x + text_offset_x, p.y+text_offset_y);
             ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
 
-            if (hand == hand_mode::left_hand || hand == hand_mode::right_hand || hand == hand_mode::dual_hand) {
+            if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
                 std::string hand_text;
-                if (hand == hand_mode::left_hand) {
+                if (skill.hand == hand_mode::left_hand) {
                     hand_text = "L";
                 }
-                else if (hand == hand_mode::right_hand) {
+                else if (skill.hand == hand_mode::right_hand) {
                     hand_text = "R";
                 }
-                else if (hand == hand_mode::dual_hand) {
+                else if (skill.hand == hand_mode::dual_hand) {
                     hand_text = "D";
                 }
                 ImVec2 tex_pos_hand(p.x + text_offset_x_right, p.y + text_offset_y);
                 ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
             }
 
-            if (consumed) {
+            if (skill.consumed != consumed_type::none) {
                 //clamp text to 999
                 std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
                 ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
@@ -284,7 +315,7 @@ namespace SpellHotbar
                 ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255), text.c_str());
             }
 
-            std::string text = GameData::resolve_spellname(skill_id);
+            std::string text = GameData::resolve_spellname(skill.formID);
 
             //draw text in grey if it was inherited from parent bar
             int grey_val = inherited ? 127 : 255;
@@ -351,19 +382,30 @@ namespace SpellHotbar
         auto pc = RE::PlayerCharacter::GetSingleton();
 
         for (int i = 0; i < Bars::barsize; i++) {
-            auto [skill_id, skill_type, consumed, hand, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+            auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+
+            GameData::Spell_cast_data skill_dat;
+            auto form = RE::TESForm::LookupByID(skill.formID);
+            if (form) {
+                skill_dat = GameData::get_spell_data(form, true, true);
+            }
 
             ImVec2 p = ImGui::GetCursorScreenPos();
 
             size_t count{ 0 };
-            if (consumed) {
-                count = GameData::count_item_in_inv(skill_id);
+            if (skill.consumed != consumed_type::none) {
+                count = GameData::count_item_in_inv(skill.formID);
             }
 
             int alpha_i = static_cast<int>(255 * alpha);
-            if (!RenderManager::draw_skill(skill_id, icon_size, alpha)) {
+            ImVec4 color = ImColor(skill.color);
+            color.w = alpha;
+            if (!RenderManager::draw_skill(skill.formID, icon_size, ImColor(color))) {
                 RenderManager::draw_bg(icon_size, alpha);
             } else {
+                if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
+                    RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32(255, 255, 255, alpha_i));
+                }
 
                 //If vampire lord uses equipmode and this is the currently equipped spell -> highlight blue
                 if (this->get_name() == Bars::bar_names.at(Bars::VAMPIRE_LORD_BAR) &&
@@ -373,24 +415,24 @@ namespace SpellHotbar
                         //If mainhand not empty, we in cast mode
                         if (equipped_mh) {
                             auto equipped_oh = pc->GetEquippedObject(true);
-                            if (equipped_oh && equipped_oh->GetFormID() == skill_id) {
+                            if (equipped_oh && equipped_oh->GetFormID() == skill.formID) {
                                 RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
                             }
                         } else {
                             //empty mh -> melee mode
-                            if (skill_type == slot_type::spell) {
+                            if (skill.type == slot_type::spell) {
                                 RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
                             }
                         }
                     }
                 }
 
-                if (consumed && count == 0) {
+                if (skill.consumed != consumed_type::none && count == 0) {
                     RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
                 }
                 else {
                     float cd_prog =
-                        determine_cd(skill_id, skill_type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
+                        determine_cd(skill.formID, skill.type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
                     if (cd_prog > 0.0f) {
                         RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
                     }
@@ -416,7 +458,7 @@ namespace SpellHotbar
             ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
             RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
 
-            if (consumed) {
+            if (skill.consumed != consumed_type::none) {
                 //clamp text to 999
                 std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
                 ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
@@ -525,7 +567,7 @@ namespace SpellHotbar
 
     SlottedSkill::SlottedSkill() : SlottedSkill(0U){};
 
-    SlottedSkill::SlottedSkill(RE::FormID id) : formID(id), type(slot_type::empty), hand(hand_mode::auto_hand), consumed(false)
+    SlottedSkill::SlottedSkill(RE::FormID id) : formID(id), type(slot_type::empty), hand(hand_mode::auto_hand), consumed(consumed_type::none), color(0xFFFFFFFF)
     { 
         if (formID > 0U)
         {
@@ -539,8 +581,8 @@ namespace SpellHotbar
                     switch (form->GetFormType()) {
 
                         case RE::FormType::Scroll:
-                            consumed = true;
-                            //fallthrough, scrolls are also spells
+                            consumed = consumed_type::scroll;
+                            [[fallthrough]]; //scrolls are also spells
                         case RE::FormType::Spell:
                             spell = form->As<RE::SpellItem>();
                             if (spell) {  // this should not be able to be null
@@ -568,6 +610,11 @@ namespace SpellHotbar
                                     hand = hand_mode::voice;
                                 }
 
+                                if ((type == slot_type::lesser_power || type == slot_type::power) && hand != hand_mode::voice) {
+                                    //fixes spells that are flagged as power
+                                    type = slot_type::spell;
+                                }
+
                             } else {
                                 type = slot_type::unknown;
                             }
@@ -579,7 +626,19 @@ namespace SpellHotbar
                         case RE::FormType::AlchemyItem:
                             type = slot_type::potion;
                             hand = hand_mode::voice;
-                            consumed = true;
+                            consumed = consumed_type::potion;
+
+                            //If brewed potion, chose color dynamically
+                            if (form->IsDynamicForm()) {
+                                auto* alch_item = form->As<RE::AlchemyItem>();
+                                if (alch_item) {
+                                    auto* effect = alch_item->GetCostliestEffectItem();
+                                    if (effect) {
+                                        //RE::EffectArchetypes::ArchetypeID arch = effect->baseEffect->GetArchetype();
+                                        color = Hotbar::calculate_potion_color(effect);
+                                    }
+                                }
+                            }
                             break;
                         default:
                             type = slot_type::unknown;
@@ -602,7 +661,7 @@ namespace SpellHotbar
         type = slot_type::empty;
         formID = 0U;
         hand = hand_mode::auto_hand;
-        consumed = false;
+        consumed = consumed_type::none;
     }
 
     bool SubBar::is_empty()

@@ -1,0 +1,19 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Potion of Minor Healing	0x03eadd	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Healing	0x03eade	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Plentiful Healing	0x03eadf	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Vigorous Healing	0x03eae3	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Extreme Healing	0x039be4	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Ultimate Healing	0x039be5	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Minor Magicka	0x03eae0	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Magicka	0x03eae1	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Plentiful Magicka	0x03eae2	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Vigorous Magicka	0x03eae4	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Extreme Magicka	0x039be6	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Ultimate Magicka	0x039be7	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Minor Stamina	0x03eae5	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Stamina	0x039be8	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Plentiful Stamina	0x03eae7	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Vigorous Stamina	0x03eae8	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Extreme Stamina	0x03eae6	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Ultimate Stamina	0x039cf3	Skyrim.esm		-1	-1	-1	-1	-1

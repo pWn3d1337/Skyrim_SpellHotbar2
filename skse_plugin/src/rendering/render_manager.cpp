@@ -80,7 +80,7 @@ void SubTextureImage::draw(float w, float h, float alpha)
     ImGui::Image((void*)res, ImVec2(w, h), uv0, uv1, ImVec4(1.0f, 1.0f, 1.0f, alpha));
 }
 
-void SubTextureImage::draw_with_scale(float w, float h, float alpha, float scale) {
+void SubTextureImage::draw_with_scale(float w, float h, ImU32 col, float scale) {
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImGui::Dummy(ImVec2(w, h));
 
@@ -88,7 +88,7 @@ void SubTextureImage::draw_with_scale(float w, float h, float alpha, float scale
     float dy = ((h * scale) - h) * 0.5f;
 
     ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
-                                         ImColor(1.0f, 1.0f, 1.0f, alpha));
+                                         col);
 }
 
 void SubTextureImage::draw_on_top(ImVec2 pos, float w, float h, ImU32 col)
@@ -147,11 +147,16 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
 
             if (selection.GetType() == RE::GFxValue::ValueType::kString) {
                 std::string tabtype = selection.GetString();
-                return tabtype == tab_scrolls || tabtype == tab_potions;
+                return tabtype == tab_scrolls || tabtype == tab_potions || tabtype == tab_food;
             }
         }
     }
     return false;
+}
+
+bool RenderManager::should_overlay_be_rendered(GameData::DefaultIconType overlay)
+{
+    return overlay != GameData::DefaultIconType::UNKNOWN && overlay != GameData::DefaultIconType::NO_OVERLAY;
 }
 
 void update_highlight(float delta) {
@@ -732,11 +737,11 @@ void RenderManager::draw_bg(int size, float alpha)
     }
 }
 
-bool RenderManager::draw_skill(RE::FormID formID, int size, float alpha) {
+bool RenderManager::draw_skill(RE::FormID formID, int size, ImU32 col) {
     constexpr float scale = 1.0f;
     SubTextureImage* img = get_tex_for_skill_internal(formID);
     if (img) {
-        img->draw_with_scale(static_cast<float>(size), static_cast<float>(size), alpha, scale);
+        img->draw_with_scale(static_cast<float>(size), static_cast<float>(size), col, scale);
         return true;
     }
     else {
@@ -805,6 +810,14 @@ void RenderManager::draw_scaled_text(ImVec2 pos, ImU32 col, const char* text)
 {
     float size = (Bars::slot_scale +0.25f)* font_text_size;
     ImGui::GetWindowDrawList()->AddText(font_text, size, pos, col, text);
+}
+
+void RenderManager::draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col)
+{
+    if (default_icons.contains(type)) {
+        auto& overlay = default_icons.at(type);
+        overlay.draw_on_top(pos, static_cast<float>(size), static_cast<float>(size), col);
+    }
 }
 
 void TextCenterHorizontal(std::string text) {

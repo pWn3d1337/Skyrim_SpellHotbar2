@@ -201,33 +201,33 @@ namespace SpellHotbar::Input {
                                     {
                                         if (bEvent->IsDown()) {
                                             handled = true;
-                                            auto [formID, slottype, hand] = GameData::get_current_spell_info_in_slot(i);
+                                            auto skill = GameData::get_current_spell_info_in_slot(i);
 
-                                            if (allowed_to_instantcast(formID) && casts::CastingController::can_start_new_cast()) {
-                                                if (formID > 0) {
-                                                    auto form = RE::TESForm::LookupByID(formID);
+                                            if (allowed_to_instantcast(skill.formID) && casts::CastingController::can_start_new_cast()) {
+                                                if (skill.formID > 0) {
+                                                    auto form = RE::TESForm::LookupByID(skill.formID);
 
-                                                    if (slottype == slot_type::spell) {
-                                                        if (allowed_to_cast(formID)) {
-                                                            bool success = casts::CastingController::try_start_cast(form, bind, i, hand);
+                                                    if (skill.type == slot_type::spell) {
+                                                        if (allowed_to_cast(skill.formID)) {
+                                                            bool success = casts::CastingController::try_start_cast(form, bind, i, skill.hand);
                                                             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
                                                         }
                                                         else {
                                                             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
                                                         }
                                                     }
-                                                    else if (slottype == slot_type::shout || slottype == slot_type::lesser_power || slottype == slot_type::power)
+                                                    else if (skill.type == slot_type::shout || skill.type == slot_type::lesser_power || skill.type == slot_type::power)
                                                     {
                                                         bool can_start{ true };
-                                                        if (slottype == slot_type::shout) {
-                                                            if (!allowed_to_cast(formID)) can_start = false;
+                                                        if (skill.type == slot_type::shout) {
+                                                            if (!allowed_to_cast(skill.formID)) can_start = false;
                                                         }
 
                                                         if (can_start) {
                                                             //Start a shout
                                                             if (!addEvent) { //do not accidentaly create another event
 
-                                                                if (casts::CastingController::try_cast_power(form, bind, i, hand)) {
+                                                                if (casts::CastingController::try_cast_power(form, bind, i, skill.hand)) {
                                                                     addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 1.0f, 0.0f); //default shout key
                                                                 }
                                                             }
@@ -236,8 +236,8 @@ namespace SpellHotbar::Input {
                                                             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
                                                         }
                                                     }
-                                                    else if (slottype == slot_type::potion) {
-                                                        bool success = casts::CastingController::try_start_cast(form, bind, i, hand);
+                                                    else if (skill.type == slot_type::potion) {
+                                                        bool success = casts::CastingController::try_start_cast(form, bind, i, skill.hand);
                                                         SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
                                                     }
                                                 }

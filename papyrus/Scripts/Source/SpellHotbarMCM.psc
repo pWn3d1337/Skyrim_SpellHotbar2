@@ -131,6 +131,11 @@ Event OnPageReset(string page)
         AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))
 
 		AddMenuOptionST("BarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getBarAnchorPoint()])
+		AddEmptyOption()
+
+		AddHeaderOption("Gameplay")
+        AddEmptyOption()
+		AddSliderOptionST("PotionGCD", "Potion GCD", SpellHotbar.getPotionGCD(), "{2}")
 
     ElseIf (page == "Bars")
 
@@ -479,6 +484,24 @@ State BarShowOptionsWW
 	EndEvent
 	Event OnDefaultST()
 		SetMenuOptionValueST(bar_show_options_transformed[SpellHotbar.setHudBarShowModeWerewolf(1)])
+	EndEvent
+EndState
+
+State PotionGCD
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getPotionGCD())
+        SetSliderDialogDefaultValue(1.0)
+        SetSliderDialogRange(0.1, 10.0)
+        SetSliderDialogInterval(0.05)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setPotionGCD(a_value), "{2}");
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Change the Hotbar Global Cooldown when drinking potions");
+    EndEvent
+	Event OnDefaultST()
+		SetSliderOptionValueST(1.0, "{2}")
 	EndEvent
 EndState
 

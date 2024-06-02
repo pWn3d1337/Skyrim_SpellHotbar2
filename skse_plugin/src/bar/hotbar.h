@@ -37,12 +37,21 @@ enum hand_mode : uint8_t
     end //highest index flag
 };
 
+enum class consumed_type : uint8_t {
+    none = 0, //non consumed, regular spells
+    scroll,
+    scroll_no_overlay,
+    potion,
+    food
+};
+
 struct SlottedSkill
 {
     RE::FormID formID;
     slot_type type;
     hand_mode hand;
-    bool consumed;
+    consumed_type consumed;
+    ImU32 color;
 
     SlottedSkill(RE::FormID id);
     SlottedSkill();
@@ -102,8 +111,8 @@ public:
 
     int set_inherit_mode(int value);
 
-    /* return skillid, slot_type, consumed?, hand_mode, inherited? */
-    std::tuple<RE::FormID, slot_type, bool, hand_mode, bool> get_skill_in_bar_with_inheritance(
+    /* return SlottedSkill(skillid, slot_type, consumed_type, hand_mode), inherited? */
+    std::tuple<SlottedSkill, bool> get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited = false, std::optional<key_modifier> original_mod = std::nullopt);
 
     void to_json(rapidjson::Document& doc, uint32_t key, rapidjson::Value& bars);
@@ -111,6 +120,8 @@ public:
     void clear();
 
     SubBar& get_sub_bar(key_modifier mod);
+
+    static ImU32 calculate_potion_color(RE::Effect* effect);
 
 private:
     bool m_enabled;

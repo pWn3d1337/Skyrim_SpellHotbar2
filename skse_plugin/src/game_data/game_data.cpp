@@ -61,6 +61,195 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<int, std::string> animation_names;
 
+    float potion_gcd = 1.0f;
+
+    constexpr ImU32 col_OneHanded {IM_COL32(255,132,0,255)};
+    constexpr ImU32 col_TwoHanded {IM_COL32(255,120,0,255)};
+    constexpr ImU32 col_Archery {IM_COL32(128,255,255,255)};
+    constexpr ImU32 col_Block {IM_COL32(255,116,0,255)};
+    constexpr ImU32 col_Smithing {IM_COL32(255,128,0,255)};
+    constexpr ImU32 col_HeavyArmor {IM_COL32(255,124,0,255)};
+    constexpr ImU32 col_LightArmor {IM_COL32(120,255,0,255)};
+    constexpr ImU32 col_Pickpocket {IM_COL32(116,255,0,255)};
+    constexpr ImU32 col_Lockpicking {IM_COL32(112,255,0,255)};
+    constexpr ImU32 col_Sneak {IM_COL32(90,255,0,255)};
+    constexpr ImU32 col_Alchemy {IM_COL32(95,255,95,255)};
+    constexpr ImU32 col_Speech {IM_COL32(135,255,0,255)};
+    constexpr ImU32 col_Alteration {IM_COL32(0,200,255,255)};
+    constexpr ImU32 col_Conjuration {IM_COL32(120,160,255,255)};
+    constexpr ImU32 col_Destruction {IM_COL32(255,90,70,255)};
+    constexpr ImU32 col_Illusion {IM_COL32(0,200,140,255)};
+    constexpr ImU32 col_Restoration {IM_COL32(255,255,160,255)};
+    constexpr ImU32 col_Enchanting {IM_COL32(0,255,200,255)};
+
+    std::unordered_map<RE::ActorValue, ImU32> potion_color_mapping =
+    {
+        //{RE::ActorValue::kAggression, IM_COL32_WHITE},
+        //{RE::ActorValue::kConfidence, IM_COL32_WHITE},
+        //{RE::ActorValue::kEnergy, IM_COL32_WHITE},
+        //{RE::ActorValue::kMorality, IM_COL32_WHITE},
+        //{RE::ActorValue::kMood, IM_COL32_WHITE},
+        //{RE::ActorValue::kAssistance, IM_COL32_WHITE},
+        {RE::ActorValue::kOneHanded, col_OneHanded},
+        {RE::ActorValue::kTwoHanded, col_TwoHanded},
+        {RE::ActorValue::kArchery, col_Archery},
+        {RE::ActorValue::kBlock, col_Block},
+        {RE::ActorValue::kSmithing, col_Smithing},
+        {RE::ActorValue::kHeavyArmor, col_HeavyArmor},
+        {RE::ActorValue::kLightArmor, col_LightArmor},
+        {RE::ActorValue::kPickpocket, col_Pickpocket},
+        {RE::ActorValue::kLockpicking, col_Lockpicking},
+        {RE::ActorValue::kSneak, col_Sneak},
+        {RE::ActorValue::kAlchemy, col_Alchemy},
+        {RE::ActorValue::kSpeech, col_Speech},
+        {RE::ActorValue::kAlteration, col_Alteration},
+        {RE::ActorValue::kConjuration, col_Conjuration},
+        {RE::ActorValue::kDestruction, col_Destruction},
+        {RE::ActorValue::kIllusion, col_Illusion},
+        {RE::ActorValue::kRestoration, col_Restoration},
+        {RE::ActorValue::kEnchanting, col_Enchanting},
+        {RE::ActorValue::kHealth, IM_COL32(255,0,0,255)},
+        {RE::ActorValue::kMagicka, IM_COL32(0,0,255,255)},
+        {RE::ActorValue::kStamina, IM_COL32(0,255,0,255)},
+        {RE::ActorValue::kHealRate, IM_COL32(255,50,50,255)},
+        {RE::ActorValue::kMagickaRate, IM_COL32(50,50,255,255)},
+        {RE::ActorValue::kStaminaRate, IM_COL32(50,255,50,255)},
+        {RE::ActorValue::kSpeedMult, IM_COL32(60,255,80,255)},
+        //{RE::ActorValue::kInventoryWeight, IM_COL32_WHITE},
+        {RE::ActorValue::kCarryWeight, IM_COL32(0,230,0,255)},
+        {RE::ActorValue::kCriticalChance, IM_COL32(230,230,230,255)},
+        //{RE::ActorValue::kMeleeDamage, IM_COL32_WHITE},
+        //{RE::ActorValue::kUnarmedDamage, IM_COL32_WHITE},
+        //{RE::ActorValue::kMass, IM_COL32_WHITE},
+        //{RE::ActorValue::kVoicePoints, IM_COL32_WHITE},
+        //{RE::ActorValue::kVoiceRate, IM_COL32_WHITE},
+        {RE::ActorValue::kDamageResist, IM_COL32(200,200,200,255)},
+        {RE::ActorValue::kPoisonResist, IM_COL32(0,200,0,255)},
+        {RE::ActorValue::kResistFire, IM_COL32(200,0,0,255)},
+        {RE::ActorValue::kResistShock, IM_COL32(200,200,0,255)},
+        {RE::ActorValue::kResistFrost, IM_COL32(0,0,200,255)},
+        {RE::ActorValue::kResistMagic, IM_COL32(0,100,200,255)},
+        {RE::ActorValue::kResistDisease, IM_COL32(50,200,50,255)},
+        //{RE::ActorValue::kPerceptionCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kEnduranceCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kLeftAttackCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kRightAttackCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kLeftMobilityCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kRightMobilityCondition, IM_COL32_WHITE},
+        //{RE::ActorValue::kBrainCondition, IM_COL32_WHITE},
+        {RE::ActorValue::kParalysis, IM_COL32(80,255,80,255)},
+        {RE::ActorValue::kInvisibility, IM_COL32(255,130,255,255)},
+        {RE::ActorValue::kNightEye, IM_COL32(100,150,255,255)},
+        //{RE::ActorValue::kDetectLifeRange, IM_COL32_WHITE},
+        {RE::ActorValue::kWaterBreathing, IM_COL32(30,60,255,255)},
+        {RE::ActorValue::kWaterWalking, IM_COL32(0,120,255,255)},
+        //{RE::ActorValue::kIgnoreCrippledLimbs, IM_COL32_WHITE},
+        //{RE::ActorValue::kFame, IM_COL32_WHITE},
+        //{RE::ActorValue::kInfamy, IM_COL32_WHITE},
+        //{RE::ActorValue::kJumpingBonus, IM_COL32_WHITE},
+        //{RE::ActorValue::kWardPower, IM_COL32_WHITE},
+        //{RE::ActorValue::kRightItemCharge, IM_COL32_WHITE},
+        //{RE::ActorValue::kArmorPerks, IM_COL32_WHITE},
+        //{RE::ActorValue::kShieldPerks, IM_COL32_WHITE},
+        //{RE::ActorValue::kWardDeflection, IM_COL32_WHITE},
+        /*{RE::ActorValue::kVariable01, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable02, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable03, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable04, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable05, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable06, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable07, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable08, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable09, IM_COL32_WHITE},
+        {RE::ActorValue::kVariable10, IM_COL32_WHITE},*/
+        //{RE::ActorValue::kBowSpeedBonus, IM_COL32_WHITE},
+        //{RE::ActorValue::kFavorActive, IM_COL32_WHITE},
+        //{RE::ActorValue::kFavorsPerDay, IM_COL32_WHITE},
+        //{RE::ActorValue::kFavorsPerDayTimer, IM_COL32_WHITE},
+        //{RE::ActorValue::kLeftItemCharge, IM_COL32_WHITE},
+        //{RE::ActorValue::kAbsorbChance, IM_COL32_WHITE},
+        //{RE::ActorValue::kBlindness, IM_COL32_WHITE},
+        //{RE::ActorValue::kWeaponSpeedMult, IM_COL32_WHITE},
+        //{RE::ActorValue::kShoutRecoveryMult, IM_COL32_WHITE},
+        //{RE::ActorValue::kBowStaggerBonus, IM_COL32_WHITE},
+        //{RE::ActorValue::kTelekinesis, IM_COL32_WHITE},
+        //{RE::ActorValue::kFavorPointsBonus, IM_COL32_WHITE},
+        //{RE::ActorValue::kLastBribedIntimidated, IM_COL32_WHITE},
+        //{RE::ActorValue::kLastFlattered, IM_COL32_WHITE},
+        //{RE::ActorValue::kMovementNoiseMult, IM_COL32_WHITE},
+        //{RE::ActorValue::kBypassVendorStolenCheck, IM_COL32_WHITE},
+        //{RE::ActorValue::kBypassVendorKeywordCheck, IM_COL32_WHITE},
+        //{RE::ActorValue::kWaitingForPlayer, IM_COL32_WHITE},
+        {RE::ActorValue::kOneHandedModifier, col_OneHanded},
+        {RE::ActorValue::kTwoHandedModifier, col_TwoHanded},
+        {RE::ActorValue::kMarksmanModifier, col_Archery},
+        {RE::ActorValue::kBlockModifier, col_Block},
+        {RE::ActorValue::kSmithingModifier, col_Smithing},
+        {RE::ActorValue::kHeavyArmorModifier, col_HeavyArmor},
+        {RE::ActorValue::kLightArmorModifier, col_LightArmor},
+        {RE::ActorValue::kPickpocketModifier, col_Pickpocket},
+        {RE::ActorValue::kLockpickingModifier, col_Lockpicking},
+        {RE::ActorValue::kSneakingModifier, col_Sneak},
+        {RE::ActorValue::kAlchemyModifier, col_Alchemy},
+        {RE::ActorValue::kSpeechcraftModifier, col_Speech},
+        {RE::ActorValue::kAlterationModifier, col_Alteration},
+        {RE::ActorValue::kConjurationModifier, col_Conjuration},
+        {RE::ActorValue::kDestructionModifier, col_Destruction},
+        {RE::ActorValue::kIllusionModifier, col_Illusion},
+        {RE::ActorValue::kRestorationModifier, col_Restoration},
+        {RE::ActorValue::kEnchantingModifier, col_Enchanting},
+        /*{RE::ActorValue::kOneHandedSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kTwoHandedSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kMarksmanSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kBlockSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kSmithingSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kHeavyArmorSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kLightArmorSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kPickpocketSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kLockpickingSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kSneakingSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kAlchemySkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kSpeechcraftSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kAlterationSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kConjurationSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kDestructionSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kIllusionSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kRestorationSkillAdvance, IM_COL32_WHITE},
+        {RE::ActorValue::kEnchantingSkillAdvance, IM_COL32_WHITE},*/
+        //{RE::ActorValue::kLeftWeaponSpeedMultiply, IM_COL32_WHITE},
+        //{RE::ActorValue::kDragonSouls, IM_COL32_WHITE},
+        {RE::ActorValue::kCombatHealthRegenMultiply, IM_COL32(255,30,30,255) },
+        {RE::ActorValue::kOneHandedPowerModifier, col_OneHanded},
+        {RE::ActorValue::kTwoHandedPowerModifier, col_TwoHanded},
+        {RE::ActorValue::kMarksmanPowerModifier, col_Archery},
+        {RE::ActorValue::kBlockPowerModifier, col_Block},
+        {RE::ActorValue::kSmithingPowerModifier, col_Smithing},
+        {RE::ActorValue::kHeavyArmorPowerModifier, col_HeavyArmor},
+        {RE::ActorValue::kLightArmorPowerModifier, col_LightArmor},
+        {RE::ActorValue::kPickpocketPowerModifier, col_Pickpocket},
+        {RE::ActorValue::kLockpickingPowerModifier, col_Lockpicking},
+        {RE::ActorValue::kSneakingPowerModifier, col_Sneak},
+        {RE::ActorValue::kAlchemyPowerModifier, col_Alchemy},
+        {RE::ActorValue::kSpeechcraftPowerModifier, col_Speech},
+        {RE::ActorValue::kAlterationPowerModifier, col_Alteration},
+        {RE::ActorValue::kConjurationPowerModifier, col_Conjuration},
+        {RE::ActorValue::kDestructionPowerModifier, col_Destruction},
+        {RE::ActorValue::kIllusionPowerModifier, col_Illusion},
+        {RE::ActorValue::kRestorationPowerModifier, col_Restoration},
+        {RE::ActorValue::kEnchantingPowerModifier, col_Enchanting},
+        //{RE::ActorValue::kDragonRend, IM_COL32_WHITE},
+        //{RE::ActorValue::kAttackDamageMult, IM_COL32_WHITE},
+        {RE::ActorValue::kHealRateMult, IM_COL32(240,40,40,255) },
+        {RE::ActorValue::kMagickaRateMult, IM_COL32(40,40,240,255) },
+        {RE::ActorValue::kStaminaRateMult, IM_COL32(40,240,40,255) },
+        //{RE::ActorValue::kWerewolfPerks, IM_COL32_WHITE},
+        //{RE::ActorValue::kVampirePerks, IM_COL32_WHITE},
+        //{RE::ActorValue::kGrabActorOffset, IM_COL32_WHITE},
+        //{RE::ActorValue::kGrabbed, IM_COL32_WHITE},
+        //{RE::ActorValue::kDEPRECATED05, IM_COL32_WHITE},
+        {RE::ActorValue::kReflectDamage, IM_COL32_WHITE}
+    };
+
     template<typename T>
     void load_form_from_game(RE::FormID formId, const std::string & plugin, T** out_ptr, const std::string & name, RE::FormType type) {
         auto form = SpellHotbar::GameData::get_form_from_file(formId, plugin);
@@ -409,8 +598,7 @@ namespace SpellHotbar::GameData {
     DefaultIconType get_fallback_icon_type(RE::TESForm* form)
     { 
         DefaultIconType ret {DefaultIconType::UNKNOWN};
-
-        if (form->GetFormType() == RE::FormType::Spell) {
+        if (form->GetFormType() == RE::FormType::Spell || form->GetFormType() == RE::FormType::Scroll) {
             RE::SpellItem* spell = form->As<RE::SpellItem>();
             if (spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) {
             
@@ -418,7 +606,7 @@ namespace SpellHotbar::GameData {
             } else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower) {
                 
                 ret = DefaultIconType::GREATER_POWER;
-            } else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+            } else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell || spell->GetSpellType() == RE::MagicSystem::SpellType::kScroll) {
                 if (spell->effects.size() > 0U) {
 
                     for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size() && ret == DefaultIconType::UNKNOWN; i++) {
@@ -489,6 +677,33 @@ namespace SpellHotbar::GameData {
         else if (form->GetFormType() == RE::FormType::Shout) {
             //RE::TESShout* shout = form->As<RE::TESShout>();
             ret = DefaultIconType::SHOUT_GENERIC;
+        } 
+        else if (form->GetFormType() == RE::FormType::AlchemyItem) {
+
+            auto alch = form->As<RE::AlchemyItem>();
+            auto gold_Val = alch->GetGoldValue();
+            if (alch->IsPoison()) {
+                if (gold_Val >= 300) {
+                    ret = DefaultIconType::GENERIC_POISON_LARGE;
+                }
+                else if (gold_Val >= 100) {
+                    ret = DefaultIconType::GENERIC_POISON;
+                }
+                else {
+                    ret = DefaultIconType::GENERIC_POISON_SMALL;
+                }
+            }
+            else {
+                if (gold_Val >= 300) {
+                    ret = DefaultIconType::GENERIC_POTION_LARGE;
+                }
+                else if (gold_Val >= 100) {
+                    ret = DefaultIconType::GENERIC_POTION;
+                }
+                else {
+                    ret = DefaultIconType::GENERIC_POTION_SMALL;
+                }
+            }
         }
         return ret;
     }
@@ -734,31 +949,27 @@ namespace SpellHotbar::GameData {
         }
     }
 
-    std::tuple<RE::FormID, slot_type, hand_mode> get_current_spell_info_in_slot(size_t index) {
-        RE::FormID ret{ 0 };
-        hand_mode reth{ hand_mode::auto_hand };
-        slot_type rett{ slot_type::empty };
+    SlottedSkill get_current_spell_info_in_slot(size_t index) {
+        SlottedSkill ret;
         if (index < max_bar_size) {
             uint32_t bar_id = Bars::getCurrentHotbar_ingame();
             if (Bars::hotbars.contains(bar_id)) {
                 auto& bar = Bars::hotbars.at(bar_id);
-                auto [id, type, consumed, hand, inherited] = bar.get_skill_in_bar_with_inheritance(static_cast<int>(index), Bars::get_current_modifier(), false);
-                ret = id;
-                reth = hand;
-                rett = type;
+                auto [skill, inherited] = bar.get_skill_in_bar_with_inheritance(static_cast<int>(index), Bars::get_current_modifier(), false);
+                ret = skill;
             }
         }
-        if (GameData::is_clear_spell(ret)) {
-            ret = 0U;
-            reth = hand_mode::voice;
-            rett = slot_type::blocked;
+        if (GameData::is_clear_spell(ret.formID)) {
+            ret.formID = 0U;
+            ret.hand = hand_mode::voice;
+            ret.type = slot_type::blocked;
         }
-        return std::make_tuple(ret, rett, reth);
+        return ret;
     }
 
      RE::FormID get_current_spell_in_slot(size_t index) {
-         auto [id, type, hand] = get_current_spell_info_in_slot(index);
-         return id;
+         auto skill = get_current_spell_info_in_slot(index);
+         return skill.formID;
      }
 
 

@@ -120,6 +120,8 @@ namespace SpellHotbar::Storage::IO {
         Bars::disable_menu_rendering = get_int_or_default(d, "settings.disable_menu_rendering", 0) != 0;
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
 
+        GameData::potion_gcd = get_float_or_default(d, "settings.potion_gcd", 1.0f);
+
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {
             Bars::MAIN_BAR_SNEAK,
@@ -254,6 +256,8 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.use_default_bar_when_sheathed", Bars::use_default_bar_when_sheathed ? 1 : 0);
         add_int(d, "settings.disable_menu_rendering", Bars::disable_menu_rendering ? 1 : 0);
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
+
+        add_float(d, "settings.potion_gcd", GameData::potion_gcd);
 
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {

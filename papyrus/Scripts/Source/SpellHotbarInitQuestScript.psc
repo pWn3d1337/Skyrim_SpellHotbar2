@@ -22,6 +22,11 @@ Function DEBUG_add_perk(int formId, string pluginfile)
 	playerref.AddPerk(p)
 EndFunction
 
+Function DEBUG_add_item(int formId, string pluginfile, int count)
+	Form item = Game.GetFormFromFile(formId, pluginfile)
+	playerref.AddItem(item, count)
+EndFunction
+
 Function DEBUG_Lean_Spells()
 
 	DEBUG_lean_spell(0x12FD0) ; Firebolt
@@ -65,6 +70,13 @@ Function DEBUG_Lean_Spells()
 
 	;Hierophant absolution - channel with time
 	DEBUG_lean_spell2(0x822, "Ghostlight.esl")
+
+	;Fabricate object
+	DEBUG_lean_spell2(0x003902, "Apocalypse - Magic of Skyrim.esp")
+	;Bear Claws
+	DEBUG_add_item(0x06bc02, "Skyrim.esm", 10)
+	;Hawk Feathers
+	DEBUG_add_item(0x0e7ed0, "Skyrim.esm", 10)
 EndFunction
 
 Event OnInit()

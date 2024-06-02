@@ -87,7 +87,15 @@ namespace SpellHotbar::GameData {
         CONJURATION_SUMMON_MASTER,
         SHOUT_GENERIC,
         SINGLE_CAST,
-        DUAL_CAST
+        DUAL_CAST,
+        SCROLL_OVERLAY,
+        NO_OVERLAY,
+        GENERIC_POTION,
+        GENERIC_POTION_SMALL,
+        GENERIC_POTION_LARGE,
+        GENERIC_POISON,
+        GENERIC_POISON_SMALL,
+        GENERIC_POISON_LARGE
     };
 
     struct Gametime_cooldown_value {
@@ -108,6 +116,14 @@ namespace SpellHotbar::GameData {
     struct Transformation_data {
         uint32_t bar_id;
         custom_transform_spell_type casting_type;
+    };
+
+    struct Slotted_Skill_Data {
+        RE::FormID form_id;
+        slot_type slot;
+        consumed_type consumed;
+        hand_mode hand;
+        bool inherited;
     };
 
     extern RE::TESGlobal* global_animation_type;
@@ -131,6 +147,10 @@ namespace SpellHotbar::GameData {
     extern std::unordered_map<int, std::string> animation_names;
 
     extern std::unordered_map<RE::FormID, GameData::User_custom_spelldata> user_spell_cast_info;
+
+    extern std::unordered_map<RE::ActorValue, ImU32> potion_color_mapping;
+
+    extern float potion_gcd;
 
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
@@ -202,7 +222,7 @@ namespace SpellHotbar::GameData {
      */
     RE::FormID get_current_spell_in_slot(size_t index);
 
-    std::tuple<RE::FormID, slot_type, hand_mode> get_current_spell_info_in_slot(size_t index);
+    SlottedSkill get_current_spell_info_in_slot(size_t index);
 
     /*
     * Is the passed spell the "unbind slot" spell?

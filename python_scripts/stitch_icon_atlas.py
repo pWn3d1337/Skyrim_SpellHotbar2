@@ -100,7 +100,15 @@ default_icons = [
     "CONJURATION_SUMMON_MASTER",
     "SHOUT_GENERIC",
     "SINGLE_CAST",
-    "DUAL_CAST"
+    "DUAL_CAST",
+    "SCROLL_OVERLAY",
+    #"NO_OVERLAY", No need to stitch
+    "GENERIC_POTION",
+    "GENERIC_POTION_SMALL",
+    "GENERIC_POTION_LARGE",
+    "GENERIC_POISON",
+    "GENERIC_POISON_SMALL",
+    "GENERIC_POISON_LARGE"
 ]
 
 
@@ -337,6 +345,8 @@ def stitch_folder(spell_list: list[str], icon_root: list[str], output_base: Path
     df = None
     for spells in spell_list:
         df_temp = pd.read_csv(spells, sep="\t")
+        if "Symbol" not in df_temp.columns:
+            df_temp["Symbol"] = np.nan
         if df is None:
             df = df_temp
         else:
@@ -358,12 +368,22 @@ def stitch_folder(spell_list: list[str], icon_root: list[str], output_base: Path
     df, cvImage = _stitch_images_internal(df, alpha_mask_path)
 
     cv2.imwrite(f"{output_base}.png", cvImage)
-    df_out = df[["FormID", "Plugin", "u0", "v0", "u1", "v1", "Name"]]
+
+    df_forms = df[~pd.isna(df["FormID"])]
+    if "ScrollID" in df.columns:
+        df_scrolls = df[~pd.isna(df["ScrollID"])]
+        ind_spell_scrolls = ~pd.isna(df_scrolls["FormID"]) #scrolls that are part of spell, add name suffix
+        df_scrolls.loc[ind_spell_scrolls,"Name"] = df_scrolls.loc[ind_spell_scrolls,"Name"] + " Scroll"
+        df_scrolls = df_scrolls.drop(columns="FormID", inplace=False)
+        df_scrolls = df_scrolls.rename(columns={"ScrollID": "FormID"})
+        df_forms = pd.concat([df_forms, df_scrolls])
+
+    df_out = df_forms[["FormID", "Plugin", "u0", "v0", "u1", "v1", "Name"]]
     df_out.to_csv(f"{output_base}.csv", index=False, sep='\t')
 
     if output_data is not None:
-        df_out_spell_data = df[["Name", "FormID", "Plugin", "Casteffect", "GCD", "Cooldown", "Casttime", "Animation",
-                                "Animation2"]]
+        df_out_spell_data = df_forms[["Name", "FormID", "Plugin", "Casteffect", "GCD", "Cooldown", "Casttime", "Animation",
+                                      "Animation2", "Symbol"]]
         df_out_spell_data.to_csv(f"{output_data}.csv", index=False, sep='\t')
 
 
@@ -619,7 +639,8 @@ if __name__ == "__main__":
         rf"{project_root}\spell_lists2\illusion.csv",
         rf"{project_root}\spell_lists2\conjuration.csv",
         rf"{project_root}\spell_lists2\powers.csv",
-        rf"{project_root}\spell_lists2\shouts.csv"
+        rf"{project_root}\spell_lists2\shouts.csv",
+        rf"{project_root}\spell_lists2\potions.csv"
     ]
     icon_root_folders = [
         rf"{project_root}\vanilla_spell_icons\alteration",
@@ -628,7 +649,8 @@ if __name__ == "__main__":
         rf"{project_root}\vanilla_spell_icons\illusion",
         rf"{project_root}\vanilla_spell_icons\conjuration",
         rf"{project_root}\vanilla_spell_icons\powers",
-        rf"{project_root}\vanilla_spell_icons\shouts"
+        rf"{project_root}\vanilla_spell_icons\shouts",
+        rf"{project_root}\vanilla_spell_icons\potions"
     ]
 
     default_icons_folders = [
@@ -638,7 +660,8 @@ if __name__ == "__main__":
         rf"{project_root}\vanilla_spell_icons\destruction_generic",
         rf"{project_root}\vanilla_spell_icons\illusion_generic",
         rf"{project_root}\vanilla_spell_icons\conjuration_generic",
-        rf"{project_root}\vanilla_spell_icons\shouts_generic"
+        rf"{project_root}\vanilla_spell_icons\shouts_generic",
+        rf"{project_root}\vanilla_spell_icons\potions_generic",
     ]
 
     # alpha_mask = none
@@ -746,3 +769,7 @@ if __name__ == "__main__":
 
     #stitch_mod("andromeda")
     #i4_mod("andromeda", tmp_icons_dir, esp_name="Andromeda - Unique Standing Stones of Skyrim")
+
+    #stitch_mod("ordinator")
+    #i4_mod("ordinator", tmp_icons_dir, esp_name="Ordinator - Perks of Skyrim")
+

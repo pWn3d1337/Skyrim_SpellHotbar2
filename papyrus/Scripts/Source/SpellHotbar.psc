@@ -46,3 +46,5 @@ string[] function getConfigPresets() native global
 string[] function getBarsPresets() native global
 int function getBarAnchorPoint() native global
 int function setBarAnchorPoint(int index) native global
+float function getPotionGCD() native global
+float function setPotionGCD(float value) native global

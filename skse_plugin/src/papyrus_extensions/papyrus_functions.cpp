@@ -295,6 +295,16 @@ int set_bar_anchor_point(RE::StaticFunctionTag*, int value) {
     return static_cast<int>(SpellHotbar::Bars::bar_anchor_point);
 }
 
+float set_potion_gcd(RE::StaticFunctionTag*, float value)
+{
+    return SpellHotbar::GameData::potion_gcd = std::clamp(value, 0.1f, 10.0f);
+}
+
+float get_potion_gcd(RE::StaticFunctionTag*)
+{
+    return SpellHotbar::GameData::potion_gcd;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -341,6 +351,8 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("getBarsPresets", "SpellHotbar", get_bars_presets);
     vm->RegisterFunction("getBarAnchorPoint", "SpellHotbar", get_bar_anchor_point);
     vm->RegisterFunction("setBarAnchorPoint", "SpellHotbar", set_bar_anchor_point);
+    vm->RegisterFunction("getPotionGCD", "SpellHotbar", get_potion_gcd);
+    vm->RegisterFunction("setPotionGCD", "SpellHotbar", set_potion_gcd);
 
     return true;
 }

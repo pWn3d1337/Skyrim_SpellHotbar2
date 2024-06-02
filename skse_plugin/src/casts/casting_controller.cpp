@@ -972,6 +972,13 @@ namespace SpellHotbar::casts::CastingController {
 	CastingInstancePotionUse::CastingInstancePotionUse(RE::TESForm* form): BaseCastingInstance(form, 0.0f)
 	{
 		m_gcd = 1.0f;
+		if (form->GetFormType() == RE::FormType::AlchemyItem) {
+			auto alch = form->As<RE::AlchemyItem>();
+			if (!alch->IsFood() && !alch->IsPoison()) {
+				//potion
+				m_gcd = GameData::potion_gcd;
+			}
+		}
 	}
 
 	bool CastingInstancePotionUse::update(RE::PlayerCharacter* pc, float delta)

@@ -1,11 +1,12 @@
 #include "spell_cast_data.h"
+#include "game_data.h"
 
 namespace SpellHotbar::GameData {
 
-    Spell_cast_data::Spell_cast_data() : gcd(-1.0f), cooldown(-1.0f), casttime(-1.0f), animation(-1), animation2(-1), casteffectid{ 0 } {}
+    Spell_cast_data::Spell_cast_data() : gcd(-1.0f), cooldown(-1.0f), casttime(-1.0f), animation(-1), animation2(-1), casteffectid(0U), overlay_icon(GameData::DefaultIconType::UNKNOWN) {};
     bool Spell_cast_data::is_empty()
     {
-        return animation <= 0 && animation2 <= 0 && gcd < 0.0f && cooldown < 0.0f && casttime < 0.0f && casteffectid == 0U;
+        return animation <= 0 && animation2 <= 0 && gcd < 0.0f && cooldown < 0.0f && casttime < 0.0f && casteffectid == 0U && overlay_icon == GameData::DefaultIconType::UNKNOWN;
     }
 
     void Spell_cast_data::fill_default_values_from_spell(const RE::SpellItem* spell)
@@ -35,6 +36,9 @@ namespace SpellHotbar::GameData {
         if (animation2 < 0) {
             animation2 = Spell_cast_data::chose_default_anim_for_spell(spell, -1, true);
         }
+        if (overlay_icon == DefaultIconType::UNKNOWN && spell->GetSpellType() == RE::MagicSystem::SpellType::kScroll) {
+            overlay_icon = DefaultIconType::SCROLL_OVERLAY;
+        }
 
     }
 
@@ -55,6 +59,7 @@ namespace SpellHotbar::GameData {
         if (animation2 < 0) {
             animation2 = -1;
         }
+        //TODO generic shout overlay?
     }
 
     void Spell_cast_data::fill_and_override_from_non_default_values(const Spell_cast_data& other)
@@ -76,6 +81,10 @@ namespace SpellHotbar::GameData {
             animation2 = other.animation2;
         }
   
+        if (other.overlay_icon != DefaultIconType::UNKNOWN) {
+            overlay_icon = other.overlay_icon;
+        }
+
         casteffectid = other.casteffectid;
 
     }

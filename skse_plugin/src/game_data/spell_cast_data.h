@@ -2,6 +2,8 @@
 
 namespace SpellHotbar::GameData {
 
+    enum class DefaultIconType : uint32_t; //forward declaration
+
     struct Spell_cast_data {
         float gcd;
         float cooldown;
@@ -9,6 +11,7 @@ namespace SpellHotbar::GameData {
         int animation; //single hand cast, or slow cast (for ritual spells)
         int animation2; //dual cast or fast cast (for ritual spells)
         uint16_t casteffectid;
+        DefaultIconType overlay_icon;
 
         Spell_cast_data();
         bool is_empty();

@@ -36,7 +36,7 @@ namespace SpellHotbar {
 
         virtual void draw(float w, float h) override;
         virtual void draw(float w, float h, float alpha) override;
-        virtual void draw_with_scale(float w, float h, float alpha, float scale);
+        virtual void draw_with_scale(float w, float h, ImU32 col, float scale);
         virtual void draw_on_top(ImVec2 pos, float w, float h, ImU32 col) override;
 
         ImVec2 uv0;
@@ -84,6 +84,7 @@ namespace SpellHotbar {
 
         static constexpr std::string_view tab_scrolls = "SCROLLS";
         static constexpr std::string_view tab_potions = "POTIONS";
+        static constexpr std::string_view tab_food = "FOOD";
 
     public:
         static bool install();
@@ -103,7 +104,7 @@ namespace SpellHotbar {
         static void init_cooldown_icons(size_t amount);
 
         static void draw_bg(int size, float alpha = 1.0f);
-        static bool draw_skill(RE::FormID formID, int size, float alpha = 1.0f);
+        static bool draw_skill(RE::FormID formID, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
         static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size);
         static void draw_extra_icon_in_editor(const std::string &key, ImVec2 pos, int size);
@@ -111,6 +112,7 @@ namespace SpellHotbar {
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);
         static void draw_scaled_text(ImVec2 pos, ImU32 col, const char* text);
+        static void draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col);
 
         static void highlight_skill_slot(int id, float dur = 1.0F, bool error = false);
 
@@ -134,5 +136,7 @@ namespace SpellHotbar {
         static float scale_from_resolution(float scaled_value);
         
         static bool current_inv_menu_tab_valid_for_hotbar();
+
+        static bool should_overlay_be_rendered(GameData::DefaultIconType overlay);
     };
 }

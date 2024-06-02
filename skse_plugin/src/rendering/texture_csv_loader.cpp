@@ -74,7 +74,15 @@ namespace SpellHotbar::TextureCSVLoader {
         {"CONJURATION_SUMMON_MASTER", GameData::DefaultIconType::CONJURATION_SUMMON_MASTER},
         {"SHOUT_GENERIC", GameData::DefaultIconType::SHOUT_GENERIC},
         {"SINGLE_CAST", GameData::DefaultIconType::SINGLE_CAST},
-        {"DUAL_CAST", GameData::DefaultIconType::DUAL_CAST}
+        {"DUAL_CAST", GameData::DefaultIconType::DUAL_CAST},
+        {"SCROLL_OVERLAY", GameData::DefaultIconType::SCROLL_OVERLAY},
+        {"NO_OVERLAY", GameData::DefaultIconType::NO_OVERLAY},
+        {"GENERIC_POTION", GameData::DefaultIconType::GENERIC_POTION},
+        {"GENERIC_POTION_SMALL", GameData::DefaultIconType::GENERIC_POTION_SMALL},
+        {"GENERIC_POTION_LARGE", GameData::DefaultIconType::GENERIC_POTION_LARGE},
+        {"GENERIC_POISON", GameData::DefaultIconType::GENERIC_POISON},
+        {"GENERIC_POISON_SMALL", GameData::DefaultIconType::GENERIC_POISON_SMALL},
+        {"GENERIC_POISON_LARGE", GameData::DefaultIconType::GENERIC_POISON_LARGE}
     };
 
     bool is_spell_icon_file(rapidcsv::Document& doc)
