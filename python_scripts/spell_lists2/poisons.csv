@@ -1,0 +1,80 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Weak Poison	0x03a5a4	Skyrim.esm		-1	-1	-1	-1	-1
+Poison	0x073f31	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Poison	0x073f32	Skyrim.esm		-1	-1	-1	-1	-1
+Virulent Poison	0x073f33	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Poison	0x073f34	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Magicka Poison	0x065a65	Skyrim.esm		-1	-1	-1	-1	-1
+Magicka Poison	0x073f39	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Magicka Poison	0x073f3a	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Magicka Poison	0x073f3b	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Magicka Poison	0x073f3c	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Stamina Poison	0x065a66	Skyrim.esm		-1	-1	-1	-1	-1
+Stamina Poison	0x073f41	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Stamina Poison	0x073f42	Skyrim.esm		-1	-1	-1	-1	-1
+Virulent Stamina Poison	0x073f43	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Stamina Poison	0x073f44	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Fear Poison	0x065a68	Skyrim.esm		-1	-1	-1	-1	-1
+Fear Poison	0x073f5e	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Fear Poison	0x073f5f	Skyrim.esm		-1	-1	-1	-1	-1
+Virulent Fear Poison	0x073f60	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Fear Poison	0x073f61	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Frenzy Poison	0x065a69	Skyrim.esm		-1	-1	-1	-1	-1
+Frenzy Poison	0x073f5a	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Frenzy Poison	0x073f5b	Skyrim.esm		-1	-1	-1	-1	-1
+Virulent Frenzy Poison	0x073f5c	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Frenzy Poison	0x073f5d	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Paralysis Poison	0x065a6a	Skyrim.esm		-1	-1	-1	-1	-1
+Paralysis Poison	0x074a38	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Paralysis Poison	0x074a39	Skyrim.esm		-1	-1	-1	-1	-1
+Virulent Paralysis Poison	0x074a3a	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Paralysis Poison	0x074a3b	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Aversion to Fire	0x065a6b	Skyrim.esm		-1	-1	-1	-1	-1
+Aversion to Fire	0x073f49	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Aversion to Fire	0x073f4a	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Aversion to Fire	0x073f4b	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Aversion to Fire	0x073f4c	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Aversion to Frost	0x065a6c	Skyrim.esm		-1	-1	-1	-1	-1
+Aversion to Frost	0x073f4d	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Aversion to Frost	0x073f4e	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Aversion to Frost	0x073f4f	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Aversion to Frost	0x073f50	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Aversion to Magic	0x065a6e	Skyrim.esm		-1	-1	-1	-1	-1
+Aversion to Magic	0x073f56	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Aversion to Magic	0x073f57	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Aversion to Magic	0x073f58	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Aversion to Magic	0x073f59	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Aversion to Shock	0x073f52	Skyrim.esm		-1	-1	-1	-1	-1
+Aversion to Shock	0x065a6d	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Aversion to Shock	0x073f53	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Aversion to Shock	0x073f54	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Aversion to Shock	0x073f55	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Recovery Poison	0x073f90	Skyrim.esm		-1	-1	-1	-1	-1
+Magicka Recovery Poison	0x073f91	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Recovery Poison	0x073f92	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Recovery Poison	0x073f93	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Recovery Poison	0x073f94	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Vigor Poison	0x073f8b	Skyrim.esm		-1	-1	-1	-1	-1
+Vigor Poison	0x073f8c	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Vigor Poison	0x073f8d	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Vigor Poison	0x073f8e	Skyrim.esm		-1	-1	-1	-1	-1
+Weak Lingering Poison	0x065a6f	Skyrim.esm		-1	-1	-1	-1	-1
+Lingering Poison	0x073f35	Skyrim.esm		-1	-1	-1	-1	-1
+Potent Lingering Poison	0x073f36	Skyrim.esm		-1	-1	-1	-1	-1
+Malign Lingering Poison	0x073f37	Skyrim.esm		-1	-1	-1	-1	-1
+Deadly Lingering Poison	0x073f38	Skyrim.esm		-1	-1	-1	-1	-1
+Lingering Magicka Poison	0x065a70	Skyrim.esm		-1	-1	-1	-1	-1
+Enduring Magicka Poison	0x073f3d	Skyrim.esm		-1	-1	-1	-1	-1
+Lasting Magicka Poison	0x073f3e	Skyrim.esm		-1	-1	-1	-1	-1
+Persisting Magicka Poison	0x073f3f	Skyrim.esm		-1	-1	-1	-1	-1
+Unceasing Magicka Poison	0x073f40	Skyrim.esm		-1	-1	-1	-1	-1
+Lingering Stamina Poison	0x065a71	Skyrim.esm		-1	-1	-1	-1	-1
+Enduring Stamina Poison	0x073f45	Skyrim.esm		-1	-1	-1	-1	-1
+Lasting Stamina Poison	0x073f46	Skyrim.esm		-1	-1	-1	-1	-1
+Persisting Stamina Poison	0x073f47	Skyrim.esm		-1	-1	-1	-1	-1
+Unceasing Stamina Poison	0x073f48	Skyrim.esm		-1	-1	-1	-1	-1
+Frostbite Venom	0x0e41b8	Skyrim.esm		-1	-1	-1	-1	-1
+Ice Wraith Bane	0x0e2d3d	Skyrim.esm		-1	-1	-1	-1	-1
+Lotus Extract	0x058cfb	Skyrim.esm		-1	-1	-1	-1	-1
+Mystic Venom	0x0b9587	ccbgssse025-advdsgs.esm		-1	-1	-1	-1	-1
+Nightshade Extact	0x0cd883	Skyrim.esm		-1	-1	-1	-1	-1

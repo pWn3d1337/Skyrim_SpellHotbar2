@@ -17,3 +17,168 @@ Potion of Plentiful Stamina	0x03eae7	Skyrim.esm		-1	-1	-1	-1	-1
 Potion of Vigorous Stamina	0x03eae8	Skyrim.esm		-1	-1	-1	-1	-1
 Potion of Extreme Stamina	0x03eae6	Skyrim.esm		-1	-1	-1	-1	-1
 Potion of Ultimate Stamina	0x039cf3	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Alteration	0x03eb36	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Alteration	0x03988e	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Alteration	0x039899	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Alteration	0x03989a	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of the Defender	0x03eb32	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of the Defender	0x03989b	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Defender	0x0398ab	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of the Defender	0x0398ac	Skyrim.esm		-1	-1	-1	-1	-1
+Conjurers Potion	0x03eb37	Skyrim.esm		-1	-1	-1	-1	-1
+Conjurers Draught	0x0398ad	Skyrim.esm		-1	-1	-1	-1	-1
+Conjurers Philter	0x0398ec	Skyrim.esm		-1	-1	-1	-1	-1
+Conjurers Elixir	0x0398ed	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Destruction	0x03eb38	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Destruction	0x0398ee	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Destruction	0x0398f1	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Destruction	0x0398f3	Skyrim.esm		-1	-1	-1	-1	-1
+Enchanters Potion	0x039cfb	Skyrim.esm		-1	-1	-1	-1	-1
+Enchanters Draught	0x039d02	Skyrim.esm		-1	-1	-1	-1	-1
+Enchanters Philter	0x039d0a	Skyrim.esm		-1	-1	-1	-1	-1
+Enchanters Elixir	0x039d12	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of the Knight	0x03eb2f	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of the Knight	0x0398f4	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Knight	0x0398f5	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of the Knight	0x0398f6	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Illusion	0x03eb39	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Illusion	0x03994f	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Illusion	0x039950	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Illusion	0x039951	Skyrim.esm		-1	-1	-1	-1	-1
+Skirmishers Potion	0x03eb30	Skyrim.esm		-1	-1	-1	-1	-1
+Skirmishers Draught	0x0398fd	Skyrim.esm		-1	-1	-1	-1	-1
+Skirmishers Philter	0x039903	Skyrim.esm		-1	-1	-1	-1	-1
+Skirmishers Elixir	0x039904	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Lockpicking	0x039930	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Lockpicking	0x039945	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Lockpicking	0x039946	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Lockpicking	0x039948	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of True Shot	0x03eb2c	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of True Shot	0x039949	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of True Shot	0x03994b	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of True Shot	0x03994e	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of the Warrior	0x03eb2a	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of the Warrior	0x039954	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Warrior	0x039955	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of the Warrior	0x039956	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Glibness	0x0d6948	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Glibness	0x0d6949	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Glibness	0x0d697f	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Glibness	0x0d6980	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Pickpocketing	0x03eb31	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Pickpocketing	0x039957	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Pickpocketing	0x039959	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Pickpocketing	0x039958	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of the Healer	0x03eb3a	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of the Healer	0x03995a	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Healer	0x03995b	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of the Healer	0x03995c	Skyrim.esm		-1	-1	-1	-1	-1
+Blacksmiths Potion	0x03eb2e	Skyrim.esm		-1	-1	-1	-1	-1
+Blacksmiths Draught	0x03995d	Skyrim.esm		-1	-1	-1	-1	-1
+Blacksmiths Philter	0x039962	Skyrim.esm		-1	-1	-1	-1	-1
+Blacksmiths Elixir	0x039967	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Light Feet	0x03eb33	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Light Feet	0x039968	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Light Feet	0x039969	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Light Feet	0x03996f	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of the Berserker	0x03eb2b	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of the Berserker	0x039974	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Berserker	0x039980	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of the Berserker	0x039aa6	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Haggling	0x03eb35 	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Haggling	0x039970	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Haggling	0x039971	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Haggling	0x039973	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Strength	0x03eb02	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Strength	0x03eb05	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Strength	0x03eb03	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Strength	0x03eb04	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Strength	0x0ff9fe	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Brief Invisibility	0x03eb3e	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Extended Invisibility	0x03eb40	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Enduring Invisibility	0x03eb3f	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Prolonged Invisibility	0x03eb41	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Regeneration	0x03eb09	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Regeneration	0x03eb0a	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Regeneration	0x03eb0b	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Regeneration	0x03eb0c	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Regeneration	0x0ff9ff	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Lasting Potency	0x03eb0d	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Lasting Potency	0x03eb0e	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Lasting Potency	0x03eb0f	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Lasting Potency	0x03eb10	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Lasting Potency	0x0ffa00	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Vigor	0x03eb11	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Vigor	0x03eb12	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Vigor	0x039b0c	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Vigor	0x03eb14	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Vigor	0x0ffa02	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Resist Fire	0x039b4a	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Resist Fire	0x03eae9	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Resist Fire	0x039b4b	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Resist Fire	0x03eaef	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Resist Cold	0x039b8a	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Resist Cold	0x03eaed	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Resist Cold	0x039bdf	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Resist Cold	0x03eaf0	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Resist Magic	0x039e52	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Resist Magic	0x039e53	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Resist Magic	0x039e54	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Resist Magic	0x039e55	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Resist Shock	0x039be1	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Resist Shock	0x03eaee	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Resist Shock	0x039be3	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Resist Shock	0x03eaf1	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Waterbreathing	0x03ac2e	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Waterbreathing	0x03ac2f	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Waterbreathing	0x03ac30	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Waterbreathing	0x03ac31	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Waterwalking	0x0390e0 	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Minor Well-being	0x01aadd	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Well-being	0x01aade	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Plentiful Well-being	0x01aadf	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Vigorous Well-being	0x01aae0	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Extreme Well-being	0x01aae1	Dragonborn.esm		-1	-1	-1	-1	-1
+Potion of Ultimate Well-being	0x01aae2	Dragonborn.esm		-1	-1	-1	-1	-1
+Cure Poison	0x065a64	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Cure Disease	0x0ae723	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Health	0x03eaf2	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Health	0x03eaf4	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Health	0x03eaf6	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Health	0x03eaf5	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Health	0x0ff9fc	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Extra Magicka	0x03eaf7	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Extra Magicka	0x03eafa	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Extra Magicka	0x03eafb	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Extra Magicka	0x03eafc	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Extra Magicka	0x0ff9fd	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Enhanced Stamina	0x03eafd	Skyrim.esm		-1	-1	-1	-1	-1
+Draught of Enhanced Stamina	0x03eb00	Skyrim.esm		-1	-1	-1	-1	-1
+Solution of Enhanced Stamina	0x03eafe	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of Enhanced Stamina	0x03eaff	Skyrim.esm		-1	-1	-1	-1	-1
+Elixir of Enhanced Stamina	0x0ffa01	Skyrim.esm		-1	-1	-1	-1	-1
+Falmer Blood Elixir	0x076f17	Skyrim.esm		-1	-1	-1	-1	-1
+Ice Wraith Essence	0x0f9642	Skyrim.esm		-1	-1	-1	-1	-1
+Philter of the Phantom	0x0663e1	Skyrim.esm		-1	-1	-1	-1	-1
+Potion of Blood	0x018ef3	Dawnguard.esm		-1	-1	-1	-1	-1
+Soul Husk Extract	0x015a1e	Dawnguard.esm		-1	-1	-1	-1	-1
+Stallion’s Potion	0x05566a 	Skyrim.esm		-1	-1	-1	-1	-1
+Vaermina’s Torpor	0x05f6df 	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x102019	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x10201a	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x10201b	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x10201c	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x10201d	Skyrim.esm		-1	-1	-1	-1	-1
+The White Phial	0x10201e	Skyrim.esm		-1	-1	-1	-1	-1
+Argonian Ale	0x09380d	Skyrim.esm		-1	-1	-1	-1	-1
+Balmora Blue	0x0dc172	Skyrim.esm		-1	-1	-1	-1	-1
+Cliff Racer	0x065c39	Skyrim.esm		-1	-1	-1	-1	-1
+Cyrodilic Brandy	0x0b91d7	Skyrim.esm		-1	-1	-1	-1	-1
+Double-Distilled Skooma	0x03f4bd	Skyrim.esm		-1	-1	-1	-1	-1
+Esbern's Potion	0x0e6df5	Skyrim.esm		-1	-1	-1	-1	-1
+Redwater Skooma	0x01391d	Dawnguard.esm		-1	-1	-1	-1	-1
+Skooma	0x057a7a	Skyrim.esm		-1	-1	-1	-1	-1
+Sleeping Tree Sap	0x0aed90	Skyrim.esm		-1	-1	-1	-1	-1
+Stros M'Kai Rum	0x0d055e	Skyrim.esm		-1	-1	-1	-1	-1
+Velvet LeChance	0x065c37	Skyrim.esm		-1	-1	-1	-1	-1
+White-Gold Tower	0x065c38	Skyrim.esm		-1	-1	-1	-1	-1

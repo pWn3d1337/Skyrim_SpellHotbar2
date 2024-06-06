@@ -23,6 +23,8 @@ namespace SpellHotbar::Input {
 		modifier_3 = 16,
 		dual_casting_mod = 17,
 		show_bar_mod = 18,
+		oblivion_cast = 19,
+		oblivion_potion = 20,
 		num_keys
 	};
 

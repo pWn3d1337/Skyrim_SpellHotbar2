@@ -29,10 +29,14 @@ set(source_files src/plugin.cpp
                  src/bar/hotbar.cpp
                  src/bar/hotbars.h
                  src/bar/hotbars.cpp
+                 src/bar/oblivion_bar.h
+                 src/bar/oblivion_bar.cpp
                  "src/input/input.h"
                  "src/input/input.cpp"
                  "src/input/keybinds.h"
                  "src/input/keybinds.cpp"
+                 "src/input/modes.h"
+                 "src/input/modes.cpp"
                  src/rendering/texture_csv_loader.h
                  src/rendering/texture_csv_loader.cpp
                  src/events/eventlistener.h
