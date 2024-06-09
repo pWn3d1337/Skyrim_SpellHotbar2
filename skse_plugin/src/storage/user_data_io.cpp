@@ -108,7 +108,7 @@ namespace SpellHotbar::Storage::IO {
         Bars::offset_x = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.offset_x", 0.0f));
         Bars::offset_y = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.offset_y", 0.0f));
 
-        Bars::slot_spacing = get_int_or_default(d, "settings.slot_spacing", 8);
+        Bars::slot_spacing = get_float_or_default(d, "settings.slot_spacing", 8.0f);
 
         Bars::bar_anchor_point = Bars::anchor_point(std::clamp(get_int_or_default(d, "settings.bar_anchor_point", 0), 0, static_cast<int>(Bars::anchor_point::CENTER)));
 
@@ -121,6 +121,14 @@ namespace SpellHotbar::Storage::IO {
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
 
         GameData::potion_gcd = get_float_or_default(d, "settings.potion_gcd", 1.0f);
+
+        //oblivion mode
+        Bars::oblivion_slot_scale = get_float_or_default(d, "settings.oblivion_bar.slot_scale", 1.0f);
+        Bars::oblivion_offset_x = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.oblivion_bar.offset_x", 0.0f));
+        Bars::oblivion_offset_y = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.oblivion_bar.offset_y", 0.0f));
+        Bars::oblivion_slot_spacing = get_float_or_default(d, "settings.oblivion_bar.slot_spacing", 8.0f);
+        Bars::oblivion_bar_anchor_point = Bars::anchor_point(std::clamp(get_int_or_default(d, "settings.oblivion_bar.bar_anchor_point", static_cast<int>(Bars::anchor_point::LEFT)), 0, static_cast<int>(Bars::anchor_point::CENTER)));
+        Bars::oblivion_bar_show_power = get_int_or_default(d, "settings.oblivion_bar.show_power", 1) != 0;
 
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {
@@ -242,11 +250,9 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.number_of_slots", static_cast<int>(Bars::barsize));
 
         add_float(d, "settings.slot_scale", Bars::slot_scale);
-
         add_float(d, "settings.offset_x", RenderManager::scale_from_resolution(Bars::offset_x));
         add_float(d, "settings.offset_y", RenderManager::scale_from_resolution(Bars::offset_y));
-
-        add_int(d, "settings.slot_spacing", Bars::slot_spacing);
+        add_float(d, "settings.slot_spacing", Bars::slot_spacing);
         add_int(d, "settings.bar_anchor_point", static_cast<int>(Bars::bar_anchor_point));
 
         add_int(d, "settings.hud_show_mode", static_cast<int>(Bars::bar_show_setting));
@@ -258,6 +264,13 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
 
         add_float(d, "settings.potion_gcd", GameData::potion_gcd);
+
+        add_float(d, "settings.oblivion_bar.slot_scale", Bars::oblivion_slot_scale);
+        add_float(d, "settings.oblivion_bar.offset_x", RenderManager::scale_from_resolution(Bars::oblivion_offset_x));
+        add_float(d, "settings.oblivion_bar.offset_y", RenderManager::scale_from_resolution(Bars::oblivion_offset_y));
+        add_float(d, "settings.oblivion_bar.slot_spacing", Bars::oblivion_slot_spacing);
+        add_int(d, "settings.oblivion_bar.bar_anchor_point", static_cast<int>(Bars::oblivion_bar_anchor_point));
+        add_int(d, "settings.oblivion_bar.show_power", Bars::oblivion_bar_show_power ? 1 : 0);
 
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {

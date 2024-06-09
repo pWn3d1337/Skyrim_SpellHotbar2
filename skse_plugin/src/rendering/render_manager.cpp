@@ -2,6 +2,7 @@
 #include "texture_loader.h"
 #include "../bar/hotbars.h"
 #include "../bar/hotbar.h"
+#include "../bar/oblivion_bar.h"
 
 #include "../logger/logger.h"
 #include "../storage/storage.h"
@@ -16,6 +17,7 @@
 #include <unordered_map>
 #include "../input/input.h"
 #include "../input/keybinds.h"
+#include "../input/modes.h"
 #include "spell_editor.h"
 
 #include <imgui_internal.h>
@@ -123,6 +125,7 @@ ImVec2 drag_window_pos = ImVec2(0,0);
 float drag_window_width = 0.0f;
 ImVec2 drag_window_start_pos = ImVec2(0, 0);
 float drag_window_start_width = 0;
+int dragged_window = 0;
 
 float SpellHotbar::RenderManager::scale_to_resolution(float normalized_value)
 {
@@ -269,7 +272,7 @@ float RenderManager::get_bar_alpha()
     return hud_fade_type == fade_type::none ? 1.0f : hud_fade_timer / hud_fade_time_max;
 }
 
-void RenderManager::start_bar_dragging()
+void RenderManager::start_bar_dragging(int type)
 { 
     show_drag_frame = true;
     drag_frame_initialized = false;
@@ -278,6 +281,7 @@ void RenderManager::start_bar_dragging()
     drag_window_width = 0.0f;
     drag_window_start_pos = ImVec2(0, 0);
     drag_window_start_width = 0;
+    dragged_window = type;
 }
 
 bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened(); }
@@ -872,16 +876,27 @@ inline std::tuple<float, float, float> calculate_menu_window_size(bool include_i
     return std::make_tuple(screen_size_x, screen_size_y, window_width);
 }
 
+inline int get_oblivion_bar_size() {
+    int barsize = 1;
+    if (Input::key_oblivion_potion.isValidBound()) {
+        barsize++;
+    }
+    if (Bars::oblivion_bar_show_power) {
+        barsize++;
+    }
+    return barsize;
+}
+
 /*
 * return screen_size_x, screen_size_y, window_width, window_height
 */
-inline std::tuple<float, float, float, float> calculate_hud_window_size()
+inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize)
 {
     auto& io = ImGui::GetIO();
     const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
 
     ImVec2 spacing = ImGui::GetStyle().ItemSpacing;
-    spacing.x = static_cast<float>(Bars::slot_spacing);
+    spacing.x = Bars::slot_spacing;
     ImGui::GetStyle().ItemSpacing = spacing;
 
     ImVec2 inner_spacing = ImGui::GetStyle().ItemInnerSpacing;
@@ -891,52 +906,52 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size()
     float window_height = slot_h + ImGui::CalcTextSize("M").y + spacing.y * 2 + inner_spacing.y *2;
     ImGui::PopFont();
 
-    float window_width = (slot_h + spacing.x) * static_cast<float>(Bars::barsize-1) + slot_h + inner_spacing.x *4;
+    float window_width = (slot_h + spacing.x) * static_cast<float>(barsize-1) + slot_h + inner_spacing.x *4;
 
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
 
-void adjust_window_pos_to_anchor(float screen_size_x, float screen_size_y, float window_width, float window_height, Bars::anchor_point anchor)
+void adjust_window_pos_to_anchor(float screen_size_x, float screen_size_y, float window_width, float window_height, Bars::anchor_point anchor, float offset_x, float offset_y)
 {
     switch (anchor)
     {
     case SpellHotbar::Bars::anchor_point::LEFT:
-        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
-                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::TOP:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                       Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + offset_x,
+                                       offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::RIGHT:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
-                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::BOTTOM_LEFT:
-        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
-                                       screen_size_y - window_height + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(offset_x,
+                                       screen_size_y - window_height + offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::TOP_LEFT:
-        ImGui::SetNextWindowPos(ImVec2(Bars::offset_x,
-                                       Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(offset_x,
+                                       offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::BOTTOM_RIGHT:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
-                                       screen_size_y - window_height + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + offset_x,
+                                       screen_size_y - window_height + offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::TOP_RIGHT:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + Bars::offset_x,
-                                       Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x - window_width + offset_x,
+                                       offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::CENTER:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                       screen_size_y * 0.5f - window_height * 0.5f + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + offset_x,
+                                       screen_size_y * 0.5f - window_height * 0.5f + offset_y));
         break;
     case SpellHotbar::Bars::anchor_point::BOTTOM:
     default:
-        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + Bars::offset_x,
-                                       screen_size_y        - window_height       + Bars::offset_y));
+        ImGui::SetNextWindowPos(ImVec2(screen_size_x * 0.5f - window_width * 0.5f + offset_x,
+                                       screen_size_y        - window_height       + offset_y));
         break;
     }
 }
@@ -953,16 +968,31 @@ void draw_drag_menu() {
     auto& io = ImGui::GetIO();
     io.MouseDrawCursor = true;
 
-    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
+    uint8_t barsize = Bars::barsize;
+    Bars::anchor_point anchor = Bars::bar_anchor_point;
+    float* slot_spacing = &Bars::slot_spacing;
+    float* slot_scale = &Bars::slot_scale;
+    float offset_x = Bars::offset_x;
+    float offset_y = Bars::offset_y;
+    if (dragged_window == 1) {
+        barsize = static_cast<uint8_t>(get_oblivion_bar_size());
+        anchor = Bars::oblivion_bar_anchor_point;
+        slot_spacing = &Bars::oblivion_slot_spacing;
+        slot_scale = &Bars::oblivion_slot_scale;
+        offset_x = Bars::oblivion_offset_x;
+        offset_y = Bars::oblivion_offset_y;
+    }
+
+    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize);
     if (!drag_frame_initialized) {
-        adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point);
+        adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, anchor, offset_x, offset_y);
     }
     ImGui::SetNextWindowBgAlpha(0.65F);
 
     float alpha = 0.5f;
 
     const std::string text = "Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing";
-    SpellHotbar::Hotbar dummy(text);
+    SpellHotbar::Hotbar dummy(text, barsize);
     ImGui::Begin(text.c_str(), &show_drag_frame, window_flag);
 
     drag_window_pos = ImGui::GetWindowPos();
@@ -977,27 +1007,32 @@ void draw_drag_menu() {
 
     float constexpr scale_diff = 0.05f;
 
+    const float spacing_diff = RenderManager::scale_to_resolution(1.0f);
+    const float max_spacing = RenderManager::scale_to_resolution(50.0f);
+
     //if (ImGui::IsItemHovered()) {
     if (io.MouseWheel < 0) {
         if (Input::mod_alt.isDown()) {
-            if (Bars::slot_spacing > 0) {
-                Bars::slot_spacing--;
+            *slot_spacing -= spacing_diff;
+            if (*slot_spacing < 0.0f) {
+                *slot_spacing = 0.0f;
             }
         }
         else {
-            if (Bars::slot_scale > 0.1f) {
-                Bars::slot_scale -= scale_diff;
+            if (*slot_scale > 0.1f) {
+                *slot_scale -= scale_diff;
             }
         }
     } else if (io.MouseWheel > 0) {
         if (Input::mod_alt.isDown()) {
-            if (Bars::slot_spacing < 50) {
-                Bars::slot_spacing++;
+             *slot_spacing += spacing_diff;
+            if (*slot_spacing > max_spacing) {
+                *slot_spacing = max_spacing;
             }
         }
         else {
-            if (Bars::slot_scale < 10.0f) {
-                Bars::slot_scale += scale_diff;
+            if (*slot_scale < 10.0f) {
+                *slot_scale += scale_diff;
             }
         }
     }
@@ -1047,14 +1082,21 @@ void RenderManager::draw() {
             //update bar position after drag has finished
             float width_diff = (drag_window_width - drag_window_start_width) * 0.5f;
 
-            Bars::offset_x += (drag_window_pos.x - drag_window_start_pos.x) + width_diff;
-            Bars::offset_y += (drag_window_pos.y - drag_window_start_pos.y);
+            if (dragged_window == 1) {
+                Bars::oblivion_offset_x += (drag_window_pos.x - drag_window_start_pos.x) + width_diff;
+                Bars::oblivion_offset_y += (drag_window_pos.y - drag_window_start_pos.y);
+            }
+            else {
+                Bars::offset_x += (drag_window_pos.x - drag_window_start_pos.x) + width_diff;
+                Bars::offset_y += (drag_window_pos.y - drag_window_start_pos.y);
+            }
             drag_window_pos = {0, 0};
             drag_window_start_pos = {0, 0};
             drag_window_width = 0.0f;
             drag_window_start_width = 0.0f;
 
             drag_frame_initialized = false;
+            dragged_window = 0;
         }
 
         auto& io = ImGui::GetIO();
@@ -1168,21 +1210,23 @@ void RenderManager::draw() {
             }
             last_hud_should_show = should_show;
 
+
+            auto* hudMenu = static_cast<RE::HUDMenu*>(ui->GetMenu(RE::HUDMenu::MENU_NAME).get());
+            float shout_cd_prog = 1.0f;
+            float shout_cd_dur = 0.0;
+            if (hudMenu) {
+                shout_cd_prog = std::clamp(hudMenu->GetRuntimeData().shout->GetFillPct() * 0.01f, 0.0f, 1.0f);
+                shout_cd_dur = hudMenu->GetRuntimeData().shout->cooldown;
+            }
+
+            static constexpr ImGuiWindowFlags window_flag =
+                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
+
             if (should_show || is_hud_fading()) {
-                auto* hudMenu = static_cast<RE::HUDMenu*>(ui->GetMenu(RE::HUDMenu::MENU_NAME).get());
-                float shout_cd_prog = 1.0f;
-                float shout_cd_dur = 0.0;
-                if (hudMenu) {
-                    shout_cd_prog = std::clamp(hudMenu->GetRuntimeData().shout->GetFillPct() * 0.01f, 0.0f, 1.0f);
-                    shout_cd_dur = hudMenu->GetRuntimeData().shout->cooldown;
-                }
 
-                static constexpr ImGuiWindowFlags window_flag =
-                    ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize);
 
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size();
-
-                adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point);
+                adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point, Bars::offset_x, Bars::offset_y);
 
                 ImGui::SetNextWindowBgAlpha(0.65F);
 
@@ -1209,12 +1253,31 @@ void RenderManager::draw() {
 
                     bar.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), m,
                                     highlight_isred, alpha, shout_cd_prog, shout_cd_dur);
+
+
+
                 } else {
                     logger::error("Unknown Bar: {}", bar_id);
                 }
 
                 ImGui::End();
             }
+
+            if (Input::is_oblivion_mode() && (should_show || is_hud_fading())) {
+
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(get_oblivion_bar_size());
+
+                adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::oblivion_bar_anchor_point, Bars::oblivion_offset_x, Bars::oblivion_offset_y);
+
+                ImGui::Begin("SpellHotbarOblivionHUD", nullptr, window_flag);
+
+                float alpha = get_bar_alpha();
+                GameData::oblivion_bar.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
+                    highlight_isred, alpha, shout_cd_prog, shout_cd_dur);
+
+                ImGui::End();
+            }
+
         }
     }
     last_mod = mod;

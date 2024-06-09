@@ -83,7 +83,7 @@ enum class key_modifier
 class Hotbar
 {
 public:
-    Hotbar(const std::string & name);
+    Hotbar(const std::string & name, uint8_t & barsize);
 
     void set_parent(uint32_t parent);
 
@@ -98,6 +98,25 @@ public:
 
     void draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot, float highlight_factor, key_modifier mod,
         bool hightlight_isred, float alpha, float shout_cd, float shout_cd_dur);
+
+    static void draw_single_skill(SlottedSkill& skill,
+                                float alpha,
+                                int icon_size,
+                                float text_offset_x,
+                                float text_offset_y,
+                                float gcd_prog,
+                                float gcd_dur,
+                                float shout_cd,
+                                float shout_cd_dur,
+                                float game_time,
+                                float time_scale,
+                                int highlight_slot,
+                                float highlight_factor,
+                                bool highlight_isred,
+                                key_modifier mod,
+                                const std::string_view& bar_name,
+                                RE::PlayerCharacter* pc,
+                                int slot_index);
 
     inline bool is_enabled() const;
 
@@ -133,6 +152,7 @@ private:
     uint32_t m_parent_bar;
     std::string m_name;
     inherit_mode m_inherit_mode;
+    uint8_t& m_barsize;
 };
 
 inline void SpellHotbar::Hotbar::set_enabled(bool enabled) { m_enabled = enabled; }

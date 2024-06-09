@@ -63,6 +63,8 @@ namespace SpellHotbar::GameData {
 
     float potion_gcd = 1.0f;
 
+    Bars::OblivionBar oblivion_bar;
+
     constexpr ImU32 col_OneHanded {IM_COL32(255,132,0,255)};
     constexpr ImU32 col_TwoHanded {IM_COL32(255,120,0,255)};
     constexpr ImU32 col_Archery {IM_COL32(128,255,255,255)};
@@ -348,6 +350,16 @@ namespace SpellHotbar::GameData {
     {
         if (slot_index >= 0 && slot_index < SpellHotbar::Input::key_spells.size()) {
             return SpellHotbar::Input::key_spells.at(slot_index).get_dx_scancode();
+        }
+        else if (slot_index == SpellHotbar::Input::keybind_id::oblivion_cast) {
+            return SpellHotbar::Input::key_oblivion_cast.get_dx_scancode();
+        }
+        else if (slot_index == SpellHotbar::Input::keybind_id::oblivion_potion) {
+            return SpellHotbar::Input::key_oblivion_potion.get_dx_scancode();
+        }
+        else if (slot_index == SpellHotbar::Input::keybind_id::dummy_key_vanilla_shout) {
+
+            return Input::get_shout_key_dxcode();
         }
         return 0;
     }
@@ -958,7 +970,13 @@ namespace SpellHotbar::GameData {
                 auto [skill, inherited] = bar.get_skill_in_bar_with_inheritance(static_cast<int>(index), Bars::get_current_modifier(), false);
                 ret = skill;
             }
+        } else if (index == Input::keybind_id::oblivion_cast) {
+            ret = oblivion_bar.get_slotted_spell();
         }
+        else if (index == Input::keybind_id::oblivion_potion) {
+            ret = oblivion_bar.get_slotted_potion();
+        }
+
         if (GameData::is_clear_spell(ret.formID)) {
             ret.formID = 0U;
             ret.hand = hand_mode::voice;

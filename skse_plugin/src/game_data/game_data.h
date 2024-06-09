@@ -3,6 +3,7 @@
 #include "../logger/logger.h"
 #include "spell_cast_data.h"
 #include "user_custom_spelldata.h"
+#include "../bar/oblivion_bar.h"
 
 namespace SpellHotbar::GameData {
 
@@ -151,6 +152,8 @@ namespace SpellHotbar::GameData {
     extern std::unordered_map<RE::ActorValue, ImU32> potion_color_mapping;
 
     extern float potion_gcd;
+
+    extern Bars::OblivionBar oblivion_bar;
 
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);

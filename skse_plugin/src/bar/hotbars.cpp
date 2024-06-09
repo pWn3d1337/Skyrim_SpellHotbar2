@@ -18,10 +18,19 @@ namespace SpellHotbar::Bars {
     std::vector<uint32_t> bar_cycle; //used for rotating bars in menu
     bool disable_non_modifier_bar;
     uint8_t barsize;
+
     float slot_scale;
-    int slot_spacing; 
+    float slot_spacing; 
     float offset_x;
     float offset_y;
+
+    float oblivion_slot_scale;
+    float oblivion_slot_spacing;
+    float oblivion_offset_x;
+    float oblivion_offset_y;
+    anchor_point oblivion_bar_anchor_point = anchor_point::LEFT;
+    bool oblivion_bar_show_power = true;
+
     text_show_mode text_show_setting;
     bar_show_mode bar_show_setting;
     bar_show_mode bar_show_setting_vampire_lord;
@@ -35,8 +44,8 @@ namespace SpellHotbar::Bars {
 
     void add_bars(uint32_t name, std::optional<uint32_t> parent = std::nullopt)
     {
-        hotbars.insert({name, Hotbar(bar_names.at(name))});
-        hotbars.insert({name+1, Hotbar(bar_names.at(name+1))});
+        hotbars.insert({name, Hotbar(bar_names.at(name), Bars::barsize)});
+        hotbars.insert({name+1, Hotbar(bar_names.at(name+1), Bars::barsize)});
         
         if (parent.has_value()) {
             uint32_t p = parent.value();
@@ -60,7 +69,7 @@ namespace SpellHotbar::Bars {
     }
 
     void add_special_bar(uint32_t name, std::optional<uint32_t> parent) {
-        hotbars.insert({name, Hotbar(bar_names.at(name))});
+        hotbars.insert({name, Hotbar(bar_names.at(name), Bars::barsize)});
 
         if (parent.has_value()) {
             uint32_t p = parent.value();
@@ -142,7 +151,7 @@ namespace SpellHotbar::Bars {
         slot_scale = 1.0f;
         offset_x = 0.0f;
         offset_y = 0.0f;
-        slot_spacing = 8;
+        slot_spacing = 8.0f;
         text_show_setting = text_show_mode::fade;
 
         bar_show_setting = bar_show_mode::combat_or_drawn;

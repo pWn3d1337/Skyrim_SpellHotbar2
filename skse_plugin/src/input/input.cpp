@@ -56,11 +56,14 @@ namespace SpellHotbar::Input {
 
         RE::InputEvent* addEvent = nullptr;
 
-        auto controlmap = RE::ControlMap::GetSingleton();
+        /*auto controlmap = RE::ControlMap::GetSingleton();
         uint32_t shoutkey = 0;
         if (controlmap) {
              shoutkey = controlmap->GetMappedKey("Shout", RE::INPUT_DEVICE::kKeyboard);
-        }
+        }*/
+
+        auto [shoutKeyDev, shoutKey] = get_shout_key_and_device();
+
 
         while (event != nullptr) {
             bool captureEvent = false; //Capure this event? (not forward to game)
@@ -117,7 +120,8 @@ namespace SpellHotbar::Input {
                     for (size_t i = 0; i < key_spells.size(); ++i) {
                         key_spells[i].update(bEvent);
                     }
-
+                    key_oblivion_cast.update(bEvent);
+                    key_oblivion_potion.update(bEvent);
 
                     if (bEvent->GetDevice() == RE::INPUT_DEVICE::kMouse) {
                         // credits open animation replacer
@@ -183,6 +187,7 @@ namespace SpellHotbar::Input {
                     if (!captureEvent) {
                         bool handled{ false };
                         if (!Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown()) {
+
                             for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
                                 const auto& bind = key_spells[i];
 
@@ -205,7 +210,7 @@ namespace SpellHotbar::Input {
                                             auto skill = GameData::get_current_spell_info_in_slot(i);
 
                                             if (InputModeBase::current_mode) {
-                                                InputModeBase::current_mode->process_input(skill, addEvent, i, bind, shoutkey);
+                                                InputModeBase::current_mode->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
                                             }
                                         }
                                         else if (bEvent->IsUp()) {
@@ -215,7 +220,7 @@ namespace SpellHotbar::Input {
 
                                                 float ct = casts::CastingController::get_current_casttime();
                                                 if (!addEvent) {
-                                                    addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 0.0f, ct); //default shout key
+                                                    addEvent = RE::ButtonEvent::Create(shoutKeyDev, "Shout", shoutKey, 0.0f, ct); //default shout key
                                                 }
                                             }
                                         }
@@ -227,6 +232,32 @@ namespace SpellHotbar::Input {
                                 }
                             }
                         }
+                        if (!handled && Input::is_oblivion_mode() && in_ingame_state())
+                        {
+                            bool cast = key_oblivion_cast.matches(bEvent);
+                            bool potion = key_oblivion_potion.matches(bEvent);
+                            if (cast || potion)
+                            {
+                                if (bEvent->IsDown()) {
+                                    size_t index = keybind_id::oblivion_potion;
+                                    if (cast) {
+                                        index = keybind_id::oblivion_cast;
+                                    }
+                                    handled = true;
+                                    auto skill = GameData::get_current_spell_info_in_slot(index);
+
+                                    if (InputModeBase::current_mode) {
+                                        if (cast) {
+                                            InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_cast, shoutKeyDev, shoutKey);
+                                        }
+                                        else if (potion) {
+                                            InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_potion, shoutKeyDev, shoutKey);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         if (!handled && in_binding_menu())
                         {
                             if (key_next.matches(bEvent) && bEvent->IsDown()) {
@@ -416,6 +447,44 @@ namespace SpellHotbar::Input {
             offset = 266;
         }
         return static_cast<int>(code) + offset;
+    }
+
+    std::tuple<RE::INPUT_DEVICE, uint8_t> get_shout_key_and_device()
+    {
+        RE::INPUT_DEVICE dev{ RE::INPUT_DEVICE::kNone };
+
+        auto controlmap = RE::ControlMap::GetSingleton();
+        uint32_t shoutkey = 0U;
+        if (controlmap) {
+            shoutkey = controlmap->GetMappedKey("Shout", RE::INPUT_DEVICE::kKeyboard);
+            if (shoutkey >= 255) {
+                shoutkey = controlmap->GetMappedKey("Shout", RE::INPUT_DEVICE::kMouse);
+
+                if (shoutkey >= 255) {
+                    shoutkey = controlmap->GetMappedKey("Shout", RE::INPUT_DEVICE::kGamepad);
+
+                    if (shoutkey >= 255) {
+                        shoutkey = 0;
+                    }
+                    else {
+                        dev = RE::INPUT_DEVICE::kGamepad;
+                    }
+                }
+                else {
+                    dev = RE::INPUT_DEVICE::kMouse;
+                }
+            }
+            else {
+                dev = RE::INPUT_DEVICE::kKeyboard;
+            }
+        }
+        return std::make_tuple(dev, static_cast<uint8_t>(shoutkey));
+    }
+
+    int get_shout_key_dxcode()
+    {
+       auto [dev, code] = get_shout_key_and_device();
+       return input_to_dx_scancode(dev, code);
     }
 
     bool allowed_to_instantcast(RE::FormID skill)

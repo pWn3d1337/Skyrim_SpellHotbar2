@@ -654,7 +654,6 @@ namespace SpellHotbar::casts::CastingController {
 						if (form->GetFormType() == RE::FormType::Spell) {
 							manacost = spell->CalculateMagickaCost(pc);
 						}
-
 						bool dual_cast{ false };
 						if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast() || hand == dual_hand)) && GameData::player_can_dualcast_spell(spell)) {
 

@@ -21,8 +21,8 @@ namespace SpellHotbar::Input {
 	KeyBind key_prev {RE::INPUT_DEVICE::kNone, 0}; //75
 	KeyBind key_next {RE::INPUT_DEVICE::kNone, 0};  //77
 
-	KeyBind oblivion_cast{ RE::INPUT_DEVICE::kNone, 0 };
-	KeyBind oblivion_potion{ RE::INPUT_DEVICE::kNone, 0 };
+	KeyBind key_oblivion_cast{ RE::INPUT_DEVICE::kKeyboard, 47 }; //V TODO default None
+	KeyBind key_oblivion_potion{ RE::INPUT_DEVICE::kKeyboard, 45 }; //B
 
 	KeyModifier mod_1(RE::INPUT_DEVICE::kNone, 0, 0); //ctrl 29, 157
 	KeyModifier mod_2(RE::INPUT_DEVICE::kNone, 0, 0); //shift 42, 54
@@ -95,12 +95,12 @@ namespace SpellHotbar::Input {
 			return mod_show_bar.get_dx_scancode();
 		}
 		else if (slot == keybind_id::oblivion_cast) {
-			oblivion_cast.assign_from_dx_scancode(code);
-			return oblivion_cast.get_dx_scancode();
+			key_oblivion_cast.assign_from_dx_scancode(code);
+			return key_oblivion_cast.get_dx_scancode();
 		}
 		else if (slot == keybind_id::oblivion_potion) {
-			oblivion_potion.assign_from_dx_scancode(code);
-			return oblivion_potion.get_dx_scancode();
+			key_oblivion_potion.assign_from_dx_scancode(code);
+			return key_oblivion_potion.get_dx_scancode();
 		}
 
 		return 0;
@@ -133,10 +133,10 @@ namespace SpellHotbar::Input {
 			return mod_show_bar.get_dx_scancode();
 		}
 		else if (slot == keybind_id::oblivion_cast) {
-			return oblivion_cast.get_dx_scancode();
+			return key_oblivion_cast.get_dx_scancode();
 		}
 		else if (slot == keybind_id::oblivion_potion) {
-			return oblivion_potion.get_dx_scancode();
+			return key_oblivion_potion.get_dx_scancode();
 		}
 		return 0;
 	}

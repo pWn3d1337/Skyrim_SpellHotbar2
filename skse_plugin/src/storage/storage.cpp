@@ -26,8 +26,8 @@ namespace SpellHotbar::Storage {
             float offset_y_out = RenderManager::scale_from_resolution(Bars::offset_y);
             a_intfc->WriteRecordData(&offset_y_out, sizeof(float));
 
-            uint8_t spacing = static_cast<uint8_t>(Bars::slot_spacing);
-            a_intfc->WriteRecordData(&spacing, sizeof(uint8_t));
+            float spacing_out = RenderManager::scale_from_resolution(Bars::slot_spacing);
+            a_intfc->WriteRecordData(&spacing_out, sizeof(float));
 
             uint8_t anchor = static_cast<uint8_t>(Bars::bar_anchor_point);
             a_intfc->WriteRecordData(&anchor, sizeof(uint8_t));
@@ -49,6 +49,23 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&Bars::disable_non_modifier_bar, sizeof(bool));
 
             a_intfc->WriteRecordData(&GameData::potion_gcd, sizeof(float));
+
+            //oblivion bar
+            a_intfc->WriteRecordData(&Bars::oblivion_slot_scale, sizeof(float));
+
+            float oblivion_offset_x_out = RenderManager::scale_from_resolution(Bars::oblivion_offset_x);
+            a_intfc->WriteRecordData(&oblivion_offset_x_out, sizeof(float));
+
+            float oblivion_offset_y_out = RenderManager::scale_from_resolution(Bars::oblivion_offset_y);
+            a_intfc->WriteRecordData(&oblivion_offset_y_out, sizeof(float));
+
+            float oblivion_spacing_out = RenderManager::scale_from_resolution(Bars::oblivion_slot_spacing);
+            a_intfc->WriteRecordData(&oblivion_spacing_out, sizeof(float));
+
+            uint8_t oblivion_anchor = static_cast<uint8_t>(Bars::oblivion_bar_anchor_point);
+            a_intfc->WriteRecordData(&oblivion_anchor, sizeof(uint8_t));
+
+            a_intfc->WriteRecordData(&Bars::oblivion_bar_show_power, sizeof(bool));
 
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
@@ -133,12 +150,12 @@ namespace SpellHotbar::Storage {
                 else {
                     Bars::offset_y = RenderManager::scale_to_resolution(read_offset_y);
                 }
-                uint8_t spacing{0};
-                if (!a_intfc->ReadRecordData(&spacing, sizeof(uint8_t))) {
+                float read_spacing{0};
+                if (!a_intfc->ReadRecordData(&read_spacing, sizeof(float))) {
                     logger::error("Failed to read slot_spacing!");
                     break;
                 } else {
-                    Bars::slot_spacing = static_cast<int>(spacing);
+                    Bars::slot_spacing = RenderManager::scale_to_resolution(std::max(0.0f, read_spacing));
                 }
 
                 uint8_t anchor{0};
@@ -199,6 +216,49 @@ namespace SpellHotbar::Storage {
 
                 if (!a_intfc->ReadRecordData(&GameData::potion_gcd, sizeof(float))) {
                     logger::error("Failed to read potion gcd!");
+                    break;
+                }
+
+                // oblivion bar setting
+                if (!a_intfc->ReadRecordData(&Bars::oblivion_slot_scale, sizeof(float))) {
+                    logger::error("Failed to read oblivion bar slot_scale!");
+                    break;
+                }
+                float read_oblivion_offset_x{ 0.0f };
+                if (!a_intfc->ReadRecordData(&read_oblivion_offset_x, sizeof(float))) {
+                    logger::error("Failed to read oblivion bar offset_x!");
+                    break;
+                }
+                else {
+                    Bars::oblivion_offset_x = RenderManager::scale_to_resolution(read_oblivion_offset_x);
+                }
+                float read_oblivion_offset_y{ 0.0f };
+                if (!a_intfc->ReadRecordData(&read_oblivion_offset_y, sizeof(float))) {
+                    logger::error("Failed to read oblivion bar offset_y!");
+                    break;
+                }
+                else {
+                    Bars::oblivion_offset_y = RenderManager::scale_to_resolution(read_oblivion_offset_y);
+                }
+                float read_oblivion_spacing{ 0 };
+                if (!a_intfc->ReadRecordData(&read_oblivion_spacing, sizeof(float))) {
+                    logger::error("Failed to read oblivion bar slot_spacing!");
+                    break;
+                }
+                else {
+                    Bars::oblivion_slot_spacing = RenderManager::scale_to_resolution(std::max(0.0f, read_oblivion_spacing));
+                }
+
+                uint8_t oblivion_anchor{ 0 };
+                if (!a_intfc->ReadRecordData(&oblivion_anchor, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar oblivion bar anchor point!");
+                    break;
+                }
+                else {
+                    Bars::oblivion_bar_anchor_point = Bars::anchor_point(std::clamp(oblivion_anchor, 0Ui8, static_cast<uint8_t>(Bars::anchor_point::CENTER)));
+                }
+                if (!a_intfc->ReadRecordData(&Bars::oblivion_bar_show_power, sizeof(bool))) {
+                    logger::error("Failed to read oblivion_bar_show_power!");
                     break;
                 }
 

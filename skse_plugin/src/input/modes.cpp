@@ -7,9 +7,36 @@ namespace SpellHotbar::Input {
 
     InputModeBase* InputModeBase::current_mode = InputModeCast::getSingleton();
 
+    bool is_oblivion_mode()
+    {
+        return InputModeBase::current_mode == InputModeOblivion::getSingleton();
+    }
 
+    int get_current_mode_index()
+    {
+        if (InputModeBase::current_mode == InputModeOblivion::getSingleton()) {
+            return 2;
+        }
+        else if (InputModeBase::current_mode == InputModeEquip::getSingleton()) {
+            return 1;
+        }
+        return 0;
+    }
 
-	void InputModeCast::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, uint32_t& shoutkey)
+    void set_input_mode(int index)
+    {
+        if (index == 2) {
+            InputModeBase::current_mode = InputModeOblivion::getSingleton();
+        }
+        else if (index == 1) {
+            InputModeBase::current_mode = InputModeEquip::getSingleton();
+        }
+        else {
+            InputModeBase::current_mode = InputModeCast::getSingleton();
+        }
+    }
+
+	void InputModeCast::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeyDev, uint8_t& shoutKey)
 	{
         if (allowed_to_instantcast(skill.formID) && casts::CastingController::can_start_new_cast()) {
             if (skill.formID > 0) {
@@ -36,7 +63,7 @@ namespace SpellHotbar::Input {
                         if (!addEvent) { //do not accidentaly create another event
 
                             if (casts::CastingController::try_cast_power(form, bind, i, skill.hand)) {
-                                addEvent = RE::ButtonEvent::Create(RE::INPUT_DEVICE::kKeyboard, "Shout", shoutkey, 1.0f, 0.0f); //default shout key
+                                addEvent = RE::ButtonEvent::Create(shoutKeyDev, "Shout", shoutKey, 1.0f, 0.0f); //default shout key
                             }
                         }
                     }
@@ -58,14 +85,14 @@ namespace SpellHotbar::Input {
             //error highlight
             SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
         }
-	}
+    }
     InputModeCast* InputModeCast::getSingleton()
     {
         static InputModeCast instance;
         return &instance;
     }
 
-    void InputModeEquip::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, uint32_t& shoutkey)
+    void InputModeEquip::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE&, uint8_t&)
     {
         auto pc = RE::PlayerCharacter::GetSingleton();
         if (pc && allowed_to_instantcast(skill.formID)) {
@@ -100,7 +127,7 @@ namespace SpellHotbar::Input {
                     SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25);
                 }
                 else if (skill.type == slot_type::potion) {
-                    if (casts::CastingController::can_start_new_cast) {
+                    if (casts::CastingController::can_start_new_cast()) {
                         bool success = casts::CastingController::try_start_cast(form, bind, i, skill.hand);
                         SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
                     }
@@ -126,32 +153,41 @@ namespace SpellHotbar::Input {
         return &instance;
     }
 
-    void InputModeOblivion::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, uint32_t& shoutkey)
+    void InputModeOblivion::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeDev, uint8_t& shoutKey)
     {
-        auto pc = RE::PlayerCharacter::GetSingleton();
-        if (pc) {
-            if (skill.formID > 0) {
-                auto form = RE::TESForm::LookupByID(skill.formID);
+        if (i == Input::keybind_id::oblivion_cast || i == Input::keybind_id::oblivion_potion) {
+            logger::info("Start Regular Cast");
+            InputModeCast::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeDev, shoutKey);
+        }
+        else {
+            auto pc = RE::PlayerCharacter::GetSingleton();
+            if (pc) {
+                if (skill.formID > 0) {
+                    auto form = RE::TESForm::LookupByID(skill.formID);
 
-                if (skill.type == slot_type::spell) {
-                 
+                    if (skill.type == slot_type::spell) {
+                        GameData::oblivion_bar.set_spell(skill);
+                    }
+                    else if (skill.type == slot_type::shout)
+                    {
+                        RE::ActorEquipManager::GetSingleton()->EquipShout(pc, form->As<RE::TESShout>());
+                    }
+                    else if (skill.type == slot_type::lesser_power || skill.type == slot_type::power) {
+                        RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, form->As<RE::SpellItem>(), GameData::equip_slot_voice);
+                    }
+                    else if (skill.type == slot_type::potion) {
+                        GameData::oblivion_bar.set_potion(skill);
+                    }
                 }
-                else if (skill.type == slot_type::shout || skill.type == slot_type::lesser_power || skill.type == slot_type::power)
-                {
-
-                }
-                else if (skill.type == slot_type::potion) {
-                  
+                else {
+                    //slot not bound
+                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25, true);
                 }
             }
             else {
-                //slot not bound
-                SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25, true);
+                //error highlight
+                SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
             }
-        }
-        else {
-            //error highlight
-            SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
         }
     }
     InputModeOblivion* InputModeOblivion::getSingleton()
@@ -159,4 +195,5 @@ namespace SpellHotbar::Input {
         static InputModeOblivion instance;
         return &instance;
     }
+
 }

@@ -5,21 +5,22 @@
 #include "../game_data/game_data.h"
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
-
+#include "../input/modes.h"
 
 namespace SpellHotbar
 {
     namespace rj = rapidjson;
 
-    Hotbar::Hotbar(const std::string & name)
-        : m_enabled(true), 
-          m_bar(),
-          m_ctrl_bar(),
-          m_shift_bar(),
-          m_alt_bar(),
-          m_parent_bar(0),
-          m_name(name),
-          m_inherit_mode(inherit_mode::def)
+    Hotbar::Hotbar(const std::string& name, uint8_t& barsize)
+        : m_enabled(true),
+        m_bar(),
+        m_ctrl_bar(),
+        m_shift_bar(),
+        m_alt_bar(),
+        m_parent_bar(0),
+        m_name(name),
+        m_inherit_mode(inherit_mode::def),
+        m_barsize(barsize)
     {
     }
     void Hotbar::set_parent(uint32_t parent)
@@ -250,7 +251,7 @@ namespace SpellHotbar
         float text_offset_y = icon_size * 0.0125f;
         //float text_height = ImGui::CalcTextSize("M").y;
 
-        for (int i = 0; i < Bars::barsize; i++) {
+        for (int i = 0; i < m_barsize; i++) {
             auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
 
             GameData::Spell_cast_data skill_dat;
@@ -369,8 +370,12 @@ namespace SpellHotbar
         float text_offset_x = icon_size * 0.05f;
         float text_offset_y = icon_size * 0.0125f;
 
-        float gcd_prog = casts::CastingController::get_current_gcd_progress(); //GameData::get_current_gcd_progress();
-        float gcd_dur = casts::CastingController::get_current_gcd_duration(); //GameData::get_current_gcd_duration();
+        float gcd_prog = 0.0f;
+        float gcd_dur = 0.0f;
+        if (!Input::is_oblivion_mode()) {
+            gcd_prog = casts::CastingController::get_current_gcd_progress();
+            gcd_dur = casts::CastingController::get_current_gcd_duration();
+        }
 
         float game_time{0};
         float time_scale{20.0f};
@@ -381,94 +386,121 @@ namespace SpellHotbar
         }
         auto pc = RE::PlayerCharacter::GetSingleton();
 
-        for (int i = 0; i < Bars::barsize; i++) {
+        for (int i = 0; i < m_barsize; i++) {
             auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
 
-            GameData::Spell_cast_data skill_dat;
-            auto form = RE::TESForm::LookupByID(skill.formID);
-            if (form) {
-                skill_dat = GameData::get_spell_data(form, true, true);
+            draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i);
+           
+        }
+        ImGui::PopFont();
+    }
+
+    void Hotbar::draw_single_skill(
+        SlottedSkill& skill,
+        float alpha,
+        int icon_size,
+        float text_offset_x,
+        float text_offset_y,
+        float gcd_prog,
+        float gcd_dur,
+        float shout_cd,
+        float shout_cd_dur,
+        float game_time,
+        float time_scale,
+        int highlight_slot,
+        float highlight_factor,
+        bool highlight_isred,
+        key_modifier mod,
+        const std::string_view & bar_name,
+        RE::PlayerCharacter* pc,
+        int slot_index)
+    {
+        GameData::Spell_cast_data skill_dat;
+        auto form = RE::TESForm::LookupByID(skill.formID);
+        if (form) {
+            skill_dat = GameData::get_spell_data(form, true, true);
+        }
+
+        ImVec2 p = ImGui::GetCursorScreenPos();
+
+        size_t count{ 0 };
+        if (skill.consumed != consumed_type::none) {
+            count = GameData::count_item_in_inv(skill.formID);
+        }
+
+        int alpha_i = static_cast<int>(255 * alpha);
+        ImVec4 color = ImColor(skill.color);
+        color.w = alpha;
+        if (!RenderManager::draw_skill(skill.formID, icon_size, ImColor(color))) {
+            RenderManager::draw_bg(icon_size, alpha);
+        }
+        else {
+            if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
+                RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32(255, 255, 255, alpha_i));
             }
 
-            ImVec2 p = ImGui::GetCursorScreenPos();
-
-            size_t count{ 0 };
-            if (skill.consumed != consumed_type::none) {
-                count = GameData::count_item_in_inv(skill.formID);
-            }
-
-            int alpha_i = static_cast<int>(255 * alpha);
-            ImVec4 color = ImColor(skill.color);
-            color.w = alpha;
-            if (!RenderManager::draw_skill(skill.formID, icon_size, ImColor(color))) {
-                RenderManager::draw_bg(icon_size, alpha);
-            } else {
-                if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
-                    RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32(255, 255, 255, alpha_i));
-                }
-
-                //If vampire lord uses equipmode and this is the currently equipped spell -> highlight blue
-                if (this->get_name() == Bars::bar_names.at(Bars::VAMPIRE_LORD_BAR) &&
-                    GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f) {
-                    if (pc) {
-                        auto equipped_mh = pc->GetEquippedObject(false);
-                        //If mainhand not empty, we in cast mode
-                        if (equipped_mh) {
-                            auto equipped_oh = pc->GetEquippedObject(true);
-                            if (equipped_oh && equipped_oh->GetFormID() == skill.formID) {
-                                RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
-                            }
-                        } else {
-                            //empty mh -> melee mode
-                            if (skill.type == slot_type::spell) {
-                                RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
-                            }
+            //If vampire lord uses equipmode and this is the currently equipped spell -> highlight blue
+            if (bar_name == Bars::bar_names.at(Bars::VAMPIRE_LORD_BAR) &&
+                GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f) {
+                if (pc) {
+                    auto equipped_mh = pc->GetEquippedObject(false);
+                    //If mainhand not empty, we in cast mode
+                    if (equipped_mh) {
+                        auto equipped_oh = pc->GetEquippedObject(true);
+                        if (equipped_oh && equipped_oh->GetFormID() == skill.formID) {
+                            RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
+                        }
+                    }
+                    else {
+                        //empty mh -> melee mode
+                        if (skill.type == slot_type::spell) {
+                            RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
                         }
                     }
                 }
-
-                if (skill.consumed != consumed_type::none && count == 0) {
-                    RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
-                }
-                else {
-                    float cd_prog =
-                        determine_cd(skill.formID, skill.type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
-                    if (cd_prog > 0.0f) {
-                        RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
-                    }
-                }
-                RenderManager::draw_slot_overlay(p, icon_size, IM_COL32(255,255,255, alpha_i));
-            }
-            if (highlight_slot == i) {
-                ImU32 col;
-                if (highlight_isred) {
-                    int f = static_cast<int>(255 * (highlight_factor)*alpha);
-                    col = IM_COL32(255, 0, 0, f);
-                } else {
-                    col = IM_COL32(255, 255, static_cast<int>(255 * (1.0f - highlight_factor)), alpha_i);
-                    // static_cast<int>(255 * (1.0f - highlight_factor)));
-                }
-                RenderManager::draw_highlight_overlay(p, icon_size, col);
             }
 
-            ImGui::SameLine();
-
-            std::string key_text = GameData::get_keybind_text(i, mod);
-            //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
-            ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-            RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
-
-            if (skill.consumed != consumed_type::none) {
-                //clamp text to 999
-                std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
-                ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
-                ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
-                ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());
+            if (skill.consumed != consumed_type::none && count == 0) {
+                RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
             }
-
-            ImGui::SameLine();
+            else {
+                float cd_prog =
+                    determine_cd(skill.formID, skill.type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
+                if (cd_prog > 0.0f) {
+                    RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
+                }
+            }
+            RenderManager::draw_slot_overlay(p, icon_size, IM_COL32(255, 255, 255, alpha_i));
         }
-        ImGui::PopFont();
+        if (highlight_slot == slot_index) {
+            ImU32 col;
+            if (highlight_isred) {
+                int f = static_cast<int>(255 * (highlight_factor)*alpha);
+                col = IM_COL32(255, 0, 0, f);
+            }
+            else {
+                col = IM_COL32(255, 255, static_cast<int>(255 * (1.0f - highlight_factor)), alpha_i);
+                // static_cast<int>(255 * (1.0f - highlight_factor)));
+            }
+            RenderManager::draw_highlight_overlay(p, icon_size, col);
+        }
+
+        ImGui::SameLine();
+
+        std::string key_text = GameData::get_keybind_text(slot_index, mod);
+        //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
+        ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
+        RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+
+        if (skill.consumed != consumed_type::none) {
+            //clamp text to 999
+            std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
+            ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
+            ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
+            ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());
+        }
+
+        ImGui::SameLine();
     }
 
 

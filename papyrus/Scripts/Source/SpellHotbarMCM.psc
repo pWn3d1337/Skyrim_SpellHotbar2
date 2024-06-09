@@ -13,6 +13,7 @@ string[] bar_show_options
 string[] bar_show_options_transformed
 string[] text_show_options
 string[] anchor_points
+string[] input_modes
 
 string presets_root = "Data/SKSE/Plugins/SpellHotbar/presets/"
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
@@ -68,6 +69,11 @@ Event OnConfigInit()
 	anchor_points[6] = "Bottom Right"
 	anchor_points[7] = "Top Right"
 	anchor_points[8] = "Center"
+
+	input_modes = new String[3]
+	input_modes[0] = "Cast Directly"
+	input_modes[1] = "Equip"
+	input_modes[2] = "Oblivion-Style"
 EndEvent
 
 ; reinit config on update
@@ -77,7 +83,7 @@ EndEvent
 
 Event OnPageReset(string page)
     if page == "Keybinds"
-        oid_spellkeybinds = new int[19]
+        oid_spellkeybinds = new int[21]
         SetCursorFillMode(LEFT_TO_RIGHT)
         AddHeaderOption("Skill Bindings")
         AddHeaderOption("")
@@ -105,10 +111,20 @@ Event OnPageReset(string page)
 		oid_spellkeybinds[16] = AddKeyMapOption("Bar Modifier 3", SpellHotbar.getKeyBind(16))
 		oid_spellkeybinds[17] = AddKeyMapOption("Dual Casting Modifier", SpellHotbar.getKeyBind(17))
 		oid_spellkeybinds[18] = AddKeyMapOption("Show Bar Modifier", SpellHotbar.getKeyBind(18))
+		AddEmptyOption()
+
+		AddHeaderOption("Oblivion Mode Bindings")
+		AddHeaderOption("")
+		oid_spellkeybinds[19] = AddKeyMapOption("Cast Spell", SpellHotbar.getKeyBind(19))
+		oid_spellkeybinds[20] = AddKeyMapOption("Use Potion", SpellHotbar.getKeyBind(20))
 
     ElseIf page == "Settings"
         AddHeaderOption("Bar Configuration")
-        AddEmptyOption()
+		AddHeaderOption("")
+
+		AddMenuOptionST("InputMode", "SpellHotbar Mode", input_modes[SpellHotbar.getInputMode()])
+		AddEmptyOption();
+
         AddToggleOptionST("DisableNonModBar", "Disable Non-Modifier Bar", SpellHotbar.isNonModBarDisabled())
 
         AddSliderOptionST("SlotsPerBar", "Slots per Bar", SpellHotbar.getNumberOfSlots() as float)
@@ -123,7 +139,7 @@ Event OnPageReset(string page)
         AddToggleOptionST("DisableMenuRendering", "Disable Menu Rendering", SpellHotbar.isDisableMenuRendering())
 
         AddHeaderOption("Bar Positioning")
-        AddEmptyOption()
+		AddHeaderOption("")
 
         AddSliderOptionST("SlotScale", "Slot Scale", SpellHotbar.getSlotScale(), "{2}")
         AddSliderOptionST("BarOffsetX", "Offset X", SpellHotbar.getOffsetX(false))
@@ -134,8 +150,21 @@ Event OnPageReset(string page)
 		AddEmptyOption()
 
 		AddHeaderOption("Gameplay")
-        AddEmptyOption()
+		AddHeaderOption("")
 		AddSliderOptionST("PotionGCD", "Potion GCD", SpellHotbar.getPotionGCD(), "{2}")
+		AddEmptyOption()
+
+		AddHeaderOption("Oblivion Mode Bar")
+		AddHeaderOption("")
+
+		AddSliderOptionST("OblivionSlotScale", "Slot Scale", SpellHotbar.getOblivionSlotScale(), "{2}")
+        AddSliderOptionST("OblivionBarOffsetX", "Offset X", SpellHotbar.getOblivionOffsetX(false))
+		AddSliderOptionST("OblivionSlotSpacing", "Slot Spacing", SpellHotbar.getOblivionSlotSpacing())
+        AddSliderOptionST("OblivionBarOffsetY", "Offset Y", SpellHotbar.getOblivionOffsetY(false))
+
+		AddMenuOptionST("OblivionBarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getOblivionBarAnchorPoint()])
+		AddToggleOptionST("OblivionPowerSlot", "Show Power", SpellHotbar.isShowOblivionBarPower())
+
 
     ElseIf (page == "Bars")
 
@@ -221,18 +250,46 @@ Event OnPageReset(string page)
 		AddEmptyOption()
 		AddToggleOptionST("ClearBarsState", "Clear all Bars", false);
 		AddEmptyOption()
-		AddToggleOptionST("ShowDragBar", "Drag Bar", false)
+		AddToggleOptionST("ShowDragBar", "Drag Main Bar", false)
+		AddToggleOptionST("ShowOblivionModeDragBar", "Drag Oblivion Mode Bar", false)
 	EndIf
 EndEvent
+
+State InputMode
+	Event OnMenuOpenST()
+		SetMenuDialogOptions(input_modes)
+		SetMenuDialogStartIndex(SpellHotbar.getInputMode())
+		SetMenuDialogDefaultIndex(0)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		SetMenuOptionValueST(input_modes[SpellHotbar.setInputMode(index)])
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("Set mode of SpellHotbar")
+	EndEvent
+	
+	Event OnDefaultST()
+		SetMenuOptionValueST(input_modes[SpellHotbar.setInputMode(0)])
+	EndEvent
+EndState
 
 State ShowDragBar
     Event OnSelectST()
         SetToggleOptionValueST(false)
-		SpellHotbar.showDragBar()
-		;UI.InvokeString("HUD Menu", "_global.skse.CloseMenu", "InventoryMenu")
+		SpellHotbar.showDragBar(0)
     EndEvent
     Event OnHighlightST()
         SetInfoText("Show a dragable Bar for positioning")
+    EndEvent
+EndState
+
+State ShowOblivionModeDragBar
+    Event OnSelectST()
+        SetToggleOptionValueST(false)
+		SpellHotbar.showDragBar(1)
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Show a dragable Bar for oblivion mode bar positioning")
     EndEvent
 EndState
 
@@ -402,6 +459,94 @@ bool Function saveSettingsAsPreset(string preset_name)
 	EndIf
 	return success
 EndFunction
+
+State OblivionSlotScale
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getOblivionSlotScale())
+        SetSliderDialogDefaultValue(1.0)
+        SetSliderDialogRange(0.01, 5.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setOblivionSlotScale(a_value), "{2}");
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Change the size of the Oblivion Bar slots");
+    EndEvent
+EndState
+
+State OblivionSlotSpacing
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getOblivionSlotSpacing())
+        SetSliderDialogDefaultValue(8.0)
+        SetSliderDialogRange(0.0, 50.0)
+        SetSliderDialogInterval(1.0)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setOblivionSlotSpacing(a_value));
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Change the spacing of the Oblivion Bar slots");
+    EndEvent
+EndState
+
+State OblivionBarOffsetX
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getOblivionOffsetX(false))
+        SetSliderDialogDefaultValue(0.0)
+        SetSliderDialogRange(-2000.0, 2000.0)
+        SetSliderDialogInterval(1.0)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setOblivionOffsetX(a_value, false));
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Move the oblivion bar in X direction");
+    EndEvent
+EndState
+
+State OblivionBarOffsetY
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getOblivionOffsetY(false))
+        SetSliderDialogDefaultValue(0.0)
+        SetSliderDialogRange(-2000.0, 2000.0)
+        SetSliderDialogInterval(1.0)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setOblivionOffsetY(a_value, false));
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Move the oblivion bar in Y direction");
+    EndEvent
+EndState
+
+State OblivionBarAnchorPoint
+	Event OnMenuOpenST()
+		SetMenuDialogOptions(anchor_points)
+		SetMenuDialogStartIndex(SpellHotbar.getOblivionBarAnchorPoint())
+		SetMenuDialogDefaultIndex(0)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		SetMenuOptionValueST(anchor_points[SpellHotbar.setOblivionBarAnchorPoint(index)])
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("Set anchor point for oblivion bar position offset.")
+	EndEvent
+	
+	Event OnDefaultST()
+		SetMenuOptionValueST(anchor_points[SpellHotbar.setOblivionBarAnchorPoint(0)])
+	EndEvent
+EndState
+
+State OblivionPowerSlot
+    Event OnSelectST()
+        SetToggleOptionValueST(SpellHotbar.toggleShowOblivionBarPower())
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Show the current equipped power on oblivion bar");
+    EndEvent
+EndState
+
 
 State SlotsPerBar
     Event OnSliderOpenST()

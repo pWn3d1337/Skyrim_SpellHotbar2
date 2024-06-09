@@ -19,6 +19,8 @@ namespace SpellHotbar::Input {
 	std::tuple<RE::INPUT_DEVICE, uint8_t> dx_scan_code_to_input(int dx_scancode);
 	int input_to_dx_scancode(RE::INPUT_DEVICE device, uint8_t code);
 
+	std::tuple<RE::INPUT_DEVICE, uint8_t> get_shout_key_and_device();
+	int get_shout_key_dxcode();
 
 	/**
 	* allowed to use powers, less restrictive than regular casts
@@ -84,6 +86,12 @@ namespace SpellHotbar::Input {
 			return m_isDown;
 		}
 		void unbind();
+
+		inline bool isValidBound() const {
+			return input_device == RE::INPUT_DEVICE::kKeyboard ||
+				   input_device == RE::INPUT_DEVICE::kMouse ||
+				   input_device == RE::INPUT_DEVICE::kGamepad;
+		};
 
 	private:
 		RE::INPUT_DEVICE input_device;

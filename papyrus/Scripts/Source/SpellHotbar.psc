@@ -16,7 +16,7 @@ int function setHudBarShowMode(int mode) native global
 int function getHudBarShowMode() native global
 function reloadResources() native global
 function reloadData() native global
-function showDragBar() native global
+function showDragBar(int type) native global
 int function setHudBarShowModeVampireLord(int mode) native global
 int function getHudBarShowModeVampireLord() native global
 int function setHudBarShowModeWerewolf(int mode) native global
@@ -48,3 +48,17 @@ int function getBarAnchorPoint() native global
 int function setBarAnchorPoint(int index) native global
 float function getPotionGCD() native global
 float function setPotionGCD(float value) native global
+float function getOblivionSlotScale() global native
+float function setOblivionSlotScale(float scale) global native
+float function getOblivionOffsetX(bool rescale) global native
+float function setOblivionOffsetX(float value, bool rescale) global native
+float function getOblivionOffsetY(bool rescale) global native
+float function setOblivionOffsetY(float value, bool rescale) global native
+float function getOblivionSlotSpacing() global native
+float function setOblivionSlotSpacing(float spacing) global native
+int function getOblivionBarAnchorPoint() native global
+int function setOblivionBarAnchorPoint(int index) native global
+bool function isShowOblivionBarPower() global native
+bool function toggleShowOblivionBarPower() global native
+int function getInputMode() global native
+int function setInputMode(int mode) global native

@@ -25,7 +25,9 @@ namespace SpellHotbar::Input {
 		show_bar_mod = 18,
 		oblivion_cast = 19,
 		oblivion_potion = 20,
-		num_keys
+		num_keys,
+
+		dummy_key_vanilla_shout = 99 //dummy value used for oblivion mode shout slot
 	};
 
 
@@ -42,6 +44,9 @@ namespace SpellHotbar::Input {
 
 	extern KeyModifier mod_alt;
 	extern KeyModifier mod_shift;
+
+	extern KeyBind key_oblivion_cast;
+	extern KeyBind key_oblivion_potion;
 
 	int rebind_key(int slot, int code, bool check_conflicts = true);
 	int get_keybind(int slot);

@@ -8,6 +8,7 @@
 #include "../casts/casting_controller.h"
 #include "../input/keybinds.h"
 #include "../storage/user_data_io.h"
+#include "../input/modes.h"
 
 int get_number_of_slots(RE::StaticFunctionTag*)
 {
@@ -150,9 +151,9 @@ inline void _set_spell_casttime(RE::TESForm* form, float& out_casttime)
     }
 }
 
-void show_drag_bar(RE::StaticFunctionTag*)
+void show_drag_bar(RE::StaticFunctionTag*, int type)
 {
-    SpellHotbar::RenderManager::start_bar_dragging();
+    SpellHotbar::RenderManager::start_bar_dragging(type);
 }
 
 int set_hud_bar_show_mode_vampire_lord(RE::StaticFunctionTag*, int show_mode) {
@@ -204,13 +205,12 @@ void clear_bars(RE::StaticFunctionTag*)
 
 float get_slot_spacing(RE::StaticFunctionTag*)
 {
-    return static_cast<float>(SpellHotbar::Bars::slot_spacing);
+    return SpellHotbar::RenderManager::scale_from_resolution(SpellHotbar::Bars::slot_spacing);
 }
 
 float set_slot_spacing(RE::StaticFunctionTag*, float spacing)
 {
-    SpellHotbar::Bars::slot_spacing = std::max(0, static_cast<int>(spacing));
-    return static_cast<float>(SpellHotbar::Bars::slot_spacing);
+    return SpellHotbar::Bars::slot_spacing = SpellHotbar::RenderManager::scale_to_resolution(std::max(0.0f, spacing));
 }
 
 int get_text_show_mode(RE::StaticFunctionTag*)
@@ -305,6 +305,95 @@ float get_potion_gcd(RE::StaticFunctionTag*)
     return SpellHotbar::GameData::potion_gcd;
 }
 
+
+//TODO oblivion values
+float get_oblivion_slot_scale(RE::StaticFunctionTag*)
+{
+    return SpellHotbar::Bars::oblivion_slot_scale;
+}
+
+float set_oblivion_slot_scale(RE::StaticFunctionTag*, float scale)
+{
+    return SpellHotbar::Bars::oblivion_slot_scale = scale;
+}
+
+float get_oblivion_offset_x(RE::StaticFunctionTag*, bool rescale)
+{
+    if (rescale) {
+        return SpellHotbar::RenderManager::scale_from_resolution(SpellHotbar::Bars::oblivion_offset_x);
+    }
+    else {
+        return SpellHotbar::Bars::oblivion_offset_x;
+    }
+}
+float set_oblivion_offset_x(RE::StaticFunctionTag*, float value, bool rescale)
+{
+    if (rescale) {
+        SpellHotbar::Bars::oblivion_offset_x = SpellHotbar::RenderManager::scale_to_resolution(value);
+    }
+    else {
+        SpellHotbar::Bars::oblivion_offset_x = value;
+    }
+    return SpellHotbar::Bars::oblivion_offset_x;
+}
+
+float get_oblivion_offset_y(RE::StaticFunctionTag*, bool rescale)
+{
+    if (rescale) {
+        return SpellHotbar::RenderManager::scale_from_resolution(SpellHotbar::Bars::oblivion_offset_y);
+    }
+    else {
+        return SpellHotbar::Bars::oblivion_offset_y;
+    }
+}
+float set_oblivion_offset_y(RE::StaticFunctionTag*, float value, bool rescale)
+{
+    if (rescale) {
+        SpellHotbar::Bars::oblivion_offset_y = SpellHotbar::RenderManager::scale_to_resolution(value);
+    }
+    else {
+        SpellHotbar::Bars::oblivion_offset_y = value;
+    }
+    return SpellHotbar::Bars::oblivion_offset_y;
+}
+
+float get_oblivion_slot_spacing(RE::StaticFunctionTag*)
+{
+    return SpellHotbar::Bars::oblivion_slot_spacing;
+}
+
+float set_oblivion_slot_spacing(RE::StaticFunctionTag*, float spacing)
+{
+    SpellHotbar::Bars::oblivion_slot_spacing = std::max(0.0f, spacing);
+    return SpellHotbar::Bars::oblivion_slot_spacing;
+}
+
+int get_oblivion_bar_anchor_point(RE::StaticFunctionTag*) {
+    return static_cast<int>(SpellHotbar::Bars::oblivion_bar_anchor_point);
+}
+
+int set_oblivion_bar_anchor_point(RE::StaticFunctionTag*, int value) {
+    SpellHotbar::Bars::oblivion_bar_anchor_point = SpellHotbar::Bars::anchor_point(std::clamp(value, 0, static_cast<int>(SpellHotbar::Bars::anchor_point::CENTER)));
+    return static_cast<int>(SpellHotbar::Bars::oblivion_bar_anchor_point);
+}
+
+bool is_show_oblivion_bar_power(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::oblivion_bar_show_power;
+}
+
+bool toggle_show_oblivion_bar_power(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::oblivion_bar_show_power = !SpellHotbar::Bars::oblivion_bar_show_power;
+}
+
+int get_input_mode(RE::StaticFunctionTag*) {
+    return SpellHotbar::Input::get_current_mode_index();
+}
+
+int set_input_mode(RE::StaticFunctionTag*, int mode) {
+    SpellHotbar::Input::set_input_mode(mode);
+    return SpellHotbar::Input::get_current_mode_index();
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -353,6 +442,20 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("setBarAnchorPoint", "SpellHotbar", set_bar_anchor_point);
     vm->RegisterFunction("getPotionGCD", "SpellHotbar", get_potion_gcd);
     vm->RegisterFunction("setPotionGCD", "SpellHotbar", set_potion_gcd);
+    vm->RegisterFunction("setOblivionSlotScale", "SpellHotbar", set_oblivion_slot_scale);
+    vm->RegisterFunction("getOblivionSlotScale", "SpellHotbar", get_oblivion_slot_scale);
+    vm->RegisterFunction("setOblivionOffsetX", "SpellHotbar", set_oblivion_offset_x);
+    vm->RegisterFunction("getOblivionOffsetX", "SpellHotbar", get_oblivion_offset_x);
+    vm->RegisterFunction("setOblivionOffsetY", "SpellHotbar", set_oblivion_offset_y);
+    vm->RegisterFunction("getOblivionOffsetY", "SpellHotbar", get_oblivion_offset_y);
+    vm->RegisterFunction("setOblivionSlotSpacing", "SpellHotbar", set_oblivion_slot_spacing);
+    vm->RegisterFunction("getOblivionSlotSpacing", "SpellHotbar", get_oblivion_slot_spacing);
+    vm->RegisterFunction("getOblivionBarAnchorPoint", "SpellHotbar", get_oblivion_bar_anchor_point);
+    vm->RegisterFunction("setOblivionBarAnchorPoint", "SpellHotbar", set_oblivion_bar_anchor_point);
+    vm->RegisterFunction("isShowOblivionBarPower", "SpellHotbar", is_show_oblivion_bar_power);
+    vm->RegisterFunction("toggleShowOblivionBarPower", "SpellHotbar", toggle_show_oblivion_bar_power);
+    vm->RegisterFunction("getInputMode", "SpellHotbar", get_input_mode);
+    vm->RegisterFunction("setInputMode", "SpellHotbar", set_input_mode);
 
     return true;
 }
