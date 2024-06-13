@@ -1,59 +1,65 @@
-Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2	Symbol
-Choking Grasp	0x00085A		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011	
-Elemental Flare	0x000850		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10001	
-Flames	0x012fcd		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1	
-Frostbite	0x02b96b		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	-1	
-Sparks	0x02dd2a		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1	
-Elemental Bolt	0x00085F		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10001	
-Fire Rune	0x05db90	0x0965A8	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10003	
-Firebolt	0x012fd0	0x096598	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10001	
-Freeze	0x02732d		Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	10001	
-Frost Rune	0x06796f	0x0965A9	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10003	
-Ice Spike	0x02b96c	0x096599	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10001	
-Ignite	0x02732b		Dragonborn.esm	DestructionFire	-1	-1	-1	-1	10001	
-Lightning Bolt	0x02dd29	0x09659A	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004	
-Lightning Rune	0x067970	0x0965AA	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10003	
-Strangulation	0x000859		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011	
-Chain Lightning	0x045f9d	0x0A44B0	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004	
-Elemental Burst	0x00085B		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10005	
-Fireball	0x01c789	0x0A44AE	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10005	
-Flame Cloak	0x03ae9f	0x0A44AB	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10002	
-Frost Cloak	0x03aea2	0x0A44AC	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10002	
-Hangman's Noose	0x000858		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011	
-Ice Storm	0x045f9c	0x0A44AF	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10005	
-Lightning Cloak	0x03aea3	0x0A44AD	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10002	
-Whirlwind Cloak	0x01772d		Dragonborn.esm	AlterationShield	-1	-1	-1	-1	10002	
-Elemental Blast	0x000856		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10013	
-Icy Spear	0x10f7ec		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10004	
-Incinerate	0x10f7ed		Skyrim.esm	DestructionFire	-1	-1	-1	-1	10005	
-Mara's Wrath	0x000855		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10002	
-Thunderbolt	0x10f7ee		Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004	
-Touch of Death	0x000857		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011	
-Unbounded Flames	0x00080e		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	-1	
-Unbounded Freezing	0x00080d		ccbgssse014-spellpack01.esl	DestructionFrost	-1	-1	-1	-1	-1	
-Unbounded Storms	0x000808		ccbgssse014-spellpack01.esl	DestructionShock	-1	-1	-1	-1	-1	
-Wall of Flames	0x035d7f		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1	
-Wall of Frost	0x035d80		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	-1	
-Wall of Storms	0x035d81		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1	
-Blizzard	0x07e8e4	0x0A44B2	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10002	
-Fire Storm	0x07a82b	0x0A44B1	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10002	
-Lightning Storm	0x07e8e5		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1	
-Arniel's Convection	0x06a104		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1	
-Vampiric Drain	0x08d5bf		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	
-Vampiric Drain	0x08d5c0		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	
-Vampiric Drain	0x08d5c1		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	
-Vampiric Drain	0x08d5c2		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	
-Exploding Flame Spider		0x019534	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY
-Exploding Frost Spider		0x0206D3	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY
-Exploding Shock Spider		0x02095F	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY
-Exploding Poison Spider		0x01707B	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY
-Jumping Flame Spider		0x014480	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY
-Jumping Frost Spider		0x0206DB	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY
-Jumping Shock Spider		0x020961	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY
-Jumping Poison Spider		0x01445E	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY
-Flame Cloaked Spider		0x01952C	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY
-Frost Cloaked Spider		0x0206D9	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY
-Shock Cloaked Spider		0x020960	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY
-Poison Cloaked Spider		0x01CAB0	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY
-Oil Spider		0x02749D	Dragonborn.esm	AlterationGreen	-1	-1	-1	-1	-1	NO_OVERLAY
-Mind Control Spider		0x016E1C	Dragonborn.esm	IllusionRed	-1	-1	-1	-1	-1	NO_OVERLAY
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2	Symbol	overlay
+Choking Grasp	0x00085A		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011		
+Elemental Flare	0x000850		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10001		
+Flames	0x012fcd		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1		
+Frostbite	0x02b96b		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	-1		
+Sparks	0x02dd2a		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1		
+Elemental Bolt	0x00085F		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10001		
+Fire Rune	0x05db90	0x0965A8	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10003		
+Firebolt	0x012fd0	0x096598	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10001		
+Freeze	0x02732d		Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	10001		
+Frost Rune	0x06796f	0x0965A9	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10003		
+Ice Spike	0x02b96c	0x096599	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10001		
+Ignite	0x02732b		Dragonborn.esm	DestructionFire	-1	-1	-1	-1	10001		
+Lightning Bolt	0x02dd29	0x09659A	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004		
+Lightning Rune	0x067970	0x0965AA	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10003		
+Strangulation	0x000859		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011		
+Chain Lightning	0x045f9d	0x0A44B0	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004		
+Elemental Burst	0x00085B		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10005		
+Fireball	0x01c789	0x0A44AE	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10005		
+Flame Cloak	0x03ae9f	0x0A44AB	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10002		
+Frost Cloak	0x03aea2	0x0A44AC	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10002		
+Hangman's Noose	0x000858		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011		
+Ice Storm	0x045f9c	0x0A44AF	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10005		
+Lightning Cloak	0x03aea3	0x0A44AD	Skyrim.esm	DestructionShock	-1	-1	-1	-1	10002		
+Whirlwind Cloak	0x01772d		Dragonborn.esm	AlterationShield	-1	-1	-1	-1	10002		
+Elemental Blast	0x000856		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10013		
+Icy Spear	0x10f7ec		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10004		
+Incinerate	0x10f7ed		Skyrim.esm	DestructionFire	-1	-1	-1	-1	10005		
+Mara's Wrath	0x000855		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	10002		
+Thunderbolt	0x10f7ee		Skyrim.esm	DestructionShock	-1	-1	-1	-1	10004		
+Touch of Death	0x000857		ccbgssse014-spellpack01.esl	ConjurationSummon	-1	-1	-1	-1	10011		
+Unbounded Flames	0x00080e		ccbgssse014-spellpack01.esl	DestructionFire	-1	-1	-1	-1	-1		
+Unbounded Freezing	0x00080d		ccbgssse014-spellpack01.esl	DestructionFrost	-1	-1	-1	-1	-1		
+Unbounded Storms	0x000808		ccbgssse014-spellpack01.esl	DestructionShock	-1	-1	-1	-1	-1		
+Wall of Flames	0x035d7f		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1		
+Wall of Frost	0x035d80		Skyrim.esm	DestructionFrost	-1	-1	-1	-1	-1		
+Wall of Storms	0x035d81		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1		
+Blizzard	0x07e8e4	0x0A44B2	Skyrim.esm	DestructionFrost	-1	-1	-1	-1	10002		
+Fire Storm	0x07a82b	0x0A44B1	Skyrim.esm	DestructionFire	-1	-1	-1	-1	10002		
+Lightning Storm	0x07e8e5		Skyrim.esm	DestructionShock	-1	-1	-1	-1	-1		
+Arniel's Convection	0x06a104		Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1		
+Vampiric Drain	0x08d5bf		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1		
+Vampiric Drain	0x08d5c0		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1		
+Vampiric Drain	0x08d5c1		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1		
+Vampiric Drain	0x08d5c2		Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1		
+Exploding Flame Spider		0x019534	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY	
+Exploding Frost Spider		0x0206D3	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY	
+Exploding Shock Spider		0x02095F	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY	
+Exploding Poison Spider		0x01707B	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY	
+Jumping Flame Spider		0x014480	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY	
+Jumping Frost Spider		0x0206DB	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY	
+Jumping Shock Spider		0x020961	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY	
+Jumping Poison Spider		0x01445E	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY	
+Flame Cloaked Spider		0x01952C	Dragonborn.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY	
+Frost Cloaked Spider		0x0206D9	Dragonborn.esm	DestructionFrost	-1	-1	-1	-1	-1	NO_OVERLAY	
+Shock Cloaked Spider		0x020960	Dragonborn.esm	DestructionShock	-1	-1	-1	-1	-1	NO_OVERLAY	
+Poison Cloaked Spider		0x01CAB0	Dragonborn.esm	IllusionGreen	-1	-1	-1	-1	-1	NO_OVERLAY	
+Oil Spider		0x02749D	Dragonborn.esm	AlterationGreen	-1	-1	-1	-1	-1	NO_OVERLAY	
+Mind Control Spider		0x016E1C	Dragonborn.esm	IllusionRed	-1	-1	-1	-1	-1	NO_OVERLAY	
+J’zargo’s Flame Cloak		0x0967e3	Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1		
+Shalidor’s Insights Alteration		0x1076e9	Skyrim.esm	AlterationGreen	-1	-1	-1	-1	-1	NO_OVERLAY	alteration
+Shalidor’s Insights Conjuration		0x1076eb	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	-1	NO_OVERLAY	conjuration
+Shalidor’s Insights Destruction		0x1076e7	Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY	destruction
+Shalidor’s Insights Illusion		0x1076e8	Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	NO_OVERLAY	illusion
+Shalidor’s Insights Restoration		0x1076ea	Skyrim.esm	RestorationGold	-1	-1	-1	-1	-1	NO_OVERLAY	restoration

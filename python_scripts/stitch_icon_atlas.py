@@ -175,12 +175,15 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
             ret = row['Path']
             shouttext = ""
             ranktext = ""
+            overlaystr = ""
             if "Shouttext" in row.index:
                 shouttext = "\t" + row["Shouttext"] if not pd.isna(row["Shouttext"]) else ""
             if "Ranktext" in row.index:
                 ranktext = "\t" + row["Ranktext"] if not pd.isna(row["Ranktext"]) else ""
+            if "overlay" in row.index:
+                overlaystr = "\t" + row["overlay"] if not pd.isna(row["overlay"]) else ""
 
-            return f"{ret}{shouttext}{ranktext}"
+            return f"{ret}{shouttext}{ranktext}{overlaystr}"
 
         return None
 
@@ -637,20 +640,35 @@ if __name__ == "__main__":
         rf"{project_root}\spell_lists2\destruction.csv",
         rf"{project_root}\spell_lists2\restoration.csv",
         rf"{project_root}\spell_lists2\illusion.csv",
-        rf"{project_root}\spell_lists2\conjuration.csv",
-        rf"{project_root}\spell_lists2\powers.csv",
-        rf"{project_root}\spell_lists2\shouts.csv",
-        rf"{project_root}\spell_lists2\potions.csv"
+        rf"{project_root}\spell_lists2\conjuration.csv"
     ]
+
+    spell_lists_powers = [
+        rf"{project_root}\spell_lists2\powers.csv",
+        rf"{project_root}\spell_lists2\shouts.csv"
+    ]
+
+    spell_lists_potions = [
+        rf"{project_root}\spell_lists2\potions.csv",
+        rf"{project_root}\spell_lists2\poisons.csv"
+    ]
+
     icon_root_folders = [
         rf"{project_root}\vanilla_spell_icons\alteration",
         rf"{project_root}\vanilla_spell_icons\destruction",
         rf"{project_root}\vanilla_spell_icons\restoration",
         rf"{project_root}\vanilla_spell_icons\illusion",
-        rf"{project_root}\vanilla_spell_icons\conjuration",
+        rf"{project_root}\vanilla_spell_icons\conjuration"
+    ]
+
+    icon_root_folders_powers = [
         rf"{project_root}\vanilla_spell_icons\powers",
-        rf"{project_root}\vanilla_spell_icons\shouts",
-        rf"{project_root}\vanilla_spell_icons\potions"
+        rf"{project_root}\vanilla_spell_icons\shouts"
+    ]
+
+    icon_root_folders_potions = [
+        rf"{project_root}\vanilla_spell_icons\potions",
+        rf"{project_root}\vanilla_spell_icons\poisons"
     ]
 
     default_icons_folders = [
@@ -664,12 +682,21 @@ if __name__ == "__main__":
         rf"{project_root}\vanilla_spell_icons\potions_generic",
     ]
 
+
     # alpha_mask = none
     alpha_mask = rf"{project_root}\icons\alpha_mask.png"
 
     if False:
         stitch_folder(spell_lists, icon_root_folders, mod_root_path / "images/icons_vanilla", alpha_mask,
                       output_data=mod_root_path / "spelldata/spells_vanilla")
+
+    if False:
+        stitch_folder(spell_lists_powers, icon_root_folders_powers, mod_root_path / "images/icons_vanilla_powers", alpha_mask,
+                      output_data=mod_root_path / "spelldata/spells_vanilla_powers")
+
+    if False:
+        stitch_folder(spell_lists_potions, icon_root_folders_potions, mod_root_path / "images/icons_vanilla_potions", alpha_mask,
+                      output_data=mod_root_path / "spelldata/spells_vanilla_potions")
 
     if False:
         stitch_default_icons(default_icons, default_icons_folders, mod_root_path / "images/default_icons", alpha_mask,
