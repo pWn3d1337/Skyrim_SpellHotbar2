@@ -207,6 +207,7 @@ namespace SpellHotbar::GameData {
     bool hasFavMenuSlotBinding();
 
     std::tuple<bool, float> shouldShowHUDBar();
+    std::tuple<bool, float> shouldShowOblivionHUDBar();
 
     DefaultIconType get_fallback_icon_type(RE::TESForm* form);
 

@@ -4,6 +4,7 @@
 #include "../bar/hotbars.h"
 #include "../bar/hotbar.h"
 #include "../input/keybinds.h"
+#include "../input/modes.h"
 
 namespace SpellHotbar::Storage {
 
@@ -67,6 +68,16 @@ namespace SpellHotbar::Storage {
 
             a_intfc->WriteRecordData(&Bars::oblivion_bar_show_power, sizeof(bool));
 
+            uint8_t input_mode = static_cast<uint8_t>(Input::get_current_mode_index());
+            a_intfc->WriteRecordData(&input_mode, sizeof(uint8_t));
+
+            a_intfc->WriteRecordData(&Bars::bar_row_len, sizeof(uint8_t));
+
+            uint8_t bar_layout = static_cast<uint8_t>(Bars::layout);
+            a_intfc->WriteRecordData(&bar_layout, sizeof(uint8_t));
+
+            a_intfc->WriteRecordData(&Bars::bar_circle_radius, sizeof(float));
+
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
             a_intfc->WriteRecordData(&num_keybinds, sizeof(uint8_t));
@@ -101,6 +112,20 @@ namespace SpellHotbar::Storage {
         }
 
     }
+
+    template <typename T>
+    inline bool read_clamped(SKSE::SerializationInterface* a_intfc, const std::string & name, T & target, T min, T max) {
+        T read_value{};
+        if (!a_intfc->ReadRecordData(&read_value, sizeof(T))) {
+            logger::error("Failed to read '{}'!", name);
+            return false;
+        }
+        else {
+            target = std::clamp(read_value, min, max);
+        }
+        return true;
+    }
+
 
     void LoadCallback(SKSE::SerializationInterface* a_intfc)
     {
@@ -261,6 +286,43 @@ namespace SpellHotbar::Storage {
                     logger::error("Failed to read oblivion_bar_show_power!");
                     break;
                 }
+
+                uint8_t input_mode{ 0 };
+                if (!a_intfc->ReadRecordData(&input_mode, sizeof(uint8_t))) {
+                    logger::error("Failed to read input mode!");
+                    break;
+                }
+                else {
+                    SpellHotbar::Input::set_input_mode(static_cast<int>(input_mode));
+                }
+
+                uint8_t read_row_len{ 0 };
+                if (!a_intfc->ReadRecordData(&read_row_len, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_row_len!");
+                    break;
+                }
+                else {
+                    Bars::bar_row_len = std::clamp(read_row_len, 1Ui8, static_cast<uint8_t>(max_bar_size));
+                }
+
+                uint8_t read_bar_layout{ 0 };
+                if (!a_intfc->ReadRecordData(&read_bar_layout, sizeof(uint8_t))) {
+                    logger::error("Failed to read bar_layout!");
+                    break;
+                }
+                else {
+                    Bars::layout = Bars::bar_layout(std::clamp(read_bar_layout, 0Ui8, 2Ui8));
+                }
+
+                float read_bar_circle_radius{ 0 };
+                if (!a_intfc->ReadRecordData(&read_bar_circle_radius, sizeof(float))) {
+                    logger::error("Failed to read bar_circle_radius!");
+                    break;
+                }
+                else {
+                    Bars::bar_circle_radius = std::clamp(read_bar_circle_radius, 0.1f, 10.0f);
+                }
+
 
                 //read num keybinds, make saves compatible when new binds are added
                 uint8_t num_keybinds{ 0U };

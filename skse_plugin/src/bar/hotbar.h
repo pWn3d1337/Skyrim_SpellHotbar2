@@ -116,7 +116,9 @@ public:
                                 key_modifier mod,
                                 const std::string_view& bar_name,
                                 RE::PlayerCharacter* pc,
-                                int slot_index);
+                                int slot_index,
+                                ImVec2 p, //ImGui Cursor pos
+                                bool new_line = false);
 
     inline bool is_enabled() const;
 

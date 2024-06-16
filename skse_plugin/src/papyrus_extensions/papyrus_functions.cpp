@@ -305,8 +305,6 @@ float get_potion_gcd(RE::StaticFunctionTag*)
     return SpellHotbar::GameData::potion_gcd;
 }
 
-
-//TODO oblivion values
 float get_oblivion_slot_scale(RE::StaticFunctionTag*)
 {
     return SpellHotbar::Bars::oblivion_slot_scale;
@@ -394,6 +392,31 @@ int set_input_mode(RE::StaticFunctionTag*, int mode) {
     return SpellHotbar::Input::get_current_mode_index();
 }
 
+int set_bar_row_length(RE::StaticFunctionTag*, int len) {
+    return SpellHotbar::Bars::bar_row_len = static_cast<uint8_t>(std::clamp(len, 1, static_cast<int>(SpellHotbar::max_bar_size)));
+}
+
+int get_bar_row_length(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::bar_row_len;
+}
+
+int get_bar_layout(RE::StaticFunctionTag*) {
+    return static_cast<int>(SpellHotbar::Bars::layout);
+}
+
+int set_bar_layout(RE::StaticFunctionTag*, int mode) {
+    SpellHotbar::Bars::layout = SpellHotbar::Bars::bar_layout(std::clamp(mode, 0, 2));
+    return static_cast<int>(SpellHotbar::Bars::layout);
+}
+
+float set_bar_circle_radius(RE::StaticFunctionTag*, float value) {
+    return SpellHotbar::Bars::bar_circle_radius = std::max(value, 0.1f);
+}
+
+float get_bar_circle_radius(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::bar_circle_radius;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -456,6 +479,12 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("toggleShowOblivionBarPower", "SpellHotbar", toggle_show_oblivion_bar_power);
     vm->RegisterFunction("getInputMode", "SpellHotbar", get_input_mode);
     vm->RegisterFunction("setInputMode", "SpellHotbar", set_input_mode);
+    vm->RegisterFunction("setBarRowLength", "SpellHotbar", set_bar_row_length);
+    vm->RegisterFunction("getBarRowLength", "SpellHotbar", get_bar_row_length);
+    vm->RegisterFunction("setBarLayout", "SpellHotbar", set_bar_layout);
+    vm->RegisterFunction("getBarLayout", "SpellHotbar", get_bar_layout);
+    vm->RegisterFunction("setBarCircleRadius", "SpellHotbar", set_bar_circle_radius);
+    vm->RegisterFunction("getBarCircleRadius", "SpellHotbar", get_bar_circle_radius);
 
     return true;
 }

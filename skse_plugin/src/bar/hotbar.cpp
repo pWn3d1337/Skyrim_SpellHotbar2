@@ -7,6 +7,8 @@
 #include "../casts/casting_controller.h"
 #include "../input/modes.h"
 
+#include <numbers>
+
 namespace SpellHotbar
 {
     namespace rj = rapidjson;
@@ -362,6 +364,13 @@ namespace SpellHotbar
         return cd_prog;
     }
 
+    ImVec2 rotate_around_origin(ImVec2 p, float _sin, float _cos) {
+        float x_rot = p.x * _cos - p.y * _sin;
+        float y_rot = p.x * _sin + p.y * _cos;
+        return ImVec2(x_rot, y_rot);
+    }
+
+
     void Hotbar::draw_in_hud(ImFont* font, float /* screensize_x*/, float screensize_y, int highlight_slot,
                              float highlight_factor, key_modifier mod, bool highlight_isred, float alpha, float shout_cd, float shout_cd_dur) {
         ImGui::PushFont(font);
@@ -386,11 +395,47 @@ namespace SpellHotbar
         }
         auto pc = RE::PlayerCharacter::GetSingleton();
 
-        for (int i = 0; i < m_barsize; i++) {
-            auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+        if (Bars::layout == Bars::bar_layout::CIRCLE && m_barsize >= 3) {
+            float w = ImGui::GetWindowWidth();
 
-            draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i);
-           
+            float p0_y = -(Bars::bar_circle_radius + 0.5f) * icon_size;
+            float p0_x = 0.0f;
+
+            double angle_rad = (2.0 * std::numbers::pi) / static_cast<double>(m_barsize);
+            float _sin = std::sinf(static_cast<float>(angle_rad));
+            float _cos = std::cosf(static_cast<float>(angle_rad));
+
+            float c = (w - icon_size) * 0.5f; // -spacing.x;
+            ImVec2 center = {c - ImGui::GetStyle().ItemInnerSpacing.x - ImGui::GetStyle().FramePadding.x, c};
+            ImVec2 p = ImGui::GetCursorScreenPos();
+
+            ImVec2 offset{ p0_x, p0_y };
+            for (int i = 0; i < m_barsize; i++) {
+                auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+                
+                ImVec2 p2 = ImVec2(p.x + center.x + offset.x, p.y + center.y + offset.y);
+                ImGui::SetCursorScreenPos(p2);
+                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i, p2, false);
+                offset = rotate_around_origin(offset, _sin, _cos);
+            }
+        }
+        //else if (Bars::layout == Bars::bar_layout::CROSS && m_barsize >= 3) {
+        // TODO
+        //}
+        else {
+
+            int c = 0;
+            for (int i = 0; i < m_barsize; i++) {
+                auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
+                bool new_line = false;
+                if (++c >= Bars::bar_row_len) {
+                    new_line = true;
+                    c = 0;
+                }
+                ImVec2 p = ImGui::GetCursorScreenPos();
+                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i, p, new_line);
+
+            }
         }
         ImGui::PopFont();
     }
@@ -413,15 +458,15 @@ namespace SpellHotbar
         key_modifier mod,
         const std::string_view & bar_name,
         RE::PlayerCharacter* pc,
-        int slot_index)
+        int slot_index,
+        ImVec2 p,
+        bool new_line)
     {
         GameData::Spell_cast_data skill_dat;
         auto form = RE::TESForm::LookupByID(skill.formID);
         if (form) {
             skill_dat = GameData::get_spell_data(form, true, true);
         }
-
-        ImVec2 p = ImGui::GetCursorScreenPos();
 
         size_t count{ 0 };
         if (skill.consumed != consumed_type::none) {
@@ -485,7 +530,7 @@ namespace SpellHotbar
             RenderManager::draw_highlight_overlay(p, icon_size, col);
         }
 
-        ImGui::SameLine();
+        //ImGui::SameLine();
 
         std::string key_text = GameData::get_keybind_text(slot_index, mod);
         //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
@@ -500,7 +545,9 @@ namespace SpellHotbar
             ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());
         }
 
-        ImGui::SameLine();
+        if (!new_line) {
+            ImGui::SameLine();
+        }
     }
 
 

@@ -123,8 +123,10 @@ bool show_drag_frame = false;
 bool drag_frame_initialized = false;
 ImVec2 drag_window_pos = ImVec2(0,0);
 float drag_window_width = 0.0f;
+float drag_window_height = 0.0f;
 ImVec2 drag_window_start_pos = ImVec2(0, 0);
-float drag_window_start_width = 0;
+float drag_window_start_width = 0.0f;
+float drag_window_start_height = 0.0f;
 int dragged_window = 0;
 
 float SpellHotbar::RenderManager::scale_to_resolution(float normalized_value)
@@ -193,24 +195,105 @@ enum class fade_type
     fade_out
 };
 
-//Bar fade timers
-float hud_fade_timer {1.0f};
-float hud_fade_time_max {1.0f};
-fade_type hud_fade_type {fade_type::none};
-bool last_hud_should_show {false};
-key_modifier hud_fade_mod{ key_modifier::none};
+struct bar_fade {
+
+    bar_fade() 
+      : hud_fade_timer(1.0f),
+        hud_fade_time_max(1.0f),
+        hud_fade_type(fade_type::none),
+        hud_fade_mod(key_modifier::none),
+        last_should_show(false)
+    {};
+
+    void finish() {
+        hud_fade_timer = 1.0f;
+        hud_fade_time_max = 1.0f;
+        hud_fade_type = fade_type::none;
+        hud_fade_mod = key_modifier::none;
+    }
+
+    void update(float delta) {
+        switch (hud_fade_type) {
+        case fade_type::fade_in:
+            hud_fade_timer += delta;
+            if (hud_fade_timer >= hud_fade_time_max) {
+                finish();
+            }
+            break;
+        case fade_type::fade_out:
+            hud_fade_timer -= delta;
+            if (hud_fade_timer <= 0.0f) {
+                finish();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    void start_fade_in(float duration)
+    {
+        float new_val{ 0.0f };
+        if (hud_fade_type == fade_type::fade_out) {
+            float current_prog = hud_fade_timer / hud_fade_time_max;
+            new_val = duration * current_prog;
+        }
+
+        hud_fade_type = fade_type::fade_in;
+        hud_fade_timer = new_val;
+        hud_fade_time_max = duration;
+        hud_fade_mod = key_modifier::none;
+    }
+
+    void start_fade_out(float duration, key_modifier mod) {
+        float new_val{ duration };
+        if (hud_fade_type == fade_type::fade_in) {
+            float current_prog = hud_fade_timer / hud_fade_time_max;
+            new_val *= current_prog;
+        }
+
+        hud_fade_type = fade_type::fade_out;
+        hud_fade_timer = new_val;
+        hud_fade_time_max = duration;
+        hud_fade_mod = mod;
+    }
+
+    bool is_hud_fading()
+    {
+        return hud_fade_type != fade_type::none;
+    }
+
+    bool is_hud_fading_out()
+    {
+        return hud_fade_type == fade_type::fade_out;
+    }
+
+    float get_bar_alpha()
+    {
+        return hud_fade_type == fade_type::none ? 1.0f : hud_fade_timer / hud_fade_time_max;
+    }
+
+    //Bar fade timers
+    float hud_fade_timer;
+    float hud_fade_time_max;
+    fade_type hud_fade_type;
+    key_modifier hud_fade_mod;
+    bool last_should_show;
+};
+
+bar_fade main_bar_fade;
+bar_fade oblivion_bar_fade;
+
 
 key_modifier last_mod{ key_modifier::none };
 
-void finish_fade()
+/*void finish_fade()
 { 
-    hud_fade_timer = 1.0f;
-    hud_fade_time_max = 1.0f;
-    hud_fade_type = fade_type::none;
-    hud_fade_mod = key_modifier::none;
-}
+    main_bar_fade.finish();
+    oblivion_bar_fade.finish();
+}*/
 
-void update_fade_timer(float delta)
+/*void update_fade_timer(float delta)
 { 
     switch (hud_fade_type) {
         case fade_type::fade_in:
@@ -228,9 +311,9 @@ void update_fade_timer(float delta)
     default:
         break;
     }
-}
+}*/
 
-void start_fade_in(float duration)
+/*void start_fade_in(float duration)
 {
     float new_val{0.0f};
     if (hud_fade_type == fade_type::fade_out) {
@@ -270,7 +353,7 @@ bool is_hud_fading_out()
 float RenderManager::get_bar_alpha()
 {
     return hud_fade_type == fade_type::none ? 1.0f : hud_fade_timer / hud_fade_time_max;
-}
+}*/
 
 void RenderManager::start_bar_dragging(int type)
 { 
@@ -279,8 +362,10 @@ void RenderManager::start_bar_dragging(int type)
 
     drag_window_pos = ImVec2(0, 0);
     drag_window_width = 0.0f;
+    drag_window_height = 0.0f;
     drag_window_start_pos = ImVec2(0, 0);
     drag_window_start_width = 0;
+    drag_window_start_height = 0;
     dragged_window = type;
 }
 
@@ -890,24 +975,41 @@ inline int get_oblivion_bar_size() {
 /*
 * return screen_size_x, screen_size_y, window_width, window_height
 */
-inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize)
+inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize, int row_len)
 {
     auto& io = ImGui::GetIO();
     const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
 
     ImVec2 spacing = ImGui::GetStyle().ItemSpacing;
+
     spacing.x = Bars::slot_spacing;
+    spacing.y = Bars::slot_spacing;
     ImGui::GetStyle().ItemSpacing = spacing;
 
     ImVec2 inner_spacing = ImGui::GetStyle().ItemInnerSpacing;
-
+    ImVec2 frame_padding = ImGui::GetStyle().FramePadding;
     float slot_h = std::floor(get_hud_slot_height(screen_size_y));
+    float window_height{ 0 };
+    float window_width{ 0 };
+
     ImGui::PushFont(font_text);
-    float window_height = slot_h + ImGui::CalcTextSize("M").y + spacing.y * 2 + inner_spacing.y *2;
+    float font_height = ImGui::CalcTextSize("M").y + frame_padding.y; //spacing.y + inner_spacing.y;
     ImGui::PopFont();
 
-    float window_width = (slot_h + spacing.x) * static_cast<float>(barsize-1) + slot_h + inner_spacing.x *4;
+    if (Bars::layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
+        window_width = (Bars::bar_circle_radius + 1.125f) * slot_h * 2.0f;
+        window_height = font_height + window_width;
+    }
+    //else if (Bars::layout == Bars::bar_layout::CROSS && barsize >= 3) {
+    // //TODO 
+    //}
+    else {
+        int numrows = Bars::get_num_rows(barsize, row_len);
+        //window_height = font_height + (slot_h + spacing.y) * (numrows);
+        window_height = font_height + (slot_h + spacing.y) * static_cast<float>(numrows - 1) + slot_h + inner_spacing.y * 2 + frame_padding.y * 2;
+        window_width = (slot_h + spacing.x) * static_cast<float>(row_len - 1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
 
+    }
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
@@ -962,20 +1064,27 @@ int wrap_index(int a, int n) {
 }
 
 void draw_drag_menu() {
-    static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
+    static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
                                                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollWithMouse;
+    //static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs; // | ImGuiWindowFlags_NoBackground;
 
     auto& io = ImGui::GetIO();
     io.MouseDrawCursor = true;
 
     uint8_t barsize = Bars::barsize;
+    uint8_t barrowlen = Bars::bar_row_len;
     Bars::anchor_point anchor = Bars::bar_anchor_point;
     float* slot_spacing = &Bars::slot_spacing;
+    if (Bars::layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
+        slot_spacing = &Bars::bar_circle_radius;
+    }
+
     float* slot_scale = &Bars::slot_scale;
     float offset_x = Bars::offset_x;
     float offset_y = Bars::offset_y;
     if (dragged_window == 1) {
         barsize = static_cast<uint8_t>(get_oblivion_bar_size());
+        barrowlen = barsize;
         anchor = Bars::oblivion_bar_anchor_point;
         slot_spacing = &Bars::oblivion_slot_spacing;
         slot_scale = &Bars::oblivion_slot_scale;
@@ -983,7 +1092,7 @@ void draw_drag_menu() {
         offset_y = Bars::oblivion_offset_y;
     }
 
-    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize);
+    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize, barrowlen);
     if (!drag_frame_initialized) {
         adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, anchor, offset_x, offset_y);
     }
@@ -993,13 +1102,15 @@ void draw_drag_menu() {
 
     const std::string text = "Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing";
     SpellHotbar::Hotbar dummy(text, barsize);
-    ImGui::Begin(text.c_str(), &show_drag_frame, window_flag);
+    ImGui::Begin("Drag Bar", &show_drag_frame, window_flag);
 
     drag_window_pos = ImGui::GetWindowPos();
     drag_window_width = ImGui::GetWindowWidth();
+    drag_window_height = ImGui::GetWindowHeight();
     if (!drag_frame_initialized) {
         drag_window_start_pos = drag_window_pos;
         drag_window_start_width = drag_window_width;
+        drag_window_start_height = drag_window_height;
         drag_frame_initialized = true;
     }
 
@@ -1007,15 +1118,22 @@ void draw_drag_menu() {
 
     float constexpr scale_diff = 0.05f;
 
-    const float spacing_diff = RenderManager::scale_to_resolution(1.0f);
-    const float max_spacing = RenderManager::scale_to_resolution(50.0f);
+    float spacing_diff = RenderManager::scale_to_resolution(1.0f);
+    float max_spacing = RenderManager::scale_to_resolution(50.0f);
+    float min_spacing = 0.0f;
+    //use radius instead of spacing on circle mode
+    if (Bars::layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
+        spacing_diff = 0.1f;
+        max_spacing = 10.0f;
+        min_spacing = 0.1f;
+    }
 
     //if (ImGui::IsItemHovered()) {
     if (io.MouseWheel < 0) {
         if (Input::mod_alt.isDown()) {
             *slot_spacing -= spacing_diff;
-            if (*slot_spacing < 0.0f) {
-                *slot_spacing = 0.0f;
+            if (*slot_spacing < min_spacing) {
+                *slot_spacing = min_spacing;
             }
         }
         else {
@@ -1036,7 +1154,7 @@ void draw_drag_menu() {
             }
         }
     }
-
+    drawCenteredText(text.c_str());
     dummy.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
                     highlight_isred, alpha, 0.0f, 0);
 
@@ -1046,7 +1164,10 @@ void draw_drag_menu() {
 void RenderManager::draw() {
     float deltaTime = ImGui::GetIO().DeltaTime;
     update_highlight(deltaTime);
-    update_fade_timer(deltaTime);
+    main_bar_fade.update(deltaTime);
+    if (Input::is_oblivion_mode()) {
+        oblivion_bar_fade.update(deltaTime);
+    }
     update_text_fade_timer(deltaTime);
 
     auto pc = RE::PlayerCharacter::GetSingleton();
@@ -1079,21 +1200,25 @@ void RenderManager::draw() {
     else
     {
         if (drag_frame_initialized) {
+
             //update bar position after drag has finished
             float width_diff = (drag_window_width - drag_window_start_width) * 0.5f;
+            float height_diff = (drag_window_height - drag_window_start_height);
 
             if (dragged_window == 1) {
                 Bars::oblivion_offset_x += (drag_window_pos.x - drag_window_start_pos.x) + width_diff;
-                Bars::oblivion_offset_y += (drag_window_pos.y - drag_window_start_pos.y);
+                Bars::oblivion_offset_y += (drag_window_pos.y - drag_window_start_pos.y) + height_diff;
             }
             else {
                 Bars::offset_x += (drag_window_pos.x - drag_window_start_pos.x) + width_diff;
-                Bars::offset_y += (drag_window_pos.y - drag_window_start_pos.y);
+                Bars::offset_y += (drag_window_pos.y - drag_window_start_pos.y) + height_diff;
             }
             drag_window_pos = {0, 0};
             drag_window_start_pos = {0, 0};
             drag_window_width = 0.0f;
+            drag_window_height = 0.0f;
             drag_window_start_width = 0.0f;
+            drag_window_start_height = 0.0f;
 
             drag_frame_initialized = false;
             dragged_window = 0;
@@ -1198,18 +1323,29 @@ void RenderManager::draw() {
             menu_open = false;
 
             auto [should_show, fade_dur] = GameData::shouldShowHUDBar();
-            if (!should_show && last_hud_should_show) {
+            auto [should_show_oblivion, fade_dur_oblivion] = GameData::shouldShowOblivionHUDBar();
+            if (!should_show && main_bar_fade.last_should_show) {
                 //If a modifier caused a bar hide, fade out with previous mod
                 key_modifier fademod = mod;
                 if (mod != last_mod) {
                     fademod = last_mod;
                 }
-                start_fade_out(fade_dur, fademod);
-            } else if (should_show && !last_hud_should_show) {
-                start_fade_in(fade_dur);
+                main_bar_fade.start_fade_out(fade_dur, fademod);
+            } else if (should_show && !main_bar_fade.last_should_show) {
+                main_bar_fade.start_fade_in(fade_dur);
             }
-            last_hud_should_show = should_show;
+            main_bar_fade.last_should_show = should_show;
 
+            //fading for oblivion bar
+            if (Input::is_oblivion_mode()) {
+                if (!should_show_oblivion && oblivion_bar_fade.last_should_show) {
+                    oblivion_bar_fade.start_fade_out(fade_dur_oblivion, key_modifier::none);
+                }
+                else if (should_show_oblivion && !oblivion_bar_fade.last_should_show) {
+                    oblivion_bar_fade.start_fade_in(fade_dur_oblivion);
+                }
+                oblivion_bar_fade.last_should_show = should_show_oblivion;
+            }
 
             auto* hudMenu = static_cast<RE::HUDMenu*>(ui->GetMenu(RE::HUDMenu::MENU_NAME).get());
             float shout_cd_prog = 1.0f;
@@ -1222,9 +1358,9 @@ void RenderManager::draw() {
             static constexpr ImGuiWindowFlags window_flag =
                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
 
-            if (should_show || is_hud_fading()) {
+            if (should_show || main_bar_fade.is_hud_fading()) {
 
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize);
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize, Bars::bar_row_len);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point, Bars::offset_x, Bars::offset_y);
 
@@ -1237,15 +1373,15 @@ void RenderManager::draw() {
                     text_fade_check_last_bar(bar_id);
                     //text_fade_check_mod_change(mod);
 
-                    float alpha = get_bar_alpha();
+                    float alpha = main_bar_fade.get_bar_alpha();
                     float text_alpha = get_text_fade_alpha();
                     auto& bar = Bars::hotbars.at(bar_id);
                     ImGui::PushFont(font_text);
 
                     key_modifier m = mod;
-                    if (is_hud_fading_out()) {
+                    if (main_bar_fade.is_hud_fading_out()) {
                         //If fading out, do not react to modifier changes visually
-                        m = hud_fade_mod;
+                        m = main_bar_fade.hud_fade_mod;
                     }
 
                     drawCenteredText(bar.get_name(), alpha* text_alpha);
@@ -1263,15 +1399,16 @@ void RenderManager::draw() {
                 ImGui::End();
             }
 
-            if (Input::is_oblivion_mode() && (should_show || is_hud_fading())) {
-
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(get_oblivion_bar_size());
+            //logger::info("OblivionBarAlpha: {}", oblivion_bar_fade.get_bar_alpha());
+            if (Input::is_oblivion_mode() && (should_show_oblivion || oblivion_bar_fade.is_hud_fading())) {
+                int obl_bar_size = get_oblivion_bar_size();
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_size);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::oblivion_bar_anchor_point, Bars::oblivion_offset_x, Bars::oblivion_offset_y);
 
                 ImGui::Begin("SpellHotbarOblivionHUD", nullptr, window_flag);
 
-                float alpha = get_bar_alpha();
+                float alpha = oblivion_bar_fade.get_bar_alpha();
                 GameData::oblivion_bar.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
                     highlight_isred, alpha, shout_cd_prog, shout_cd_dur);
 

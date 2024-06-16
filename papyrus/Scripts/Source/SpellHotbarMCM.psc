@@ -14,6 +14,7 @@ string[] bar_show_options_transformed
 string[] text_show_options
 string[] anchor_points
 string[] input_modes
+string[] bar_layouts
 
 string presets_root = "Data/SKSE/Plugins/SpellHotbar/presets/"
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
@@ -74,6 +75,11 @@ Event OnConfigInit()
 	input_modes[0] = "Cast Directly"
 	input_modes[1] = "Equip"
 	input_modes[2] = "Oblivion-Style"
+
+	bar_layouts = new String[3]
+	bar_layouts[0] = "Bar"
+	bar_layouts[1] = "Circle"
+	bar_layouts[2] = "Cross"
 EndEvent
 
 ; reinit config on update
@@ -140,14 +146,17 @@ Event OnPageReset(string page)
 
         AddHeaderOption("Bar Positioning")
 		AddHeaderOption("")
+		
+		AddMenuOptionST("BarLayout", "Layout", bar_layouts[SpellHotbar.getBarLayout()])
+		AddMenuOptionST("BarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getBarAnchorPoint()])
 
         AddSliderOptionST("SlotScale", "Slot Scale", SpellHotbar.getSlotScale(), "{2}")
         AddSliderOptionST("BarOffsetX", "Offset X", SpellHotbar.getOffsetX(false))
 		AddSliderOptionST("SlotSpacing", "Slot Spacing", SpellHotbar.getSlotSpacing())
-        AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))
-
-		AddMenuOptionST("BarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getBarAnchorPoint()])
-		AddEmptyOption()
+        AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))		
+		AddSliderOptionST("BarRowLen", "Slots per Row", SpellHotbar.getBarRowLength())
+		AddSliderOptionST("BarCircleRadius", "Circle Radius", SpellHotbar.getBarCircleRadius(),"{2}")
+		;AddEmptyOption()
 
 		AddHeaderOption("Gameplay")
 		AddHeaderOption("")
@@ -459,6 +468,53 @@ bool Function saveSettingsAsPreset(string preset_name)
 	EndIf
 	return success
 EndFunction
+
+State BarLayout
+	Event OnMenuOpenST()
+		SetMenuDialogOptions(bar_layouts)
+		SetMenuDialogStartIndex(SpellHotbar.getBarLayout())
+		SetMenuDialogDefaultIndex(0)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		SetMenuOptionValueST(bar_layouts[SpellHotbar.setBarLayout(index)])
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("Set the basic bar shape type, circle and cross need at least 3 slots per bar")
+	EndEvent
+	Event OnDefaultST()
+		SetMenuOptionValueST(bar_layouts[SpellHotbar.setBarLayout(0)])
+	EndEvent
+EndState
+
+State BarRowLen
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getBarRowLength() as float)
+        SetSliderDialogDefaultValue(12.0)
+        SetSliderDialogRange(1.0, 12.0)
+        SetSliderDialogInterval(1.0)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setBarRowLength(a_value as int));
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Set the number of skills per row, only relevant in 'Bar' Layout");
+    EndEvent
+EndState
+
+State BarCircleRadius
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getBarCircleRadius())
+        SetSliderDialogDefaultValue(2.2)
+        SetSliderDialogRange(0.1, 10.0)
+        SetSliderDialogInterval(0.1)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setBarCircleRadius(a_value));
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Set the radius when using 'Circle' Layout, unit is 'icon_size'");
+    EndEvent
+EndState
 
 State OblivionSlotScale
     Event OnSliderOpenST()

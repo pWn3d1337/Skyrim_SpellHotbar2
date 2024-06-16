@@ -31,6 +31,12 @@ namespace SpellHotbar::Bars {
         CENTER
     };
 
+    enum class bar_layout : uint8_t {
+        BARS = 0Ui8,
+        CIRCLE,
+        CROSS
+    };
+
     extern std::unordered_map<uint32_t, Hotbar> hotbars;
     extern bool disable_non_modifier_bar;
     extern uint8_t barsize;
@@ -56,6 +62,10 @@ namespace SpellHotbar::Bars {
     extern bool disable_menu_rendering;
 
     extern anchor_point bar_anchor_point;
+
+    extern uint8_t bar_row_len;
+    extern bar_layout layout;
+    extern float bar_circle_radius;
 
     constexpr uint32_t MAIN_BAR = 'MAIN';
     constexpr uint32_t MAIN_BAR_SNEAK = MAIN_BAR + 1;
@@ -125,5 +135,7 @@ namespace SpellHotbar::Bars {
     bool load_bars_from_json(std::string path);
 
     void add_special_bar(uint32_t name, std::optional<uint32_t> parent = std::nullopt);
+
+    int get_num_rows(int barsize, int row_len);
 
 }

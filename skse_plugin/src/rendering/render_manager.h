@@ -116,8 +116,6 @@ namespace SpellHotbar {
 
         static void highlight_skill_slot(int id, float dur = 1.0F, bool error = false);
 
-        static float get_bar_alpha();
-
         static void start_bar_dragging(int type);
         static bool should_block_game_cursor_inputs();
         static void stop_bar_dragging();

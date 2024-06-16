@@ -70,16 +70,19 @@ namespace SpellHotbar::Bars {
 				if (!m_power_slot.isEmpty()) m_power_slot.clear();
 			}
 
+			ImVec2 p = ImGui::GetCursorScreenPos();
 			Hotbar::draw_single_skill(m_spell_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-				game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_cast));
+				game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_cast), p);
 
 			if (Input::key_oblivion_potion.isValidBound()) {
+				p = ImGui::GetCursorScreenPos();
 				Hotbar::draw_single_skill(m_potion_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_potion));
+					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_potion), p);
 			}
 			if (Bars::oblivion_bar_show_power) {
+				p = ImGui::GetCursorScreenPos();
 				Hotbar::draw_single_skill(m_power_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout));
+					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout), p);
 			}
 
 		}

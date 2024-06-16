@@ -10,6 +10,7 @@
 #include "animation_data_csv_loader.h"
 #include "keynames_csv_loader.h"
 #include "spell_cast_data.h"
+#include "../input/modes.h"
 
 namespace SpellHotbar::GameData {
 
@@ -588,6 +589,56 @@ namespace SpellHotbar::GameData {
                     case Bars::bar_show_mode::combat_or_drawn:
                         return std::make_tuple(in_combat || weapon_drawn, slow_fade);
                 }
+            }
+        }
+        return std::make_tuple(false, fast_fade);
+    }
+
+    std::tuple<bool, float> shouldShowOblivionHUDBar() {
+        constexpr float fast_fade = 0.1f;
+        constexpr float slow_fade = 0.5f;
+
+        if(!Input::is_oblivion_mode())
+        {
+            return std::make_tuple(false, fast_fade);
+        }
+
+        auto* ui = RE::UI::GetSingleton();
+        if (!ui || ui->GameIsPaused() || !ui->IsCursorHiddenWhenTopmost() || !ui->IsShowingMenus() || !ui->GetMenu<RE::HUDMenu>() || ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME))
+        {
+            return std::make_tuple(false, fast_fade);
+        }
+        if (const auto* control_map = RE::ControlMap::GetSingleton();
+            !control_map || !control_map->IsMovementControlsEnabled())
+        {
+            return std::make_tuple(false, fast_fade);
+        }
+
+        if (Input::mod_show_bar.isValidBound() && Input::mod_show_bar.isDown()) {
+            return std::make_tuple(true, fast_fade);
+        }
+
+        auto* pc = RE::PlayerCharacter::GetSingleton();
+        if (pc) {
+
+            if (Bars::bar_show_setting == Bars::bar_show_mode::never) return std::make_tuple(false, slow_fade);
+            if (Bars::bar_show_setting == Bars::bar_show_mode::always) return std::make_tuple(true, slow_fade);
+
+            bool in_combat = pc->IsInCombat();
+            bool weapon_drawn = pc->AsActorState()->IsWeaponDrawn();
+
+            switch (Bars::bar_show_setting) {
+            case Bars::bar_show_mode::combat:
+                return std::make_tuple(in_combat, slow_fade);
+
+            case Bars::bar_show_mode::drawn_weapon:
+                return std::make_tuple(weapon_drawn, slow_fade);
+
+            case Bars::bar_show_mode::combat_and_drawn:
+                return std::make_tuple(in_combat && weapon_drawn, slow_fade);
+
+            case Bars::bar_show_mode::combat_or_drawn:
+                return std::make_tuple(in_combat || weapon_drawn, slow_fade);
             }
         }
         return std::make_tuple(false, fast_fade);

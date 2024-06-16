@@ -39,6 +39,10 @@ namespace SpellHotbar::Bars {
     bool disable_menu_rendering;
     anchor_point bar_anchor_point = anchor_point::BOTTOM;
 
+    uint8_t bar_row_len = 1U;
+    bar_layout layout = bar_layout::BARS;
+    float bar_circle_radius = 2.2f;
+
     //non-persisten
     uint32_t menu_bar_id;
 
@@ -77,6 +81,11 @@ namespace SpellHotbar::Bars {
                 hotbars.at(name).set_parent(p);
             }
         } 
+    }
+
+    int get_num_rows(int bar_size, int row_len)
+    {
+        return static_cast<int>(std::ceil(static_cast<float>(bar_size) / static_cast<float>(row_len)));
     }
 
     uint32_t get_enabled_hotbar(uint32_t barID)

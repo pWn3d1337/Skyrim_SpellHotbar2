@@ -62,3 +62,9 @@ bool function isShowOblivionBarPower() global native
 bool function toggleShowOblivionBarPower() global native
 int function getInputMode() global native
 int function setInputMode(int mode) global native
+int function setBarRowLength(int len) global native
+int function getBarRowLength() global native
+int function getBarLayout() native global
+int function setBarLayout(int index) native global
+float function setBarCircleRadius(float value) global native
+float function getBarCircleRadius() global native
