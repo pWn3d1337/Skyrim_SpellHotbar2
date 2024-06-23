@@ -96,7 +96,10 @@ namespace SpellHotbar::GameData {
         GENERIC_POTION_LARGE,
         GENERIC_POISON,
         GENERIC_POISON_SMALL,
-        GENERIC_POISON_LARGE
+        GENERIC_POISON_LARGE,
+        GENERIC_FOOD,
+        GENERIC_FOOD_SOUP,
+        GENERIC_FOOD_DRINK
     };
 
     struct Gametime_cooldown_value {
@@ -139,6 +142,9 @@ namespace SpellHotbar::GameData {
     extern RE::BGSEquipSlot* equip_slot_either_hand;
     extern RE::BGSEquipSlot* equip_slot_both_hand;
     extern RE::BGSEquipSlot* equip_slot_voice;
+
+    extern RE::BGSSoundDescriptorForm* sound_ITMPotionUse;
+    extern RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup;
 
     extern std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     extern std::vector<std::tuple<RE::BGSArtObject*, RE::BGSArtObject*, const std::string>> spell_casteffect_art;

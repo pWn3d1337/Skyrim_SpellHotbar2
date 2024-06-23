@@ -95,6 +95,8 @@ namespace SpellHotbar {
         static void load_gamedata_dependant_resources();
         static void reload_resouces();
 
+        static void on_game_load();
+
         static TextureImage & load_texture(std::string path);
 
         static void add_spell_texture(TextureImage & main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename);

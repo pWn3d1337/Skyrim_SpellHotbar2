@@ -359,6 +359,8 @@ namespace SpellHotbar::Storage {
             }
 
         }
+
+        RenderManager::on_game_load();
     }
 
     bool slotSpell_internal(RE::FormID form, size_t index, uint32_t bar_id)

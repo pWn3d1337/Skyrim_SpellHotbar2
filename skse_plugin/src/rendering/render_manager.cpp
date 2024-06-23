@@ -287,74 +287,6 @@ bar_fade oblivion_bar_fade;
 
 key_modifier last_mod{ key_modifier::none };
 
-/*void finish_fade()
-{ 
-    main_bar_fade.finish();
-    oblivion_bar_fade.finish();
-}*/
-
-/*void update_fade_timer(float delta)
-{ 
-    switch (hud_fade_type) {
-        case fade_type::fade_in:
-            hud_fade_timer += delta;
-            if (hud_fade_timer >= hud_fade_time_max) {
-                finish_fade();
-            }
-            break;
-        case fade_type::fade_out:
-            hud_fade_timer -= delta;
-            if (hud_fade_timer <= 0.0f) {
-                finish_fade();
-            }
-            break;
-    default:
-        break;
-    }
-}*/
-
-/*void start_fade_in(float duration)
-{
-    float new_val{0.0f};
-    if (hud_fade_type == fade_type::fade_out) {
-        float current_prog = hud_fade_timer / hud_fade_time_max;
-        new_val = duration * current_prog;
-    }
-
-    hud_fade_type = fade_type::fade_in;
-    hud_fade_timer = new_val;
-    hud_fade_time_max = duration;
-    hud_fade_mod = key_modifier::none;
-}
-
-void start_fade_out(float duration, key_modifier mod) {
-    float new_val{duration};
-    if (hud_fade_type == fade_type::fade_in) {
-        float current_prog = hud_fade_timer / hud_fade_time_max;
-        new_val *= current_prog;
-    }
-
-    hud_fade_type = fade_type::fade_out;
-    hud_fade_timer = new_val;
-    hud_fade_time_max = duration;
-    hud_fade_mod = mod;
-}
-
-bool is_hud_fading()
-{ 
-    return hud_fade_type != fade_type::none;
-}
-
-bool is_hud_fading_out()
-{
-    return hud_fade_type == fade_type::fade_out;
-}
-
-float RenderManager::get_bar_alpha()
-{
-    return hud_fade_type == fade_type::none ? 1.0f : hud_fade_timer / hud_fade_time_max;
-}*/
-
 void RenderManager::start_bar_dragging(int type)
 { 
     show_drag_frame = true;
@@ -526,6 +458,10 @@ void RenderManager::reload_resouces() {
     logger::info("Reloading Resources...");
     GameData::load_keynames_file();
     RenderManager::load_gamedata_dependant_resources();
+}
+
+void RenderManager::on_game_load()
+{
 }
 
 TextureImage & RenderManager::load_texture(std::string path) {
@@ -727,11 +663,36 @@ void RenderManager::MessageCallback(SKSE::MessagingInterface::Message* msg)
 inline SubTextureImage* lookup_default_icon(RE::FormID formID) {
     SubTextureImage* ret{ nullptr };
     // fallback icons
-    auto form = RE::TESForm::LookupByID(formID);
     GameData::DefaultIconType icon{ GameData::DefaultIconType::UNKNOWN };
+
+
+    auto form = RE::TESForm::LookupByID(formID);
+
     if (form != nullptr) {
-        icon = GameData::get_fallback_icon_type(form);
+
+        if (form->GetFormType() == RE::FormType::AlchemyItem) {
+            auto alch = form->As<RE::AlchemyItem>();
+            if (alch && alch->IsFood()) {
+
+                //check sound
+                if (alch->data.consumptionSound == GameData::sound_ITMPotionUse) {
+                    icon = GameData::DefaultIconType::GENERIC_FOOD_DRINK;
+                }
+                else if (alch->data.consumptionSound == GameData::sound_NPCHumanEatSoup) {
+                    icon = GameData::DefaultIconType::GENERIC_FOOD_SOUP;
+                }
+                else {
+                    icon = GameData::DefaultIconType::GENERIC_FOOD;
+                }
+            }
+        }
+
+        //No food icon found
+        if (icon == GameData::DefaultIconType::UNKNOWN) {
+            icon = GameData::get_fallback_icon_type(form);
+        }
     }
+    
 
     if (default_icons.contains(icon)) {
         ret = &default_icons.at(icon);

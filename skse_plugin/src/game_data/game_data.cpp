@@ -48,6 +48,9 @@ namespace SpellHotbar::GameData {
     RE::BGSPerk* perk_illusion_dual_casting = nullptr;
     RE::BGSPerk* perk_restoration_dual_casting = nullptr;
 
+    RE::BGSSoundDescriptorForm* sound_ITMPotionUse = nullptr;
+    RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup = nullptr;
+
     std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     std::unordered_map<RE::FormID, User_custom_spelldata> user_spell_cast_info;
 
@@ -298,6 +301,9 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x153CF, "Skyrim.esm", &perk_destruction_dual_casting, "DestructionDualCasting", RE::FormType::Perk);
         load_form_from_game(0x153D0, "Skyrim.esm", &perk_illusion_dual_casting, "IllusionDualCasting", RE::FormType::Perk);
         load_form_from_game(0x153D1, "Skyrim.esm", &perk_restoration_dual_casting, "RestorationDualCasting", RE::FormType::Perk);
+
+        load_form_from_game(0x10E2EA, "Skyrim.esm", &sound_NPCHumanEatSoup, "NPCHumanEatSoup", RE::FormType::SoundRecord);
+        load_form_from_game(0xB6435, "Skyrim.esm", &sound_ITMPotionUse, "ITMPostionUse", RE::FormType::SoundRecord);
 
         load_keynames_file();
 

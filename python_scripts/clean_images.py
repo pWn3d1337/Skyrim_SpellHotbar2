@@ -27,7 +27,7 @@ if __name__ == "__main__":
     input_dir_root = r"F:\Skyrim Dev\Python_projects\SpellHotbar"
     output_dir_root = r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts"
 
-    #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons")
+    cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons")
     #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons", only_new=True)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons", f"{output_dir_root}/modded_spell_icons")

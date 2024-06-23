@@ -108,7 +108,10 @@ default_icons = [
     "GENERIC_POTION_LARGE",
     "GENERIC_POISON",
     "GENERIC_POISON_SMALL",
-    "GENERIC_POISON_LARGE"
+    "GENERIC_POISON_LARGE",
+    "GENERIC_FOOD",
+    "GENERIC_FOOD_SOUP",
+    "GENERIC_FOOD_DRINK"
 ]
 
 
@@ -650,6 +653,9 @@ if __name__ == "__main__":
 
     spell_lists_potions = [
         rf"{project_root}\spell_lists2\potions.csv",
+    ]
+
+    spell_lists_poisons = [
         rf"{project_root}\spell_lists2\poisons.csv"
     ]
 
@@ -668,6 +674,9 @@ if __name__ == "__main__":
 
     icon_root_folders_potions = [
         rf"{project_root}\vanilla_spell_icons\potions",
+    ]
+
+    icon_root_folders_poisons = [
         rf"{project_root}\vanilla_spell_icons\poisons"
     ]
 
@@ -680,6 +689,7 @@ if __name__ == "__main__":
         rf"{project_root}\vanilla_spell_icons\conjuration_generic",
         rf"{project_root}\vanilla_spell_icons\shouts_generic",
         rf"{project_root}\vanilla_spell_icons\potions_generic",
+        rf"{project_root}\vanilla_spell_icons\foods_generic",
     ]
 
 
@@ -699,9 +709,13 @@ if __name__ == "__main__":
                       output_data=mod_root_path / "spelldata/spells_vanilla_potions")
 
     if False:
+        stitch_folder(spell_lists_poisons, icon_root_folders_poisons, mod_root_path / "images/icons_vanilla_poisons", alpha_mask,
+                      output_data=mod_root_path / "spelldata/spells_vanilla_poisons")
+
+    if False:
         stitch_default_icons(default_icons, default_icons_folders, mod_root_path / "images/default_icons", alpha_mask,
                              alphamask_empty=False, alphamask_overlay=False, alphamask_highlight=False,
-                             add_school_icon=True)
+                             add_school_icon=False)
 
     # create_cooldown_progress_overlay(mod_root_path / "images/icons_cooldown", alpha_mask, radius=1.0, alpha=0.8)
 
@@ -744,7 +758,7 @@ if __name__ == "__main__":
         stitch_default_icons(default_icons, [rf"{project_root}\icons\nordic_ui"],
                              mod_nordic_ui_root_path / "images/default_icons_nordic", alpha_mask,
                              alphamask_empty=False, alphamask_overlay=False, alphamask_highlight=False,
-                             add_school_icon=True)
+                             add_school_icon=False)
 
     #stitch_mod("thunderchild")
     #i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
