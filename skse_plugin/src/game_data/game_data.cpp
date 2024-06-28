@@ -256,8 +256,15 @@ namespace SpellHotbar::GameData {
         {RE::ActorValue::kReflectDamage, IM_COL32_WHITE}
     };
 
+    //Mod support:
+
+    //Sacrosanct
+    RE::TESGlobal* sacrosanct_VampireSpells_Vanilla_Power_Global_CanLamaesPyre = nullptr;
+    RE::FormID sacrosanct_lamaes_pyre_id = 0U;
+
+    
     template<typename T>
-    void load_form_from_game(RE::FormID formId, const std::string & plugin, T** out_ptr, const std::string & name, RE::FormType type) {
+    void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type) {
         auto form = SpellHotbar::GameData::get_form_from_file(formId, plugin);
 
         if (form && form->GetFormType() == type) {
@@ -331,6 +338,19 @@ namespace SpellHotbar::GameData {
         }
         else {
             logger::error("Could not get Vampire Powers Formlist");
+        }
+
+
+        //mod Support:
+        //Sacrosanct Lamae's pyre: can only cast when global is true
+        constexpr std::string_view sacrosanct_esp_name = "Sacrosanct - Vampires of Skyrim.esp";
+        if (RE::TESDataHandler::GetSingleton()->GetModIndex(sacrosanct_esp_name).has_value()) {
+            logger::info("Loading Sacrosanct compatibility...");
+            load_form_from_game(0x05EB00, sacrosanct_esp_name, &sacrosanct_VampireSpells_Vanilla_Power_Global_CanLamaesPyre, "SCS_VampireSpells_Vanilla_Power_Global_CanLamaesPyre", RE::FormType::Global);
+            auto form_sacrosanct_lamaes_pyre = SpellHotbar::GameData::get_form_from_file(0x05EAFD, sacrosanct_esp_name);
+            if (form_sacrosanct_lamaes_pyre) {
+                sacrosanct_lamaes_pyre_id = form_sacrosanct_lamaes_pyre->GetFormID();
+            }
         }
     }
 
@@ -906,13 +926,18 @@ namespace SpellHotbar::GameData {
     bool is_skill_on_cd(RE::FormID skill)
     {
         bool ret{ false };
-        RE::Calendar* cal = RE::Calendar::GetSingleton();
-        if (cal) {
-            float game_time = cal->GetCurrentGameTime();
+        if (is_on_binary_cd(skill)) {
+            ret = true;
+        }
+        else {
+            RE::Calendar* cal = RE::Calendar::GetSingleton();
+            if (cal) {
+                float game_time = cal->GetCurrentGameTime();
 
-            if (gametime_cooldowns.contains(skill)) {
-                auto& cd_info = gametime_cooldowns.at(skill);
-                ret = !cd_info.is_expired(game_time);
+                if (gametime_cooldowns.contains(skill)) {
+                    auto& cd_info = gametime_cooldowns.at(skill);
+                    ret = !cd_info.is_expired(game_time);
+                }
             }
         }
 
@@ -1264,6 +1289,16 @@ namespace SpellHotbar::GameData {
              }
          }
          return count;
+     }
+
+     bool is_on_binary_cd(RE::FormID skill)
+     {
+         bool can_cast{ true };
+         if (sacrosanct_lamaes_pyre_id != 0 && sacrosanct_lamaes_pyre_id == skill) {
+             can_cast = sacrosanct_VampireSpells_Vanilla_Power_Global_CanLamaesPyre->value != 0.0f;
+         }
+
+         return !can_cast;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

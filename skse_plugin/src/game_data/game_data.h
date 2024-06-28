@@ -175,7 +175,7 @@ namespace SpellHotbar::GameData {
 
     std::string get_keybind_text(int slot_index, key_modifier mod);
 
-    inline RE::TESForm* get_form_from_file(const uint32_t formID, const std::string& pluginFile)
+    inline RE::TESForm* get_form_from_file(const uint32_t formID, const std::string_view& pluginFile)
     {
         static const auto data_handler = RE::TESDataHandler::GetSingleton();
         if (data_handler != nullptr) {
@@ -271,5 +271,7 @@ namespace SpellHotbar::GameData {
     bool form_has_special_icon(RE::TESForm* form);
 
     int count_item_in_inv(RE::FormID form);
+
+    bool is_on_binary_cd(RE::FormID skill);
 }
 

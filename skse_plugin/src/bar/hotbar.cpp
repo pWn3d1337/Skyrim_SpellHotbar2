@@ -505,7 +505,7 @@ namespace SpellHotbar
                 }
             }
 
-            if (skill.consumed != consumed_type::none && count == 0) {
+            if ((skill.consumed != consumed_type::none && count == 0) || GameData::is_on_binary_cd(skill.formID)) {
                 RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
             }
             else {

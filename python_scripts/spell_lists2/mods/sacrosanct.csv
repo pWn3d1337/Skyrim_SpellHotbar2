@@ -1,0 +1,20 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Tremble	0x03E7A0	Sacrosanct - Vampires of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Maelstrom	0x032166	Sacrosanct - Vampires of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curtain Call	0x092B8E	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	10003
+Lamae’s Pyre	0x05EAFD	Sacrosanct - Vampires of Skyrim.esp	DestructionFire	-1	-1	-1	-1	-1
+Eyes of the Predator	0x12EBF5	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Summon to Molag’s Court	0x12C43F	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Wicked Wind	0x129C8C	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Blood Cauldron	0x0DA87E	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Blood Revel	0x158DFB	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Obfuscate	0x0DA880	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Vampire’s Command	0x06B142	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Flaywind	0x06B157	Sacrosanct - Vampires of Skyrim.esp		-1	-1	-1	-1	-1
+Blood Seed	0x007F19	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Blood Brand	0x00CE5D	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Blood Garden	0x00F60C	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Blood Ankh	0x1274CA	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Blood Scourge	0x00CE61	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Profaned Sun	0x1274CC	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Borrowed Time	0x1274C5	Sacrosanct - Vampires of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
