@@ -196,4 +196,58 @@ namespace SpellHotbar::Input {
         return &instance;
     }
 
+    void InputModeVampireLord::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeyDev, uint8_t& shoutKey)
+    {
+        auto pc = RE::PlayerCharacter::GetSingleton();
+        if (pc && allowed_to_instantcast(skill.formID)) {
+            if (skill.formID > 0) {
+                auto form = RE::TESForm::LookupByID(skill.formID);
+
+                if (skill.type == slot_type::spell) {
+
+                    RE::BGSEquipSlot* equip_slot = GameData::equip_slot_right_hand;
+                    if (skill.hand == left_hand) {
+                        equip_slot = GameData::equip_slot_left_hand;
+                    }
+
+                    RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, form->As<RE::SpellItem>(), equip_slot);
+                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25);
+
+                } else if(skill.type == slot_type::lesser_power || skill.type == slot_type::power || skill.type == slot_type::shout) {
+                    bool can_start{ true };
+                    if (skill.type == slot_type::shout) {
+                        if (!allowed_to_cast(skill.formID)) can_start = false;
+                    }
+
+                    if (can_start) {
+                        //Start a shout
+                        if (!addEvent) { //do not accidentaly create another event
+
+                            if (casts::CastingController::try_cast_power(form, bind, i, skill.hand)) {
+                                addEvent = RE::ButtonEvent::Create(shoutKeyDev, "Shout", shoutKey, 1.0f, 0.0f); //default shout key
+                            }
+                        }
+                    }
+                    else {
+                        SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                    }
+                }
+                else if (skill.type == slot_type::potion) {
+                    bool success = casts::CastingController::try_start_cast(form, bind, i, skill.hand);
+                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, !success);
+                }
+            }
+        }
+        else {
+            //error highlight
+            SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+        }
+    }
+
+    InputModeVampireLord* InputModeVampireLord::getSingleton()
+    {
+        static InputModeVampireLord instance;
+        return &instance;
+    }
+
 }

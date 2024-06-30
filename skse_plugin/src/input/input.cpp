@@ -209,7 +209,10 @@ namespace SpellHotbar::Input {
                                             handled = true;
                                             auto skill = GameData::get_current_spell_info_in_slot(i);
 
-                                            if (InputModeBase::current_mode) {
+                                            if (GameData::isVampireLord() && GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f) {
+                                                InputModeVampireLord::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
+                                            }
+                                            else if (InputModeBase::current_mode) {
                                                 InputModeBase::current_mode->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
                                             }
                                         }

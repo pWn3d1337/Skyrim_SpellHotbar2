@@ -56,4 +56,16 @@ namespace SpellHotbar::Input
 		InputModeOblivion() = default;
 		virtual ~InputModeOblivion() = default;
 	};
+
+	class InputModeVampireLord : public InputModeBase {
+	public:
+
+		virtual void process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeyDev, uint8_t& shoutKey) override;
+
+		static InputModeVampireLord* getSingleton();
+
+	protected:
+		InputModeVampireLord() = default;
+		virtual ~InputModeVampireLord() = default;
+	};
 }
