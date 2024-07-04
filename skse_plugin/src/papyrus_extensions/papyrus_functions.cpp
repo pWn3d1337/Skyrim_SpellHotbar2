@@ -417,6 +417,11 @@ float get_bar_circle_radius(RE::StaticFunctionTag*) {
     return SpellHotbar::Bars::bar_circle_radius;
 }
 
+void open_potion_editor(RE::StaticFunctionTag*)
+{
+    SpellHotbar::RenderManager::open_potion_editor();
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -485,6 +490,7 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("getBarLayout", "SpellHotbar", get_bar_layout);
     vm->RegisterFunction("setBarCircleRadius", "SpellHotbar", set_bar_circle_radius);
     vm->RegisterFunction("getBarCircleRadius", "SpellHotbar", get_bar_circle_radius);
+    vm->RegisterFunction("openPotionEditor", "SpellHotbar", open_potion_editor);
 
     return true;
 }

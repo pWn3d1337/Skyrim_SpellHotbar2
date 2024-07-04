@@ -209,7 +209,12 @@ namespace SpellHotbar::Input {
                                             handled = true;
                                             auto skill = GameData::get_current_spell_info_in_slot(i);
 
-                                            if (GameData::isVampireLord() && GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f) {
+                                            if (GameData::isVampireLord() &&
+                                                GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f &&
+                                                !Input::is_equip_mode())
+                                            {
+                                                //If Vampire Lord and using Not Equipmode -> use special VL mode (equip spells & cast powers) instead
+                                                //The global can turn of this behaviour
                                                 InputModeVampireLord::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
                                             }
                                             else if (InputModeBase::current_mode) {

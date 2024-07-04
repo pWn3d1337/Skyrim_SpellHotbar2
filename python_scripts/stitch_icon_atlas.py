@@ -814,3 +814,11 @@ if __name__ == "__main__":
     #stitch_mod("ordinator")
     #i4_mod("ordinator", tmp_icons_dir, esp_name="Ordinator - Perks of Skyrim")
 
+    #stitch_mod("sacrosanct")
+    #i4_mod("sacrosanct", tmp_icons_dir, esp_name="Sacrosanct - Vampires of Skyrim")
+
+    #stitch_mod("abyssal_tides_magic")
+    #i4_mod("abyssal_tides_magic", tmp_icons_dir, esp_name="Aqua")
+
+    #stitch_mod("abyssal_wind_magic")
+    #i4_mod("abyssal_wind_magic", tmp_icons_dir, esp_name="Aero")

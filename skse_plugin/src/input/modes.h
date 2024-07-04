@@ -5,6 +5,7 @@
 namespace SpellHotbar::Input
 {
 	bool is_oblivion_mode();
+	bool is_equip_mode();
 
 	int get_current_mode_index();
 	void set_input_mode(int index);

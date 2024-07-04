@@ -1,0 +1,12 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Abyssal Ink Bolt	0x819		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1
+Runeblades	0x814		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1
+Abyssal Impact	0x813		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1
+Fatecarver	0x812		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1
+Runemend	0x81C	0x862	Aqua.esl	AlterationGreen	-1	-1	-1	-1	10008
+Apocryphal Gates	0x817	0x865	Aqua.esl	AlterationGreen	-1	-1	-1	-1	10008
+Conjure Watcher	0x81B	0x863	Aqua.esl	AlterationGreen	-1	-1	-1	-1	10003
+Conjure Lurker	0x81D	0x864	Aqua.esl	AlterationGreen	-1	-1	-1	-1	10003
+Chakram Shields	0x86D	0x870	Aqua.esl	AlterationGreen	-1	-1	-1	-1	10002
+Gaze	0x81A		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1
+Apocryphal Gates	0x818		Aqua.esl	AlterationGreen	-1	-1	-1	-1	-1

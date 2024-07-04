@@ -27,7 +27,7 @@ if __name__ == "__main__":
     input_dir_root = r"F:\Skyrim Dev\Python_projects\SpellHotbar"
     output_dir_root = r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts"
 
-    cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons")
+    #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons")
     #cleanse_images(f"{input_dir_root}/ai_spell_icons", f"{output_dir_root}/vanilla_spell_icons", only_new=True)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons", f"{output_dir_root}/modded_spell_icons")
@@ -68,3 +68,9 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/andromeda", f"{output_dir_root}/modded_spell_icons/andromeda", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/ordinator", f"{output_dir_root}/modded_spell_icons/ordinator", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/sacrosanct", f"{output_dir_root}/modded_spell_icons/sacrosanct", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/abyssal_tides_magic", f"{output_dir_root}/modded_spell_icons/abyssal_tides_magic", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/abyssal_wind_magic", f"{output_dir_root}/modded_spell_icons/abyssal_wind_magic", subdirs=False)

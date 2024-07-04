@@ -19,10 +19,9 @@
 #include "../input/keybinds.h"
 #include "../input/modes.h"
 #include "spell_editor.h"
+#include "potion_editor.h"
 
 #include <imgui_internal.h>
-
-#define IMAGES_ROOT_PATH ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\"
 
 // Hook render stuff for imgui, mostly copied from wheeler
 namespace stl {
@@ -37,6 +36,8 @@ namespace stl {
 }
 
 namespace SpellHotbar {
+
+    constexpr std::string_view images_root_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\" };
 
 bool TextureImage::load(const std::string& path)
 {
@@ -301,7 +302,7 @@ void RenderManager::start_bar_dragging(int type)
     dragged_window = type;
 }
 
-bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened(); }
+bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened() || PotionEditor::is_opened(); }
 
 void RenderManager::stop_bar_dragging()
 { 
@@ -323,14 +324,29 @@ void RenderManager::close_spell_editor()
     SpellEditor::hide();
 }
 
+void RenderManager::open_potion_editor()
+{
+    PotionEditor::show();
+}
+
+void RenderManager::close_potion_editor()
+{
+    PotionEditor::hide();
+}
+
 bool RenderManager::should_block_game_key_inputs()
 {
-    return SpellEditor::is_opened();
+    return SpellEditor::is_opened() || PotionEditor::is_opened();
 }
 
 void RenderManager::close_key_blocking_frames()
 {
-    close_spell_editor();
+    if (SpellEditor::is_opened()) {
+        close_spell_editor();
+    }
+    if (PotionEditor::is_opened()) {
+        close_potion_editor();
+    }
 }
 
 bool RenderManager::has_custom_icon(RE::FormID form_id)
@@ -434,7 +450,7 @@ void load_font_resources(float window_height) {
 }
 
 void RenderManager::load_gamedata_dependant_resources() {
-    TextureCSVLoader::load_icons(std::filesystem::path(IMAGES_ROOT_PATH));
+    TextureCSVLoader::load_icons(std::filesystem::path(images_root_path));
 }
 
 void RenderManager::reload_resouces() {
@@ -1157,6 +1173,9 @@ void RenderManager::draw() {
     }
     else if (SpellEditor::is_opened()) {
         SpellEditor::renderEditor();
+    }
+    else if (PotionEditor::is_opened()) {
+        PotionEditor::renderEditor();
     }
     else
     {

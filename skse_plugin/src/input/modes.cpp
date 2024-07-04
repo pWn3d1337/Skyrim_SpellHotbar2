@@ -12,6 +12,11 @@ namespace SpellHotbar::Input {
         return InputModeBase::current_mode == InputModeOblivion::getSingleton();
     }
 
+    bool is_equip_mode()
+    {
+        return InputModeBase::current_mode == InputModeEquip::getSingleton();
+    }
+
     int get_current_mode_index()
     {
         if (InputModeBase::current_mode == InputModeOblivion::getSingleton()) {

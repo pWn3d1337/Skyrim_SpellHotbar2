@@ -68,3 +68,4 @@ int function getBarLayout() native global
 int function setBarLayout(int index) native global
 float function setBarCircleRadius(float value) global native
 float function getBarCircleRadius() global native
+function openPotionEditor() native global

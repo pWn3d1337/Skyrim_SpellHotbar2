@@ -138,5 +138,8 @@ namespace SpellHotbar {
         static bool current_inv_menu_tab_valid_for_hotbar();
 
         static bool should_overlay_be_rendered(GameData::DefaultIconType overlay);
+
+        static void open_potion_editor();
+        static void close_potion_editor();
     };
 }

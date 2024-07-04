@@ -51,6 +51,8 @@ namespace SpellHotbar::GameData {
     RE::BGSSoundDescriptorForm* sound_ITMPotionUse = nullptr;
     RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup = nullptr;
 
+    RE::SpellItem* werewolf_change_power = nullptr;
+
     std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     std::unordered_map<RE::FormID, User_custom_spelldata> user_spell_cast_info;
 
@@ -262,6 +264,8 @@ namespace SpellHotbar::GameData {
     RE::TESGlobal* sacrosanct_VampireSpells_Vanilla_Power_Global_CanLamaesPyre = nullptr;
     RE::FormID sacrosanct_lamaes_pyre_id = 0U;
 
+    //Growl
+    RE::EffectSetting* growl_beast_form_cd_magic_effect = nullptr;
     
     template<typename T>
     void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type) {
@@ -312,6 +316,8 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x10E2EA, "Skyrim.esm", &sound_NPCHumanEatSoup, "NPCHumanEatSoup", RE::FormType::SoundRecord);
         load_form_from_game(0xB6435, "Skyrim.esm", &sound_ITMPotionUse, "ITMPostionUse", RE::FormType::SoundRecord);
 
+        load_form_from_game(0x092C48, "Skyrim.esm", &werewolf_change_power, "Beast Form", RE::FormType::Spell);
+
         load_keynames_file();
 
         //need to wait for game data beeing available
@@ -351,6 +357,13 @@ namespace SpellHotbar::GameData {
             if (form_sacrosanct_lamaes_pyre) {
                 sacrosanct_lamaes_pyre_id = form_sacrosanct_lamaes_pyre->GetFormID();
             }
+        }
+
+        //Growl werewolf cd tracking
+        constexpr std::string_view growl_esp_name = "Growl - Werebeasts of Skyrim.esp";
+        if (RE::TESDataHandler::GetSingleton()->GetModIndex(growl_esp_name).has_value()) {
+            logger::info("Loading Growl compatibility...");
+            load_form_from_game(0x13A7D6, growl_esp_name, &growl_beast_form_cd_magic_effect, "HRI_Lycan_Effect_BeastFormCooldown", RE::FormType::MagicEffect);
         }
     }
 
@@ -928,6 +941,8 @@ namespace SpellHotbar::GameData {
         bool ret{ false };
         if (is_on_binary_cd(skill)) {
             ret = true;
+        } else if (get_special_cd(skill) > 0.0f) {
+            ret = true;
         }
         else {
             RE::Calendar* cal = RE::Calendar::GetSingleton();
@@ -1299,6 +1314,39 @@ namespace SpellHotbar::GameData {
          }
 
          return !can_cast;
+     }
+
+     float get_special_cd(RE::FormID formID)
+     {
+         float cd{ 0.0f };
+         //Wereworlf CD if Growl is loaded
+         if (formID == werewolf_change_power->GetFormID() && growl_beast_form_cd_magic_effect != nullptr) {
+             auto pc = RE::PlayerCharacter::GetSingleton();
+             auto magic_target = pc->AsMagicTarget();
+             if (magic_target) {
+                 auto effect_list = magic_target->GetActiveEffectList();
+                 
+                 if (effect_list) {
+                     bool found{ false };
+                     for (auto it = effect_list->begin(); it != effect_list->end() && !found; ++it) {
+                 
+                         auto effect = *it;
+                         if (effect->effect->baseEffect == growl_beast_form_cd_magic_effect) {
+                             found = true;
+                             float max_dur = effect->duration;
+                             float elapsed = effect->elapsedSeconds;
+
+                             if (elapsed < max_dur)
+                             {
+                                 cd = elapsed / max_dur;
+                             }
+                         }
+                     }        
+                 }
+             }
+         }
+
+         return cd;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

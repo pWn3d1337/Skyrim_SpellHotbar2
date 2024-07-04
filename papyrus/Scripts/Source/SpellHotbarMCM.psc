@@ -250,6 +250,7 @@ Event OnPageReset(string page)
 
 	ElseIf (page == "Spells")
 		AddToggleOptionST("OpenSpellEditor", "Open Spell Editor ...", false);
+		AddToggleOptionST("OpenPotionEditor", "Open Potion Editor ...", false);
 		AddEmptyOption()
 
 	ElseIf (page == "Util")
@@ -309,6 +310,16 @@ State OpenSpellEditor
     EndEvent
     Event OnHighlightST()
         SetInfoText("Open Editor to change Spell Settings and Icons")
+    EndEvent
+EndState
+
+State OpenPotionEditor
+    Event OnSelectST()
+        SetToggleOptionValueST(false)
+		SpellHotbar.openPotionEditor()
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Open Potion to change Icons")
     EndEvent
 EndState
 

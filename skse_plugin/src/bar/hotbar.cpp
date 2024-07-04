@@ -340,24 +340,36 @@ namespace SpellHotbar
 
         constexpr float gt_to_sec_factor = 24.0f * 60.0f * 60.0f;
 
-        auto [gt_prog, gt_dur] = GameData::get_gametime_cooldown(game_time, skill);
-        if (gt_dur > 0.0f)
+        float special_cd = GameData::get_special_cd(skill);
+        if (special_cd > 0.0f)
         {
-            // get longer CD
             float gcd = gcd_dur * (1.0f - gcd_prog);
-            float gt_cd = gt_dur * gt_to_sec_factor / time_scale * (1.0f - gt_prog);
+            //get longer CD (special or global)
+            cd_prog = (special_cd >= gcd) ? special_cd : gcd_prog;
+        }
+        else {
 
-            cd_prog = (gt_cd >= gcd) ? gt_prog : gcd_prog;
-
-        } else {
-            if (skill_type == slot_type::shout && shout_cd_dur > 0.0f) {
-                // get longer cd
+            auto [gt_prog, gt_dur] = GameData::get_gametime_cooldown(game_time, skill);
+            if (gt_dur > 0.0f)
+            {
+                // get longer CD
                 float gcd = gcd_dur * (1.0f - gcd_prog);
-                float scd = shout_cd_dur * (1.0f - shout_cd);
-                cd_prog = (scd >= gcd) ? shout_cd : gcd_prog;
-            } else {
-                if (gcd_prog > 0.0f) {
-                    cd_prog = gcd_prog;
+                float gt_cd = gt_dur * gt_to_sec_factor / time_scale * (1.0f - gt_prog);
+
+                cd_prog = (gt_cd >= gcd) ? gt_prog : gcd_prog;
+
+            }
+            else {
+                if (skill_type == slot_type::shout && shout_cd_dur > 0.0f) {
+                    // get longer cd
+                    float gcd = gcd_dur * (1.0f - gcd_prog);
+                    float scd = shout_cd_dur * (1.0f - shout_cd);
+                    cd_prog = (scd >= gcd) ? shout_cd : gcd_prog;
+                }
+                else {
+                    if (gcd_prog > 0.0f) {
+                        cd_prog = gcd_prog;
+                    }
                 }
             }
         }

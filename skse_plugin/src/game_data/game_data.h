@@ -273,5 +273,7 @@ namespace SpellHotbar::GameData {
     int count_item_in_inv(RE::FormID form);
 
     bool is_on_binary_cd(RE::FormID skill);
+
+    float get_special_cd(RE::FormID formID);
 }
 

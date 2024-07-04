@@ -1,0 +1,13 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Summon Fallingstar Thrasher	0x8AE	Aero.esl	IllusionGreen	-1	-1	-1	-1	-1
+Corrosive Torrent	0x8A3	Aero.esl	IllusionGreen	-1	-1	-1	-1	10011
+Concentrated Air Blades	0x86E	Aero.esl	IllusionGreen	-1	-1	-1	-1	10004
+Corrosive Aura	0x870	Aero.esl	IllusionGreen	-1	-1	-1	-1	10015
+Noxious Stings	0x869	Aero.esl	IllusionGreen	-1	-1	-1	-1	10011
+Dancing Blades	0x868	Aero.esl	IllusionGreen	-1	-1	-1	-1	10005
+Gale Fans	0x867	Aero.esl	IllusionGreen	-1	-1	-1	-1	10006
+Potent Corrosive Torrent	0x8A4	Aero.esl	IllusionGreen	-1	-1	-1	-1	10011
+Bladed Poison Bolt	0x86A	Aero.esl	IllusionGreen	-1	-1	-1	-1	10005
+Twister	0x86F	Aero.esl	IllusionGreen	-1	-1	-1	-1	10013
+Annihilation	0x898	Aero.esl	IllusionGreen	-1	-1	-1	-1	10003
+Dark Judgement	0x86D	Aero.esl	IllusionGreen	-1	-1	-1	-1	10003
