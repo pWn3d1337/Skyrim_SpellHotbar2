@@ -71,6 +71,10 @@ set(source_files src/plugin.cpp
                  src/game_data/spell_cast_data.cpp
                  src/rendering/potion_editor.h
                  src/rendering/potion_editor.cpp
+                 src/game_data/user_custom_entry.h
+                 src/game_data/user_custom_entry.cpp
+                 src/rendering/icon_edit_dialog.h
+                 src/rendering/icon_edit_dialog.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

@@ -154,6 +154,7 @@ namespace SpellHotbar::GameData {
     extern std::unordered_map<int, std::string> animation_names;
 
     extern std::unordered_map<RE::FormID, GameData::User_custom_spelldata> user_spell_cast_info;
+    extern std::unordered_map<RE::FormID, GameData::User_custom_entry> user_custom_entry_info;
 
     extern std::unordered_map<RE::ActorValue, ImU32> potion_color_mapping;
 
@@ -166,6 +167,9 @@ namespace SpellHotbar::GameData {
 
     void load_user_spell_data_from_SKSE_save(SKSE::SerializationInterface* a_intfc, uint32_t version);
     void save_user_spell_data_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
+
+    void load_user_entry_info_from_SKSE_save(SKSE::SerializationInterface* a_intfc, uint32_t version);
+    void save_user_entry_info_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
 
     //Called when game data is available
     void onDataLoad();

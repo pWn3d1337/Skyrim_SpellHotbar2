@@ -161,7 +161,13 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("File");
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
-            ImGui::TextUnformatted(form->GetFile(0)->fileName);
+            auto file = form->GetFile(0);
+            if (file != nullptr) {
+                ImGui::TextUnformatted(file->fileName);
+            }
+            else {
+                ImGui::TextUnformatted("<Dynamic Form>");
+            }
             ImGui::PopStyleColor();
 
             ImGui::PushID(id++);

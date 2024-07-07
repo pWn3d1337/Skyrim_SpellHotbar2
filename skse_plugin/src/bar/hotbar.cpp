@@ -86,7 +86,13 @@ namespace SpellHotbar
             } else {
                 RE::FormID resolved_id{0};
                 serializer->ResolveFormID(read_id, resolved_id);
-                bar.m_slotted_skills[read_slot] = resolved_id;
+                if (RE::TESForm::LookupByID(resolved_id)) {
+                    bar.m_slotted_skills[read_slot] = resolved_id;
+                }
+                else {
+                    logger::info("Removing {:8x} from bar, form no longer exists.", resolved_id);
+                    bar.m_slotted_skills[read_slot] = 0;
+                }
             }
 
             if (!serializer->ReadRecordData(&read_hand, sizeof(uint8_t))) {

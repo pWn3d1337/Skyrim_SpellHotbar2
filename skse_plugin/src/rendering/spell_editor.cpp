@@ -412,7 +412,13 @@ namespace SpellHotbar::SpellEditor {
                     ImGui::TableNextColumn();
                     ImGui::Text("%08X", item->GetFormID());
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(item->GetFile(0)->fileName);
+                    auto file = item->GetFile(0);
+                    if (file != nullptr) {
+                        ImGui::TextUnformatted(file->fileName);
+                    }
+                    else {
+                        ImGui::TextUnformatted("<Dynamic Form>");
+                    }
 
                     ImGui::TableNextColumn();
                     RenderManager::draw_skill(item->GetFormID(), static_cast<int>(std::round(40.0f * scale_factor)));

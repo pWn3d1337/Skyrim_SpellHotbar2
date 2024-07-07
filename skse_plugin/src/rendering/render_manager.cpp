@@ -750,6 +750,28 @@ SubTextureImage* RenderManager::get_tex_for_skill_internal(RE::FormID formID)
             }
         }
 
+        if (GameData::user_custom_entry_info.contains(formID)) {
+            auto& dat = GameData::user_custom_entry_info.at(formID);
+            if (dat.has_icon_data()) {
+                if (dat.m_icon_form > 0) {
+
+                    formID = dat.m_icon_form;
+                    if (spell_icons.contains(formID)) {
+                        return &spell_icons.at(formID);
+                    }
+                }
+                else if (!dat.m_icon_str.empty()) {
+                    if (TextureCSVLoader::default_icon_names.contains(dat.m_icon_str)) {
+                        auto def_icon = TextureCSVLoader::default_icon_names.at(dat.m_icon_str);
+                        return &default_icons.at(def_icon);
+                    }
+                    else if (extra_icons.contains(dat.m_icon_str)) {
+                        return &extra_icons.at(dat.m_icon_str);
+                    }
+                }
+            }
+        }
+
         if (GameData::is_clear_spell(formID) && default_icons.contains(GameData::DefaultIconType::UNBIND_SLOT)) {
             ret = &default_icons.at(GameData::DefaultIconType::UNBIND_SLOT);
         }

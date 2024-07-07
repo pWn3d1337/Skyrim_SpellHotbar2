@@ -111,6 +111,16 @@ namespace SpellHotbar::Storage {
             }
         }
 
+        // Save custom icondata if present
+        if (!GameData::user_custom_entry_info.empty()) {
+            if (!a_intfc->OpenRecord('UDAT', Storage::save_format)) {
+                logger::error("Could not store user icon info values!");
+            }
+            else {
+                GameData::save_user_entry_info_to_SKSE_save(a_intfc);
+            }
+        }
+
     }
 
     template <typename T>
@@ -348,6 +358,10 @@ namespace SpellHotbar::Storage {
             else if (type == 'SDAT') {
                 logger::trace("Reading 'SDAT' data from save...");
                 GameData::load_user_spell_data_from_SKSE_save(a_intfc, version);
+            }
+            else if (type == 'UDAT') {
+                logger::trace("Reading 'UDAT' data from save...");
+                GameData::load_user_entry_info_from_SKSE_save(a_intfc, version);
             }
             else if (SpellHotbar::Bars::hotbars.contains(type))
             {

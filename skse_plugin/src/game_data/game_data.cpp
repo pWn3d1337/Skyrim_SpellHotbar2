@@ -56,6 +56,8 @@ namespace SpellHotbar::GameData {
     std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     std::unordered_map<RE::FormID, User_custom_spelldata> user_spell_cast_info;
 
+    std::unordered_map<RE::FormID, User_custom_entry> user_custom_entry_info;
+
     std::vector<std::tuple<RE::BGSArtObject*, RE::BGSArtObject*, const std::string>> spell_casteffect_art;
     std::unordered_map<RE::FormID, Gametime_cooldown_value> gametime_cooldowns;
 
@@ -851,6 +853,30 @@ namespace SpellHotbar::GameData {
         uint16_t size = static_cast<uint16_t>(std::min(user_spell_cast_info.size(), static_cast<size_t>(std::numeric_limits<uint16_t>::max())));
         a_intfc->WriteRecordData(&size, sizeof(uint16_t));
         for (const auto& [k, v] : user_spell_cast_info) {
+            v.serialize(a_intfc);
+        }
+    }
+
+    void load_user_entry_info_from_SKSE_save(SKSE::SerializationInterface* a_intfc, uint32_t version)
+    {
+        user_custom_entry_info.clear();
+        uint16_t size{ 0Ui16 };
+        if (a_intfc->ReadRecordData(&size, sizeof(uint16_t))) {
+            for (uint16_t i = 0Ui16; i < size; i++) {
+                auto data = User_custom_entry::deserialize(a_intfc, version);
+                user_custom_entry_info.insert_or_assign(data.m_form_id, data);
+            }
+        }
+        else {
+            logger::error("Error loading custom icon info from SKSE save");
+        }
+    }
+
+    void save_user_entry_info_to_SKSE_save(SKSE::SerializationInterface* a_intfc)
+    {
+        uint16_t size = static_cast<uint16_t>(std::min(user_custom_entry_info.size(), static_cast<size_t>(std::numeric_limits<uint16_t>::max())));
+        a_intfc->WriteRecordData(&size, sizeof(uint16_t));
+        for (const auto& [k, v] : user_custom_entry_info) {
             v.serialize(a_intfc);
         }
     }

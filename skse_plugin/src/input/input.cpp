@@ -51,6 +51,13 @@ namespace SpellHotbar::Input {
             return;
         }
 
+        //don't react to inputs outside of the game:
+        auto pc = RE::PlayerCharacter::GetSingleton();
+        if (!pc || !pc->Is3DLoaded()) {
+            return;  // no player, no draw
+        }
+
+
         RE::InputEvent* event = *a_event;
         RE::InputEvent* prev = nullptr;
 

@@ -3,13 +3,9 @@
 
 namespace SpellHotbar::GameData {
 
-	User_custom_spelldata::User_custom_spelldata(RE::FormID form)
-		: m_form_id(form),
-		m_spell_data(),
-		m_icon_form(0),
-		m_icon_str("")
-	{
-	}
+	User_custom_spelldata::User_custom_spelldata(RE::FormID form) : User_custom_entry(form),
+		m_spell_data()
+	{}
 
 	void User_custom_spelldata::serialize(SKSE::SerializationInterface* serializer) const
 	{
@@ -93,7 +89,7 @@ namespace SpellHotbar::GameData {
 
 	bool User_custom_spelldata::is_non_default()
 	{
-		return !m_spell_data.is_empty() || !m_icon_str.empty() || m_icon_form > 0;
+		return !m_spell_data.is_empty() || User_custom_entry::is_non_default();
 	}
 
 	User_custom_spelldata::save_flags User_custom_spelldata::calc_save_flags() const
@@ -120,11 +116,6 @@ namespace SpellHotbar::GameData {
 			m_spell_data.animation != other.animation ||
 			m_spell_data.animation2 != other.animation2 ||
 			m_spell_data.casteffectid != other.casteffectid;
-	}
-
-	bool User_custom_spelldata::has_icon_data()
-	{
-		return m_icon_form > 0 || !m_icon_str.empty();
 	}
 
 }
