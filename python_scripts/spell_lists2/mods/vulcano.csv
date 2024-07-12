@@ -1,25 +1,25 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Molten Ash	0x00082D	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
-Molten Bolt	0x000829	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10001
-Molten Touch	0x000836	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
-Molten Rune	0x000831	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10003
-Molten Lava	0x000834	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10004
-Molten Aura	0x000825	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
-Molten Contact	0x00082B	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
-Molten Skoria	0x0009AA	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
-Molten Wall	0x000837	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
-Molten Fragment	0x000833	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10005
-Molten Blade	0x000838	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10005
-Molten Grasp	0x00082F	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
-Molten Lava Rune	0x000832	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10003
-Molten Earth	0x00082E	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
-Molten Core	0x00082C	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10013
-Molten Lava Detonation	0x000835	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
-Molten Palm	0x00082A	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
-Molten Ray	0x0008F2	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
-Molten Eruption	0x000969	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
-Conjure Molten Wyrm	0x00094C	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Molten Atronach	0x000980	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Molten Monarch	0x000981	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Molten Body	0x000827	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
-Molten Heart	0x0009C5	Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Molten Ash	0x00082D		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Molten Bolt	0x000829	0x8A0	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10001
+Molten Touch	0x000836	0x8A9	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
+Molten Rune	0x000831	0x8A5	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10003
+Molten Lava	0x000834	0x8A8	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10004
+Molten Aura	0x000825	0x89E	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
+Molten Contact	0x00082B	0x8A2	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
+Molten Skoria	0x0009AA		Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
+Molten Wall	0x000837		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Molten Fragment	0x000833	0x8A6	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10005
+Molten Blade	0x000838	0x8AA	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10005
+Molten Grasp	0x00082F	0x8A3	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
+Molten Lava Rune	0x000832	0x8A4	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10003
+Molten Earth	0x00082E		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Molten Core	0x00082C	0x8AB	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10013
+Molten Lava Detonation	0x000835	0x8A7	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
+Molten Palm	0x00082A	0x8A1	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10011
+Molten Ray	0x0008F2		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Molten Eruption	0x000969	0x9B3	Vulcano.esp	DestructionFire	-1	-1	-1	-1	10002
+Conjure Molten Wyrm	0x00094C	0x94B	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Molten Atronach	0x000980	0x983	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Molten Monarch	0x000981	0x984	Vulcano.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Molten Body	0x000827		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1
+Molten Heart	0x0009C5		Vulcano.esp	DestructionFire	-1	-1	-1	-1	-1

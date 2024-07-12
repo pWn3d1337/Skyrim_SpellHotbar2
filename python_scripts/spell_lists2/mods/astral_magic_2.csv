@@ -1,25 +1,25 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Astral Bite	0x000835	Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
-Astral Blitz	0x000836	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Astral Crash	0x00083F	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Astral Flare	0x00083C	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Astral Light	0x000830	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Astral Rune	0x000834	Astral.esl	RestorationBlue	-1	-1	-1	-1	10003
-Astral Shield	0x0008DE	Astral.esl	RestorationBlue	-1	-1	-1	-1	-1
-Astral Shower	0x000847	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Astral Spear	0x000844	Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
-Astral Strike	0x000831	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Astral Wave	0x000837	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Greater Astral Bite	0x000838	Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
-Greater Astral Blitz	0x000841	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Greater Astral Flare	0x000840	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Greater Astral Light	0x0008D1	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Greater Astral Spear	0x000845	Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
-Greater Astral Wave	0x00083A	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Pure Astral Bite	0x000839	Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
-Pure Astral Blitz	0x000842	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
-Pure Astral Flare	0x000843	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Pure Astral Light	0x0008D2	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Pure Astral Spear	0x000846	Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
-Pure Astral Wave	0x00083B	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
-Astral Bite	0x0008D9	Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Astral Bite	0x000835		Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
+Astral Blitz	0x000836	0x84D	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Astral Crash	0x00083F	0x84B	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Astral Flare	0x00083C	0x84A	Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Astral Light	0x000830		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Astral Rune	0x000834	0x84C	Astral.esl	RestorationBlue	-1	-1	-1	-1	10003
+Astral Shield	0x0008DE		Astral.esl	RestorationBlue	-1	-1	-1	-1	-1
+Astral Shower	0x000847	0x848	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Astral Spear	0x000844		Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
+Astral Strike	0x000831	0x84E	Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Astral Wave	0x000837		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Greater Astral Bite	0x000838		Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
+Greater Astral Blitz	0x000841		Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Greater Astral Flare	0x000840		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Greater Astral Light	0x0008D1		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Greater Astral Spear	0x000845		Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
+Greater Astral Wave	0x00083A		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Pure Astral Bite	0x000839		Astral.esl	RestorationBlue	-1	-1	-1	-1	10004
+Pure Astral Blitz	0x000842		Astral.esl	RestorationBlue	-1	-1	-1	-1	10013
+Pure Astral Flare	0x000843		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Pure Astral Light	0x0008D2		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Pure Astral Spear	0x000846		Astral.esl	RestorationBlue	-1	-1	-1	-1	10007
+Pure Astral Wave	0x00083B		Astral.esl	RestorationBlue	-1	-1	-1	-1	10005
+Astral Bite	0x0008D9		Astral.esl	RestorationBlue	-1	-1	-1	-1	10004

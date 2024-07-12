@@ -1,32 +1,32 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Bone Spirit	0x03527C	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Circle of Strength	0x036A05	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Wild Healing	0x082483	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Lamb of Mara	0x036A03	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Leech Seed	0x13E4FD	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Mystic Wind	0x0E8B77	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10002
-Necroplague	0x034D12	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Slay Living	0x003E0F	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Welling Blood	0x01FCD9	Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	10004
-Circle of the Moons	0x111CFB	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10003
-Finger of Death	0x035452	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Horrid Wilting	0x012214	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Ruin	0x0159D8	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Sealed Resolve	0x01FCCA	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Tree Rings	0x13DA15	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Blood Boil	0x044D44	Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
-Channel Energies	0x01FCCE	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10004
-Decompose	0x01F1FB	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Healing Blossom	0x05F74D	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Nature's Balance	0x0012DC	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
-Resurgence	0x01E701	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Bloodseeker	0x048398	Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	10005
-Breath of Arkay	0x12B063	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	-1
-Circle of Death	0x01220F	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Dust to Dust	0x11122C	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Godform	0x086B2E	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Infinite Light	0x02F66E	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	-1
-King's Heart	0x033CCA	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Life's Finale	0x083FA8	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Meridia's Wrath	0x0362C7	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
-Worm Shroud	0x12CB8D	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Bone Spirit	0x03527C	0x03AF31	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Circle of Strength	0x036A05	0x03AF33	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Wild Healing	0x082483	0x0896E2	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Lamb of Mara	0x036A03	0x03AF37	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Leech Seed	0x13E4FD	0x03AF39	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Mystic Wind	0x0E8B77	0x03AF3B	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10002
+Necroplague	0x034D12	0x03AF3D	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Slay Living	0x003E0F	0x03AF3F	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Welling Blood	0x01FCD9	0x03AF35	Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	10004
+Circle of the Moons	0x111CFB	0x03AF41	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10003
+Finger of Death	0x035452	0x03AF43	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Horrid Wilting	0x012214	0x03AF45	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Ruin	0x0159D8	0x0B7DA0	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Sealed Resolve	0x01FCCA	0x03AF49	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Tree Rings	0x13DA15	0x03AF47	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Blood Boil	0x044D44		Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	-1
+Channel Energies	0x01FCCE	0x067915	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	10004
+Decompose	0x01F1FB	0x095F45	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Healing Blossom	0x05F74D	0x03B4B4	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Nature's Balance	0x0012DC	0x03B4B2	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10004
+Resurgence	0x01E701	0x03AF4B	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Bloodseeker	0x048398	0x04839A	Apocalypse - Magic of Skyrim.esp	IllusionRed	-1	-1	-1	-1	10005
+Breath of Arkay	0x12B063		Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	-1
+Circle of Death	0x01220F	0x03B4B8	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Dust to Dust	0x11122C	0x03B4BC	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Godform	0x086B2E	0x083FAB	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Infinite Light	0x02F66E		Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	-1
+King's Heart	0x033CCA	0x03B4BE	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Life's Finale	0x083FA8	0x03B4B6	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Meridia's Wrath	0x0362C7	0x05F25E	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10002
+Worm Shroud	0x12CB8D	0x03B4BA	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003

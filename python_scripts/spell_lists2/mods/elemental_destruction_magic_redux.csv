@@ -1,31 +1,31 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Gravel	0x00092A	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	-1
-Rock Blast	0x00092D	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
-Earth Rune	0x00092E	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
-Stalagmite	0x000D65	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
-Rock Cloak	0x00092C	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10002
-Boulder	0x00092F	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
-Wall of Earth	0x000934	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	-1
-Earthquake	0x00093B	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
-Rapids	0x00091F	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	-1
-Waterball	0x000920	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
-Water Rune	0x000921	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003
-Geyser	0x000922	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
-Rain Cloak	0x000923	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10002
-Torrent	0x000924	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
-Wall of Water	0x000926	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	-1
-Tidal Wave	0x000925	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10005
-Gust	0x000928	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	-1
-Zephyr	0x000929	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10004
-Wind Rune	0x000930	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
-Tornado	0x000931	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10005
-Whirlwind Cloak	0x000932	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10002
-Tempest	0x000938	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10004
-Wall of Wind	0x000936	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	-1
-Cyclone	0x000939	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10005
-Conjure Earth Atronach	0x000946	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
-Conjure Wind Atronach	0x000944	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
-Conjure Water Atronach	0x000940	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003
-Earth Thrall	0x000919	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
-Wind Thrall	0x00091A	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
-Water Thrall	0x00091B	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Gravel	0x00092A		Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	-1
+Rock Blast	0x00092D	0x95F	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
+Earth Rune	0x00092E	0x950	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
+Stalagmite	0x000D65	0x953	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
+Rock Cloak	0x00092C	0x95C	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10002
+Boulder	0x00092F		Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10004
+Wall of Earth	0x000934		Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	-1
+Earthquake	0x00093B	0x95E	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
+Rapids	0x00091F		Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	-1
+Waterball	0x000920	0x954	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
+Water Rune	0x000921	0x955	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003
+Geyser	0x000922	0x952	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
+Rain Cloak	0x000923	0x951	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10002
+Torrent	0x000924		Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10004
+Wall of Water	0x000926		Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	-1
+Tidal Wave	0x000925	0x94F	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10005
+Gust	0x000928		Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	-1
+Zephyr	0x000929	0x956	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10004
+Wind Rune	0x000930	0x958	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
+Tornado	0x000931	0x94E	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10005
+Whirlwind Cloak	0x000932	0x95D	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10002
+Tempest	0x000938		Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10004
+Wall of Wind	0x000936		Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	-1
+Cyclone	0x000939	0x957	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10005
+Conjure Earth Atronach	0x000946	0x959	Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
+Conjure Wind Atronach	0x000944	0x95A	Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
+Conjure Water Atronach	0x000940	0x95B	Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003
+Earth Thrall	0x000919		Elemental Destruction Magic Redux.esp	AlterationGreen	-1	-1	-1	-1	10003
+Wind Thrall	0x00091A		Elemental Destruction Magic Redux.esp	AlterationShield	-1	-1	-1	-1	10003
+Water Thrall	0x00091B		Elemental Destruction Magic Redux.esp	RestorationBlue	-1	-1	-1	-1	10003

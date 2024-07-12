@@ -1,33 +1,33 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Azure Reconstruction	0x088694	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
-Conjure Avenging Wraith	0x017A8E	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
-Consuming Power	0x016F92	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
-Atronach Mark	0x02CD7E	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
-Conjure Cat Totem	0x027144	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
-Conjure Deadeye Captain	0x037E17	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Dremora Churl	0x012359	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Power of the Master	0x01857E	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10002
-Soul Cloak	0x140B03	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10008
-Conjure Dremora Pit Fighter	0x012364	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Lich	0x01236A	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Xivilai Sorcerer	0x1228A8	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Corpse Explosion	0x1212EB	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
-Daedric Crescent	0x01A0A4	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
-Summoning Rune	0x124EC5	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Dremora Champion	0x0128DF	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Dremora Honor Guard	0x0133D6	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Dremora Mentor	0x0C64B1	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Herne	0x0128E8	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
-Conjure Xivilai Lord	0x012370	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Oathbound Guardian	0x018AE7	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
-Banish Living	0x092B91	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
-Conjure Battlemage	0x08868C	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Conjure Bear Totem	0x04734D	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
-Conjure Craftlord	0x123E5B	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Conjure Dremora Assassin	0x0128F7	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Kyrkrim	0x100032	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Lord of Bindings	0x019B2D	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Nether Lich	0x0128FA	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Weeping Daedra	0x08FDED	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Necrowitch	0x016F95	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Reconfigure Craftlord	0x0B1C39	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10009
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Azure Reconstruction	0x088694		Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Conjure Avenging Wraith	0x017A8E	0x03BA22	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
+Consuming Power	0x016F92	0x03BA24	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Atronach Mark	0x02CD7E	0x03BA26	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Conjure Cat Totem	0x027144	0x03BA2E	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
+Conjure Deadeye Captain	0x037E17	0x03BA2D	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dremora Churl	0x012359	0x03BA2B	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Power of the Master	0x01857E	0x08811C	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Soul Cloak	0x140B03	0x03BA27	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10008
+Conjure Dremora Pit Fighter	0x012364	0x03BA31	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Lich	0x01236A	0x03BA33	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Xivilai Sorcerer	0x1228A8	0x03BA35	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Corpse Explosion	0x1212EB	0x03BA38	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Daedric Crescent	0x01A0A4	0x03BA37	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Summoning Rune	0x124EC5	0x03BA3B	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dremora Champion	0x0128DF	0x03BA3D	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dremora Honor Guard	0x0133D6	0x03BA3F	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Dremora Mentor	0x0C64B1	0x03BA47	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Herne	0x0128E8	0x03BA41	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
+Conjure Xivilai Lord	0x012370	0x03BA43	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Oathbound Guardian	0x018AE7	0x03BA45	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
+Banish Living	0x092B91	0x03BFAB	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Conjure Battlemage	0x08868C	0x0896DC	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Conjure Bear Totem	0x04734D	0x047E29	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	10003
+Conjure Craftlord	0x123E5B	0x03BFB1	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Conjure Dremora Assassin	0x0128F7	0x03BFAC	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Kyrkrim	0x100032	0x088681	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Lord of Bindings	0x019B2D	0x066E4F	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Nether Lich	0x0128FA	0x03BFAF	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Weeping Daedra	0x08FDED	0x05F25A	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Necrowitch	0x016F95		Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Reconfigure Craftlord	0x0B1C39		Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	10009

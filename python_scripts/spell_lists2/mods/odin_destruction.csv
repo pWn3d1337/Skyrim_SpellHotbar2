@@ -1,22 +1,22 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Taldam’s Scorcher	0x1D3482	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
-Arctic Blast	0x1D347B	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
-Lightning Grasp	0x1E279F	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
-Firehand	0x2A304F	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10011
-Frosthand	0x2A3051	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10011
-Stormhand	0x07C83B	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10011
-Flame Darts	0x1D347E	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
-Ice Shards	0x027F2E	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
-Charged Storm	0x024E49	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
-Blazing Strikes	0x26B43B	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10002
-Freezing Strikes	0x26B441	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10002
-Shocking Strikes	0x26B443	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10002
-Wildfire	0x1D858B	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
-Arctic Frost	0x1E78AD	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
-Thundering Grasp	0x1E27A7	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
-Firebloom	0x1D8588	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10003
-Frostbloom	0x1DD697	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10003
-Shockbloom	0x1DD699	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10003
-Flame Tempest	0x1CE36C	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
-Black Winter	0x1CE374	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
-Lightning Fury	0x1C4166	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Taldam’s Scorcher	0x1D3482		Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
+Arctic Blast	0x1D347B		Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
+Lightning Grasp	0x1E279F		Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
+Firehand	0x2A304F	0x2A3058	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10011
+Frosthand	0x2A3051	0x2A305A	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10011
+Stormhand	0x07C83B	0x0393FA	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10011
+Flame Darts	0x1D347E		Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
+Ice Shards	0x027F2E		Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
+Charged Storm	0x024E49		Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
+Blazing Strikes	0x26B43B		Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10002
+Freezing Strikes	0x26B441		Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10002
+Shocking Strikes	0x26B443		Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10002
+Wildfire	0x1D858B		Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
+Arctic Frost	0x1E78AD		Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
+Thundering Grasp	0x1E27A7		Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1
+Firebloom	0x1D8588	0x26B457	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10003
+Frostbloom	0x1DD697	0x26B459	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10003
+Shockbloom	0x1DD699	0x26B45B	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10003
+Flame Tempest	0x1CE36C		Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	-1
+Black Winter	0x1CE374		Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	-1
+Lightning Fury	0x1C4166		Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	-1

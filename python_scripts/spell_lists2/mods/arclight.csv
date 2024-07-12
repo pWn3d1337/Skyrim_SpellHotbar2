@@ -1,20 +1,20 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Arclight Sparks	0x00082D	Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
-Arclight Bolt	0x000829	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
-Arclight Touch	0x000836	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
-Arclight Rune	0x000831	Arclight.esp	RestorationGold	-1	-1	-1	-1	10003
-Arclight Chain	0x000834	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
-Arclight Aura	0x000825	Arclight.esp	RestorationGold	-1	-1	-1	-1	10002
-Arclight Contact	0x00082B	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
-Arclight Wall	0x000837	Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
-Arclight Flash	0x000833	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
-Arclight Wave	0x000838	Arclight.esp	RestorationGold	-1	-1	-1	-1	10005
-Arclight Grasp	0x00082F	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
-Arclight Charged Rune	0x000832	Arclight.esp	RestorationGold	-1	-1	-1	-1	10003
-Arclight Discharge	0x00082C	Arclight.esp	RestorationGold	-1	-1	-1	-1	10013
-Arclight Detonation	0x000835	Arclight.esp	RestorationGold	-1	-1	-1	-1	10002
-Arclight Palm	0x00082A	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
-Arclight Storm	0x0008F2	Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
-Conjure Arclight Atronach	0x000980	Arclight.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Arclight Monarch	0x000981	Arclight.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Arclight Body	0x000827	Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Arclight Sparks	0x00082D		Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
+Arclight Bolt	0x000829	0x8A0	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
+Arclight Touch	0x000836	0x8A9	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
+Arclight Rune	0x000831	0x8A5	Arclight.esp	RestorationGold	-1	-1	-1	-1	10003
+Arclight Chain	0x000834	0x8A8	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
+Arclight Aura	0x000825	0x89E	Arclight.esp	RestorationGold	-1	-1	-1	-1	10002
+Arclight Contact	0x00082B	0x8A2	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
+Arclight Wall	0x000837		Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
+Arclight Flash	0x000833	0x8A6	Arclight.esp	RestorationGold	-1	-1	-1	-1	10004
+Arclight Wave	0x000838	0x8AA	Arclight.esp	RestorationGold	-1	-1	-1	-1	10005
+Arclight Grasp	0x00082F	0x8A3	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
+Arclight Charged Rune	0x000832	0x8A4	Arclight.esp	RestorationGold	-1	-1	-1	-1	10003
+Arclight Discharge	0x00082C	0x8AB	Arclight.esp	RestorationGold	-1	-1	-1	-1	10013
+Arclight Detonation	0x000835	0x8A7	Arclight.esp	RestorationGold	-1	-1	-1	-1	10002
+Arclight Palm	0x00082A	0x8A1	Arclight.esp	RestorationGold	-1	-1	-1	-1	10011
+Arclight Storm	0x0008F2		Arclight.esp	RestorationGold	-1	-1	-1	-1	-1
+Conjure Arclight Atronach	0x000980	0x983	Arclight.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Arclight Monarch	0x000981	0x984	Arclight.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Arclight Body	0x000827		Arclight.esp	RestorationGold	-1	-1	-1	-1	-1

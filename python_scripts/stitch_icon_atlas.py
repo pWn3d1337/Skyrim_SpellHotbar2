@@ -388,8 +388,9 @@ def stitch_folder(spell_list: list[str], icon_root: list[str], output_base: Path
     df_out.to_csv(f"{output_base}.csv", index=False, sep='\t')
 
     if output_data is not None:
-        df_out_spell_data = df_forms[["Name", "FormID", "Plugin", "Casteffect", "GCD", "Cooldown", "Casttime", "Animation",
-                                      "Animation2", "Symbol"]]
+        data_columns = ["Name", "FormID", "Plugin", "Casteffect", "GCD", "Cooldown", "Casttime", "Animation",
+                                      "Animation2", "Symbol"]
+        df_out_spell_data = df_forms[data_columns]
         df_out_spell_data.to_csv(f"{output_data}.csv", index=False, sep='\t')
 
 
@@ -764,9 +765,9 @@ if __name__ == "__main__":
     #i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
 
     #stitch_mod("sonic_magic")
-    #stitch_mod("storm_calling_magic2")
-
     #i4_mod("sonic_magic", tmp_icons_dir, esp_name="Shockwave")
+
+    #stitch_mod("storm_calling_magic2")
     #i4_mod("storm_calling_magic2", tmp_icons_dir, esp_name="StormCalling")
 
     #stitch_mod("astral_magic_2")
@@ -822,3 +823,6 @@ if __name__ == "__main__":
 
     #stitch_mod("abyssal_wind_magic")
     #i4_mod("abyssal_wind_magic", tmp_icons_dir, esp_name="Aero")
+
+    #stitch_mod("winter_wonderland_magic")
+    #i4_mod("winter_wonderland_magic", tmp_icons_dir, esp_name="Icebloom")

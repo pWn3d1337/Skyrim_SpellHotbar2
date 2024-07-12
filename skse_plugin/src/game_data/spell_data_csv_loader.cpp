@@ -4,6 +4,7 @@
 #include <regex>
 #include "csv_loader.h"
 #include "../rendering/texture_csv_loader.h"
+#include <unordered_set>
 
 namespace SpellHotbar::SpellDataCSVLoader {
 
@@ -72,6 +73,8 @@ namespace SpellHotbar::SpellDataCSVLoader {
         
             bool has_symbol = csv::has_column(doc.GetColumnNames(), "Symbol");
 
+            std::unordered_set<std::string> warned_plugins;
+
             for (size_t i = 0; i < doc.GetRowCount(); i++) {
                 try {
 
@@ -80,44 +83,54 @@ namespace SpellHotbar::SpellDataCSVLoader {
 
                     std::string plugin = doc.GetCell<std::string>("Plugin", i);
 
-                    auto* form = GameData::get_form_from_file(form_id, plugin);
+                    if (RE::TESDataHandler::GetSingleton()->GetModIndex(plugin).has_value()) {
 
-                    if (form != nullptr) {
-                        RE::FormID actual_form_id = form->GetFormID();
-                        GameData::Spell_cast_data data;
-                        data.gcd = doc.GetCell<float>("GCD", i);
-                        std::string time_str = doc.GetCell<std::string>("Cooldown", i);
-                        data.cooldown = parse_time(time_str);
-                        data.casttime = doc.GetCell<float>("Casttime", i);
+                        auto* form = GameData::get_form_from_file(form_id, plugin);
 
-                        int anim_var = std::min(doc.GetCell<int>("Animation", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
-                        int anim_var2 = std::min(doc.GetCell<int>("Animation2", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
+                        if (form != nullptr) {
+                            RE::FormID actual_form_id = form->GetFormID();
+                            GameData::Spell_cast_data data;
+                            data.gcd = doc.GetCell<float>("GCD", i);
+                            std::string time_str = doc.GetCell<std::string>("Cooldown", i);
+                            data.cooldown = parse_time(time_str);
+                            data.casttime = doc.GetCell<float>("Casttime", i);
 
-                        data.animation = GameData::chose_default_anim_for_spell(form, anim_var, false);
-                        data.animation2 = GameData::chose_default_anim_for_spell(form, anim_var2, true);
+                            int anim_var = std::min(doc.GetCell<int>("Animation", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
+                            int anim_var2 = std::min(doc.GetCell<int>("Animation2", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
 
-                        std::string cast_effect = doc.GetCell<std::string>("Casteffect", i);
-                        data.casteffectid = static_cast<uint16_t>(GameData::get_cast_effect_id(cast_effect));
+                            data.animation = GameData::chose_default_anim_for_spell(form, anim_var, false);
+                            data.animation2 = GameData::chose_default_anim_for_spell(form, anim_var2, true);
 
-                        if (has_symbol) {
-                            std::string symbol = doc.GetCell<std::string>("Symbol", i);
-                            if (!symbol.empty()) {
-                                if (TextureCSVLoader::default_icon_names.contains(symbol)) {
-                                    data.overlay_icon = TextureCSVLoader::default_icon_names.at(symbol);
-                                }
-                                else {
-                                    logger::warn("Unknown Overlay Symbol: '{}'", symbol);
+                            std::string cast_effect = doc.GetCell<std::string>("Casteffect", i);
+                            data.casteffectid = static_cast<uint16_t>(GameData::get_cast_effect_id(cast_effect));
+
+                            if (has_symbol) {
+                                std::string symbol = doc.GetCell<std::string>("Symbol", i);
+                                if (!symbol.empty()) {
+                                    if (TextureCSVLoader::default_icon_names.contains(symbol)) {
+                                        data.overlay_icon = TextureCSVLoader::default_icon_names.at(symbol);
+                                    }
+                                    else {
+                                        logger::warn("Unknown Overlay Symbol: '{}'", symbol);
+                                    }
                                 }
                             }
-                        }
 
-                        // skip saving default spell data
-                        if (!data.is_empty()) {
+                            // skip saving default spell data
+                            if (!data.is_empty()) {
 
-                            GameData::set_spell_cast_data(actual_form_id, std::move(data));
+                                GameData::set_spell_cast_data(actual_form_id, std::move(data));
+                            }
                         }
-                    } else {
-                        logger::warn("Skipping spell data {} {}, because form is null", str_form, plugin);
+                        else {
+                            logger::warn("Skipping spell data {} {}, because form is null", str_form, plugin);
+                        }
+                    }
+                    else {
+                        if (!warned_plugins.contains(plugin)) {
+                            warned_plugins.emplace(plugin);
+                            logger::warn("Skipping Plugin '{}', not loaded.", plugin);
+                        }
                     }
 
                 } catch (const std::exception& e) {

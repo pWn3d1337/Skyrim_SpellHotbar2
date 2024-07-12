@@ -1,0 +1,7 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Erase Spell		0x11A04C	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Gravisphere		0x03A44B	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Mind Fog		0x099574	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Oblivion Unbound		0x09900A	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Stendarr’s Embrace		0x09957C	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Wizardfire		0x05D1E4	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1

@@ -1,9 +1,9 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Mage’s Fury	0x000809	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10004
-Streak	0x00080A	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10009
-Lightning Flood	0x00080E	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10013
-Maelstrom	0x000A04	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10013
-Teslasphere	0x000833	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10005
-Conjure Gloomstorm Atronach	0x000855	StormCalling.esl	ConjurationSummon	-1	-1	-1	-1	10003
-Tonitrus	0x000955	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10005
-Streak	0x000829	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10009
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Mage’s Fury	0x000809	0x826	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10004
+Streak	0x00080A	0x827	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10009
+Lightning Flood	0x00080E	0x828	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10013
+Maelstrom	0x000A04	0x848	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10013
+Teslasphere	0x000833	0x849	StormCalling.esl	DestructionShock	-1	-1	-1	-1	10005
+Conjure Gloomstorm Atronach	0x000855		StormCalling.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Tonitrus	0x000955		StormCalling.esl	DestructionShock	-1	-1	-1	-1	10005
+Streak	0x000829		StormCalling.esl	DestructionShock	-1	-1	-1	-1	10009

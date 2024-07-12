@@ -4,6 +4,7 @@
 #include "../game_data/game_data.h"
 #include "render_manager.h"
 #include "../game_data/csv_loader.h"
+#include <unordered_set>
 
 namespace SpellHotbar::TextureCSVLoader {
 
@@ -134,6 +135,8 @@ namespace SpellHotbar::TextureCSVLoader {
         TextureImage& main_tex = RenderManager::load_texture(img_path);
         const std::string filename = std::filesystem::path(img_path).filename().string();
 
+        std::unordered_set<std::string> warned_plugins;
+
         for (size_t i = 0; i < doc.GetRowCount(); i++)
         {
             try {
@@ -149,13 +152,22 @@ namespace SpellHotbar::TextureCSVLoader {
 
                     std::string plugin = doc.GetCell<std::string>("Plugin", i);
 
-                    auto* form = GameData::get_form_from_file(form_id, plugin);
+                    if (RE::TESDataHandler::GetSingleton()->GetModIndex(plugin).has_value()) {
+                        auto* form = GameData::get_form_from_file(form_id, plugin);
 
-                    if (form != nullptr) {
-                        RenderManager::add_spell_texture(main_tex, form->GetFormID(), ImVec2(u0, v0), ImVec2(u1, v1), filename);
+                        if (form != nullptr) {
+                            RenderManager::add_spell_texture(main_tex, form->GetFormID(), ImVec2(u0, v0), ImVec2(u1, v1), filename);
 
-                    } else {
-                        logger::warn("Skipping spell icon {} {}, because form is null", str_form, plugin);
+                        }
+                        else {
+                            logger::warn("Skipping spell icon {} {}, because form is null", str_form, plugin);
+                        }
+                    }
+                    else {
+                        if (!warned_plugins.contains(plugin)) {
+                            warned_plugins.emplace(plugin);
+                            logger::warn("Skipping Plugin '{}', not loaded.", plugin);
+                        }
                     }
 
                 } else if (default_icons) {

@@ -1,0 +1,9 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Enchanted Snowball	0x820		Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10004
+Mirage Cloak	0x861	0x864	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10002
+Winter’s Grace	0x81D		Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10003
+Frost Spirit	0x81E	0x825	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10003
+Boreal Touch	0x819	0x822	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10005
+Frostblossom	0x81A	0x824	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10003
+Boreal Breath	0x816	0x823	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10005
+Boreal Nova	0x818	0x826	Icebloom.esl	DestructionFrost	-1	-1	-1	-1	10002

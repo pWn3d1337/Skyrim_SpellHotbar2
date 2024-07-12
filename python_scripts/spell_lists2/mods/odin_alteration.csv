@@ -1,28 +1,28 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Feet of Notorgo	0x00541E	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Alarm	0x0064A2	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10009
-Reynos' Fins	0x007A94	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Ease Burden	0x2849E8	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Slowfall	0x17306A	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Haste Mount	0x289AEC	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10011
-Latch Crack	0x00AB69	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
-Alter Body	0x163D41	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Gonar's Greed	0x0DD9E7	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10004
-Web	0x168E4E	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	-1
-Corrosion	0x27A7B1	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10004
-Vulnerability	0x173074	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
-Resist Elements	0x27F8C6	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
-Orc Strength	0x289AFB	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
-Barricade	0x0803F2	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
-Force Bolt	0x293D28	Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10004
-Enfeeble	0x27A7A9	Odin - Skyrim Magic Overhaul.esp	AlterationShield	-1	-1	-1	-1	10004
-Leaguestep	0x298E3A	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
-Ekash's Locksplitter	0x2849DB	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
-Deep Storage	0x003907	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
-Fabricate Object	0x003902	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
-Ocato's Spell Trigger	0x006FA6	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10008
-Dire Corrosion	0x27A7B4	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10005
-Dire Vulnerability	0x293D0E	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
-Dazzling Flash	0x168E47	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10011
-Control Weather	0x084A9C	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10012
-Milestones	0x0A59D5	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Feet of Notorgo	0x00541E		Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Alarm	0x0064A2	0x03A449	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	10009
+Reynos' Fins	0x007A94	0x03A451	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Ease Burden	0x2849E8	0x27A7B6	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Slowfall	0x17306A	0x27568D	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Haste Mount	0x289AEC	0x298E35	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10011
+Latch Crack	0x00AB69	0x03A9C1	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
+Alter Body	0x163D41	0x275689	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Gonar's Greed	0x0DD9E7	0x298E33	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10004
+Web	0x168E4E		Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	-1
+Corrosion	0x27A7B1	0x293D1B	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10004
+Vulnerability	0x173074	0x275693	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
+Resist Elements	0x27F8C6	0x27F8D0	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
+Orc Strength	0x289AFB		Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
+Barricade	0x0803F2	0x27F8BA	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
+Force Bolt	0x293D28		Odin - Skyrim Magic Overhaul.esp	IllusionRed	-1	-1	-1	-1	10004
+Enfeeble	0x27A7A9	0x27A7AC	Odin - Skyrim Magic Overhaul.esp	AlterationShield	-1	-1	-1	-1	10004
+Leaguestep	0x298E3A	0x298E3C	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10008
+Ekash's Locksplitter	0x2849DB	0x2849DD	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10002
+Deep Storage	0x003907	0x03A45D	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
+Fabricate Object	0x003902	0x03A9C3	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003
+Ocato's Spell Trigger	0x006FA6		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10008
+Dire Corrosion	0x27A7B4	0x293D1D	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10005
+Dire Vulnerability	0x293D0E	0x293D10	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
+Dazzling Flash	0x168E47	0x275695	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10011
+Control Weather	0x084A9C	0x085572	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10012
+Milestones	0x0A59D5	0x0AF0A6	Odin - Skyrim Magic Overhaul.esp	AlterationGreen	-1	-1	-1	-1	10003

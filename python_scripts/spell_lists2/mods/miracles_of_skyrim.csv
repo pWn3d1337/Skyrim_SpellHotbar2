@@ -1,12 +1,12 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Heal	0x0036CB	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
-Caressing Prayer	0x0036D8	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
-Med Heal	0x0036CC	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
-Magic Barrier	0x0036DF	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
-Bountiful Sunlight	0x0036D6	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10012
-Soothing Sunlight	0x0036CE	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10012
-Great Heal Excerpt	0x0036D3	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
-Warmth	0x009476	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10003
-Sacred Oath	0x0036E5	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
-Great Heal	0x0036D4	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
-Projected Heal	0x014FB7	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10013
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Heal	0x0036CB	0x0386E6	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
+Caressing Prayer	0x0036D8	0x03D7F0	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
+Med Heal	0x0036CC	0x0386E7	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
+Magic Barrier	0x0036DF	0x03D7F8	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
+Bountiful Sunlight	0x0036D6	0x03D7EE	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10012
+Soothing Sunlight	0x0036CE	0x03D7E9	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10012
+Great Heal Excerpt	0x0036D3	0x03D7EA	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
+Warmth	0x009476	0x03D7F4	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10003
+Sacred Oath	0x0036E5	0x03D7F2	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10009
+Great Heal	0x0036D4	0x03D7EC	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10008
+Projected Heal	0x014FB7	0x03D7F6	DS2Miracles.esp	RestorationGold	-1	-1	-1	-1	10013

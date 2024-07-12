@@ -1,23 +1,23 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Spider Touch	0x251EB2	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10011
-Viperbolt	0x256FCE	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
-Shield of Daybreak	0x25C0E3	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
-Slay Living	0x003E0F	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10003
-Troll's Blood	0x251EA5	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
-Black Hand	0x26121C	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	-1
-Poison Strikes	0x251EC9	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
-Hallowed Strikes	0x251EC5	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
-Rilm's Cure	0x251EAF	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10008
-Viperblast	0x2D5AD9	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
-Sun Storm	0x247C89	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	-1
-Toxic Cloud	0x247C86	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
-Accelerated Decay	0x256FD4	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
-Circle of Death	0x01220F	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10003
-Shield of Sanctuary	0x25C0E6	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
-Energy Leech	0x251E98	Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	-1
-Strength Leech	0x251EA0	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	-1
-Radiate Energies	0x01FCCE	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10008
-Enervate	0x0159D8	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10004
-Purifying Dawn	0x247C8C	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
-Poison Nova	0x159B3D	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
-Splendor	0x251EAB	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Spider Touch	0x251EB2	0x2611F0	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10011
+Viperbolt	0x256FCE	0x2611FB	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
+Shield of Daybreak	0x25C0E3	0x2611FD	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Slay Living	0x003E0F	0x03AF3F	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10003
+Troll's Blood	0x251EA5	0x2611F5	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Black Hand	0x26121C		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	-1
+Poison Strikes	0x251EC9		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
+Hallowed Strikes	0x251EC5		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Rilm's Cure	0x251EAF		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10008
+Viperblast	0x2D5AD9		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
+Sun Storm	0x247C89		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	-1
+Toxic Cloud	0x247C86		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10005
+Accelerated Decay	0x256FD4		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10004
+Circle of Death	0x01220F	0x03B4B8	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10003
+Shield of Sanctuary	0x25C0E6		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Energy Leech	0x251E98		Odin - Skyrim Magic Overhaul.esp	RestorationBlue	-1	-1	-1	-1	-1
+Strength Leech	0x251EA0		Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	-1
+Radiate Energies	0x01FCCE		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10008
+Enervate	0x0159D8	0x0B7DA0	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10004
+Purifying Dawn	0x247C8C		Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002
+Poison Nova	0x159B3D	0x26120F	Odin - Skyrim Magic Overhaul.esp	IllusionGreen	-1	-1	-1	-1	10002
+Splendor	0x251EAB	0x261212	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10002

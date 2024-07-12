@@ -1,33 +1,39 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Alarm	0x0064A2	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Longstride	0x00541E	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
-Prepare for Adventure	0x007FFD	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10015
-Drop Zone	0x00B646	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
-Ocato's Recital	0x006FA6	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Perilous Path	0x0803F2	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Raise Wall	0x00CC14	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Reynos' Fins	0x007A94	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
-Wither	0x12649C	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10011
-Locate Object	0x00C143	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Spell Twine	0x006A30	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Strength of Earth	0x00D6F5	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	-1
-Tharn's Prison	0x002E25	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Thundering Hooves	0x007A8C	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
-Undermine	0x002E31	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
-Deep Storage	0x003907	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Detonate Lock	0x00AB69	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
-Entomb	0x04581C	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Fabricate Object	0x003902	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Knowledge is Power	0x00CC16	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Tumble Magnet	0x00A5EB	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Acceleration Rune	0x124EC9	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Battletide	0x05ECEE	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10002
-Control Weather	0x084A9C	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10012
-Hethoth's Grimoire	0x00C13D	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Malviser's Gauntlet	0x002E2A	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
-Milestones	0x0A59D5	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Sotha's Maelstrom	0x086B60	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
-Talons of Nirn	0x07FE79	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10002
-Thrumming Stone	0x124EC7	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
-Wind Running	0x005F2B	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
-The Knowledge of Power	0x00CC1B	Apocalypse - Magic of Skyrim.esp		-1	-1	-1	-1	-1
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Alarm	0x0064A2	0x03A449	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Longstride	0x00541E		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
+Prepare for Adventure	0x007FFD	0x084A8C	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10015
+Drop Zone	0x00B646	0x03A44D	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	10003
+Ocato's Recital	0x006FA6		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Perilous Path	0x0803F2	0x03A44F	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Raise Wall	0x00CC14		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Reynos' Fins	0x007A94	0x03A451	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
+Wither	0x12649C	0x03A453	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10011
+Locate Object	0x00C143	0x03A459	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Spell Twine	0x006A30		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Strength of Earth	0x00D6F5		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	-1
+Tharn's Prison	0x002E25	0x03A45B	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Thundering Hooves	0x007A8C		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
+Undermine	0x002E31	0x03A457	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
+Deep Storage	0x003907	0x03A45D	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Detonate Lock	0x00AB69	0x03A9C1	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
+Entomb	0x04581C	0x03F659	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Fabricate Object	0x003902	0x03A9C3	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Knowledge is Power	0x00CC16	0x0668E7	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Tumble Magnet	0x00A5EB		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Acceleration Rune	0x124EC9	0x03A9C5	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Battletide	0x05ECEE	0x05F258	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10002
+Control Weather	0x084A9C	0x085572	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10012
+Hethoth's Grimoire	0x00C13D	0x03A9CB	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Malviser's Gauntlet	0x002E2A	0x03A9C7	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10004
+Milestones	0x0A59D5	0x0AF0A6	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Sotha's Maelstrom	0x086B60		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10009
+Talons of Nirn	0x07FE79	0x047E27	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10002
+Thrumming Stone	0x124EC7	0x03A9CD	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10003
+Wind Running	0x005F2B		Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	10008
+The Knowledge of Power	0x00CC1B		Apocalypse - Magic of Skyrim.esp		-1	-1	-1	-1	-1
+Erase Spell		0x11A04C	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Gravisphere		0x03A44B	Apocalypse - Magic of Skyrim.esp	AlterationGreen	-1	-1	-1	-1	-1
+Mind Fog		0x099574	Apocalypse - Magic of Skyrim.esp	IllusionGreen	-1	-1	-1	-1	-1
+Oblivion Unbound		0x09900A	Apocalypse - Magic of Skyrim.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Stendarr’s Embrace		0x09957C	Apocalypse - Magic of Skyrim.esp	RestorationGold	-1	-1	-1	-1	-1
+Wizardfire		0x05D1E4	Apocalypse - Magic of Skyrim.esp	RestorationBlue	-1	-1	-1	-1	-1

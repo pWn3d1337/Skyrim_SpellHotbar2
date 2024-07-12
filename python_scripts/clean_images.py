@@ -74,3 +74,5 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/abyssal_tides_magic", f"{output_dir_root}/modded_spell_icons/abyssal_tides_magic", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/abyssal_wind_magic", f"{output_dir_root}/modded_spell_icons/abyssal_wind_magic", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/winter_wonderland_magic", f"{output_dir_root}/modded_spell_icons/winter_wonderland_magic", subdirs=False)

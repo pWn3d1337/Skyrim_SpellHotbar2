@@ -1,20 +1,20 @@
-Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Necrotic Flames	0x000817	Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
-Necrotic Fire Bolt	0x000814	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10001
-Necrotic Burn Touch	0x000828	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
-Necrotic Fire Rune	0x000888	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10003
-Necrotic Fire Ball	0x000819	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10005
-Necrotic Flame Cloak	0x00081C	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10002
-Greater Necrotic Flames	0x00082D	Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
-Necrotic Flame Touch	0x00082F	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
-Necrotic Combustion	0x000825	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10004
-Wall of Necrotic Flames	0x000821	Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
-Necrotic Fire Grasp	0x000835	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
-Greater Necrotic Fire Rune	0x00088B	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10003
-Necrotic Devastation	0x00082A	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10013
-Necrotic Flame Tempest	0x000831	Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
-Necrotic Fire Storm	0x00081E	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10002
-Necrotic Scorch	0x000833	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
-Conjure Necrotic Flame Atronach	0x000959	Desecration.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Conjure Necrotic Flame Monarch	0x00095A	Desecration.esp	ConjurationSummon	-1	-1	-1	-1	10003
-Necrotic Fire Body	0x0009BF	Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Necrotic Flames	0x000817		Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
+Necrotic Fire Bolt	0x000814	0x816	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10001
+Necrotic Burn Touch	0x000828	0x829	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
+Necrotic Fire Rune	0x000888	0x889	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10003
+Necrotic Fire Ball	0x000819	0x81B	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10005
+Necrotic Flame Cloak	0x00081C	0x81D	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10002
+Greater Necrotic Flames	0x00082D		Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
+Necrotic Flame Touch	0x00082F	0x830	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
+Necrotic Combustion	0x000825	0x827	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10004
+Wall of Necrotic Flames	0x000821		Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
+Necrotic Fire Grasp	0x000835	0x836	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
+Greater Necrotic Fire Rune	0x00088B	0x88C	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10003
+Necrotic Devastation	0x00082A	0x82B	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10013
+Necrotic Flame Tempest	0x000831		Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1
+Necrotic Fire Storm	0x00081E	0x81F	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10002
+Necrotic Scorch	0x000833	0x834	Desecration.esp	IllusionGreen	-1	-1	-1	-1	10011
+Conjure Necrotic Flame Atronach	0x000959	0x954	Desecration.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Necrotic Flame Monarch	0x00095A	0x955	Desecration.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Necrotic Fire Body	0x0009BF		Desecration.esp	IllusionGreen	-1	-1	-1	-1	-1

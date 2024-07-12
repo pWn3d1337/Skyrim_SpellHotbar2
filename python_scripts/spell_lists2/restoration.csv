@@ -22,3 +22,6 @@ Repel Undead	0x05dd60	0x0A44C5	Skyrim.esm	RestorationBlue	-1	-1	-1	-1	10005
 Turn Greater Undead	0x05dd5e	0x0A44C6	Skyrim.esm	RestorationBlue	-1	-1	-1	-1	10004
 Bane of the Undead	0x08c1ab	0x0218F2	Skyrim.esm	RestorationGold	-1	-1	-1	-1	10002
 Guardian Circle	0x0e0ccf	0x0E0CD5	Skyrim.esm	RestorationBlue	-1	-1	-1	-1	10010
+Sun Fire		0x2E9EEE	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10004
+Close Wounds		0x261200	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10008
+Vampire’s Bane		0x2E9EF0	Odin - Skyrim Magic Overhaul.esp	RestorationGold	-1	-1	-1	-1	10013

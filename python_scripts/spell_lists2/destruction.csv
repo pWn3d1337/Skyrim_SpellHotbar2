@@ -63,3 +63,6 @@ Shalidor’s Insights Conjuration		0x1076eb	Skyrim.esm	ConjurationSummon	-1	-1	-
 Shalidor’s Insights Destruction		0x1076e7	Skyrim.esm	DestructionFire	-1	-1	-1	-1	-1	NO_OVERLAY	destruction
 Shalidor’s Insights Illusion		0x1076e8	Skyrim.esm	IllusionRed	-1	-1	-1	-1	-1	NO_OVERLAY	illusion
 Shalidor’s Insights Restoration		0x1076ea	Skyrim.esm	RestorationGold	-1	-1	-1	-1	-1	NO_OVERLAY	restoration
+Incinerate		0x26B45D	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10005		
+Icy Spear		0x26B461	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10004		
+Thunderbolt		0x26B45F	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10004		
