@@ -86,11 +86,12 @@ namespace SpellHotbar
             } else {
                 RE::FormID resolved_id{0};
                 serializer->ResolveFormID(read_id, resolved_id);
-                if (RE::TESForm::LookupByID(resolved_id)) {
+                RE::TESForm* form = RE::TESForm::LookupByID(resolved_id);
+                if (form != nullptr && Hotbar::is_valid_formtype_for_hotbar(form)) {
                     bar.m_slotted_skills[read_slot] = resolved_id;
                 }
                 else {
-                    logger::info("Removing {:8x} from bar, form no longer exists.", resolved_id);
+                    logger::info("Removing {:8x} from bar, form no longer exists or not valid for hotbar.", resolved_id);
                     bar.m_slotted_skills[read_slot] = 0;
                 }
             }
@@ -214,10 +215,39 @@ namespace SpellHotbar
         return ret;
     }
 
+    bool Hotbar::is_valid_formtype_for_hotbar(const RE::TESForm* form)
+    {
+        if (form != nullptr) {
+            switch (form->GetFormType()) {
+            case RE::FormType::Scroll:
+                [[fallthrough]];
+            case RE::FormType::Spell:
+                [[fallthrough]];
+            case RE::FormType::Shout:
+                [[fallthrough]];
+            case RE::FormType::AlchemyItem:
+                return true;
+            default:
+                return false;
+            }
+        }
+        return false;;
+    }
+
     std::tuple<SlottedSkill, bool> Hotbar::get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited, std::optional<key_modifier> original_mod)
     {
         auto skill = get_sub_bar(mod).m_slotted_skills[index];
+
+        //if dynamic form -> check if still valid
+        if (skill.formID >= 0xFF000000) {
+            RE::TESForm* form = RE::TESForm::LookupByID(skill.formID);
+            if (!form || !Hotbar::is_valid_formtype_for_hotbar(form)) {
+                // unbind from bar
+                get_sub_bar(mod).m_slotted_skills[index] = SlottedSkill();
+                skill = get_sub_bar(mod).m_slotted_skills[index];
+            }
+        }
 
         if (skill.formID != 0U && this->is_enabled())
         {

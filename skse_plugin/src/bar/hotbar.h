@@ -144,6 +144,8 @@ public:
 
     static ImU32 calculate_potion_color(RE::Effect* effect);
 
+    static bool is_valid_formtype_for_hotbar(const RE::TESForm* form);
+
 private:
     bool m_enabled;
     SubBar m_bar;

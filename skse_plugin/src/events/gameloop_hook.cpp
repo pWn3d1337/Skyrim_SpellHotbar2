@@ -6,12 +6,9 @@ namespace SpellHotbar::events {
 
 	void GameLoopHook::Timinghook()
 	{
+        _Timinghook();
         auto ui = RE::UI::GetSingleton();
-        if (!ui) {
-            return;  // no ui reference, quit
-        }
-        if (!ui->GameIsPaused()) {
-            //logger::info("GameTimeDelta: {}", deltaTime);
+        if (ui && !ui->GameIsPaused()) {
             casts::CastingController::update_cast(deltaTime);
         }
 	}
