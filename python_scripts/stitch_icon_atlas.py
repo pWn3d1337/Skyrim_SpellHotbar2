@@ -826,3 +826,6 @@ if __name__ == "__main__":
 
     #stitch_mod("winter_wonderland_magic")
     #i4_mod("winter_wonderland_magic", tmp_icons_dir, esp_name="Icebloom")
+
+    #stitch_mod("abyss")
+    #i4_mod("abyss", tmp_icons_dir, esp_name="Abyss")

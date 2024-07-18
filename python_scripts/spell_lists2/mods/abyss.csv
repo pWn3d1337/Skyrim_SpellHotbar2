@@ -1,0 +1,36 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Shadow Drain	0x829		Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Touch	0xA8C	0xA90	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Bolt	0x810	0xA94	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Shadow Rune	0x82A	0xA95	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Abyssal Shadow Drain	0xC0C		Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Burst	0x831	0xA97	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Aura	0x838	0xA98	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Abyssal Shadow Touch	0xA8D	0xA91	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Ambush	0xBA0	0xB9F	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10001
+Shadow Orb	0x86F	0xA9A	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Grasp	0xA8E	0xA92	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Abyssal Shadow Rune	0x82B	0xA96	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Shadow Detonation	0xBB6	0xBB5	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Shadow Wall	0xBE4		Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Torrent	0xC0B		Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Eye	0x860		Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Eruption	0x974	0xA9B	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Abyssal Shadow Grasp	0xA8F	0xA93	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Void	0xBF3	0xBF2	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10013
+Shadow Chains	0xACB	0xAEF	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Enfeeblement	0xACE	0xAF2	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Bane	0xACC	0xAF0	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Step	0xB88	0xB86	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10008
+Shadow Grave	0xACF	0xAF3	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Regeneration	0xAC1	0xAF4	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Shadow Soul	0xACD	0xAF1	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10005
+Shadow Mantle	0xABC	0xAF5	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Abyssal Shadow Step	0xB89	0xB87	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10008
+Shadow Mark	0xBAC	0xBAB	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Shadow Wolf	0xC31	0xC32	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Shadow Atronach	0xB0D	0xB11	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Shadow Monarch	0xB0E	0xB12	Abyss.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Shadow Body	0x839		Abyss.esp		-1	-1	-1	-1	-1
+Dark Shroud	0xC04		Abyss.esp		-1	-1	-1	-1	-1
+Shadow Form	0xC21		Abyss.esp		-1	-1	-1	-1	-1
