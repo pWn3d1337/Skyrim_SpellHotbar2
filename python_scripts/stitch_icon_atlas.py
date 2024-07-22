@@ -829,3 +829,6 @@ if __name__ == "__main__":
 
     #stitch_mod("abyss")
     #i4_mod("abyss", tmp_icons_dir, esp_name="Abyss")
+
+    #stitch_mod("ancient_blood_magic_2")
+    #i4_mod("ancient_blood_magic_2", tmp_icons_dir, esp_name="AncientBloodII")

@@ -17,6 +17,9 @@ namespace SpellHotbar::PotionEditor {
     //Spell currently beeing edited
     std::optional<GameData::User_custom_entry> current_edit_data = std::nullopt;
 
+    constexpr int filter_buf_size = 256;
+    char filter_buf[filter_buf_size] = "";
+
     enum potion_editor_column_id : ImGuiID {
         column_id_ID = 0U,
         column_id_Plugin,
@@ -108,7 +111,8 @@ namespace SpellHotbar::PotionEditor {
                     list_of_entries.push_back(f);
                 }
             }
-
+            
+            filter_buf[0] = '\0';
             update_filter("", filter_predefined_data, filter_user_data);
         }
     }
@@ -215,8 +219,6 @@ namespace SpellHotbar::PotionEditor {
         static std::string last_filter = "";
 
         static auto filter_input_flags = ImGuiInputTextFlags_EscapeClearsAll;
-        constexpr int filter_buf_size = 256;
-        static char filter_buf[filter_buf_size] = "";
         bool filter_dirty = false;
 
         if (button_clear_filter_clicked) {

@@ -27,6 +27,9 @@ namespace SpellHotbar::SpellEditor {
     std::optional<GameData::Spell_cast_data> current_edit_data_saved = std::nullopt;
     std::vector<int> list_of_anims;
 
+    constexpr int filter_buf_size = 256;
+    char filter_buf[filter_buf_size] = "";
+
     enum spell_editor_column_id : ImGuiID {
         column_id_ID = 0U,
         column_id_Plugin,
@@ -157,6 +160,7 @@ namespace SpellHotbar::SpellEditor {
                 list_of_skills.push_back(shout);
             }
 
+            filter_buf[0] = '\0';
             update_filter("", filter_predefined_data, filter_user_data);
         }
     }
@@ -322,8 +326,7 @@ namespace SpellHotbar::SpellEditor {
         static std::string last_filter = "";
 
         static auto filter_input_flags = ImGuiInputTextFlags_EscapeClearsAll;
-        constexpr int filter_buf_size = 256;
-        static char filter_buf[filter_buf_size] = "";
+
         bool filter_dirty = false;
 
         if (button_clear_filter_clicked) {
