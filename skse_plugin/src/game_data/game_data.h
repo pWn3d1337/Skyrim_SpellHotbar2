@@ -136,6 +136,20 @@ namespace SpellHotbar::GameData {
     extern RE::TESGlobal* global_casting_conc_spell;
 
     extern RE::SpellItem* spellhotbar_castfx_spell;
+    extern RE::EffectSetting* spellhotbar_spellproc_cd;
+    extern RE::SpellItem* spellhotbar_apply_spellproc_cd;
+
+    extern RE::TESGlobal* global_spellhotbar_perks_override;
+    extern RE::TESGlobal* global_spellhotbar_perks_timed_block_window;
+    extern RE::TESGlobal* global_spellhotbar_perks_block_trigger_chance;
+    extern RE::TESGlobal* global_spellhotbar_perks_power_attack_trigger_chance;
+    extern RE::TESGlobal* global_spellhotbar_perks_sneak_attack_trigger_chance;
+    extern RE::TESGlobal* global_spellhotbar_perks_crit_trigger_chance;
+
+    extern RE::BGSPerk* spellhotbar_perk_cast_on_power_attack;
+    extern RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack;
+    extern RE::BGSPerk* spellhotbar_perk_cast_on_crit;
+    extern RE::BGSPerk* spellhotbar_perk_cast_on_block;
 
     extern RE::BGSEquipSlot* equip_slot_right_hand;
     extern RE::BGSEquipSlot* equip_slot_left_hand;
@@ -159,6 +173,7 @@ namespace SpellHotbar::GameData {
     extern std::unordered_map<RE::ActorValue, ImU32> potion_color_mapping;
 
     extern float potion_gcd;
+    extern float block_timer;
 
     extern Bars::OblivionBar oblivion_bar;
 
@@ -279,5 +294,12 @@ namespace SpellHotbar::GameData {
     bool is_on_binary_cd(RE::FormID skill);
 
     float get_special_cd(RE::FormID formID);
+
+    /*
+    * Checks for this perk, or if the ignore perks global is set
+    */
+    bool player_has_trigger_perk(RE::BGSPerk* perk);
+
+    bool calc_random_proc(RE::TESGlobal* chance);
 }
 

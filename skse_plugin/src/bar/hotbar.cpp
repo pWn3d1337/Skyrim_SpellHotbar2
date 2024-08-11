@@ -6,6 +6,7 @@
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
 #include "../input/modes.h"
+#include "../casts/spell_proc.h"
 
 #include <numbers>
 
@@ -511,9 +512,13 @@ namespace SpellHotbar
         bool new_line)
     {
         GameData::Spell_cast_data skill_dat;
+        bool has_spell_proc{ false };
         auto form = RE::TESForm::LookupByID(skill.formID);
         if (form) {
             skill_dat = GameData::get_spell_data(form, true, true);
+            if (form->GetFormType() == RE::FormType::Spell) {
+                has_spell_proc = casts::SpellProc::has_spell_proc(form->As<RE::SpellItem>());
+            }
         }
 
         size_t count{ 0 };
@@ -562,7 +567,14 @@ namespace SpellHotbar
                 if (cd_prog > 0.0f) {
                     RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
                 }
+                else {
+                    //Draw spell proc overlay
+                    if (has_spell_proc) {
+                        RenderManager::draw_spellproc_overlay(p, icon_size, casts::SpellProc::get_spell_proc_timer(), casts::SpellProc::get_spell_proc_total(), alpha);
+                    }
+                }
             }
+
             RenderManager::draw_slot_overlay(p, icon_size, IM_COL32(255, 255, 255, alpha_i));
         }
         if (highlight_slot == slot_index) {

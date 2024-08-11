@@ -104,6 +104,14 @@ namespace SpellHotbar::TextureCSVLoader {
                csv::has_column(columns, "v0") && csv::has_column(columns, "u1") && csv::has_column(columns, "v1");
     }
 
+    bool is_spellproc_overlay_icon_file(rapidcsv::Document& doc) {
+        std::vector<std::string> columns = doc.GetColumnNames();
+
+        // check required column names
+        return csv::has_column(columns, "SpellProc") && csv::has_column(columns, "u0") &&
+            csv::has_column(columns, "v0") && csv::has_column(columns, "u1") && csv::has_column(columns, "v1");
+    }
+
     
     bool is_default_icon_file(rapidcsv::Document& doc) {
         std::vector<std::string> columns = doc.GetColumnNames();
@@ -122,14 +130,19 @@ namespace SpellHotbar::TextureCSVLoader {
         bool spell_icons = is_spell_icon_file(doc);
         bool default_icons = is_default_icon_file(doc); //also used for extra icons
         bool cooldown_icons = is_cooldown_icon_file(doc);
+        bool spellproc_icons = is_spellproc_overlay_icon_file(doc);
 
-        if (!spell_icons && !default_icons && !cooldown_icons) {
+        if (!spell_icons && !default_icons && !cooldown_icons && !spellproc_icons) {
             logger::warn("Could not parse '{}', skipping", path);
         }
 
         if (cooldown_icons) {
             size_t num_cds = doc.GetRowCount();
             RenderManager::init_cooldown_icons(num_cds);
+        }
+        else if (spellproc_icons) {
+            size_t num_frames = doc.GetRowCount();
+            RenderManager::init_spellproc_overlay_icons(num_frames);
         }
 
         TextureImage& main_tex = RenderManager::load_texture(img_path);
@@ -180,6 +193,9 @@ namespace SpellHotbar::TextureCSVLoader {
                     }
                 } else if (cooldown_icons) {
                     RenderManager::add_cooldown_icon(main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
+                }
+                else if (spellproc_icons){
+                    RenderManager::add_spellproc_overlay_icon(main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
                 }
             } catch (const std::exception& e) {
                 std::string msg = e.what();

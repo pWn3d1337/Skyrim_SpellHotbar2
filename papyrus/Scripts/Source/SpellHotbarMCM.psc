@@ -1,8 +1,13 @@
 Scriptname SpellHotbarMCM extends SKI_ConfigBase
   
-;import PO3_SKSEFunctions
-
 SpellHotbarInitQuestScript Property Main Auto
+
+GlobalVariable Property SpellHotbar_BattleMage_OverridePerks Auto
+GlobalVariable Property SpellHotbar_BattleMage_TimedBlockWindow Auto
+GlobalVariable Property SpellHotbar_BattleMage_BlockProcChance Auto
+GlobalVariable Property SpellHotbar_BattleMage_PowerAttackProcChance Auto
+GlobalVariable Property SpellHotbar_BattleMage_SneakAttackProcChance Auto
+GlobalVariable Property SpellHotbar_BattleMage_CritProcChance Auto
 
 int[] oid_spellkeybinds
 
@@ -29,13 +34,14 @@ endFunction
 
 Event OnConfigInit()
     ModName = "Spell Hotbar"
-    Pages = new String[6]
+    Pages = new String[7]
     Pages[0] = "Keybinds"
     Pages[1] = "Settings"
     Pages[2] = "Bars"
-	Pages[3] = "Presets"
-	Pages[4] = "Spells"
-	Pages[5] = "Util"
+	Pages[3] = "Perks"
+	Pages[4] = "Presets"
+	Pages[5] = "Spells"
+	Pages[6] = "Util"
 
     inherit_options = new String[3]
     inherit_options[0] = "Default"
@@ -235,6 +241,22 @@ Event OnPageReset(string page)
 		AddToggleOptionST("MAGIC_SNEAK_Enabled", "Enabled", SpellHotbar.getBarEnabled(1296123716))
 		AddMenuOptionST("MAGIC_Inherit", "Inherit Mode", inherit_options[SpellHotbar.getInheritMode(1296123715)])
 		AddMenuOptionST("MAGIC_SNEAK_Inherit", "Inherit Mode", inherit_options[SpellHotbar.getInheritMode(1296123716)])
+	ElseIf (page == "Perks")
+		AddToggleOptionST("DisablePerkRequirementsState", "Disable Perk Requirements", SpellHotbar_BattleMage_OverridePerks.GetValueInt() != 0)
+		AddEmptyOption()
+
+		AddSliderOptionST("TimeBlockWindowState", "Timed Block Window", SpellHotbar_BattleMage_TimedBlockWindow.GetValue(), "{2}")
+		AddSliderOptionST("BlockProcChanceState", "Block Proc Chance", SpellHotbar_BattleMage_BlockProcChance.GetValue(), "{2}")
+
+		AddSliderOptionST("PowerAttackProcChanceState", "Power Attack Proc Chance", SpellHotbar_BattleMage_PowerAttackProcChance.GetValue(), "{2}")
+		AddEmptyOption()
+
+		AddSliderOptionST("SneakAttackProcChanceState", "Sneak Attack Proc Chance", SpellHotbar_BattleMage_SneakAttackProcChance.GetValue(), "{2}")
+		AddEmptyOption()
+
+		AddSliderOptionST("CriticalProcChanceState", "Critical Strike Proc Chance", SpellHotbar_BattleMage_CritProcChance.GetValue(), "{2}")
+		AddEmptyOption()
+
 
 	ElseIf (page == "Presets")
 		checkPresets()
@@ -264,6 +286,125 @@ Event OnPageReset(string page)
 		AddToggleOptionST("ShowOblivionModeDragBar", "Drag Oblivion Mode Bar", false)
 	EndIf
 EndEvent
+
+State CriticalProcChanceState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_CritProcChance.GetValue())
+        SetSliderDialogDefaultValue(1.0)
+        SetSliderDialogRange(0.0, 1.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_CritProcChance.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_CritProcChance.SetValue(1.0)
+        SetSliderOptionValueST(1.0, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Chance a critical hit triggers procs");
+    EndEvent
+EndState
+
+State SneakAttackProcChanceState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_SneakAttackProcChance.GetValue())
+        SetSliderDialogDefaultValue(1.0)
+        SetSliderDialogRange(0.0, 1.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_SneakAttackProcChance.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_SneakAttackProcChance.SetValue(1.0)
+        SetSliderOptionValueST(1.0, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Chance a sneak attack hit triggers procs");
+    EndEvent
+EndState
+
+State PowerAttackProcChanceState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_PowerAttackProcChance.GetValue())
+        SetSliderDialogDefaultValue(0.5)
+        SetSliderDialogRange(0.0, 1.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_PowerAttackProcChance.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_PowerAttackProcChance.SetValue(0.5)
+        SetSliderOptionValueST(0.5, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Chance a power attack hit triggers procs");
+    EndEvent
+EndState
+
+State TimeBlockWindowState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_TimedBlockWindow.GetValue())
+        SetSliderDialogDefaultValue(0.5)
+        SetSliderDialogRange(0.0, 5.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_TimedBlockWindow.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_TimedBlockWindow.SetValue(0.5)
+        SetSliderOptionValueST(0.5, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("A timed block window of 0 will cause every block to be able to trigger procs");
+    EndEvent
+EndState
+
+State BlockProcChanceState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_BlockProcChance.GetValue())
+        SetSliderDialogDefaultValue(1.0)
+        SetSliderDialogRange(0.0, 1.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_BlockProcChance.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_BlockProcChance.SetValue(1.0)
+        SetSliderOptionValueST(1.0, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Chance a Block matching the time window will trigger procs");
+    EndEvent
+EndState
+
+State DisablePerkRequirementsState
+    Event OnSelectST()
+		if(SpellHotbar_BattleMage_OverridePerks.GetValueInt() != 0)
+			SpellHotbar_BattleMage_OverridePerks.SetValueInt(0)
+			SetToggleOptionValueST(false)
+		Else
+			SpellHotbar_BattleMage_OverridePerks.SetValueInt(1)
+			SetToggleOptionValueST(true)
+		EndIf
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_OverridePerks.SetValueInt(0)
+		SetToggleOptionValueST(false)
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("All spell proc triggers will work like having learned all Battlemage perks")
+    EndEvent
+EndState
 
 State InputMode
 	Event OnMenuOpenST()

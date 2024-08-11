@@ -109,6 +109,7 @@ std::unordered_map<RE::FormID, SubTextureImage> spell_icons;
 std::unordered_map<GameData::DefaultIconType, SubTextureImage> default_icons;
 std::unordered_map<std::string, SubTextureImage> extra_icons;
 std::vector<SubTextureImage> cooldown_icons;
+std::vector<SubTextureImage> spellproc_overlay_icons;
 
 // nested templates <3 
 std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>> editor_icon_list;
@@ -465,6 +466,7 @@ void RenderManager::reload_resouces() {
     default_icons.clear();
     extra_icons.clear();
     cooldown_icons.clear();
+    spellproc_overlay_icons.clear();
 
     for (const auto& teximg : loaded_textures) {
         teximg.res->Release();
@@ -560,6 +562,16 @@ void RenderManager::add_cooldown_icon(TextureImage& main_texture, ImVec2 uv0, Im
 void RenderManager::init_cooldown_icons(size_t amount) {
     cooldown_icons.clear();
     cooldown_icons.reserve(amount);
+}
+
+void RenderManager::add_spellproc_overlay_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1)
+{
+    spellproc_overlay_icons.emplace_back(main_texture, uv0, uv1);
+}
+
+void RenderManager::init_spellproc_overlay_icons(size_t amount) {
+    spellproc_overlay_icons.clear();
+    spellproc_overlay_icons.reserve(amount);
 }
 
 LRESULT RenderManager::WndProcHook::thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -883,6 +895,22 @@ void RenderManager::draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col) {
         size_t i = static_cast<size_t>(std::round((cooldown_icons.size()-1) * cd));
         size_t index = std::clamp(i, static_cast<size_t>(0U), static_cast<size_t>(cooldown_icons.size()-1U));
         cooldown_icons.at(index).draw_on_top(pos, static_cast<float>(size), static_cast<float>(size), col);
+    }
+}
+
+void RenderManager::draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha) {
+    if (spellproc_overlay_icons.size() > 0) {
+        float prog = timer - std::floor(timer); //run anim once per sec
+        size_t i = static_cast<size_t>(std::round((spellproc_overlay_icons.size() - 1) * prog));
+        size_t index = std::clamp(i, static_cast<size_t>(0U), static_cast<size_t>(spellproc_overlay_icons.size() - 1U));
+
+        //fade out
+        constexpr float fade_out_time = 1.5f;
+        if (timer > (total - fade_out_time)) {
+            float p = std::clamp(timer - (total - fade_out_time) / fade_out_time, 0.0f, 1.0f);
+            alpha *= p;
+        }
+        spellproc_overlay_icons.at(index).draw_on_top(pos, static_cast<float>(size), static_cast<float>(size), IM_COL32(255, 255, 255, alpha*255));
     }
 }
 

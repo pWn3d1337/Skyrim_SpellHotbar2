@@ -103,7 +103,9 @@ namespace SpellHotbar {
         static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string& icon_name);
         static void add_extra_icon(TextureImage& main_texture, const std::string& icon_name, ImVec2 uv0, ImVec2 uv1, const std::string& filename);
         static void add_cooldown_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1);
+        static void add_spellproc_overlay_icon(TextureImage& main_texture, ImVec2 uv0, ImVec2 uv1);
         static void init_cooldown_icons(size_t amount);
+        static void init_spellproc_overlay_icons(size_t amount);
 
         static void draw_bg(int size, float alpha = 1.0f);
         static bool draw_skill(RE::FormID formID, int size, ImU32 col = IM_COL32_WHITE);
@@ -112,6 +114,7 @@ namespace SpellHotbar {
         static void draw_extra_icon_in_editor(const std::string &key, ImVec2 pos, int size);
         static void draw_slot_overlay(ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
+        static void draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);
         static void draw_scaled_text(ImVec2 pos, ImU32 col, const char* text);
         static void draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col);

@@ -12,6 +12,8 @@
 #include "spell_cast_data.h"
 #include "../input/modes.h"
 
+#include <random>
+
 namespace SpellHotbar::GameData {
 
     constexpr std::string_view spell_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\spelldata\\";
@@ -20,6 +22,10 @@ namespace SpellHotbar::GameData {
     constexpr std::string_view animation_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\animationdata\\";
 
     inline const std::string keynames_csv_path = ".\\data\\SKSE\\Plugins\\SpellHotbar\\keynames\\keynames.csv";
+
+    std::random_device _random_device;
+    std::mt19937 random_engine(_random_device());
+    std::uniform_real_distribution<float> random_dist(0.0f, 1.0f);
 
     RE::TESRace* vampire_lord_race = nullptr;
     RE::TESRace* werewolf_beast_race = nullptr;
@@ -33,8 +39,22 @@ namespace SpellHotbar::GameData {
     RE::SpellItem* spellhotbar_castfx_spell = nullptr;
     RE::SpellItem* spellhotbar_unbind_slot = nullptr;
     RE::SpellItem* spellhotbar_toggle_dualcast = nullptr;
+    RE::EffectSetting* spellhotbar_spellproc_cd = nullptr;
+    RE::SpellItem* spellhotbar_apply_spellproc_cd = nullptr;
 
     RE::TESGlobal* global_spellhotbar_use_dual_casting = nullptr;
+
+    RE::TESGlobal* global_spellhotbar_perks_override = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_timed_block_window = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_block_trigger_chance = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_power_attack_trigger_chance = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_sneak_attack_trigger_chance = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_crit_trigger_chance = nullptr;
+
+    RE::BGSPerk* spellhotbar_perk_cast_on_power_attack = nullptr;
+    RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack = nullptr;
+    RE::BGSPerk* spellhotbar_perk_cast_on_crit = nullptr;
+    RE::BGSPerk* spellhotbar_perk_cast_on_block = nullptr;
 
     RE::BGSEquipSlot* equip_slot_right_hand = nullptr;
     RE::BGSEquipSlot* equip_slot_left_hand = nullptr;
@@ -69,7 +89,8 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<int, std::string> animation_names;
 
-    float potion_gcd = 1.0f;
+    float potion_gcd { 1.0f };
+    float block_timer { 0.0f };
 
     Bars::OblivionBar oblivion_bar;
 
@@ -301,6 +322,20 @@ namespace SpellHotbar::GameData {
 
         load_form_from_game(0x838, "SpellHotbar.esp", &global_casting_timer, "SpellHotbar_Casttimer", RE::FormType::Global);
         load_form_from_game(0x834, "SpellHotbar.esp", &global_casting_conc_spell, "SpellHotbar_isCastingConcSpell", RE::FormType::Global);
+        load_form_from_game(0x83E, "SpellHotbar.esp", &spellhotbar_spellproc_cd, "SpellHotbar_SpellProcCD", RE::FormType::MagicEffect);
+        load_form_from_game(0x83F, "SpellHotbar.esp", &spellhotbar_apply_spellproc_cd, "SpellHotbar_ApplySpellProcCD", RE::FormType::Spell);
+
+        load_form_from_game(0x840, "SpellHotbar.esp", &global_spellhotbar_perks_override, "SpellHotbar_BattleMage_OverridePerks", RE::FormType::Global);
+        load_form_from_game(0x841, "SpellHotbar.esp", &global_spellhotbar_perks_timed_block_window, "SpellHotbar_BattleMage_TimedBlockWindow", RE::FormType::Global);
+        load_form_from_game(0x842, "SpellHotbar.esp", &global_spellhotbar_perks_block_trigger_chance, "SpellHotbar_BattleMage_BlockProcChance", RE::FormType::Global);
+        load_form_from_game(0x843, "SpellHotbar.esp", &global_spellhotbar_perks_power_attack_trigger_chance, "SpellHotbar_BattleMage_PowerAttackProcChance", RE::FormType::Global);
+        load_form_from_game(0x844, "SpellHotbar.esp", &global_spellhotbar_perks_sneak_attack_trigger_chance, "SpellHotbar_BattleMage_SneakAttackProcChance", RE::FormType::Global);
+        load_form_from_game(0x845, "SpellHotbar.esp", &global_spellhotbar_perks_crit_trigger_chance, "SpellHotbar_BattleMage_CritProcChance", RE::FormType::Global);
+
+        load_form_from_game(0x83D, "SpellHotbar.esp", &spellhotbar_perk_cast_on_power_attack, "SpellHotbar_BattleMage_PerkProcPowerAttack", RE::FormType::Perk);
+        load_form_from_game(0x846, "SpellHotbar.esp", &spellhotbar_perk_cast_on_sneak_attack, "SpellHotbar_BattleMage_PerkProcSneakAttack", RE::FormType::Perk);
+        load_form_from_game(0x847, "SpellHotbar.esp", &spellhotbar_perk_cast_on_crit, "SpellHotbar_BattleMage_PerkProcCrit", RE::FormType::Perk);
+        load_form_from_game(0x848, "SpellHotbar.esp", &spellhotbar_perk_cast_on_block, "SpellHotbar_BattleMage_PerkProcBlock", RE::FormType::Perk);
 
 
         load_form_from_game(0x13F42, "Skyrim.esm", &equip_slot_right_hand, "RightHand", RE::FormType::EquipSlot);
@@ -1373,6 +1408,39 @@ namespace SpellHotbar::GameData {
          }
 
          return cd;
+     }
+
+     bool player_has_trigger_perk(RE::BGSPerk* perk)
+     {
+         bool ret{ false };
+         if (global_spellhotbar_perks_override && global_spellhotbar_perks_override->value != 0.0f) {
+             ret = true;
+         }
+         else {
+             auto pc = RE::PlayerCharacter::GetSingleton();
+             if (pc) {
+                 ret = pc->HasPerk(perk);
+             }
+         }
+         return ret;
+     }
+
+     bool calc_random_proc(RE::TESGlobal* chance)
+     {
+         bool proc{ false };
+         if (chance) {
+             if (chance->value >= 1.0f) {
+                 proc = true;
+             }
+             else if (chance->value <= 0.0f) {
+                 proc = false;
+             }
+             else {
+                 proc = random_dist(random_engine) < chance->value;
+             }
+         }
+
+         return proc;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

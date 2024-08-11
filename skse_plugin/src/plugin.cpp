@@ -29,7 +29,7 @@ SKSEPluginLoad(const SKSE::LoadInterface * skse)
      });
 
     //Install animationeventhook
-    //SpellHotbar::events::install(); //No need for now
+    //SpellHotbar::events::install(); no need
     SpellHotbar::events::GameLoopHook::hook();
 
     auto event_listener = SpellHotbar::events::EventListener::GetSingleton();
@@ -37,6 +37,7 @@ SKSEPluginLoad(const SKSE::LoadInterface * skse)
     auto eventSourceHolder = RE::ScriptEventSourceHolder::GetSingleton();
     eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(event_listener);
     eventSourceHolder->AddEventSink<RE::TESHitEvent>(event_listener);
+    eventSourceHolder->AddEventSink<RE::TESPlayerBowShotEvent>(event_listener);
 
     RE::CriticalHit::GetEventSource()->AddEventSink(event_listener);
 

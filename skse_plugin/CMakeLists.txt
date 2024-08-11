@@ -75,6 +75,8 @@ set(source_files src/plugin.cpp
                  src/game_data/user_custom_entry.cpp
                  src/rendering/icon_edit_dialog.h
                  src/rendering/icon_edit_dialog.cpp
+                 src/casts/spell_proc.h
+                 src/casts/spell_proc.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

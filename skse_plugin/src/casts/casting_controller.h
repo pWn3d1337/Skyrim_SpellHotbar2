@@ -58,7 +58,7 @@ namespace SpellHotbar::casts::CastingController {
 	//Abstract base for Spell casts
 	class CastingInstance : public BaseCastingInstance {
 	public:
-		CastingInstance(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect);
+		CastingInstance(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool is_spell_proc);
 		virtual ~CastingInstance() = default;
 
 		virtual bool is_anim_ok(RE::PlayerCharacter* pc) const;
@@ -109,19 +109,20 @@ namespace SpellHotbar::casts::CastingController {
 		hand_mode m_used_hand;
 		RE::SpellItem* m_equip_ability;
 		uint16_t m_casteffect;
+		bool m_spell_proc;
 	};
 
 	//Regular spell cast (1h, movement allowed)
 	class CastingInstanceSpell : public CastingInstance {
 	public:
-		CastingInstanceSpell(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect);
+		CastingInstanceSpell(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc);
 		virtual ~CastingInstanceSpell() = default;
 	};
 
 	//Ritual cast with blocked movement
 	class CastingInstanceRitual : public CastingInstance {
 	public:
-		CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect);
+		CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc);
 		virtual ~CastingInstanceRitual() = default;
 
 		virtual bool blocks_movement() const override;
@@ -130,7 +131,7 @@ namespace SpellHotbar::casts::CastingController {
 	//Single handed concentration spell with movement
 	class CastingInstanceSpellConcentration : public CastingInstance {
 	public:
-		CastingInstanceSpellConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, const Input::KeyBind& keybind, int slot, bool blocksMovement = false);
+		CastingInstanceSpellConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot, bool blocksMovement = false);
 		virtual ~CastingInstanceSpellConcentration() = default;
 
 		virtual void apply_cast_start_spell(RE::PlayerCharacter* pc) override;
@@ -153,7 +154,7 @@ namespace SpellHotbar::casts::CastingController {
 	//Ritual style concentration spell, 2hands and blocked movement
 	class CastingInstanceSpellRitualConcentration : public CastingInstanceSpellConcentration {
 	public:
-		CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, const Input::KeyBind& keybind, int slot, float pre_release_anim_time);
+		CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot, float pre_release_anim_time);
 		virtual ~CastingInstanceSpellRitualConcentration() = default;
 
 		virtual bool blocks_movement() const override;
@@ -195,7 +196,7 @@ namespace SpellHotbar::casts::CastingController {
 	*/
 	struct CastingInstanceSpellData
 	{
-		CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animamtion, int animation2, uint16_t casteffect);
+		CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animamtion, int animation2, uint16_t casteffect, bool is_spell_proc);
 
 		RE::SpellItem* m_spell;
 		float m_casttime;
@@ -205,6 +206,7 @@ namespace SpellHotbar::casts::CastingController {
 		int m_animation;
 		int m_animation2;
 		uint16_t m_casteffect;
+		bool m_spellproc;
 	};
 
 
@@ -237,7 +239,7 @@ namespace SpellHotbar::casts::CastingController {
 	/**
 	* Actually casts the spell, do not call directly
 	*/
-	bool cast_spell(RE::SpellItem* spell, bool dual_cast);
+	bool cast_spell(RE::SpellItem* spell, bool dual_cast, std::optional<float> concentration_manacost = std::nullopt);
 
 	void cast_spell_on_player(RE::SpellItem* spell, float magnitude = 0.0f, bool no_art = false);
 

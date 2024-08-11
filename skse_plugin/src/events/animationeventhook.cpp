@@ -1,6 +1,7 @@
 #include "animationeventhook.h"
 
 namespace SpellHotbar::events {
+
 	void Animation_event_hook::ProcessEvent(RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>* a_eventSource)
 	{
 		{
@@ -9,11 +10,20 @@ namespace SpellHotbar::events {
 			}
 
 			auto eventHolder = const_cast<RE::TESObjectREFR*>(a_event->holder);
-			auto animationGraph = static_cast<RE::BShkbAnimationGraph*>(a_eventSource);
+			//auto animationGraph = static_cast<RE::BShkbAnimationGraph*>(a_eventSource);
 
-			if (eventHolder->GetFormID() == 0x14) { //playerref
-				logger::info("AnimationGraphEvent: {}, {}, {}", std::string(a_event->tag), eventHolder->GetFormID(), std::string(a_event->payload));
-			}
+			/*if (eventHolder->IsPlayerRef()) {
+				if (a_event->tag == "blockStartOut"sv) {
+					logger::info("BlockStart");
+				}
+				else if (a_event->tag == "blockStop"sv) {
+					logger::info("BlockStop");
+				}
+			}*/
+
+			//if (eventHolder->GetFormID() == 0x14) { //playerref
+			//	logger::info("AnimationGraphEvent: {}, {}, {}", std::string(a_event->tag), eventHolder->GetFormID(), std::string(a_event->payload));
+			//}
 		}
 	}
 
