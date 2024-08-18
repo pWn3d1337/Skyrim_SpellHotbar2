@@ -27,6 +27,7 @@
         <Import>F:\Skyrim Dev\Papyrus_Include\SkyUI_5.1_SDK\Scripts\Source</Import>
         <!-- <Import>@ModsFolder\SKSE64\Scripts\Source</Import> -->
         <Import>@ModsFolder\Skyrim Script Extender (SKSE64)\Scripts\Source</Import>
+        <Import>@ModsFolder\Custom Skills Framework\Source\Scripts</Import>
     </Imports>
     <Folders>
         <!-- Relative path to folder containing .psc Papyrus source code files for this project -->
