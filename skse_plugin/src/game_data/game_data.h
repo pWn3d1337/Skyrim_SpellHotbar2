@@ -145,11 +145,15 @@ namespace SpellHotbar::GameData {
     extern RE::TESGlobal* global_spellhotbar_perks_power_attack_trigger_chance;
     extern RE::TESGlobal* global_spellhotbar_perks_sneak_attack_trigger_chance;
     extern RE::TESGlobal* global_spellhotbar_perks_crit_trigger_chance;
+    extern RE::TESGlobal* global_spellhotbar_perks_proc_cooldown;
+    extern RE::TESGlobal* global_spellhotbar_perks_require_halfcostperk;
 
     extern RE::BGSPerk* spellhotbar_perk_cast_on_power_attack;
     extern RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack;
     extern RE::BGSPerk* spellhotbar_perk_cast_on_crit;
     extern RE::BGSPerk* spellhotbar_perk_cast_on_block;
+    extern RE::BGSPerk* spellhotbar_perk_expert;
+    extern RE::BGSPerk* spellhotbar_perk_master;
 
     extern RE::BGSEquipSlot* equip_slot_right_hand;
     extern RE::BGSEquipSlot* equip_slot_left_hand;

@@ -50,11 +50,15 @@ namespace SpellHotbar::GameData {
     RE::TESGlobal* global_spellhotbar_perks_power_attack_trigger_chance = nullptr;
     RE::TESGlobal* global_spellhotbar_perks_sneak_attack_trigger_chance = nullptr;
     RE::TESGlobal* global_spellhotbar_perks_crit_trigger_chance = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_proc_cooldown = nullptr;
+    RE::TESGlobal* global_spellhotbar_perks_require_halfcostperk = nullptr;
 
     RE::BGSPerk* spellhotbar_perk_cast_on_power_attack = nullptr;
     RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack = nullptr;
     RE::BGSPerk* spellhotbar_perk_cast_on_crit = nullptr;
     RE::BGSPerk* spellhotbar_perk_cast_on_block = nullptr;
+    RE::BGSPerk* spellhotbar_perk_expert = nullptr;
+    RE::BGSPerk* spellhotbar_perk_master = nullptr;
 
     RE::BGSEquipSlot* equip_slot_right_hand = nullptr;
     RE::BGSEquipSlot* equip_slot_left_hand = nullptr;
@@ -331,11 +335,15 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x843, "SpellHotbar.esp", &global_spellhotbar_perks_power_attack_trigger_chance, "SpellHotbar_BattleMage_PowerAttackProcChance", RE::FormType::Global);
         load_form_from_game(0x844, "SpellHotbar.esp", &global_spellhotbar_perks_sneak_attack_trigger_chance, "SpellHotbar_BattleMage_SneakAttackProcChance", RE::FormType::Global);
         load_form_from_game(0x845, "SpellHotbar.esp", &global_spellhotbar_perks_crit_trigger_chance, "SpellHotbar_BattleMage_CritProcChance", RE::FormType::Global);
+        load_form_from_game(0x84F, "SpellHotbar.esp", &global_spellhotbar_perks_proc_cooldown, "SpellHotbar_BattleMage_ProcCooldown", RE::FormType::Global);
+        load_form_from_game(0x850, "SpellHotbar.esp", &global_spellhotbar_perks_require_halfcostperk, "SpellHotbar_BattleMage_RequireHalfCostPerk", RE::FormType::Global);
 
         load_form_from_game(0x83D, "SpellHotbar.esp", &spellhotbar_perk_cast_on_power_attack, "SpellHotbar_BattleMage_PerkProcPowerAttack", RE::FormType::Perk);
         load_form_from_game(0x846, "SpellHotbar.esp", &spellhotbar_perk_cast_on_sneak_attack, "SpellHotbar_BattleMage_PerkProcSneakAttack", RE::FormType::Perk);
         load_form_from_game(0x847, "SpellHotbar.esp", &spellhotbar_perk_cast_on_crit, "SpellHotbar_BattleMage_PerkProcCrit", RE::FormType::Perk);
         load_form_from_game(0x848, "SpellHotbar.esp", &spellhotbar_perk_cast_on_block, "SpellHotbar_BattleMage_PerkProcBlock", RE::FormType::Perk);
+        load_form_from_game(0x84A, "SpellHotbar.esp", &spellhotbar_perk_expert, "SpellHotbar_BattleMage_PerkExpert", RE::FormType::Perk);
+        load_form_from_game(0x84B, "SpellHotbar.esp", &spellhotbar_perk_master, "SpellHotbar_BattleMage_PerkMaster", RE::FormType::Perk);
 
 
         load_form_from_game(0x13F42, "Skyrim.esm", &equip_slot_right_hand, "RightHand", RE::FormType::EquipSlot);

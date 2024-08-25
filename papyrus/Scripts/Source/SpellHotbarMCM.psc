@@ -8,6 +8,8 @@ GlobalVariable Property SpellHotbar_BattleMage_BlockProcChance Auto
 GlobalVariable Property SpellHotbar_BattleMage_PowerAttackProcChance Auto
 GlobalVariable Property SpellHotbar_BattleMage_SneakAttackProcChance Auto
 GlobalVariable Property SpellHotbar_BattleMage_CritProcChance Auto
+GlobalVariable Property SpellHotbar_BattleMage_ProcCooldown Auto
+GlobalVariable Property SpellHotbar_BattleMage_RequireHalfCostPerk Auto
 
 int[] oid_spellkeybinds
 
@@ -243,6 +245,9 @@ Event OnPageReset(string page)
 		AddMenuOptionST("MAGIC_SNEAK_Inherit", "Inherit Mode", inherit_options[SpellHotbar.getInheritMode(1296123716)])
 	ElseIf (page == "Perks")
 		AddToggleOptionST("DisablePerkRequirementsState", "Disable Perk Requirements", SpellHotbar_BattleMage_OverridePerks.GetValueInt() != 0)
+		AddToggleOptionST("RequireHalfCostPerkState", "Require Half-Cost Perk", SpellHotbar_BattleMage_RequireHalfCostPerk.GetValueInt() != 0)
+
+		AddSliderOptionST("ProcCooldownState", "Spell Proc Cooldown", SpellHotbar_BattleMage_ProcCooldown.GetValue(), "{2}")
 		AddEmptyOption()
 
 		AddSliderOptionST("TimeBlockWindowState", "Timed Block Window", SpellHotbar_BattleMage_TimedBlockWindow.GetValue(), "{2}")
@@ -286,6 +291,45 @@ Event OnPageReset(string page)
 		AddToggleOptionST("ShowOblivionModeDragBar", "Drag Oblivion Mode Bar", false)
 	EndIf
 EndEvent
+
+State RequireHalfCostPerkState
+    Event OnSelectST()
+		if(SpellHotbar_BattleMage_RequireHalfCostPerk.GetValueInt() != 0)
+			SpellHotbar_BattleMage_RequireHalfCostPerk.SetValueInt(0)
+			SetToggleOptionValueST(false)
+		Else
+			SpellHotbar_BattleMage_RequireHalfCostPerk.SetValueInt(1)
+			SetToggleOptionValueST(true)
+		EndIf
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_RequireHalfCostPerk.SetValueInt(0)
+		SetToggleOptionValueST(false)
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Casting a spell with a spell proc requires to know the spells half cost perk")
+    EndEvent
+EndState
+
+State ProcCooldownState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar_BattleMage_ProcCooldown.GetValue())
+        SetSliderDialogDefaultValue(10.0)
+        SetSliderDialogRange(0.0, 60.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+		SpellHotbar_BattleMage_ProcCooldown.SetValue(a_value)
+        SetSliderOptionValueST(a_value, "{2}");
+    EndEvent
+	Event OnDefaultST()
+		SpellHotbar_BattleMage_ProcCooldown.SetValue(1.0)
+        SetSliderOptionValueST(10.0, "{2}");
+	EndEvent
+    Event OnHighlightST()
+        SetInfoText("Base cooldown for gaining new procs when a spell proc is used.");
+    EndEvent
+EndState
 
 State CriticalProcChanceState
     Event OnSliderOpenST()
