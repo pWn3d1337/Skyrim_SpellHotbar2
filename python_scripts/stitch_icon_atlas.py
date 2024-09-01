@@ -900,4 +900,7 @@ if __name__ == "__main__":
     # stitch_mod("ancient_blood_magic_2")
     # i4_mod("ancient_blood_magic_2", tmp_icons_dir, esp_name="AncientBloodII")
 
-    create_spellproc_overlay(rf"{project_root}\icons\spellproc_anim", mod_root_path / "images/icons_spellproc_overlay", alpha_mask, 10)
+    #create_spellproc_overlay(rf"{project_root}\icons\spellproc_anim", mod_root_path / "images/icons_spellproc_overlay", alpha_mask, 10)
+
+    #stitch_mod("stellaris")
+    #i4_mod("stellaris", tmp_icons_dir)

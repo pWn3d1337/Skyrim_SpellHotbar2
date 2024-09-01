@@ -1,29 +1,29 @@
-Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2	
-Astral Dust	0x82D		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Reconditioning	0x909	0x904	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Hand	0x95A	0x959	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Bolt	0x829	0x8A0	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Touch	0x836	0x8A9	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Rune	0x831	0x8A5	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Recreation	0x90B	0x906	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Aura	0x825	0x89E	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Star	0x834	0x8A8	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Contact	0x82B	0x8A2	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Radiant Astral Dust	0x96D		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Wave	0x838	0x8AA	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Constitution	0x907	0x902	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Shard	0x833	0x8A6	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Wall of Astral Dust	0x837		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Grasp	0x82F	0x8A3	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Radiant Rune	0x832	0x8A4	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Fusion	0x908	0x903	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Epicentre	0x82E		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Core	0x82C	0x8AB	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Cancellation	0x82A	0x8A1	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	f
-Astral Star Shower	0x8F2		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Astral Star Detonation	0x835	0x8A7	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Recovery	0x90A	0x905	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	s
-Conjure Astral Wyrm	0x94C	0x94B	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Body	0x827		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Motion	0x91E		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
-Astral Void	0x934		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1	
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Astral Dust	0x82D		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Reconditioning	0x909	0x904	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Hand	0x95A	0x959	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Bolt	0x829	0x8A0	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Touch	0x836	0x8A9	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Rune	0x831	0x8A5	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Recreation	0x90B	0x906	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Aura	0x825	0x89E	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Star	0x834	0x8A8	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Contact	0x82B	0x8A2	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Radiant Astral Dust	0x96D		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Wave	0x838	0x8AA	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Constitution	0x907	0x902	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Shard	0x833	0x8A6	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Wall of Astral Dust	0x837		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Grasp	0x82F	0x8A3	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Radiant Rune	0x832	0x8A4	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Fusion	0x908	0x903	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Epicentre	0x82E		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Core	0x82C	0x8AB	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Cancellation	0x82A	0x8A1	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Star Shower	0x8F2		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Star Detonation	0x835	0x8A7	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Recovery	0x90A	0x905	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Conjure Astral Wyrm	0x94C	0x94B	Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Body	0x827		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Motion	0x91E		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1
+Astral Void	0x934		Stellaris.esp	RestorationBlue	-1	-1	-1	-1	-1

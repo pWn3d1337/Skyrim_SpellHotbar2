@@ -80,3 +80,5 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/abyss", f"{output_dir_root}/modded_spell_icons/abyss", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/ancient_blood_magic_2", f"{output_dir_root}/modded_spell_icons/ancient_blood_magic_2", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/stellaris", f"{output_dir_root}/modded_spell_icons/stellaris", subdirs=False)
