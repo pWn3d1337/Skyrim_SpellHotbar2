@@ -1,0 +1,13 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Flaming Skull	0x820	KittySpellPack01.esl	IllusionGreen	-1	-1	-1	-1	10004
+Radiant Oppression	0x821	KittySpellPack01.esl	RestorationGold	-1	-1	-1	-1	-1
+Elemental Susceptibility	0x822	KittySpellPack01.esl	AlterationBlue	-1	-1	-1	-1	10004
+Aedric Scepter	0x823	KittySpellPack01.esl	RestorationGold	-1	-1	-1	-1	10015
+Infernal Mist	0x824	KittySpellPack01.esl	DestructionFire	-1	-1	-1	-1	10005
+Celestial Vortex	0x827	KittySpellPack01.esl	RestorationBlue	-1	-1	-1	-1	10013
+Water Globe	0x829	KittySpellPack01.esl	AlterationBlue	-1	-1	-1	-1	10013
+Storm Zone	0x82A	KittySpellPack01.esl	DestructionShock	-1	-1	-1	-1	10002
+Blazing Frost	0x82C	KittySpellPack01.esl	DestructionFrost	-1	-1	-1	-1	10005
+Hollowjack Lantern	0x82E	KittySpellPack01.esl	IllusionRed	-1	-1	-1	-1	10012
+Race Against Time	0x82F	KittySpellPack01.esl	AlterationBlue	-1	-1	-1	-1	10002
+Nature’s Fury	0x831	KittySpellPack01.esl	IllusionGreen	-1	-1	-1	-1	10005

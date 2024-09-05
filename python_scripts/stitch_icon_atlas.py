@@ -904,3 +904,9 @@ if __name__ == "__main__":
 
     #stitch_mod("stellaris")
     #i4_mod("stellaris", tmp_icons_dir)
+
+    #stitch_mod("obscure_magic")
+    #i4_mod("obscure_magic", tmp_icons_dir, esp_name="KittySpellPack01")
+
+    #stitch_mod("holy_templar_magic")
+    #i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")

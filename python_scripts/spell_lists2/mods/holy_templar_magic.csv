@@ -1,0 +1,7 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Consecrate Dead	0x826	Lightpower.esl	RestorationGold	-1	-1	-1	-1	10003
+Sun Shards	0x824	Lightpower.esl	RestorationGold	-1	-1	-1	-1	-1
+Sunlight Targe	0x820	Lightpower.esl	RestorationGold	-1	-1	-1	-1	-1
+Hallowed Flare	0x822	Lightpower.esl	RestorationGold	-1	-1	-1	-1	10013
+Sanctuary	0x825	Lightpower.esl	RestorationGold	-1	-1	-1	-1	10003
+Wrath of the Heavens	0x829	Lightpower.esl	RestorationGold	-1	-1	-1	-1	10002
