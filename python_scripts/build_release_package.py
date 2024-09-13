@@ -135,3 +135,6 @@ if __name__ == "__main__":
 
     #build_release_zip(project_root / "build/Spell Hotbar - Dark Hierophant Magic 1.0.zip",
     #                  get_spell_pack_list("dark_hierophant_magic", esp_name="Ghostlight"))
+
+    test_build_release_zip(project_root / "build/Spell Hotbar - Dark Hierophant Magic 1.0.zip",
+                     get_spell_pack_list("dark_hierophant_magic", esp_name="Ghostlight"))
