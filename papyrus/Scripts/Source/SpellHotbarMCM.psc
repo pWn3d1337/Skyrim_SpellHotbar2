@@ -97,7 +97,7 @@ EndEvent
 
 Event OnPageReset(string page)
     if page == "Keybinds"
-        oid_spellkeybinds = new int[21]
+        oid_spellkeybinds = new int[22]
         SetCursorFillMode(LEFT_TO_RIGHT)
         AddHeaderOption("Skill Bindings")
         AddHeaderOption("")
@@ -131,6 +131,7 @@ Event OnPageReset(string page)
 		AddHeaderOption("")
 		oid_spellkeybinds[19] = AddKeyMapOption("Cast Spell", SpellHotbar.getKeyBind(19))
 		oid_spellkeybinds[20] = AddKeyMapOption("Use Potion", SpellHotbar.getKeyBind(20))
+		oid_spellkeybinds[21] = AddKeyMapOption("Show Oblivion Bar Modifier", SpellHotbar.getKeyBind(21))
 
     ElseIf page == "Settings"
         AddHeaderOption("Bar Configuration")
@@ -182,6 +183,7 @@ Event OnPageReset(string page)
 		AddMenuOptionST("OblivionBarAnchorPoint", "Anchor Point", anchor_points[SpellHotbar.getOblivionBarAnchorPoint()])
 		AddToggleOptionST("OblivionPowerSlot", "Show Power", SpellHotbar.isShowOblivionBarPower())
 
+		AddMenuOptionST("OblivionBarShowOptions", "Show Oblivion Bar", bar_show_options[SpellHotbar.getOblivionBarShowMode()])
 
     ElseIf (page == "Bars")
 
@@ -814,6 +816,23 @@ State SlotsPerBar
     Event OnHighlightST()
         SetInfoText("Limit the number of Slots per Bar");
     EndEvent
+EndState
+
+State OblivionBarShowOptions
+	Event OnMenuOpenST()
+		SetMenuDialogOptions(bar_show_options)
+		SetMenuDialogStartIndex(SpellHotbar.getOblivionBarShowMode())
+		SetMenuDialogDefaultIndex(4)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		SetMenuOptionValueST(bar_show_options[SpellHotbar.setOblivionBarShowMode(index)])
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("Chose on which conditions the Oblivion HUD bar is shown.")
+	EndEvent
+	Event OnDefaultST()
+		SetMenuOptionValueST(bar_show_options[SpellHotbar.setOblivionBarShowMode(4)])
+	EndEvent
 EndState
 
 State BarShowOptions

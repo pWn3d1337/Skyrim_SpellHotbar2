@@ -1002,7 +1002,7 @@ inline int get_oblivion_bar_size() {
 /*
 * return screen_size_x, screen_size_y, window_width, window_height
 */
-inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize, int row_len)
+inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize, int row_len, Bars::bar_layout layout)
 {
     auto& io = ImGui::GetIO();
     const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
@@ -1023,11 +1023,11 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size(int bars
     float font_height = ImGui::CalcTextSize("M").y + frame_padding.y; //spacing.y + inner_spacing.y;
     ImGui::PopFont();
 
-    if (Bars::layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
+    if (layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
         window_width = (Bars::bar_circle_radius + 1.125f) * slot_h * 2.0f;
         window_height = font_height + window_width;
     }
-    //else if (Bars::layout == Bars::bar_layout::CROSS && barsize >= 3) {
+    //else if (layout == Bars::bar_layout::CROSS && barsize >= 3) {
     // //TODO 
     //}
     else {
@@ -1119,7 +1119,7 @@ void draw_drag_menu() {
         offset_y = Bars::oblivion_offset_y;
     }
 
-    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize, barrowlen);
+    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize, barrowlen, Bars::layout);
     if (!drag_frame_initialized) {
         adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, anchor, offset_x, offset_y);
     }
@@ -1390,7 +1390,7 @@ void RenderManager::draw() {
 
             if (should_show || main_bar_fade.is_hud_fading()) {
 
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize, Bars::bar_row_len);
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize, Bars::bar_row_len, Bars::layout);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point, Bars::offset_x, Bars::offset_y);
 
@@ -1432,7 +1432,7 @@ void RenderManager::draw() {
             //logger::info("OblivionBarAlpha: {}", oblivion_bar_fade.get_bar_alpha());
             if (Input::is_oblivion_mode() && (should_show_oblivion || oblivion_bar_fade.is_hud_fading())) {
                 int obl_bar_size = get_oblivion_bar_size();
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_size);
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_size, Bars::bar_layout::BARS);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::oblivion_bar_anchor_point, Bars::oblivion_offset_x, Bars::oblivion_offset_y);
 

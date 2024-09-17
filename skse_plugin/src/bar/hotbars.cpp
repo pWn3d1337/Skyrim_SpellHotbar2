@@ -30,6 +30,7 @@ namespace SpellHotbar::Bars {
     float oblivion_offset_y;
     anchor_point oblivion_bar_anchor_point = anchor_point::LEFT;
     bool oblivion_bar_show_power = true;
+    bar_show_mode oblivion_bar_show_setting;
 
     text_show_mode text_show_setting;
     bar_show_mode bar_show_setting;

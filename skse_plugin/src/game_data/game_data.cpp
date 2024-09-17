@@ -698,20 +698,20 @@ namespace SpellHotbar::GameData {
             return std::make_tuple(false, fast_fade);
         }
 
-        if (Input::mod_show_bar.isValidBound() && Input::mod_show_bar.isDown()) {
+        if (Input::mod_oblivion_show_bar.isValidBound() && Input::mod_oblivion_show_bar.isDown()) {
             return std::make_tuple(true, fast_fade);
         }
 
         auto* pc = RE::PlayerCharacter::GetSingleton();
         if (pc) {
 
-            if (Bars::bar_show_setting == Bars::bar_show_mode::never) return std::make_tuple(false, slow_fade);
-            if (Bars::bar_show_setting == Bars::bar_show_mode::always) return std::make_tuple(true, slow_fade);
+            if (Bars::oblivion_bar_show_setting == Bars::bar_show_mode::never) return std::make_tuple(false, slow_fade);
+            if (Bars::oblivion_bar_show_setting == Bars::bar_show_mode::always) return std::make_tuple(true, slow_fade);
 
             bool in_combat = pc->IsInCombat();
             bool weapon_drawn = pc->AsActorState()->IsWeaponDrawn();
 
-            switch (Bars::bar_show_setting) {
+            switch (Bars::oblivion_bar_show_setting) {
             case Bars::bar_show_mode::combat:
                 return std::make_tuple(in_combat, slow_fade);
 

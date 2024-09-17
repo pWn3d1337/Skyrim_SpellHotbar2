@@ -801,24 +801,23 @@ if __name__ == "__main__":
 
     # mods: vulcano
     # stitch_mod("vulcano")
+    # i4_mod("vulcano", tmp_icons_dir)
     # stitch_mod("arclight")
+    # i4_mod("arclight", tmp_icons_dir)
     # stitch_mod("desecration")
-    # stitch_mod("triumvirate_druid")
-    # stitch_mod("triumvirate_cleric")
-    # stitch_mod("triumvirate_shadow_mage")
-    # stitch_mod("triumvirate_warlock")
-    # stitch_mod("triumvirate_shaman")
+    # i4_mod("desecration", tmp_icons_dir)
 
-    # i4 icons mods:
     if False:
-        i4_mod("vulcano", tmp_icons_dir)
-        i4_mod("arclight", tmp_icons_dir)
-        i4_mod("desecration", tmp_icons_dir)
-
         t_archetypes = ["druid", "cleric", "shadow_mage", "warlock", "shaman"]
+
+        triumvirate_spell_lists = [rf"{project_root}\spell_lists2\mods\triumvirate_{a}.csv" for a in t_archetypes]
+        triumvirate_icon_folders = [rf"{project_root}\modded_spell_icons\triumvirate_{a}" for a in t_archetypes]
+        stitch_folder(triumvirate_spell_lists, triumvirate_icon_folders, mod_root_path / f"images/icons_triumvirate", alpha_mask,
+                      output_data=mod_root_path / "spelldata/spells_triumvirate")
+
         i4_mod("triumvirate", tmp_icons_dir,
-               [rf"{project_root}\spell_lists2\mods\triumvirate_{a}.csv" for a in t_archetypes],
-               [rf"{project_root}\modded_spell_icons\triumvirate_{a}" for a in t_archetypes],
+               triumvirate_spell_lists,
+               triumvirate_icon_folders,
                esp_name="Triumvirate - Mage Archetypes")
 
     # create nordic_ui files
@@ -910,3 +909,12 @@ if __name__ == "__main__":
 
     #stitch_mod("holy_templar_magic")
     #i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")
+
+
+    m_schools = ["alteration"]  # "conjuration", "destruction", "illusion", "restoration"]
+    mysticism_spell_lists = [rf"{project_root}\spell_lists2\mods\mysticism_{s}.csv" for s in m_schools]
+    mysticism_icon_folders = [rf"{project_root}\modded_spell_icons\mysticism_{s}" for s in m_schools]
+
+    #stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
+
+    #i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")

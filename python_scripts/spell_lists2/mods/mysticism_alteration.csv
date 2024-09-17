@@ -1,0 +1,40 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Open Novice Lock	0x3C2436	0xC8A8D7	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
+Open Apprentice Lock	0x3C753F	0xC8A8ED	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
+Feather	0x292684		MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10008
+Feather		0x1019AE	Skyrim.esm	AlterationGreen	-1	-1	-1	-1	10008
+Windwalker	0x10D264	0x10D26A	MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	10009
+Swift Swim	0x7D0721	0xC8A8EF	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10009
+Dispel	0x2ABBDC	0xF4A7A6	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10009
+Fire Shell	0x29265E	0xC8A8F1	MysticismMagic.esp	DestructionFire	-1	-1	-1	-1	10008
+Frost Shell	0x29266B	0xC8F9F3	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10008
+Shock Shell	0x292664	0xC8F9F4	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	10008
+Poison Shell	0x292672	0xC8F9F7	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10008
+Burden	0x3C7547	0xC8F9F8	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10004
+Disintegrate Weapon	0x7B720C	0xC8F9FA	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10004
+Corrode Armor	0x29C8AB	0xC8F9FB	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10004
+Destroy Construct	0x844E4A	0xF4A7A7	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10004
+Open Adept Lock	0x3C7540	0xC8F9FD	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
+Slowfall	0x2977A1	0xF4A7A9	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10009
+Sea Stride	0x1B3907	0xC8FA00	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10009
+Weakness to Fire	0x292677	0xC8FA02	MysticismMagic.esp	DestructionFire	-1	-1	-1	-1	10004
+Weakness to Frost	0x29267C	0xC8FA04	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10004
+Weakness to Shock	0x29267B	0xC8FA08	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	10004
+Weakness to Poison	0x292680	0xC8FA06	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10004
+Open Expert Lock	0x3C7542	0xC8FA0E	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
+Pack Mule	0x292689	0xC8FA15	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10008
+Windrunner	0x10D265	0x10D26B	MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	10009
+Detect All	0xC857B9		MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	-1
+Ash Cloud	0x1901E5	0xF4A7AF	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10005
+Flame Shield	0x29265D	0xC8FA13	MysticismMagic.esp	DestructionFire	-1	-1	-1	-1	10008
+Ice Shield	0x29266C	0xC8FA16	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10008
+Lightning Shield	0x292665	0xC8FA1A	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	10008
+Venom Shield	0x292673	0xC8FA1C	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10008
+Weight of the World	0x4B065F	0xC8FA1E	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10005
+Swordbreaker	0x9E9213	0xC8FA20	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10005
+Armoreater	0x2A19B9	0xC8FA22	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10005
+Dwemerbane	0x2A19B3	0xF4A7B3	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10013
+The Unwelcome Guest	0x4B0648	0xC8FA24	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
+Grand Telekinesis	0x19A3ED		MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	-1
+Symmetry	0xFF19E0		MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	-1
+Cinder Storm	0x4B065B		MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10013

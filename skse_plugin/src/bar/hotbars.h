@@ -52,6 +52,7 @@ namespace SpellHotbar::Bars {
     extern float oblivion_slot_spacing;
     extern anchor_point oblivion_bar_anchor_point;
     extern bool oblivion_bar_show_power;
+    extern bar_show_mode oblivion_bar_show_setting;
 
     extern text_show_mode text_show_setting;
     extern bar_show_mode bar_show_setting;

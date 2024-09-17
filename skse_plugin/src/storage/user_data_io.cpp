@@ -98,6 +98,9 @@ namespace SpellHotbar::Storage::IO {
         Input::rebind_key(17, get_int_or_default(d, "keybind.modifier.dual_cast", -1), false);
         Input::rebind_key(18, get_int_or_default(d, "keybind.modifier.show_bar", -1), false);
         
+        Input::rebind_key(19, get_int_or_default(d, "keybind.oblivion_mode.cast", -1), false);
+        Input::rebind_key(20, get_int_or_default(d, "keybind.oblivion_mode.potion", -1), false);
+        Input::rebind_key(21, get_int_or_default(d, "keybind.oblivion_mode.modifier_show_bar", -1), false);
 
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
 
@@ -130,6 +133,8 @@ namespace SpellHotbar::Storage::IO {
         Bars::oblivion_slot_spacing = get_float_or_default(d, "settings.oblivion_bar.slot_spacing", 8.0f);
         Bars::oblivion_bar_anchor_point = Bars::anchor_point(std::clamp(get_int_or_default(d, "settings.oblivion_bar.bar_anchor_point", static_cast<int>(Bars::anchor_point::LEFT)), 0, static_cast<int>(Bars::anchor_point::CENTER)));
         Bars::oblivion_bar_show_power = get_int_or_default(d, "settings.oblivion_bar.show_power", 1) != 0;
+        Bars::oblivion_bar_show_setting = Bars::bar_show_mode(std::clamp(get_int_or_default(d, "settings.oblivion_bar.show_mode", static_cast<int>(Bars::bar_show_mode::combat_or_drawn)), 0, 5));
+
 
         Input::set_input_mode(std::clamp(get_int_or_default(d, "settings.input_mode", 0), 0, 2));
         Bars::bar_row_len = std::clamp(static_cast<uint8_t>(get_int_or_default(d, "setttings.bar_row_ren", static_cast<int>(max_bar_size))), 1Ui8, static_cast<uint8_t>(max_bar_size));
@@ -251,6 +256,9 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "keybind.modifier.3", Input::get_keybind(16));
         add_int(d, "keybind.modifier.dual_cast", Input::get_keybind(17));
         add_int(d, "keybind.modifier.show_bar", Input::get_keybind(18));
+        add_int(d, "keybind.oblivion_mode.cast", Input::get_keybind(19));
+        add_int(d, "keybind.oblivion_mode.potion", Input::get_keybind(20));
+        add_int(d, "keybind.oblivion_mode.modifier_show_bar", Input::get_keybind(21));
 
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
         add_int(d, "settings.number_of_slots", static_cast<int>(Bars::barsize));
@@ -277,6 +285,7 @@ namespace SpellHotbar::Storage::IO {
         add_float(d, "settings.oblivion_bar.slot_spacing", Bars::oblivion_slot_spacing);
         add_int(d, "settings.oblivion_bar.bar_anchor_point", static_cast<int>(Bars::oblivion_bar_anchor_point));
         add_int(d, "settings.oblivion_bar.show_power", Bars::oblivion_bar_show_power ? 1 : 0);
+        add_int(d, "settings.oblivion_bar.show_mode", static_cast<int>(Bars::oblivion_bar_show_setting));
 
         add_int(d, "settings.input_mode", Input::get_current_mode_index());
         add_int(d, "setttings.bar_row_ren", Bars::bar_row_len);

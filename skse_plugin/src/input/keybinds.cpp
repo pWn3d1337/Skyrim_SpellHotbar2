@@ -30,6 +30,7 @@ namespace SpellHotbar::Input {
 
 	KeyModifier mod_dual_cast(RE::INPUT_DEVICE::kNone, 0, 0);
 	KeyModifier mod_show_bar(RE::INPUT_DEVICE::kNone, 0, 0);
+	KeyModifier mod_oblivion_show_bar(RE::INPUT_DEVICE::kNone, 0, 0);
 
 	KeyModifier mod_alt(RE::INPUT_DEVICE::kKeyboard, 56, 184);  //fixed modifier, used for gui
 	//KeyModifier mod_shift(RE::INPUT_DEVICE::kKeyboard, 42, 54);  //fixed modifier, used for gui
@@ -102,6 +103,10 @@ namespace SpellHotbar::Input {
 			key_oblivion_potion.assign_from_dx_scancode(code);
 			return key_oblivion_potion.get_dx_scancode();
 		}
+		else if (slot == keybind_id::oblivion_show_bar_mod) {
+			mod_oblivion_show_bar.rebind(code);
+			return mod_oblivion_show_bar.get_dx_scancode();
+		}
 
 		return 0;
 	}
@@ -137,6 +142,9 @@ namespace SpellHotbar::Input {
 		}
 		else if (slot == keybind_id::oblivion_potion) {
 			return key_oblivion_potion.get_dx_scancode();
+		}
+		else if (slot == keybind_id::oblivion_show_bar_mod) {
+			return mod_oblivion_show_bar.get_dx_scancode();
 		}
 		return 0;
 	}

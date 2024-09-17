@@ -68,6 +68,9 @@ namespace SpellHotbar::Storage {
 
             a_intfc->WriteRecordData(&Bars::oblivion_bar_show_power, sizeof(bool));
 
+            uint8_t oblivion_bar_show = static_cast<uint8_t>(Bars::oblivion_bar_show_setting);
+            a_intfc->WriteRecordData(&oblivion_bar_show, sizeof(uint8_t));
+
             uint8_t input_mode = static_cast<uint8_t>(Input::get_current_mode_index());
             a_intfc->WriteRecordData(&input_mode, sizeof(uint8_t));
 
@@ -295,6 +298,15 @@ namespace SpellHotbar::Storage {
                 if (!a_intfc->ReadRecordData(&Bars::oblivion_bar_show_power, sizeof(bool))) {
                     logger::error("Failed to read oblivion_bar_show_power!");
                     break;
+                }
+
+                uint8_t oblivion_bar_show{ 0 };
+                if (!a_intfc->ReadRecordData(&oblivion_bar_show, sizeof(uint8_t))) {
+                    logger::error("Failed to read oblivion_bar_show_setting!");
+                    break;
+                }
+                else {
+                    Bars::oblivion_bar_show_setting = Bars::bar_show_mode(std::clamp(oblivion_bar_show, 0Ui8, 5Ui8));
                 }
 
                 uint8_t input_mode{ 0 };

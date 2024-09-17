@@ -422,6 +422,17 @@ void open_potion_editor(RE::StaticFunctionTag*)
     SpellHotbar::RenderManager::open_potion_editor();
 }
 
+int set_oblivion_bar_show_mode(RE::StaticFunctionTag*, int show_mode)
+{
+    SpellHotbar::Bars::oblivion_bar_show_setting = SpellHotbar::Bars::bar_show_mode(std::clamp(show_mode, 0, 5));
+    return static_cast<int>(SpellHotbar::Bars::oblivion_bar_show_setting);
+}
+
+int get_oblivion_bar_show_mode(RE::StaticFunctionTag*)
+{
+    return static_cast<int>(SpellHotbar::Bars::oblivion_bar_show_setting);
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -491,6 +502,8 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("setBarCircleRadius", "SpellHotbar", set_bar_circle_radius);
     vm->RegisterFunction("getBarCircleRadius", "SpellHotbar", get_bar_circle_radius);
     vm->RegisterFunction("openPotionEditor", "SpellHotbar", open_potion_editor);
+    vm->RegisterFunction("setOblivionBarShowMode", "SpellHotbar", set_oblivion_bar_show_mode);
+    vm->RegisterFunction("getOblivionBarShowMode", "SpellHotbar", get_oblivion_bar_show_mode);
 
     return true;
 }
