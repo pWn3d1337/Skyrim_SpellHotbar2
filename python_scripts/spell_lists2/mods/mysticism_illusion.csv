@@ -1,0 +1,27 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Soothe	0x4B063A	0xC62077	MysticismMagic.esp		-1	-1	-1	-1	-1
+Fury	0xB4B8F4		MysticismMagic.esp		-1	-1	-1	-1	-1
+Silence	0xB467E6	0xC62078	MysticismMagic.esp		-1	-1	-1	-1	-1
+Night Eye	0x2CF331	0xC6207A	MysticismMagic.esp		-1	-1	-1	-1	-1
+Hush	0x4AB524	0xC6207D	MysticismMagic.esp		-1	-1	-1	-1	-1
+Panic	0x4AB528	0xC6207B	MysticismMagic.esp		-1	-1	-1	-1	-1
+Command	0x2B0CEE	0xC6207F	MysticismMagic.esp		-1	-1	-1	-1	-1
+Chameleon	0x2CA222	0xC62084	MysticismMagic.esp		-1	-1	-1	-1	-1
+Shroud	0x2A6AC8	0xC62087	MysticismMagic.esp		-1	-1	-1	-1	-1
+Hypnotize	0x4B063B	0xC62089	MysticismMagic.esp		-1	-1	-1	-1	-1
+Wrath	0x4AB52F	0xC6208B	MysticismMagic.esp		-1	-1	-1	-1	-1
+Mute	0x2B5DFA	0xC62090	MysticismMagic.esp		-1	-1	-1	-1	-1
+Immobilize	0x176CD0		MysticismMagic.esp		-1	-1	-1	-1	-1
+Control	0x2CA217	0xC62092	MysticismMagic.esp		-1	-1	-1	-1	-1
+Calm Rune	0x3E0AC5	0xC62095	MysticismMagic.esp		-1	-1	-1	-1	-1
+Silence Rune	0x3E5BD3	0xC6209A	MysticismMagic.esp		-1	-1	-1	-1	-1
+Fear Rune	0x3E5BEE	0xC6209C	MysticismMagic.esp		-1	-1	-1	-1	-1
+Paralyze Rune	0x2CF335	0xC6209E	MysticismMagic.esp		-1	-1	-1	-1	-1
+Command Rune	0x3E5BE1	0xC620A0	MysticismMagic.esp		-1	-1	-1	-1	-1
+Invisibility	0xC4DC3A		MysticismMagic.esp		-1	-1	-1	-1	-1
+Fade	0xA9A573	0xC62094	MysticismMagic.esp		-1	-1	-1	-1	-1
+Quietude	0x2B0CE9	0xC620A2	MysticismMagic.esp		-1	-1	-1	-1	-1
+Domination	0x2CA219	0xC671A5	MysticismMagic.esp		-1	-1	-1	-1	-1
+Ghostwalk	0x2CA226	0xC671A8	MysticismMagic.esp		-1	-1	-1	-1	-1
+Vanish	0x705EAF	0xC671AB	MysticismMagic.esp		-1	-1	-1	-1	-1
+Sanctuary	0x2A6AC9	0xC671A7	MysticismMagic.esp		-1	-1	-1	-1	-1

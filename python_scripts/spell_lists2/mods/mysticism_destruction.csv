@@ -1,0 +1,41 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Burning Touch	0x1AE7FA	0xCDB95C	MysticismMagic.esp		-1	-1	-1	-1	-1
+Chilling Touch	0x1AE800	0xCDB981	MysticismMagic.esp		-1	-1	-1	-1	-1
+Shocking Touch	0x1AE801	0xCF9FBC	MysticismMagic.esp		-1	-1	-1	-1	-1
+Flame Touch	0xC43A35	0xCDB95D	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Flames	0x1D7023		MysticismMagic.esp		-1	-1	-1	-1	-1
+Icy Touch	0xCDB97D	0xCDB984	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Frostbite	0x1D702B		MysticismMagic.esp		-1	-1	-1	-1	-1
+Static Touch	0xCF9FAB	0xCF9FBD	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Sparks	0x1D702A		MysticismMagic.esp		-1	-1	-1	-1	-1
+Drain Life	0x445FB7		MysticismMagic.esp		-1	-1	-1	-1	-1
+Vampiric Touch	0x1B8A10	0xD64576	MysticismMagic.esp		-1	-1	-1	-1	-1
+Vampiric Bolt	0x1B8A15	0xD64575	MysticismMagic.esp		-1	-1	-1	-1	-1
+Absorb Magicka	0x445FA7		MysticismMagic.esp		-1	-1	-1	-1	-1
+Absorb Stamina	0x445FB1		MysticismMagic.esp		-1	-1	-1	-1	-1
+Fiery Grasp	0x1D702D	0xCDB960	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Fire Rune	0x1FF868	0xCDB962	MysticismMagic.esp		-1	-1	-1	-1	-1
+Freezing Grasp	0x1D7031	0xCDB991	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Frost Rune	0x2FCC83	0xCDB982	MysticismMagic.esp		-1	-1	-1	-1	-1
+Thundering Grasp	0x1D702F	0xCF9FC4	MysticismMagic.esp		-1	-1	-1	-1	-1
+Greater Lightning Rune	0x2FCC82	0xCF9FC6	MysticismMagic.esp		-1	-1	-1	-1	-1
+Vampiric Grasp	0x2E8863	0xD64577	MysticismMagic.esp		-1	-1	-1	-1	-1
+Vampiric Blast	0x46E8A8	0xD64579	MysticismMagic.esp		-1	-1	-1	-1	-1
+Vampiric Rune	0x2DE640	0xD6457A	MysticismMagic.esp		-1	-1	-1	-1	-1
+Scorch	0x7847E9	0xCDB966	MysticismMagic.esp		-1	-1	-1	-1	-1
+Flame Tempest	0x445FD0		MysticismMagic.esp		-1	-1	-1	-1	-1
+Immolate	0x1D7020	0xCDB965	MysticismMagic.esp		-1	-1	-1	-1	-1
+Flash Freeze	0xA07827	0xCF9FB7	MysticismMagic.esp		-1	-1	-1	-1	-1
+Hoarfrost	0x445FFD		MysticismMagic.esp		-1	-1	-1	-1	-1
+Throat of the World	0x2E8870	0xCF9FB3	MysticismMagic.esp		-1	-1	-1	-1	-1
+Electrocute	0xA0782A	0xCF9FD3	MysticismMagic.esp		-1	-1	-1	-1	-1
+Finger of the Mountain	0x1DC141		MysticismMagic.esp		-1	-1	-1	-1	-1
+Stormblast	0x399C05	0xCF9FD5	MysticismMagic.esp		-1	-1	-1	-1	-1
+Touch of Death	0xA0782D	0xD6457D	MysticismMagic.esp		-1	-1	-1	-1	-1
+Leech Life	0x440E99		MysticismMagic.esp		-1	-1	-1	-1	-1
+Blood Lance	0x1B8A09	0xD6457F	MysticismMagic.esp		-1	-1	-1	-1	-1
+Scion’s Embrace	0x445FA0	0xD64581	MysticismMagic.esp		-1	-1	-1	-1	-1
+Leech Magicka	0x440E96		MysticismMagic.esp		-1	-1	-1	-1	-1
+Siphon Spirit	0x445FA8	0xD64584	MysticismMagic.esp		-1	-1	-1	-1	-1
+Leech Stamina	0x2DE648		MysticismMagic.esp		-1	-1	-1	-1	-1
+Sap Essence	0x445FB2	0xD64585	MysticismMagic.esp		-1	-1	-1	-1	-1

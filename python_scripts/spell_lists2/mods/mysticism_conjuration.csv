@@ -1,35 +1,35 @@
 Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Conjure Skeleton	0x413541	05E1AA13	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Spectral Dire Wolf	0543BD62	05E1AA26	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Skeleton Archer	0x413545	05E1AA28	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Death Hound	05E7FEC6	05F68EA0	MysticismMagic.esp		-1	-1	-1	-1	-1
-Bound War Axe	05DD3BED	05E1AA18	MysticismMagic.esp		-1	-1	-1	-1	-1
-Bound Mace	0xE01500	05E1AA1A	MysticismMagic.esp		-1	-1	-1	-1	-1
-Bound Shield	05DC48DA	05E1AA16	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
-Conjure Spectral Sabre Cat	0543BD66	05E1AA2A	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Spectral Steed	0543BD6D	05E1AA2C	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Dremora Warrior	0541D74F	05E1AA2E	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Skeleton Mage	0x413549	05E1AA30	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Gargoyle	05E7FED0	05F68E9D	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Dwarven Spider	0x446019		MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Ancestral Guardian	0543BD7A	05E1AA32	MysticismMagic.esp		-1	-1	-1	-1	-1
-Bound Greatsword	05DC99E1	05E1AA1C	MysticismMagic.esp		-1	-1	-1	-1	-1
-Bound Warhammer	05DED0F7	05E1AA20	MysticismMagic.esp		-1	-1	-1	-1	-1
-Daedric Cure	05DB04D0		MysticismMagic.esp		-1	-1	-1	-1	-1
-Soul Harvest	059F8524	05E1AA3B	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Spectral Bear	0543BD6C	05E1AA3D	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Dremora Warlock	0542795A	05E1AA3F	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Skeleton Warrior	0540933C	05E1AA42	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Volkihar Hound	05E7FECB	05F68EA2	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Ancestral Wizard	0543BD82	05E1AA44	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Ash Guardian	05E7ADBD	05F4A7B6	MysticismMagic.esp		-1	-1	-1	-1	-1
-Mark	0545536C		MysticismMagic.esp		-1	-1	-1	-1	-1
-Recall	0545536D		MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Skeleton	0x413541	05E1AA13	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Spectral Dire Wolf	0543BD62	0xE1AA26	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Skeleton Archer	0x413545	0xE1AA28	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Death Hound	0xE7FEC6	0xF68EA0	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Bound War Axe	0xDD3BED	0xE1AA18	MysticismMagic.esp		-1	-1	-1	-1	-1
+Bound Mace	0xE01500	0xE1AA1A	MysticismMagic.esp		-1	-1	-1	-1	-1
+Bound Shield	0xDC48DA	0xE1AA16	MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Spectral Sabre Cat	0x43BD66	0xE1AA2A	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Spectral Steed	0x43BD6D	0xE1AA2C	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Dremora Warrior	0x41D74F	0xE1AA2E	MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Skeleton Mage	0x413549	0xE1AA30	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Gargoyle	0xE7FED0	0xF68E9D	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Dwarven Spider	0x446019		MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Ancestral Guardian	0x43BD7A	0xE1AA32	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Bound Greatsword	0xDC99E1	0xE1AA1C	MysticismMagic.esp		-1	-1	-1	-1	-1
+Bound Warhammer	0xDED0F7	0xE1AA20	MysticismMagic.esp		-1	-1	-1	-1	-1
+Daedric Cure	0xDB04D0		MysticismMagic.esp		-1	-1	-1	-1	-1
+Soul Harvest	0x9F8524	0xE1AA3B	MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Spectral Bear	0x43BD6C	0xE1AA3D	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Dremora Warlock	0x42795A	0xE1AA3F	MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Skeleton Warrior	0x40933C	0xE1AA42	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Volkihar Hound	0xE7FECB	0xF68EA2	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Ancestral Wizard	0x43BD82	0xE1AA44	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Ash Guardian	0xE7ADBD	0xF4A7B6	MysticismMagic.esp		-1	-1	-1	-1	-1
+Mark	0x45536C		MysticismMagic.esp		-1	-1	-1	-1	-1
+Recall	0x45536D		MysticismMagic.esp		-1	-1	-1	-1	-1
 Shalidor’s Beacon	0x455387		MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Spectral Manbeast	0543BD72	05E1AA48	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Skeleton Champion	0541864C	05E1AA4C	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Gargoyle Brute	05E7FED5	05F68E9E	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Ancestral Assassin	0543BD87	05E1AA4E	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure Ash Husk	0545F595	05E1AA50	MysticismMagic.esp		-1	-1	-1	-1	-1
-Conjure High Seeker	0545538C	05E1AA52	MysticismMagic.esp		-1	-1	-1	-1	-1
-Oblivion’s Embrace	05DB04D2		MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure Spectral Manbeast	0x43BD72	0xE1AA48	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Skeleton Champion	0x41864C	0xE1AA4C	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Gargoyle Brute	0xE7FED5	0xF68E9E	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Ancestral Assassin	0x43BD87	0xE1AA4E	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Ash Husk	0x45F595	0xE1AA50	MysticismMagic.esp		-1	-1	-1	-1	-1
+Conjure High Seeker	0x45538C	0xE1AA52	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Oblivion’s Embrace	0xDB04D2		MysticismMagic.esp		-1	-1	-1	-1	-1
