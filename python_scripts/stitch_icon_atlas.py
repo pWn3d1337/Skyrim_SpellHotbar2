@@ -911,7 +911,7 @@ if __name__ == "__main__":
     #i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")
 
 
-    m_schools = ["alteration"]  # "conjuration", "destruction", "illusion", "restoration"]
+    m_schools = ["alteration", "conjuration"] #, "destruction", "illusion", "restoration"]
     mysticism_spell_lists = [rf"{project_root}\spell_lists2\mods\mysticism_{s}.csv" for s in m_schools]
     mysticism_icon_folders = [rf"{project_root}\modded_spell_icons\mysticism_{s}" for s in m_schools]
 

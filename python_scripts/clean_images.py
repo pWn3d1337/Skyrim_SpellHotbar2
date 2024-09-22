@@ -88,3 +88,4 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/holy_templar_magic", f"{output_dir_root}/modded_spell_icons/holy_templar_magic", subdirs=False)
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_alteration",f"{output_dir_root}/modded_spell_icons/mysticism_alteration", subdirs=False)
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_conjuration",f"{output_dir_root}/modded_spell_icons/mysticism_conjuration", subdirs=False)
