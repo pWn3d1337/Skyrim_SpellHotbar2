@@ -89,3 +89,5 @@ if __name__ == "__main__":
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_alteration",f"{output_dir_root}/modded_spell_icons/mysticism_alteration", subdirs=False)
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_conjuration",f"{output_dir_root}/modded_spell_icons/mysticism_conjuration", subdirs=False)
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_destruction",f"{output_dir_root}/modded_spell_icons/mysticism_destruction", subdirs=False)
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_illusion",f"{output_dir_root}/modded_spell_icons/mysticism_illusion", subdirs=False)
