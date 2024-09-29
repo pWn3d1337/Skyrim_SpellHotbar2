@@ -161,7 +161,7 @@ namespace SpellHotbar::Input {
     void InputModeOblivion::process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeDev, uint8_t& shoutKey)
     {
         if (i == Input::keybind_id::oblivion_cast || i == Input::keybind_id::oblivion_potion) {
-            logger::info("Start Regular Cast");
+            //logger::info("Start Regular Cast");
             InputModeCast::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeDev, shoutKey);
         }
         else {
@@ -195,6 +195,21 @@ namespace SpellHotbar::Input {
             }
         }
     }
+    void InputModeOblivion::process_key_update(const KeyBind& bind, size_t i, float held_down_sec)
+    {
+        //Only called for main keys (0-11), no check needed
+        constexpr float show_time = 1.0f;
+
+        if (Bars::oblivion_bar_held_show_time_threshold > 0.0f) {
+            if (Bars::oblivion_bar_press_show_timer > 0.0f) {
+                Bars::oblivion_bar_press_show_timer = show_time;
+            }
+            else if (held_down_sec >= Bars::oblivion_bar_held_show_time_threshold) {
+                Bars::oblivion_bar_press_show_timer = show_time;
+            }
+        }
+    }
+
     InputModeOblivion* InputModeOblivion::getSingleton()
     {
         static InputModeOblivion instance;
@@ -253,6 +268,11 @@ namespace SpellHotbar::Input {
     {
         static InputModeVampireLord instance;
         return &instance;
+    }
+
+    void InputModeBase::process_key_update(const KeyBind& bind, size_t i, float held_down_sec)
+    {
+        //do nothing
     }
 
 }

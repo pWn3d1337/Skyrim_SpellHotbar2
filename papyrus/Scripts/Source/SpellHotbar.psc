@@ -71,3 +71,7 @@ float function getBarCircleRadius() global native
 function openPotionEditor() native global
 int function setOblivionBarShowMode(int mode) native global
 int function getOblivionBarShowMode() native global
+float function setOblivionModeShowTime(float time) native global
+float function getOblivionModeShowTime() native global
+bool function isOblivionBarVertical() global native
+bool function toggleOblivionBarVertical() global native

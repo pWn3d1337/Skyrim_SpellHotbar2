@@ -629,6 +629,10 @@ namespace SpellHotbar::GameData {
             return std::make_tuple(true, fast_fade);
         }
 
+        if (Bars::oblivion_bar_press_show_timer > 0.0f) {
+            return std::make_tuple(true, fast_fade);
+        }
+
         auto* pc = RE::PlayerCharacter::GetSingleton();
         if (pc) {
             if (GameData::isVampireLord()) {

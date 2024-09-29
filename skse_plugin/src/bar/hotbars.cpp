@@ -31,6 +31,8 @@ namespace SpellHotbar::Bars {
     anchor_point oblivion_bar_anchor_point = anchor_point::LEFT;
     bool oblivion_bar_show_power = true;
     bar_show_mode oblivion_bar_show_setting;
+    float oblivion_bar_held_show_time_threshold = 0.25f;
+    bool oblivion_bar_vertical = false;
 
     text_show_mode text_show_setting;
     bar_show_mode bar_show_setting;
@@ -44,8 +46,9 @@ namespace SpellHotbar::Bars {
     bar_layout layout = bar_layout::BARS;
     float bar_circle_radius = 2.2f;
 
-    //non-persisten
+    //non-persistent
     uint32_t menu_bar_id;
+    float oblivion_bar_press_show_timer = 0.0f;
 
     void add_bars(uint32_t name, std::optional<uint32_t> parent = std::nullopt)
     {
@@ -150,6 +153,16 @@ namespace SpellHotbar::Bars {
             }
         }
         return get_enabled_hotbar(ret);
+    }
+
+    void update_oblivion_bar_press_show_timer(float delta)
+    {
+        if (oblivion_bar_press_show_timer > 0.0f) {
+            oblivion_bar_press_show_timer -= delta;
+            if (oblivion_bar_press_show_timer < 0.0f) {
+                oblivion_bar_press_show_timer = 0.0f;
+            }
+        }
     }
 
     void SpellHotbar::Bars::init()

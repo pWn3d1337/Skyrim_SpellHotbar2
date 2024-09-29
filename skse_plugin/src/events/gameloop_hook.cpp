@@ -3,6 +3,7 @@
 #include "../casts/casting_controller.h"
 #include "../casts/spell_proc.h"
 #include "../game_data/game_data.h"
+#include "../bar/hotbars.h"
 
 namespace SpellHotbar::events {
 
@@ -16,6 +17,7 @@ namespace SpellHotbar::events {
             casts::CastingController::update_cast(deltaTime);
             casts::SpellProc::update_timer(deltaTime);
         }
+        Bars::update_oblivion_bar_press_show_timer(deltaTime);
         auto pc = RE::PlayerCharacter::GetSingleton();
         if (pc) {
             bool blocking = pc->IsBlocking();

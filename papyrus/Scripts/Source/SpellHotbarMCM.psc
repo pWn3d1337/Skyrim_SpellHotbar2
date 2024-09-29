@@ -184,6 +184,9 @@ Event OnPageReset(string page)
 		AddToggleOptionST("OblivionPowerSlot", "Show Power", SpellHotbar.isShowOblivionBarPower())
 
 		AddMenuOptionST("OblivionBarShowOptions", "Show Oblivion Bar", bar_show_options[SpellHotbar.getOblivionBarShowMode()])
+		AddSliderOptionST("OblivionModeShowMainBarTimer", "Show Main Bar After", SpellHotbar.getOblivionModeShowTime(), "{2}")
+
+		AddToggleOptionST("OblivionBarVertical", "Vertical Oblivion bar", SpellHotbar.isOblivionBarVertical())
 
     ElseIf (page == "Bars")
 
@@ -801,6 +804,32 @@ State OblivionPowerSlot
     EndEvent
 EndState
 
+State OblivionBarVertical
+    Event OnSelectST()
+        SetToggleOptionValueST(SpellHotbar.toggleOblivionBarVertical())
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Orient the Oblivion bar vertically");
+    EndEvent
+EndState
+
+State OblivionModeShowMainBarTimer
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getOblivionModeShowTime())
+        SetSliderDialogDefaultValue(0.25)
+        SetSliderDialogRange(0.0, 5.0)
+        SetSliderDialogInterval(0.01)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setOblivionModeShowTime(a_value), "{2}");
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Show the main bar when pressing a shortcut for x seconds. (0.0 to turn off)");
+    EndEvent
+	Event OnDefaultST()
+		SetMenuOptionValueST(SpellHotbar.setOblivionModeShowTime(0.25), "{2}")
+	EndEvent
+EndState
 
 State SlotsPerBar
     Event OnSliderOpenST()

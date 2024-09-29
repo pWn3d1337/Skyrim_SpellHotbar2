@@ -7,6 +7,8 @@ namespace SpellHotbar::Bars {
 	class OblivionBar {
 
     public:
+        static inline constexpr std::string_view oblivion_bar_name = "oblivion_bar";
+        
         OblivionBar();
         ~OblivionBar() = default;
 

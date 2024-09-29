@@ -53,6 +53,8 @@ namespace SpellHotbar::Bars {
     extern anchor_point oblivion_bar_anchor_point;
     extern bool oblivion_bar_show_power;
     extern bar_show_mode oblivion_bar_show_setting;
+    extern float oblivion_bar_held_show_time_threshold;
+    extern bool oblivion_bar_vertical;
 
     extern text_show_mode text_show_setting;
     extern bar_show_mode bar_show_setting;
@@ -118,9 +120,12 @@ namespace SpellHotbar::Bars {
 
     // non save-persistent vars:
     extern uint32_t menu_bar_id;
+    extern float oblivion_bar_press_show_timer;
 
     // functions
     uint32_t getCurrentHotbar_ingame();
+
+    void update_oblivion_bar_press_show_timer(float delta);
 
     void init();
 

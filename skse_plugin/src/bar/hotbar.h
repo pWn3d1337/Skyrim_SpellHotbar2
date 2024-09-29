@@ -56,7 +56,7 @@ struct SlottedSkill
     SlottedSkill(RE::FormID id);
     SlottedSkill();
     void clear();
-    bool isEmpty();
+    bool isEmpty() const;
 };
 
 struct SubBar {

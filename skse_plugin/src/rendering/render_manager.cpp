@@ -998,6 +998,14 @@ inline int get_oblivion_bar_size() {
     }
     return barsize;
 }
+inline int get_oblivion_bar_row_length() {
+    int row_len{ 1 };
+    if (!Bars::oblivion_bar_vertical) {
+        row_len = get_oblivion_bar_size();
+    }
+    return row_len;
+}
+
 
 /*
 * return screen_size_x, screen_size_y, window_width, window_height
@@ -1432,7 +1440,8 @@ void RenderManager::draw() {
             //logger::info("OblivionBarAlpha: {}", oblivion_bar_fade.get_bar_alpha());
             if (Input::is_oblivion_mode() && (should_show_oblivion || oblivion_bar_fade.is_hud_fading())) {
                 int obl_bar_size = get_oblivion_bar_size();
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_size, Bars::bar_layout::BARS);
+                int obl_bar_row = get_oblivion_bar_row_length();
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_row, Bars::bar_layout::BARS);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::oblivion_bar_anchor_point, Bars::oblivion_offset_x, Bars::oblivion_offset_y);
 

@@ -433,6 +433,25 @@ int get_oblivion_bar_show_mode(RE::StaticFunctionTag*)
     return static_cast<int>(SpellHotbar::Bars::oblivion_bar_show_setting);
 }
 
+float set_oblivion_mode_show_time(RE::StaticFunctionTag*, float time)
+{
+    SpellHotbar::Bars::oblivion_bar_held_show_time_threshold = std::clamp(time, 0.0f, 5.0f);
+    return SpellHotbar::Bars::oblivion_bar_held_show_time_threshold;
+}
+
+float get_oblivion_mode_show_time(RE::StaticFunctionTag*)
+{
+    return SpellHotbar::Bars::oblivion_bar_held_show_time_threshold;
+}
+
+bool is_oblivion_bar_vertical(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::oblivion_bar_vertical;
+}
+
+bool toggle_oblivion_bar_vertical(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::oblivion_bar_vertical = !SpellHotbar::Bars::oblivion_bar_vertical;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -504,6 +523,10 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("openPotionEditor", "SpellHotbar", open_potion_editor);
     vm->RegisterFunction("setOblivionBarShowMode", "SpellHotbar", set_oblivion_bar_show_mode);
     vm->RegisterFunction("getOblivionBarShowMode", "SpellHotbar", get_oblivion_bar_show_mode);
-
+    vm->RegisterFunction("setOblivionModeShowTime", "SpellHotbar", set_oblivion_mode_show_time);
+    vm->RegisterFunction("getOblivionModeShowTime", "SpellHotbar", get_oblivion_mode_show_time);
+    vm->RegisterFunction("isOblivionBarVertical", "SpellHotbar", is_oblivion_bar_vertical);
+    vm->RegisterFunction("toggleOblivionBarVertical", "SpellHotbar", toggle_oblivion_bar_vertical);
+    //TODO save showtime/vertical layout to json/skse_save
     return true;
 }

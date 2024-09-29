@@ -16,7 +16,7 @@ namespace SpellHotbar::Input
 		static InputModeBase* current_mode;
 
 		virtual void process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeyDev, uint8_t& shoutKey) = 0;
-
+		virtual void process_key_update(const KeyBind& bind, size_t i, float held_down_sec);
 	protected:
 		InputModeBase() = default;
 		virtual ~InputModeBase() = default;
@@ -50,6 +50,7 @@ namespace SpellHotbar::Input
 	public:
 
 		virtual void process_input(SlottedSkill& skill, RE::InputEvent*& addEvent, size_t& i, const KeyBind& bind, RE::INPUT_DEVICE& shoutKeyDev, uint8_t& shoutKey) override;
+		virtual void process_key_update(const KeyBind& bind, size_t i, float held_down_sec) override;
 
 		static InputModeOblivion* getSingleton();
 

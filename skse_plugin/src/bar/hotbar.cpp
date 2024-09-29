@@ -419,6 +419,53 @@ namespace SpellHotbar
         return ImVec2(x_rot, y_rot);
     }
 
+    bool spell_is_currently_equipped(const SpellHotbar::SlottedSkill& skill, RE::PlayerCharacter* pc) {
+        //If oblivion or equip mode and currently equipped, highlight the slot
+        if ((Input::is_oblivion_mode() || Input::is_equip_mode()) && pc) {
+            RE::TESForm* equipped{ nullptr };
+            if (skill.type == slot_type::spell) {
+                if (Input::is_oblivion_mode()) {
+                    const auto spell = GameData::oblivion_bar.get_slotted_spell();
+                    if (!spell.isEmpty()) {
+                        return spell.formID == skill.formID;
+                    }
+                }
+                else {
+                    if (skill.hand == SpellHotbar::hand_mode::auto_hand || skill.hand == SpellHotbar::hand_mode::left_hand) {
+                        equipped = pc->GetEquippedObjectInSlot(GameData::equip_slot_left_hand);
+                    }
+                    else if (skill.hand == SpellHotbar::hand_mode::right_hand) {
+                        equipped = pc->GetEquippedObjectInSlot(GameData::equip_slot_right_hand);
+                    }
+                    else if (skill.hand == SpellHotbar::hand_mode::dual_hand) {
+                        equipped = pc->GetEquippedObjectInSlot(GameData::equip_slot_both_hand);
+                    }
+                    else if (skill.hand == SpellHotbar::hand_mode::voice) {
+                        equipped = pc->GetEquippedObjectInSlot(GameData::equip_slot_voice);
+                    }
+                }
+            }
+            else if (skill.type == slot_type::lesser_power || skill.type == slot_type::power || skill.type == slot_type::shout) {
+                equipped = pc->GetEquippedObjectInSlot(GameData::equip_slot_voice);
+
+            }
+            else if (skill.type == slot_type::potion) {
+                if (Input::is_oblivion_mode()) {
+                    const auto potion = GameData::oblivion_bar.get_slotted_potion();
+                    if (!potion.isEmpty()) {
+                        return potion.formID == skill.formID;
+                    }
+                }
+                return false;
+            }
+
+            if (equipped != nullptr) {
+                return equipped->GetFormID() == skill.formID;
+            }
+        }
+
+       return false;
+    }
 
     void Hotbar::draw_in_hud(ImFont* font, float /* screensize_x*/, float screensize_y, int highlight_slot,
                              float highlight_factor, key_modifier mod, bool highlight_isred, float alpha, float shout_cd, float shout_cd_dur) {
@@ -556,6 +603,8 @@ namespace SpellHotbar
                         }
                     }
                 }
+            } else if (spell_is_currently_equipped(skill, pc) && !(bar_name == Bars::OblivionBar::oblivion_bar_name)) {
+                RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
             }
 
             if ((skill.consumed != consumed_type::none && count == 0) || GameData::is_on_binary_cd(skill.formID)) {
@@ -791,7 +840,7 @@ namespace SpellHotbar
         }
     }
 
-    bool SlottedSkill::isEmpty() {
+    bool SlottedSkill::isEmpty() const {
         return type==slot_type::empty;
     }
 

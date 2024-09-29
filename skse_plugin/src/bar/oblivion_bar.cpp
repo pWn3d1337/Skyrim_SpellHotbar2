@@ -38,8 +38,6 @@ namespace SpellHotbar::Bars {
 		auto pc = RE::PlayerCharacter::GetSingleton();
 		//end dupe
 
-		constexpr std::string_view oblivion_bar_name = "oblivion_bar";
-
 		if (pc) {
 			//assign power_slot
 			auto& dat = pc->GetActorRuntimeData();
@@ -71,15 +69,19 @@ namespace SpellHotbar::Bars {
 			}
 
 			ImVec2 p = ImGui::GetCursorScreenPos();
-			Hotbar::draw_single_skill(m_spell_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-				game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_cast), p);
+			bool vertical = Bars::oblivion_bar_vertical;
+			bool draw_potion = Input::key_oblivion_potion.isValidBound();
+			bool show_power = Bars::oblivion_bar_show_power;
 
-			if (Input::key_oblivion_potion.isValidBound()) {
+			Hotbar::draw_single_skill(m_spell_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
+				game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_cast), p, vertical && (draw_potion || show_power));
+
+			if (draw_potion) {
 				p = ImGui::GetCursorScreenPos();
 				Hotbar::draw_single_skill(m_potion_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_potion), p);
+					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_potion), p, vertical && show_power);
 			}
-			if (Bars::oblivion_bar_show_power) {
+			if (show_power) {
 				p = ImGui::GetCursorScreenPos();
 				Hotbar::draw_single_skill(m_power_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
 					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout), p);

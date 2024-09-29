@@ -239,6 +239,10 @@ namespace SpellHotbar::Input {
                                                 }
                                             }
                                         }
+                                        else if (bEvent->IsRepeating()) {
+                                            //Check in Oblivion Mode for holding slot key down to show bar.
+                                            InputModeBase::current_mode->process_key_update(bind, i, bEvent->HeldDuration());
+                                        }
                                         if (handled && (mod_1.isDown() || mod_2.isDown() || mod_3.isDown())) {
                                             //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
                                             captureEvent = true;
