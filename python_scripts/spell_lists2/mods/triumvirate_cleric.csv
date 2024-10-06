@@ -1,8 +1,8 @@
 Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
 Aid	0x1EC53D	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002
-Aura of Might	0x1E7427	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002
-Aura of Vigor	0x1E7429	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002
-Aura of Thorns	0x1E742B	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002
+Aura of Might	0x1E7427	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	-1
+Aura of Vigor	0x1E7429	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	-1
+Aura of Thorns	0x1E742B	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	-1
 Mass Immortality	0x1EC531	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002
 Solar Ray	0x205A8F	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	-1
 Holy Fire	0x205A91	Triumvirate - Mage Archetypes.esp	RestorationGold	-1	-1	-1	-1	10002

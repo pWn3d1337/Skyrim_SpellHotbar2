@@ -527,6 +527,5 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("getOblivionModeShowTime", "SpellHotbar", get_oblivion_mode_show_time);
     vm->RegisterFunction("isOblivionBarVertical", "SpellHotbar", is_oblivion_bar_vertical);
     vm->RegisterFunction("toggleOblivionBarVertical", "SpellHotbar", toggle_oblivion_bar_vertical);
-    //TODO save showtime/vertical layout to json/skse_save
     return true;
 }

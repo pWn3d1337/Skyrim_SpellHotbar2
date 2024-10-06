@@ -470,8 +470,8 @@ namespace SpellHotbar::casts::CastingController {
 				RE::PlaySound(Input::sound_MagFail);
 			}
 
-			if (has_duration() && m_cast_timer >= m_release_anim_time + m_total_casttime) {
-				//abort a channcel spell with duration
+			if (has_duration() && m_cast_timer > m_release_anim_time + m_total_casttime) {
+				//abort a channel spell with duration
 				keydown = false;
 			}
 
@@ -556,7 +556,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				GameData::set_animtype_global(anim);
 
-				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand);
+				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				current_cast = std::make_unique<CastingInstanceSpell>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -577,7 +577,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				GameData::set_animtype_global(anim);
 
-				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand);
+				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				current_cast = std::make_unique<CastingInstanceSpellConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot), cast_info.m_dual_cast);
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
@@ -600,7 +600,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				GameData::set_animtype_global(anim);
 
-				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand);
+				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				current_cast = std::make_unique<CastingInstanceSpellRitualConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot), pre_release_anim);
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
@@ -624,7 +624,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				GameData::set_animtype_global(anim);
 
-				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand);
+				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				current_cast = std::make_unique<CastingInstanceRitual>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -803,6 +803,17 @@ namespace SpellHotbar::casts::CastingController {
 		return false;
 	}
 
+	bool is_currently_using_procced_spell()
+	{
+		if (current_cast) {
+			CastingInstance* curr_cast = dynamic_cast<CastingInstance*>(current_cast.get());
+			if (curr_cast) {
+				return curr_cast->is_procced();
+			}
+		}
+		return false;
+	}
+
 	float get_current_casttime()
 	{
 		if (current_cast) {
@@ -922,7 +933,7 @@ namespace SpellHotbar::casts::CastingController {
 		if (concentration_manacost.has_value()) {
 			playerMagicCaster->currentSpellCost = concentration_manacost.value();
 		}
-		logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
+		//logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
 
 		return true;

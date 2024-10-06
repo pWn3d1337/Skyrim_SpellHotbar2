@@ -54,7 +54,10 @@ namespace SpellHotbar::events {
             constexpr float dur = 4.0f;
             if(ct_l >= dur || ct_r >= dur)
             {
-                casts::SpellProc::trigger_spellproc();
+                //only cause proc if spell is not procced itself
+                if (!casts::CastingController::is_currently_using_procced_spell()) {
+                    casts::SpellProc::trigger_spellproc();
+                }
             }
         }
 	}

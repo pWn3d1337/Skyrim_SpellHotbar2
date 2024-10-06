@@ -499,10 +499,11 @@ namespace SpellHotbar::GameData {
             case RE::WEAPON_TYPE::kTwoHandSword:
                     return EquippedType::TWOHAND;
             case RE::WEAPON_TYPE::kStaff:
-                    if (left_hand != nullptr && left_hand->GetFormType() == RE::FormType::Armor) {
+                    /*if (left_hand != nullptr && left_hand->GetFormType() == RE::FormType::Armor) {
                         return EquippedType::STAFF_SHIELD;
                     }
-                    return EquippedType::SPELL;
+                    return EquippedType::SPELL;*/
+                return EquippedType::STAFF_SHIELD;
             case RE::WEAPON_TYPE::kBow:
                     return EquippedType::BOW;
             case RE::WEAPON_TYPE::kCrossbow:
@@ -1263,7 +1264,7 @@ namespace SpellHotbar::GameData {
              global_animation_type->value = static_cast<float>(value);
          }
      }
-     hand_mode set_weapon_dependent_casting_source(hand_mode hand)
+     hand_mode set_weapon_dependent_casting_source(hand_mode hand, bool dual_cast)
      {
          hand_mode used_hand = hand;
          if (SpellHotbar::GameData::global_casting_source) {
@@ -1273,7 +1274,7 @@ namespace SpellHotbar::GameData {
              switch (hand) {
              case hand_mode::auto_hand:
                  castsource = SpellHotbar::GameData::get_cast_hand_from_equip();
-                 if (castsource == RE::MagicSystem::CastingSource::kLeftHand) {
+                 if (castsource == RE::MagicSystem::CastingSource::kLeftHand || dual_cast) {
                      used_hand = hand_mode::left_hand;
                  }
                  else if (castsource == RE::MagicSystem::CastingSource::kRightHand) {

@@ -95,6 +95,10 @@ namespace SpellHotbar::casts::CastingController {
 			m_played_release = true;
 		}
 
+		inline bool is_procced() const {
+			return m_spell_proc;
+		}
+
 	protected:
 		RE::BGSSoundDescriptorForm* m_charge_sound;
 		RE::BGSSoundDescriptorForm* m_release_sound;
@@ -221,6 +225,11 @@ namespace SpellHotbar::casts::CastingController {
 	bool start_potion_use(RE::TESForm* alch_item);
 
 	bool is_currently_using_power();
+
+	/**
+	* Is current spell boosted by a spell proc?, return false when no cast
+	*/
+	bool is_currently_using_procced_spell();
 
 	float get_current_casttime();
 

@@ -658,4 +658,4 @@ if __name__ == "__main__":
     #    anims_1p_turn_move + _1st_person_walkrun)
 
     #sneak run anims
-    copy_anim_to_multiple_dict(sneak_walk, r"F:\Skyrim Dev\TOOLS\EXTRACT\Animations_BSA\meshes\actors\character\animations", r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\meshes\actors\character\OpenAnimationReplacer\SpellHotbar2\cast_running_sneak\animations")
+    #copy_anim_to_multiple_dict(sneak_walk, r"F:\Skyrim Dev\TOOLS\EXTRACT\Animations_BSA\meshes\actors\character\animations", r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\meshes\actors\character\OpenAnimationReplacer\SpellHotbar2\cast_running_sneak\animations")

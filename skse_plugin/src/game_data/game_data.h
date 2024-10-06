@@ -278,7 +278,7 @@ namespace SpellHotbar::GameData {
 
     void set_animtype_global(int value);
 
-    hand_mode set_weapon_dependent_casting_source(hand_mode hand);
+    hand_mode set_weapon_dependent_casting_source(hand_mode hand, bool dual_cast);
 
     void reset_animation_vars();
 

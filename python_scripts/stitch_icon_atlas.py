@@ -793,7 +793,7 @@ if __name__ == "__main__":
     tmp_icons_dir = r"F:\Skyrim Dev\WORK\TMP\icons"
     if False:
         swf_path = str(mod_folder_path / "Interface/SpellHotbar/spell_icons.swf")
-        create_i4_icons(spell_lists, icon_root_folders + default_icons_folders,
+        create_i4_icons(spell_lists + spell_lists_powers, icon_root_folders + default_icons_folders + icon_root_folders_powers,
                         mod_root_path / "../InventoryInjector/SpellHotbar.json",
                         alpha_mask,
                         tmp_icons_dir=tmp_icons_dir, swf_out_path=swf_path, write_icons_and_swf=True,
@@ -915,6 +915,6 @@ if __name__ == "__main__":
     mysticism_spell_lists = [rf"{project_root}\spell_lists2\mods\mysticism_{s}.csv" for s in m_schools]
     mysticism_icon_folders = [rf"{project_root}\modded_spell_icons\mysticism_{s}" for s in m_schools]
 
-    stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
+    #stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
 
-    i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
+    #i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
