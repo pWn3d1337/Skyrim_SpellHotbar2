@@ -66,3 +66,7 @@ Shalidor’s Insights Restoration		0x1076ea	Skyrim.esm	RestorationGold	-1	-1	-1	
 Incinerate		0x26B45D	Odin - Skyrim Magic Overhaul.esp	DestructionFire	-1	-1	-1	-1	10005		
 Icy Spear		0x26B461	Odin - Skyrim Magic Overhaul.esp	DestructionFrost	-1	-1	-1	-1	10004		
 Thunderbolt		0x26B45F	Odin - Skyrim Magic Overhaul.esp	DestructionShock	-1	-1	-1	-1	10004		
+Whirlwind Cloak		0xF4A7AA	MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	10002		
+Incinerate		0xCDB95E	MysticismMagic.esp	DestructionFire	-1	-1	-1	-1	10005		
+Icy Spear		0xCDB990	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10004		
+Thunderbolt		0xCF9FC3	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	10004		

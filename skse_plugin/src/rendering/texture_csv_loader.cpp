@@ -205,24 +205,40 @@ namespace SpellHotbar::TextureCSVLoader {
 
     }
 
+    inline void _load_images(const std::string & str_path) {
+        // find matching .png
+        std::string png_path = str_path.substr(0, str_path.size() - 3) + "png";
+        if (fs::exists(fs::path(png_path))) {
+            logger::info("Loading icons: {}", png_path);
+
+            load_texture_from_csv(str_path, png_path);
+
+        }
+        else {
+            logger::warn("No matching image file for {}", str_path);
+        }
+    }
+
     void load_icons(std::filesystem::path folder)
     {
         try {
+            //Do vanilla icons first, so mods can override
             for (const auto& entry : std::filesystem::directory_iterator(folder)) {
                 if (entry.is_regular_file()) {
                     std::string str_path = entry.path().string();
 
-                    if (str_path.ends_with(".csv")) {
-                        // find matching .png
-                        std::string png_path = str_path.substr(0, str_path.size() - 3) + "png";
-                        if (fs::exists(fs::path(png_path))) {
-                            logger::info("Loading icons: {}", png_path);
+                    if (str_path.ends_with(".csv") && str_path.starts_with("icons_vanilla")) {
+                        _load_images(str_path);
+                    }
+                }
+            }
+            //non vanilla 
+            for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+                if (entry.is_regular_file()) {
+                    std::string str_path = entry.path().string();
 
-                            load_texture_from_csv(str_path, png_path);
-
-                        } else {
-                            logger::warn("No matching image file for {}", str_path);
-                        }
+                    if (str_path.ends_with(".csv") && !str_path.starts_with("icons_vanilla")) {
+                        _load_images(str_path);
                     }
                 }
             }

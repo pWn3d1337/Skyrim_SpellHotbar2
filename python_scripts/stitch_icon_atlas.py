@@ -911,10 +911,19 @@ if __name__ == "__main__":
     #i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")
 
 
-    m_schools = ["alteration", "conjuration", "destruction", "illusion"] #, "restoration"]
+    m_schools = ["alteration", "conjuration", "destruction", "illusion", "restoration"]
     mysticism_spell_lists = [rf"{project_root}\spell_lists2\mods\mysticism_{s}.csv" for s in m_schools]
     mysticism_icon_folders = [rf"{project_root}\modded_spell_icons\mysticism_{s}" for s in m_schools]
 
     #stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
 
     #i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
+
+    #stitch_mod("sperg")
+    #i4_mod("sperg", tmp_icons_dir, esp_name="SPERG-SSE")
+
+    #stitch_mod("path_of_sorcery")
+    #i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
+
+    #stitch_mod("witcher_signs")
+    #i4_mod("witcher_signs", tmp_icons_dir, esp_name="W3S")

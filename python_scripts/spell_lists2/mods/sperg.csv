@@ -1,0 +1,15 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Hunter's Sight	0x00BB69		SPERG-SSE.esp		-1	-1	-1	-1	-1
+Dungeon Sense	0x00BB6A		SPERG-SSE.esp		-1	-1	-1	-1	-1
+Assassin's Reflexes	0x061246		SPERG-SSE.esp		-1	-1	-1	-1	-1
+Tranquility	0x00BB6C		SPERG-SSE.esp		-1	-1	-1	-1	-1
+Awakened Battle Cry	0x01FFBB		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Adrenaline Rush	0x01FFCC		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Ancestor’s Wrath	0x01FFC6		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Berserker Rage	0x01FFD0		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Command Animal	0x01FFCE		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Dragonskin	0x01FFC4		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Highborn	0x01FFC8		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Histskin	0x01FFC3		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Awakened Voice of the Emperor	0x01FFCA		SPERG-SSE.esp		-1	6h	-1	-1	-1
+Skooma Frenzy	0x020551		SPERG-SSE.esp		-1	6h	-1	-1	-1

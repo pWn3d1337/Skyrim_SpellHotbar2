@@ -57,3 +57,13 @@ Frost Thrall	0x07E5D6	0x0A44A9	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
 Storm Thrall	0x07E5D7	0x0A44AA	Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
 Summon Arniel's Shade	0x06A153		Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
 Summon Unbound Dremora	0x099F39		Skyrim.esm	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Ash Spawn		0xE1AA36	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Boneman		0xE1AA39	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Bound Battleaxe		0xE1AA1E	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10015
+Bound Bow		0xE1AA22	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10015
+Bound Dagger		0xE1AA14	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10015
+Bound Sword		0xE1AA24	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10015
+Flaming Familiar		0xE1AA34	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Mistman		0xE1AA46	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Seeker		0xE1AA38	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Wrathman		0xE1AA54	MysticismMagic.esp	ConjurationSummon	-1	-1	-1	-1	10003

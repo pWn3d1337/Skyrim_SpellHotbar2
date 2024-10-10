@@ -37,4 +37,6 @@ Dwemerbane	0x2A19B3	0xF4A7B3	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	1001
 The Unwelcome Guest	0x4B0648	0xC8FA24	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	10009
 Grand Telekinesis	0x19A3ED		MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	-1
 Symmetry	0xFF19E0		MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	-1
-Cinder Storm	0x4B065B		MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10013
+Cinder Storm	0x4B065B	0xF4A7B4	MysticismMagic.esp	AlterationGreen	-1	-1	-1	-1	10013
+Leap	0x802	0x807	MysticismJumpSpells.esp	AlterationGreen	-1	-1	-1	-1	10008
+Springheel	0x805	0x808	MysticismJumpSpells.esp	AlterationGreen	-1	-1	-1	-1	10008

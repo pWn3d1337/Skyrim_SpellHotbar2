@@ -1,0 +1,11 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Careful Preparation	0x9E2		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Blood Ritual	0x09412C		PathOfSorcery.esp	IllusionRed	-1	-1	-1	-1	10003
+Assemble Skeleton	0x9BB		PathOfSorcery.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Summon Meteor Shower	0xA47		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Summon Blizzard	0xA36		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Summon Lightning Storm	0xA49		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Telepathy	0xA0E		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Mastered Spell	0x9F7		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Call of the Master	0x9BC		PathOfSorcery.esp		-1	-1	-1	-1	-1
+Choose Familiar	0x9DF		PathOfSorcery.esp		-1	-1	-1	-1	-1

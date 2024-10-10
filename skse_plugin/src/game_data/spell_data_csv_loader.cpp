@@ -141,20 +141,33 @@ namespace SpellHotbar::SpellDataCSVLoader {
         }
     }
 
+
     void load_spell_data(std::filesystem::path folder)
     {
         try {
+            //load vanilla first so mods can override
             for (const auto& entry : std::filesystem::directory_iterator(folder)) {
                 if (entry.is_regular_file()) {
                     std::string str_path = entry.path().string();
 
-                    if (str_path.ends_with(".csv")) {
+                    if (str_path.ends_with(".csv") && str_path.starts_with("spells_vanilla")) {
                         logger::info("Loading spelldata: {}", str_path);
                         load_spell_data_from_csv(str_path);
                     }
                 }
+            }
+            //load modded
+            for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+                if (entry.is_regular_file()) {
+                    std::string str_path = entry.path().string();
+
+                    if (str_path.ends_with(".csv") && !str_path.starts_with("spells_vanilla")) {
+                        logger::info("Loading spelldata: {}", str_path);
+                        load_spell_data_from_csv(str_path);
+                    }
                 }
             }
+        }
         catch (const std::exception& e) {
             std::string msg = e.what();
             logger::error("Error loading spell data: {}", msg);

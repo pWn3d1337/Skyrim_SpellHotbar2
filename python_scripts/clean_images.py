@@ -91,3 +91,10 @@ if __name__ == "__main__":
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_conjuration",f"{output_dir_root}/modded_spell_icons/mysticism_conjuration", subdirs=False)
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_destruction",f"{output_dir_root}/modded_spell_icons/mysticism_destruction", subdirs=False)
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_illusion",f"{output_dir_root}/modded_spell_icons/mysticism_illusion", subdirs=False)
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/mysticism_restoration",f"{output_dir_root}/modded_spell_icons/mysticism_restoration", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/sperg",f"{output_dir_root}/modded_spell_icons/sperg", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/path_of_sorcery",f"{output_dir_root}/modded_spell_icons/path_of_sorcery", subdirs=False)
+
+    cleanse_images(f"{input_dir_root}/modded_spell_icons/witcher_signs",f"{output_dir_root}/modded_spell_icons/witcher_signs", subdirs=False)

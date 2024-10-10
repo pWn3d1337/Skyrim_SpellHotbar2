@@ -1,50 +1,53 @@
 Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
-Sunbeam	057388D3		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Poison Spray	058C886D		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Close Wounds	05515B97	???	MysticismMagic.esp		-1	-1	-1	-1	-1
-Regeneration	052559DE	05CD1745	MysticismMagic.esp		-1	-1	-1	-1	-1
-Sunlight Touch	0520496A	05D4B031	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Sunlight Rune	05890D64	05D4B032	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
-Poisonous Touch	05209A74	05D36C0D	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Poisonbolt	051E634D	05D36C0C	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10004
-Close Greater Wounds	0x27E242	???	MysticismMagic.esp		-1	-1	-1	-1	-1
-Rapid Regeneration	059A74C9	05CD1747	MysticismMagic.esp		-1	-1	-1	-1	-1
-Circle of Vitality	05F3637F	05F3B491	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
-Circle of Wisdom	0548CEEB	05F3B49D	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10003
-Circle of Strength	05F21F4A	05F3B4A0	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
-Attunement	0x274020	05CD174F	MysticismMagic.esp		-1	-1	-1	-1	-1
-Radiant Touch	05D45F28	05D4B04D	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Radiant Sunbeam	0578E9F4		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Venomous Touch	05D278E3	05D36C13	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Deadly Poison Spray	059420A3		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Poison Cloud	0x1E6352	05D36C11	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10005
-Poison Cloak	0x209A73	05D36C15	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Grand Healing	0x27E243		MysticismMagic.esp		-1	-1	-1	-1	-1
-Breath of Life	000B62EE	???	!!!		-1	-1	-1	-1	-1
-Mutagen	052559DF	05CD1749	MysticismMagic.esp		-1	-1	-1	-1	-1
-Cure Disease	0x283346	05CD174D	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
+Sunbeam	0x7388D3		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Poison Spray	0x8C886D		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Close Wounds	0x515B97		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10002
+Close Wounds		0x0965AF	Skyrim.esm	RestorationGold	-1	-1	-1	-1	10002
+Regeneration	0x2559DE	0xCD1745	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
+Sunlight Touch	0x20496A	0xD4B031	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Sunlight Rune	0x890D64	0xD4B032	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
+Poisonous Touch	0x209A74	0xD36C0D	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Poisonbolt	0x1E634D	0xD36C0C	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10004
+Close Greater Wounds	0x27E242		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10002
+Close Greater Wounds		0x0B64B3	Skyrim.esm	RestorationGold	-1	-1	-1	-1	10002
+Rapid Regeneration	0x9A74C9	0xCD1747	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
+Circle of Vitality	0xF3637F	0xF3B491	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
+Circle of Wisdom	0x48CEEB	0xF3B49D	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10003
+Circle of Strength	0xF21F4A	0xF3B4A0	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
+Attunement	0x274020	0xCD174F	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10002
+Radiant Touch	0xD45F28	0xD4B04D	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Radiant Sunbeam	0x78E9F4		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Venomous Touch	0xD278E3	0xD36C13	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Deadly Poison Spray	0x9420A3		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Poison Cloud	0x1E6352	0xD36C11	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10005
+Poison Cloak	0x209A73	0xD36C15	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Grand Healing	0x27E243		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Breath of Life	0x0B62EE	0x0A44C4	Skyrim.esm	RestorationGold	-1	-1	-1	-1	10002
+Mutagen	0x2559DF	0xCD1749	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
+Cure Disease	0x283346	0xCD174D	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
 Grand Ward	0x283349		MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	-1
-Searing Grasp	052280B0	05D4B04F	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Reflective Light	052508C9	05D4B053	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10005
-Radiant Sunlight Rune	059AC5CE	05D4B056	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
-Wall of Sunlight	059C09E5		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Viper’s Grasp	05209A76	05D36C17	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Viperbolt	051E634F	05D36C19	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10005
-Deadly Poison Rune	05209A7A	05D36C1A	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
-Wall of Poison	0596F9BA		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Mara’s Embrace	057D5826		MysticismMagic.esp		-1	-1	-1	-1	-1
-Stendarr’s Mercy	05482CE4	05CD1744	MysticismMagic.esp		-1	-1	-1	-1	-1
-Arkay’s Light	059A74CB	05CD174C	MysticismMagic.esp		-1	-1	-1	-1	-1
-Font of Vitality	05F3B48D	???	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
-Font of Wisdom	05F3636B	05F3B492	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10003
-Font of Strength	05F3635D	05F3B49E	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
-Augur of Aetherius	0x274025	05CD1751	MysticismMagic.esp		-1	-1	-1	-1	-1
-Spelldrinker	053DB99C		MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	-1
-Eclipse	0548CF09	05D4B051	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Daybreak	057BC311		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
-Solar Flare	052466C0	05D4B059	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10013
-Charged Nova	0525FBFF	05D4B05F	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10002
-Venomfang	0548CF04	05D36C1D	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Miasma	059606AC		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
-Death Cloud	051FA75F	05D36C1F	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10013
-Black Marsh	052ED973	05D36C21	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10002
+Searing Grasp	0x2280B0	0xD4B04F	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Reflective Light	0x2508C9	0xD4B053	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10005
+Radiant Sunlight Rune	0x9AC5CE	0xD4B056	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
+Wall of Sunlight	0x9C09E5		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Viper’s Grasp	0x209A76	0xD36C17	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Viperbolt	0x1E634F	0xD36C19	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10005
+Deadly Poison Rune	0x209A7A	0xD36C1A	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
+Wall of Poison	0x96F9BA		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Mara’s Embrace	0x7D5826		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Stendarr’s Mercy	0x482CE4	0xCD1744	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10002
+Arkay’s Light	0x9A74CB	0xCD174C	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10008
+Font of Vitality	0xF3B48D		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10003
+Font of Vitality		0x0E0CD5	Skyrim.esm	RestorationGold	-1	-1	-1	-1	10003
+Font of Wisdom	0xF3636B	0xF3B492	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10003
+Font of Strength	0xF3635D	0xF3B49E	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10003
+Augur of Aetherius	0x274025	0xCD1751	MysticismMagic.esp	RestorationBlue	-1	-1	-1	-1	10002
+Spelldrinker	0x3DB99C		MysticismMagic.esp	AlterationShield	-1	-1	-1	-1	-1
+Eclipse	0x48CF09	0xD4B051	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Daybreak	0x7BC311		MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	-1
+Solar Flare	0x2466C0	0xD4B059	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10013
+Charged Nova	0x25FBFF	0xD4B05F	MysticismMagic.esp	RestorationGold	-1	-1	-1	-1	10002
+Venomfang	0x48CF04	0xD36C1D	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Miasma	0x9606AC		MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	-1
+Death Cloud	0x1FA75F	0xD36C1F	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10013
+Black Marsh	0x2ED973	0xD36C21	MysticismMagic.esp	IllusionGreen	-1	-1	-1	-1	10002

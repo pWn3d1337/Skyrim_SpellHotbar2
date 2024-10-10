@@ -29,7 +29,7 @@ Flash Freeze	0xA07827	0xCF9FB7	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	-
 Hoarfrost	0x445FFD		MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	-1
 Throat of the World	0x2E8870	0xCF9FB3	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10005
 Electrocute	0xA0782A	0xCF9FD3	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	-1
-Finger of the Mountain	0x1DC141		MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	-1
+Finger of the Mountain	0x1DC141	0xCF9FD2	MysticismMagic.esp	DestructionShock	-1	-1	-1	-1	-1
 Stormblast	0x399C05	0xCF9FD5	MysticismMagic.esp	DestructionFrost	-1	-1	-1	-1	10002
 Touch of Death	0xA0782D	0xD6457D	MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	-1
 Leech Life	0x440E99		MysticismMagic.esp	IllusionRed	-1	-1	-1	-1	-1
