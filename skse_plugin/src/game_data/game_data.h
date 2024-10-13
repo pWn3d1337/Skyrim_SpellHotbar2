@@ -161,6 +161,12 @@ namespace SpellHotbar::GameData {
     extern RE::BGSEquipSlot* equip_slot_both_hand;
     extern RE::BGSEquipSlot* equip_slot_voice;
 
+    extern RE::BGSPerk* perk_alteration_dual_casting;
+    extern RE::BGSPerk* perk_conjuration_dual_casting;
+    extern RE::BGSPerk* perk_destruction_dual_casting;
+    extern RE::BGSPerk* perk_illusion_dual_casting;
+    extern RE::BGSPerk* perk_restoration_dual_casting;
+
     extern RE::BGSSoundDescriptorForm* sound_ITMPotionUse;
     extern RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup;
 
@@ -212,6 +218,8 @@ namespace SpellHotbar::GameData {
     void load_keynames_file();
 
     void set_spell_cast_data(RE::FormID spell, Spell_cast_data&& data);
+    
+    void set_spell_cooldown_effect(RE::FormID spell, RE::FormID cd_effect);
 
     void reload_data();
 

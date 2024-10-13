@@ -97,4 +97,7 @@ if __name__ == "__main__":
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/path_of_sorcery",f"{output_dir_root}/modded_spell_icons/path_of_sorcery", subdirs=False)
 
-    cleanse_images(f"{input_dir_root}/modded_spell_icons/witcher_signs",f"{output_dir_root}/modded_spell_icons/witcher_signs", subdirs=False)
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/witcher_signs",f"{output_dir_root}/modded_spell_icons/witcher_signs", subdirs=False)
+
+    #copy_and_clean_image(Path(r"F:\Skyrim Dev\WORK\icon_work\toggle_dual_cast_icon_blend.png"), Path(output_dir_root) / "icons/toggle_cast.png")
+

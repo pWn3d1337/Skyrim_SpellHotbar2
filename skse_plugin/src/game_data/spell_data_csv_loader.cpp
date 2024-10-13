@@ -92,7 +92,23 @@ namespace SpellHotbar::SpellDataCSVLoader {
                             GameData::Spell_cast_data data;
                             data.gcd = doc.GetCell<float>("GCD", i);
                             std::string time_str = doc.GetCell<std::string>("Cooldown", i);
-                            data.cooldown = parse_time(time_str);
+                            RE::FormID cooldown_effect = 0U;
+                            if (time_str.starts_with("0x")) {
+                                data.cooldown = 0.0f;
+                                cooldown_effect = static_cast<uint32_t>(std::stoul(time_str, nullptr, 16));
+                                auto* cd_form = GameData::get_form_from_file(cooldown_effect, plugin);
+                                if (cd_form) {
+                                    cooldown_effect = cd_form->GetFormID();
+                                }
+                                else
+                                {
+                                    logger::error("Could not Load {:8x} from {}", cooldown_effect, plugin);
+                                    cooldown_effect = 0;
+                                }
+                            }
+                            else {
+                                data.cooldown = parse_time(time_str);
+                            }
                             data.casttime = doc.GetCell<float>("Casttime", i);
 
                             int anim_var = std::min(doc.GetCell<int>("Animation", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
@@ -121,6 +137,9 @@ namespace SpellHotbar::SpellDataCSVLoader {
 
                                 GameData::set_spell_cast_data(actual_form_id, std::move(data));
                             }
+                            if (cooldown_effect > 0U) {
+                                GameData::set_spell_cooldown_effect(actual_form_id, cooldown_effect);
+                            }
                         }
                         else {
                             logger::warn("Skipping spell data {} {}, because form is null", str_form, plugin);
@@ -141,6 +160,24 @@ namespace SpellHotbar::SpellDataCSVLoader {
         }
     }
 
+    inline void _load_perk_from_game(const rapidcsv::Document & doc, const std::string & school, RE::BGSPerk** out_perk) {
+        try {
+            std::string str_form = doc.GetCell<std::string>("FormID", school);
+            uint32_t form_id = static_cast<uint32_t>(std::stoul(str_form, nullptr, 16));
+
+            std::string plugin = doc.GetCell<std::string>("Plugin", school);
+
+            auto* form = GameData::get_form_from_file(form_id, plugin);
+            if (form && form->GetFormType() == RE::FormType::Perk) {
+                *out_perk = form->As<RE::BGSPerk>();
+            } else {
+                logger::error("Dual cast perk for '{}' is null!", school);
+            }
+        }
+        catch (const std::exception& e) {
+            logger::error("Could not load perk data for {}: {}", school, e.what());
+        }
+    }
 
     void load_spell_data(std::filesystem::path folder)
     {
@@ -172,5 +209,29 @@ namespace SpellHotbar::SpellDataCSVLoader {
             std::string msg = e.what();
             logger::error("Error loading spell data: {}", msg);
         }
+
+        //load perk data
+        logger::info("Loading dual cast perk data...");
+        const std::string perk_data_file = ".\\data\\SKSE\\Plugins\\SpellHotbar\\perkdata\\dual_cast_perks.csv";
+        rapidcsv::Document doc(perk_data_file, rapidcsv::LabelParams(0, 0), rapidcsv::SeparatorParams('\t'));
+
+        std::vector<std::string> columns = doc.GetColumnNames();
+        std::vector<std::string> rows = doc.GetRowNames();
+
+        if (csv::has_column(columns, "FormID") && csv::has_column(columns, "Plugin") &&
+            csv::has_column(rows, "Alteration") && csv::has_column(rows, "Conjuration") && csv::has_column(rows, "Destruction") &&
+            csv::has_column(rows, "Illusion") && csv::has_column(rows, "Restoration")) {
+           
+            _load_perk_from_game(doc, "Alteration", &GameData::perk_alteration_dual_casting);
+            _load_perk_from_game(doc, "Conjuration", &GameData::perk_conjuration_dual_casting);
+            _load_perk_from_game(doc, "Destruction", &GameData::perk_destruction_dual_casting);
+            _load_perk_from_game(doc, "Illusion", &GameData::perk_illusion_dual_casting);
+            _load_perk_from_game(doc, "Restoration", &GameData::perk_restoration_dual_casting);
+        }
+        else {
+            logger::error("Dual cast perk config file invalid: {}", perk_data_file);
+        }
+
+
     }
 }

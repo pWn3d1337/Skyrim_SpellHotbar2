@@ -37,7 +37,7 @@ SKSEPluginLoad(const SKSE::LoadInterface * skse)
     auto eventSourceHolder = RE::ScriptEventSourceHolder::GetSingleton();
     eventSourceHolder->AddEventSink<RE::TESSpellCastEvent>(event_listener);
     eventSourceHolder->AddEventSink<RE::TESHitEvent>(event_listener);
-    eventSourceHolder->AddEventSink<RE::TESPlayerBowShotEvent>(event_listener);
+    //eventSourceHolder->AddEventSink<RE::TESPlayerBowShotEvent>(event_listener);
 
     RE::CriticalHit::GetEventSource()->AddEventSink(event_listener);
 

@@ -93,6 +93,11 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<int, std::string> animation_names;
 
+    /*
+    * Spells that have a magiceffect as cooldown
+    */
+    std::unordered_map<RE::FormID, RE::FormID> spell_cd_magiceffect_tracking;
+
     float potion_gcd { 1.0f };
     float block_timer { 0.0f };
 
@@ -352,11 +357,12 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x13F45, "Skyrim.esm", &equip_slot_both_hand, "BothHands", RE::FormType::EquipSlot);
         load_form_from_game(0x25BEE, "Skyrim.esm", &equip_slot_voice, "Voice", RE::FormType::EquipSlot);
 
-        load_form_from_game(0x153CD, "Skyrim.esm", &perk_alteration_dual_casting, "AlterationDualCasting", RE::FormType::Perk);
-        load_form_from_game(0x153CE, "Skyrim.esm", &perk_conjuration_dual_casting, "ConjurationDualCasting", RE::FormType::Perk);
-        load_form_from_game(0x153CF, "Skyrim.esm", &perk_destruction_dual_casting, "DestructionDualCasting", RE::FormType::Perk);
-        load_form_from_game(0x153D0, "Skyrim.esm", &perk_illusion_dual_casting, "IllusionDualCasting", RE::FormType::Perk);
-        load_form_from_game(0x153D1, "Skyrim.esm", &perk_restoration_dual_casting, "RestorationDualCasting", RE::FormType::Perk);
+        //now loaded from csv for mod compatibility
+        //load_form_from_game(0x153CD, "Skyrim.esm", &perk_alteration_dual_casting, "AlterationDualCasting", RE::FormType::Perk);
+        //load_form_from_game(0x153CE, "Skyrim.esm", &perk_conjuration_dual_casting, "ConjurationDualCasting", RE::FormType::Perk);
+        //load_form_from_game(0x153CF, "Skyrim.esm", &perk_destruction_dual_casting, "DestructionDualCasting", RE::FormType::Perk);
+        //load_form_from_game(0x153D0, "Skyrim.esm", &perk_illusion_dual_casting, "IllusionDualCasting", RE::FormType::Perk);
+        //load_form_from_game(0x153D1, "Skyrim.esm", &perk_restoration_dual_casting, "RestorationDualCasting", RE::FormType::Perk);
 
         load_form_from_game(0x10E2EA, "Skyrim.esm", &sound_NPCHumanEatSoup, "NPCHumanEatSoup", RE::FormType::SoundRecord);
         load_form_from_game(0xB6435, "Skyrim.esm", &sound_ITMPotionUse, "ITMPostionUse", RE::FormType::SoundRecord);
@@ -416,6 +422,7 @@ namespace SpellHotbar::GameData {
     { 
         logger::info("Reloading Spell Data...");
         spell_cast_info.clear();
+        spell_cd_magiceffect_tracking.clear();
         spell_casteffect_art.clear();
         animation_names.clear();
 
@@ -864,6 +871,11 @@ namespace SpellHotbar::GameData {
         spell_cast_info.insert_or_assign(spell, std::move(data));
     }
 
+    void set_spell_cooldown_effect(RE::FormID spell, RE::FormID cd_effect)
+    {
+        spell_cd_magiceffect_tracking.insert_or_assign(spell, cd_effect);
+    }
+
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc)
     {
         //purge expired cooldowns before saving
@@ -974,6 +986,7 @@ namespace SpellHotbar::GameData {
         if (cal) {
             float curr_time = cal->GetCurrentGameTime();
             float gt_value = hours / 24.0f;
+            logger::info("GT Cooldown {}, curr_time: {}", gt_value, curr_time);
 
             if (gametime_cooldowns.contains(skill)) {
                 auto cd = gametime_cooldowns.find(skill);
@@ -1228,6 +1241,10 @@ namespace SpellHotbar::GameData {
 
          return hand;
      }
+     inline bool _check_perk(RE::PlayerCharacter* pc, RE::BGSPerk* perk) {
+         return perk != nullptr && pc->HasPerk(perk);
+     }
+
      bool player_can_dualcast_spell(RE::SpellItem* spell)
      {
          bool hasPerk{ false };
@@ -1237,19 +1254,19 @@ namespace SpellHotbar::GameData {
          
              switch (school) {
              case RE::ActorValue::kAlteration:
-                 hasPerk = pc->HasPerk(perk_alteration_dual_casting);
+                 hasPerk = _check_perk(pc, perk_alteration_dual_casting);
                  break;
              case RE::ActorValue::kConjuration:
-                 hasPerk = pc->HasPerk(perk_conjuration_dual_casting);
+                 hasPerk = _check_perk(pc, perk_conjuration_dual_casting);
                  break;
              case RE::ActorValue::kDestruction:
-                 hasPerk = pc->HasPerk(perk_destruction_dual_casting);
+                 hasPerk = _check_perk(pc, perk_destruction_dual_casting);
                  break;
              case RE::ActorValue::kIllusion:
-                 hasPerk = pc->HasPerk(perk_illusion_dual_casting);
+                 hasPerk = _check_perk(pc, perk_illusion_dual_casting);;
                  break;
              case RE::ActorValue::kRestoration:
-                 hasPerk = pc->HasPerk(perk_restoration_dual_casting);
+                 hasPerk = _check_perk(pc, perk_restoration_dual_casting);
                  break;
              default:
                  break;
@@ -1390,34 +1407,44 @@ namespace SpellHotbar::GameData {
          return !can_cast;
      }
 
+     inline float get_magic_effect_cooldown(RE::FormID effect_id) {
+         float cd{ 0.0f };
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         auto magic_target = pc->AsMagicTarget();
+         if (magic_target) {
+             auto effect_list = magic_target->GetActiveEffectList();
+
+             if (effect_list) {
+                 bool found{ false };
+                 for (auto it = effect_list->begin(); it != effect_list->end() && !found; ++it) {
+
+                     auto effect = *it;
+                     if (effect->effect->baseEffect->GetFormID() == effect_id) {
+                         found = true;
+                         float max_dur = effect->duration;
+                         float elapsed = effect->elapsedSeconds;
+
+                         if (elapsed < max_dur)
+                         {
+                             cd = elapsed / max_dur;
+                         }
+                     }
+                 }
+             }
+         }
+         return cd;
+     }
+
      float get_special_cd(RE::FormID formID)
      {
          float cd{ 0.0f };
          //Wereworlf CD if Growl is loaded
          if (formID == werewolf_change_power->GetFormID() && growl_beast_form_cd_magic_effect != nullptr) {
-             auto pc = RE::PlayerCharacter::GetSingleton();
-             auto magic_target = pc->AsMagicTarget();
-             if (magic_target) {
-                 auto effect_list = magic_target->GetActiveEffectList();
-                 
-                 if (effect_list) {
-                     bool found{ false };
-                     for (auto it = effect_list->begin(); it != effect_list->end() && !found; ++it) {
-                 
-                         auto effect = *it;
-                         if (effect->effect->baseEffect == growl_beast_form_cd_magic_effect) {
-                             found = true;
-                             float max_dur = effect->duration;
-                             float elapsed = effect->elapsedSeconds;
+             cd = get_magic_effect_cooldown(growl_beast_form_cd_magic_effect->GetFormID());
+         }
 
-                             if (elapsed < max_dur)
-                             {
-                                 cd = elapsed / max_dur;
-                             }
-                         }
-                     }        
-                 }
-             }
+         if (spell_cd_magiceffect_tracking.contains(formID)) {
+             cd = get_magic_effect_cooldown(spell_cd_magiceffect_tracking.at(formID));
          }
 
          return cd;

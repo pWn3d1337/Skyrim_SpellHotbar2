@@ -23,12 +23,7 @@ namespace SpellHotbar::GameData {
             gcd = 0.0f;
         }
         if (cooldown < 0.0f) {
-            if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower) {
-                cooldown = 1.0f;
-            }
-            else {
-                cooldown = 0.0f;
-            }
+            cooldown = 0.0f;
         }
         if (animation < 0) {
             animation = Spell_cast_data::chose_default_anim_for_spell(spell, -1, false);

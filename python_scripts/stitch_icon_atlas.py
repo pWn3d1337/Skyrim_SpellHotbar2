@@ -718,6 +718,10 @@ if __name__ == "__main__":
         rf"{project_root}\spell_lists2\shouts.csv"
     ]
 
+    spell_lists_i4_only = [
+        rf"{project_root}\spell_lists2\spellhotbar_i4_only.csv",
+    ]
+
     spell_lists_potions = [
         rf"{project_root}\spell_lists2\potions.csv",
     ]
@@ -793,7 +797,8 @@ if __name__ == "__main__":
     tmp_icons_dir = r"F:\Skyrim Dev\WORK\TMP\icons"
     if False:
         swf_path = str(mod_folder_path / "Interface/SpellHotbar/spell_icons.swf")
-        create_i4_icons(spell_lists + spell_lists_powers, icon_root_folders + default_icons_folders + icon_root_folders_powers,
+        create_i4_icons(spell_lists + spell_lists_powers + spell_lists_i4_only,
+                        icon_root_folders + default_icons_folders + icon_root_folders_powers,
                         mod_root_path / "../InventoryInjector/SpellHotbar.json",
                         alpha_mask,
                         tmp_icons_dir=tmp_icons_dir, swf_out_path=swf_path, write_icons_and_swf=True,

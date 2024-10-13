@@ -21,7 +21,7 @@ namespace SpellHotbar::events {
                     if (form->GetFormType() == RE::FormType::Spell) {
                         RE::SpellItem* spell = form->As<RE::SpellItem>();
                         if (spell) {
-                            if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kPower)
+                            if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower)
                             {
                                 GameData::add_gametime_cooldown(event->spell, 24.0, false);
                                 casts::CastingController::try_finish_power_cast(event->spell);
@@ -154,14 +154,14 @@ namespace SpellHotbar::events {
         return RE::BSEventNotifyControl::kContinue;
     }
 
-    RE::BSEventNotifyControl EventListener::ProcessEvent(const RE::TESPlayerBowShotEvent* event, RE::BSTEventSource<RE::TESPlayerBowShotEvent>*)
-    {
+    //RE::BSEventNotifyControl EventListener::ProcessEvent(const RE::TESPlayerBowShotEvent* event, RE::BSTEventSource<RE::TESPlayerBowShotEvent>*)
+    //{
         //logger::info("Bow Shot Power: {}", event->shotPower);
         //if (event->shotPower >= 1.0f) {
             //TODO check perk
         //    SpellHotbar::casts::SpellProc::trigger_spellproc();
         //}
-        return RE::BSEventNotifyControl::kContinue;
-    }
+    //    return RE::BSEventNotifyControl::kContinue;
+    //}
 
 }

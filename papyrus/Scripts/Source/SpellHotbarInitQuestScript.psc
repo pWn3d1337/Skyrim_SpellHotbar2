@@ -62,11 +62,11 @@ Function DEBUG_Lean_Spells()
 	DEBUG_lean_spell(0xA1A3E)
 	
 	;Dual Cast perks
-	DEBUG_add_perk(0x153CD, "Skyrim.esm")
-	DEBUG_add_perk(0x153CE, "Skyrim.esm")
-	DEBUG_add_perk(0x153CF, "Skyrim.esm")
-	DEBUG_add_perk(0x153D0, "Skyrim.esm")
-	DEBUG_add_perk(0x153D1, "Skyrim.esm")
+	;DEBUG_add_perk(0x153CD, "Skyrim.esm")
+	;DEBUG_add_perk(0x153CE, "Skyrim.esm")
+	;DEBUG_add_perk(0x153CF, "Skyrim.esm")
+	;DEBUG_add_perk(0x153D0, "Skyrim.esm")
+	;DEBUG_add_perk(0x153D1, "Skyrim.esm")
 
 	;Hierophant absolution - channel with time
 	DEBUG_lean_spell2(0x822, "Ghostlight.esl")

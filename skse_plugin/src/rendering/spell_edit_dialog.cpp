@@ -344,7 +344,7 @@ namespace SpellHotbar::SpellEditor {
                     dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
                     constexpr float inc{ 0.5f };
                     constexpr float inc_fast{ 5.0f };
-                    constexpr std::string format{ "%.2fs" };
+                    const std::string format{ "%.2fs" };
                     if (ImGui::InputScalar("", ImGuiDataType_Float, &dat.gcd, &inc, &inc_fast, format.c_str())) {
                         dat.gcd = std::clamp(dat.gcd, 0.0f, 30.0f);
                     }
@@ -375,7 +375,7 @@ namespace SpellHotbar::SpellEditor {
                     input_cd_value = std::clamp(input_cd_value, 0.0f, 4320.0f);
                     constexpr float inc{ 1.f };
                     constexpr float inc_fast{ 10.0f };
-                    constexpr std::string format{ "%.1fs" };
+                    const std::string format{ "%.1fs" };
                     if (ImGui::InputScalar("", ImGuiDataType_Float, &input_cd_value, &inc, &inc_fast, format.c_str())) {
                         input_cd_value = std::clamp(input_cd_value, 0.0f, 4320.0f);
                         dat.cooldown = input_cd_value * seconds_to_days;
@@ -405,7 +405,7 @@ namespace SpellHotbar::SpellEditor {
                     dat.casttime = std::clamp(dat.casttime, 0.25f, 10.0f);
                     constexpr float inc{ 0.05f };
                     constexpr float inc_fast{ 0.5f };
-                    constexpr std::string format{ "%.2fs" };
+                    const std::string format{ "%.2fs" };
                     if (ImGui::InputScalar("", ImGuiDataType_Float, &dat.casttime, &inc, &inc_fast, format.c_str())) {
                         dat.casttime = std::clamp(dat.casttime, 0.25f, 10.0f);
                     }

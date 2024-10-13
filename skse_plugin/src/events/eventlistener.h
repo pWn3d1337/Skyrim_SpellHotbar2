@@ -1,7 +1,7 @@
 #pragma once
 namespace SpellHotbar::events {
     class EventListener : public RE::BSTEventSink<RE::TESSpellCastEvent>, public RE::BSTEventSink<SKSE::ActionEvent>, public RE::BSTEventSink<RE::TESHitEvent>,
-        public RE::BSTEventSink<RE::CriticalHit::Event>, public RE::BSTEventSink<RE::TESPlayerBowShotEvent>
+        public RE::BSTEventSink<RE::CriticalHit::Event> //, public RE::BSTEventSink<RE::TESPlayerBowShotEvent>
     {
     public:
 
@@ -21,7 +21,7 @@ namespace SpellHotbar::events {
 
         RE::BSEventNotifyControl ProcessEvent(const RE::CriticalHit::Event* event, RE::BSTEventSource<RE::CriticalHit::Event>*);
 
-        RE::BSEventNotifyControl ProcessEvent(const RE::TESPlayerBowShotEvent* event, RE::BSTEventSource<RE::TESPlayerBowShotEvent>*);
+        //RE::BSEventNotifyControl ProcessEvent(const RE::TESPlayerBowShotEvent* event, RE::BSTEventSource<RE::TESPlayerBowShotEvent>*);
 
     private:
         EventListener() = default;
