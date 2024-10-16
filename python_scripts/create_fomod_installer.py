@@ -1,4 +1,6 @@
+import shutil
 from enum import Enum
+from glob import glob
 from pathlib import Path
 from typing import Callable
 
@@ -10,6 +12,31 @@ dev_mod_root_battlemage = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemag
 
 project_root = Path(__file__).parent.parent
 
+
+def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], main_folder: str = "data"):
+    print(f"Copying to folder: {outfile}...")
+    main_path = Path(main_folder)
+    for entry in files:
+        file_list = glob(str(entry[0]), recursive=True)
+        for file_name in file_list:
+            if isinstance(entry[1], Path):
+                arcname = str(main_path / Path(file_name).relative_to(entry[1]))
+            elif isinstance(entry[1], tuple):
+                rel_path = Path(entry[1][0])
+                arc_folders = Path(entry[1][1])
+                arcname = str(main_path / arc_folders / Path(file_name).relative_to(rel_path))
+            else:
+                fname = Path(file_name).name
+                zip_path = Path(entry[1]) / fname
+                arcname = str(main_path / zip_path)
+            print(f"Copying: {arcname}")
+            target_path = outfile / arcname
+            if not target_path.parent.exists():
+                target_path.parent.mkdir(parents=True)
+            if target_path.is_file():
+                shutil.copy(file_name, target_path)
+            elif target_path.is_dir():
+                target_path.mkdir(parents=True)
 
 def _get_info_xml(version: str) -> str:
     return f"""<fomod>
@@ -66,7 +93,8 @@ def _get_dual_cast_perk_flag(flag: DualCastPerkConfig, ref: DualCastPerkConfig) 
     return f"""<flag name="DUAL_CAST_PERKS_{ref.name}">{'On' if flag == ref else 'Off'}</flag>"""
 
 
-def _get_perk_overhaul_config(formatted_name: str, pluginfile: str, folders: list[str], dual_cast_perks: DualCastPerkConfig) -> str:
+def _get_perk_overhaul_config(formatted_name: str, pluginfile: str, folders: list[str],
+                              dual_cast_perks: DualCastPerkConfig) -> str:
     return f"""
                         <plugin name="{formatted_name}">
                             <description>Install compatibility for {formatted_name}</description>
@@ -79,6 +107,9 @@ def _get_perk_overhaul_config(formatted_name: str, pluginfile: str, folders: lis
                                 {"".join([f'<folder source="{f}" destination="" priority="0"/>' for f in folders])}
                             </files>
                             <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                            <!--typeDescriptor>
                                 {f'''<dependencyType>
                                     <defaultType name="Optional"/>
                                     <patterns>
@@ -90,7 +121,7 @@ def _get_perk_overhaul_config(formatted_name: str, pluginfile: str, folders: lis
                                     </pattern>
                                     </patterns>
                                 </dependencyType>''' if pluginfile is not None else ""}
-                            </typeDescriptor>
+                            </typeDescriptor-->
                         </plugin>"""
 
 
@@ -107,10 +138,20 @@ def _get_battle_mage_perk_config(folder: str) -> str:
                         </plugin>"""
 
 
+def _get_profile_config(name: str, json_name: str, desc: str) -> str:
+    return f"""
+                         <plugin name="{name}">
+                            <description>{desc}</description>
+                            <files>
+                                <file source="0000 Required - Main Mod/SKSE/Plugins/SpellHotbar/presets/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
+                            </files>
+                        </plugin>"""
+
 def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]) -> str:
     return f"""
 <config xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>Spell Hotbar 2 - {version} Installer</moduleName>
+    <moduleImage path="installer_images/spell_hotbar_logo.png" />
     <requiredInstallFiles>
         <folder source="{required_folder}" destination="" priority="0"/>
     </requiredInstallFiles>
@@ -122,17 +163,69 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                         {_get_battle_mage_perk_config(battlemage_mod_folder)}
                     </plugins>
                 </group>
+                <group name="Perk Overhaul" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                        {"".join([_get_perk_overhaul_config(p[0], p[1], p[2], p[3]) for p in perk_overhauls])}
+                    </plugins>
+                </group>
                 <group name="Spell Packs" type="SelectAny">
                     <plugins order="Explicit">
                         {"".join([_get_spell_pack_config(s[0], s[1], s[2]) for s in spell_packs])}
                     </plugins>
                 </group>
-                <group name="Perk Overhaul" type="SelectOne">
-                        {"".join([_get_perk_overhaul_config(p[0], p[1], p[2], p[3]) for p in perk_overhauls])}
+            </optionalFileGroups>
+        </installStep>
+        <installStep name="Config Options">
+            <optionalFileGroups order="Explicit">
+                <group name="Chose a Profile that automatically gets loaded" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                         <plugin name="No Auto Profile">
+                            <description>All variables will be set to default and no keybinds will be set on initialisation. Will require manual configuration of the mod</description>
+                            <files>
+                            </files>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        {_get_profile_config("Simple", "simple",
+                                             "Only 1 Bar, no modifiers, Keybinds: 1-10.=")}
+                        {_get_profile_config("All Bars", "all_bars",
+                                             "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu")}
+                        {_get_profile_config("Oblivion Mode", "oblivion_mode", 
+                                             "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion")}
+                    </plugins>
                 </group>
             </optionalFileGroups>
         </installStep>
     </installSteps>
+    <conditionalFileInstalls> 
+        <patterns> 
+            <pattern> 
+                <dependencies operator="And"> 
+                    <flagDependency flag="DUAL_CAST_PERKS_VANILLA" value="On"/> 
+                </dependencies> 
+                <files> 
+                    <file source="9000 ConditionalFiles/perkdata_vanilla/dual_cast_perks.csv" destination="SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv" priority="0" /> 
+                </files> 
+            </pattern> 
+            <pattern> 
+                <dependencies operator="And"> 
+                    <flagDependency flag="DUAL_CAST_PERKS_ADAMANT" value="On"/> 
+                </dependencies> 
+                <files> 
+                    <file source="9000 ConditionalFiles/perkdata_adamant/dual_cast_perks.csv" destination="SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv" priority="0" /> 
+                </files> 
+            </pattern> 
+            <pattern> 
+                <dependencies operator="And"> 
+                    <flagDependency flag="DUAL_CAST_PERKS_SPERG" value="On"/> 
+                </dependencies> 
+                <files> 
+                    <file source="9000 ConditionalFiles/perkdata_sperg/dual_cast_perks.csv" destination="SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv" priority="0" /> 
+                </files> 
+            </pattern> 
+        </patterns>
+    </conditionalFileInstalls>
 </config>
 """
 
@@ -161,6 +254,7 @@ def _get_perk_overhaul_folder_name(num: int, modname: str) -> str:
 def _get_spell_list(modname: str, num: int, folder_name_getter: Callable[[int, str], str], esp_name: str | None = None) -> list[tuple[Path, tuple[Path, str]]]:
     if esp_name is None:
         esp_name = modname.capitalize()
+    esp_name = Path(esp_name).stem  # removes suffix if preset
     folder_name = folder_name_getter(num, modname)
     return [
         (dev_mod_root / f"Interface/SpellHotbar/{modname}_icons.swf", (dev_mod_root, folder_name)),
@@ -190,7 +284,7 @@ released_files_main_plugin_v2 = [
     # (dev_mod_root / "Scripts/Source/*.psc", dev_mod_root), script source is no longer in install
     (dev_mod_root / "Interface/SpellHotbar/spell_icons.swf", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "meshes/SpellHotbar/*.nif", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "meshes/**/*.txt", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "meshes/**/*.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "meshes/**/*.hkx", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/animationdata/*.csv", (dev_mod_root, main_mod_folder)),
@@ -213,7 +307,9 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.png", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/keynames/keynames.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/*.json", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/all_bars.json", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/oblivion_mode.json", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/simple.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
@@ -231,9 +327,12 @@ battlemage_perk_files = [
 ]
 
 if __name__ == "__main__":
-    ONLY_XML_FILES = True
+    ONLY_XML_FILES = False
+    ONLY_PRINT_FILES = False
     if ONLY_XML_FILES:
         print("Only creating xml files...")
+
+    debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
     version = "0.0.1"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
@@ -275,13 +374,17 @@ if __name__ == "__main__":
 
 
     # perk overhauls
+    ordinator_folder = _get_perk_overhaul_folder_name(1,"ordinator")
+    sperg_folder = _get_perk_overhaul_folder_name(2,"sperg")
+    pos_folder = _get_perk_overhaul_folder_name(3,"path_of_sorcery")
+
     _add_perk_overhaul("Vanilla/Vorkii", None, [], DualCastPerkConfig.VANILLA)
-    _add_perk_overhaul("Ordinator", "Ordinator - Perks of Skyrim.esp", "ordinator", DualCastPerkConfig.VANILLA)
-    _add_perk_overhaul("SPERG", "SPERG-SSE.esp", "sperg", DualCastPerkConfig.SPERG)
-    _add_perk_overhaul("Path Of Sorcery", "SPERG-SSE.esp", "path_of_sorcery", DualCastPerkConfig.VANILLA)
+    _add_perk_overhaul("Ordinator", "Ordinator - Perks of Skyrim.esp", ordinator_folder, DualCastPerkConfig.VANILLA)
+    _add_perk_overhaul("SPERG", "SPERG-SSE.esp", sperg_folder, DualCastPerkConfig.SPERG)
+    _add_perk_overhaul("Path of Sorcery", "PathOfSorcery.esp", pos_folder, DualCastPerkConfig.VANILLA)
     _add_perk_overhaul("Adamant", "Adamant.esp", [], DualCastPerkConfig.ADAMANT)
-    _add_perk_overhaul("Vokriinator", "Vokriinator.esp", "ordinator", DualCastPerkConfig.VANILLA)
-    _add_perk_overhaul("Vokriinator Black", "Vokriinator Black.esp", ["ordinator", "sperg", "path_of_sorcery"], DualCastPerkConfig.VANILLA)
+    _add_perk_overhaul("Vokriinator", "Vokriinator.esp", ordinator_folder, DualCastPerkConfig.VANILLA)
+    _add_perk_overhaul("Vokriinator Black", "Vokriinator Black.esp", [ordinator_folder, sperg_folder, pos_folder], DualCastPerkConfig.VANILLA)
 
 
     tmp_folder = output_zip_path.parent / f"tmp_build_{version}"
@@ -324,4 +427,21 @@ if __name__ == "__main__":
 
         release_files += battlemage_perk_files
 
-        build_release_zip(output_zip_path, release_files, main_folder="Spell Hotbar 2")
+        release_files += get_perk_overhaul_list("ordinator",1, "Ordinator - Perks of Skyrim")
+        release_files += get_perk_overhaul_list("sperg",2, "SPERG-SSE")
+        release_files += get_perk_overhaul_list("path_of_sorcery",3, "PathOfSorcery")
+
+        # conditionalFiles
+        release_files += (dev_mod_root / "SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_vanilla"),
+        release_files += (dev_mod_root / "../Spell Hotbar 2 Adamant/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_adamant"),
+        release_files += (dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_sperg"),
+
+        # installer images
+        release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.png", "installer_images"))
+
+        if ONLY_PRINT_FILES:
+            for p1, p2 in release_files:
+                print(f"'{p1}' -> '{p2}'")
+        else:
+            build_release_zip(output_zip_path, release_files, main_folder="Spell Hotbar 2")
+            #copy_files_outfolder(debug_output_folder, release_files, main_folder="Spell Hotbar 2")

@@ -47,19 +47,7 @@ namespace SpellHotbar::Storage::IO {
         return get_doc_dir() / user_dir_bars;
     }
 
-    bool save_profile_json(const std::filesystem::path& path) {
-
-        std::filesystem::create_directories(path.parent_path());
-
-        rj::Document d;
-        d.SetObject();
-
-        d.AddMember("version", preset_save_version, d.GetAllocator());
-
-        return false;
-    }
-
-    inline int get_int_or_default(rj::Document& d, std::string key, int def) {
+    inline static int get_int_or_default(rj::Document& d, std::string key, int def) {
         const char* str_key = key.c_str();
         if (d.HasMember(str_key)) {
             return d[str_key].GetInt();
@@ -69,7 +57,7 @@ namespace SpellHotbar::Storage::IO {
         }
     }
 
-    inline float get_float_or_default(rj::Document& d, std::string key, float def) {
+    inline static float get_float_or_default(const rj::Document& d, std::string key, float def) {
         const char* str_key = key.c_str();
         if (d.HasMember(str_key)) {
             return d[str_key].GetFloat();
@@ -79,8 +67,13 @@ namespace SpellHotbar::Storage::IO {
         }
     }
 
+    inline static void load_global_from_json(const rj::Document& d, RE::TESGlobal* glob, const std::string & key, float def) {
+        if (glob != nullptr) {
+            glob->value = get_float_or_default(d, key, def);
+        }
+    }
 
-    bool load_profile_json_v2(rj::Document& d) {
+    static bool load_profile_json_v2(rj::Document& d) {
         
         logger::trace("Loading profile from json...");
 
@@ -139,9 +132,19 @@ namespace SpellHotbar::Storage::IO {
         Bars::oblivion_bar_vertical = get_int_or_default(d, "settings.oblivion_bar.vertical", 0) != 0;
 
         Input::set_input_mode(std::clamp(get_int_or_default(d, "settings.input_mode", 0), 0, 2));
-        Bars::bar_row_len = std::clamp(static_cast<uint8_t>(get_int_or_default(d, "setttings.bar_row_ren", static_cast<int>(max_bar_size))), 1Ui8, static_cast<uint8_t>(max_bar_size));
+        Bars::bar_row_len = std::clamp(static_cast<uint8_t>(get_int_or_default(d, "settings.bar_row_ren", static_cast<int>(max_bar_size))), 1Ui8, static_cast<uint8_t>(max_bar_size));
         Bars::layout = Bars::bar_layout(std::clamp(get_int_or_default(d, "settings.bar_layout", 0), 0, 2));
         Bars::bar_circle_radius = std::max(get_float_or_default(d, "settings.bar_circle_radius", 2.2f), 0.1f);
+
+        //battlemage perks
+        load_global_from_json(d, GameData::global_spellhotbar_perks_override, "battlemage.overrideperks", 0.0f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_timed_block_window, "battlemage.timedblockwindow", 0.5f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_block_trigger_chance, "battlemage.blockprocchance", 1.0f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_power_attack_trigger_chance, "battlemage.powerattackprocchance", 0.5f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_sneak_attack_trigger_chance, "battlemage.sneakattackprocchance", 1.0f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_crit_trigger_chance, "battlemage.critprocchance", 1.0f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_proc_cooldown, "battlemage.proccooldown", 10.0f);
+        load_global_from_json(d, GameData::global_spellhotbar_perks_require_halfcostperk, "battlemage.requirehalfcostperk", 0.0f);
 
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {
@@ -174,7 +177,7 @@ namespace SpellHotbar::Storage::IO {
         return true;
     }
 
-    bool load_preset_json(const std::filesystem::path& path) {
+    static bool load_preset_json(const std::filesystem::path& path) {
     
         logger::trace("Loading Profile from {}", path.string());
         std::ifstream ifs(path);
@@ -235,17 +238,23 @@ namespace SpellHotbar::Storage::IO {
         return false;
     }
 
-    inline void add_int(rj::Document& d, const std::string& key, int value) {
+    inline static void add_int(rj::Document& d, const std::string& key, int value) {
         rj::Value name(key.c_str(), d.GetAllocator());
         d.AddMember(name, value, d.GetAllocator());
     }
 
-    inline void add_float(rj::Document& d, const std::string& key, float value) {
+    inline static void add_float(rj::Document& d, const std::string& key, float value) {
         rj::Value name(key.c_str(), d.GetAllocator());
         d.AddMember(name, value, d.GetAllocator());
     }
 
-    bool save_preset_v2(rj::Document& d) {
+    inline static void save_global_to_json(rj::Document& d, RE::TESGlobal* glob, const std::string& key) {
+        if (glob != nullptr) {
+            add_float(d, key, glob->value);
+        }
+    }
+
+    static bool save_preset_v2(rj::Document& d) {
         
         for (int i = 0; i < static_cast<int>(max_bar_size); i++) {
 
@@ -292,9 +301,18 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.oblivion_bar.vertical", Bars::oblivion_bar_vertical ? 1 : 0);
 
         add_int(d, "settings.input_mode", Input::get_current_mode_index());
-        add_int(d, "setttings.bar_row_ren", Bars::bar_row_len);
+        add_int(d, "settings.bar_row_ren", Bars::bar_row_len);
         add_int(d, "settings.bar_layout", static_cast<int>(Bars::layout));
         add_float(d, "settings.bar_circle_radius", Bars::bar_circle_radius);
+
+        save_global_to_json(d, GameData::global_spellhotbar_perks_override, "battlemage.overrideperks");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_timed_block_window, "battlemage.timedblockwindow");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_block_trigger_chance, "battlemage.blockprocchance");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_power_attack_trigger_chance, "battlemage.powerattackprocchance");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_sneak_attack_trigger_chance, "battlemage.sneakattackprocchance");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_crit_trigger_chance, "battlemage.critprocchance");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_proc_cooldown, "battlemage.proccooldown");
+        save_global_to_json(d, GameData::global_spellhotbar_perks_require_halfcostperk, "battlemage.requirehalfcostperk");
 
         //Bar Enabled & inherit state:
         const std::vector<uint32_t> bars = {
@@ -362,7 +380,7 @@ namespace SpellHotbar::Storage::IO {
         }
     }
 
-    void add_json_files(std::vector<std::string>& vec, std::filesystem::path& folder) {
+    static void add_json_files(std::vector<std::string>& vec, std::filesystem::path& folder) {
         if (std::filesystem::exists(folder) && std::filesystem::is_directory(folder)) {
             for (auto& p : std::filesystem::directory_iterator(folder))
             {

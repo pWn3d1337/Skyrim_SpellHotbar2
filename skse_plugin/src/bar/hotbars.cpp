@@ -42,7 +42,7 @@ namespace SpellHotbar::Bars {
     bool disable_menu_rendering;
     anchor_point bar_anchor_point = anchor_point::BOTTOM;
 
-    uint8_t bar_row_len = 1U;
+    uint8_t bar_row_len = 12U;
     bar_layout layout = bar_layout::BARS;
     float bar_circle_radius = 2.2f;
 
