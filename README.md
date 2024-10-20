@@ -1,7 +1,17 @@
 A total rework to SpellHotbar (https://github.com/pWn3d1337/Skyrim_SpellHotbar)
 
 # Beta State
-The mod is currently in a beta state and just being released to the public for testing
+The mod is currently in a beta state and just being released to the public for testing. If you want to report Bugs create an Issue here, please also provide information about your skyrim binary version and include the log file in case of crashes or loading issues. ("C:\Users\<username>\Documents\My Games\Skyrim Special Edition\SKSE\SpellHotbar2.log"). Crash logs can also be helpful in case of a crash.
+
+## Contribute
+### Presets
+If you want to help out you can create custom presets. I would like to add more presets to the installer.
+
+### Video and Image material
+If you have created cool Screenshots or video clips using the mods I could also use some promotion Material for the Mod Page in the future.
+
+### Test the Mod and Report Issues
+:-)
 
 ## Requirements
 [SKSE](https://skse.silverlock.org/)  
