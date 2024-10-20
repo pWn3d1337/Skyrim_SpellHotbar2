@@ -7,7 +7,7 @@ The mod is currently in a beta state and just being released to the public for t
 [SKSE](https://skse.silverlock.org/)  
 [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)  
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
-[OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)
+[OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and easier file structure.
