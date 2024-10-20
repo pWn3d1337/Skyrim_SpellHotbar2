@@ -20,6 +20,7 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu
+[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
 All papyrus lib requirements have been dropped.
@@ -37,6 +38,14 @@ The mod is built with CommonLib-NG and was tested on 1.5.97, 1.6.640 and 1.6.107
 
 ## SKSE based
 All spell casting is now triggered by SKSE plugin and not by papyrus. Casting is now strongly tied to animations. 
+
+## FOMOD Installer
+Spell Packs and Perk Overhauls can now be selected inside a FOMOD installer. Spell Packs auto check depending on your installed plugins.
+You can also chose an "Auto Profile" that will be applied on new game or first install.
+![#installer](docs/images/installer.jpg)  
+
+## Auto Profiles
+If a file called "..Data\SKSE\Plugins\SpellHotbar\presets\auto_profile.json" is present in your install it will automatically load on new game or first init. This allows to redestribute the MCM config in mod packs. An auto profile can be chosen during the installer.
 
 ## Input improvements
 Modifiers are no longer hardcoded to CTRL, SHIFT and ALT and up to 3 modifiers can now be freely configured. All controller buttons should also be supported.
