@@ -108,3 +108,37 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 
 ![#Ingame_Editor](docs/images/spell_editor1.jpg) ![#Ingame_Editor2](docs/images/spell_editor2.jpg)  
 
+## Currently supported Spell/Perk mods with icons
+[Abyss](https://www.nexusmods.com/skyrimspecialedition/mods/83329)  
+[Abyssal Tides Magic](https://www.nexusmods.com/skyrimspecialedition/mods/97892)  
+[Abyssal Wind Magic](https://www.nexusmods.com/skyrimspecialedition/mods/96352)  
+[Ancient Blood Magic II](https://www.nexusmods.com/skyrimspecialedition/mods/115106)  
+[Andromeda - Unique Standing Stones of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/14910)  
+[Apocalypse - Magic Of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/1090)  
+[Arclight](https://www.nexusmods.com/skyrimspecialedition/mods/90405)  
+[Astral Magic 2](https://www.nexusmods.com/skyrimspecialedition/mods/69938)  
+[Constellation Magic](https://www.nexusmods.com/skyrimspecialedition/mods/92104)  
+[Dark Hierophant Magic](https://www.nexusmods.com/skyrimspecialedition/mods/108499)  
+[Desecration](https://www.nexusmods.com/skyrimspecialedition/mods/90832)  
+[Elemental Destruction Magic Redux](https://www.nexusmods.com/skyrimspecialedition/mods/37211)  
+[Holy Templar Magic](https://www.nexusmods.com/skyrimspecialedition/mods/113360)  
+[Miracles of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/71708)  
+[Mysticism - A Magic Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/27839)  
+[Obscure Magic](https://www.nexusmods.com/skyrimspecialedition/mods/103805)  
+[Odin - Skyrim Magic Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/46000)  
+[Ordinator - Perks of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/1137)  
+[Path of Sorcery - Magic Perk Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/6660)  
+[Sacrosanct - Vampires of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/3928)  
+[Sonic Magic](https://www.nexusmods.com/skyrimspecialedition/mods/76360)  
+[SPERG - Skyrim Perk Enhancements and Rebalanced Gameplay SE](https://www.nexusmods.com/skyrimspecialedition/mods/14180)  
+[Stellaris](https://www.nexusmods.com/skyrimspecialedition/mods/86833)  
+[Storm Calling Magic 2](https://www.nexusmods.com/skyrimspecialedition/mods/89643)  
+[Thunderchild - Epic Shouts and Immersion](https://www.nexusmods.com/skyrimspecialedition/mods/1460)  
+[Triumvirate - Mage Archetypes](https://www.nexusmods.com/skyrimspecialedition/mods/39170)  
+[Vulcano](https://www.nexusmods.com/skyrimspecialedition/mods/88689)  
+[Winter Wonderland Magic](https://www.nexusmods.com/skyrimspecialedition/mods/93871)  
+[The Witcher Signs](https://www.nexusmods.com/skyrimspecialedition/mods/90645)  
+
+# Known Issues
+* Some Perk mods change the costs of spells to health, this is currently not working when casting through the hotbar
+* Casting while moving in sneak mode has animation issues (walking in regular speed while counting as sneaking)
