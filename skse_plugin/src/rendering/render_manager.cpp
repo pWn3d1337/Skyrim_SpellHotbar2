@@ -701,7 +701,6 @@ inline SubTextureImage* lookup_default_icon(RE::FormID formID) {
         if (form->GetFormType() == RE::FormType::AlchemyItem) {
             auto alch = form->As<RE::AlchemyItem>();
             if (alch && alch->IsFood()) {
-
                 //check sound
                 if (alch->data.consumptionSound == GameData::sound_ITMPotionUse) {
                     icon = GameData::DefaultIconType::GENERIC_FOOD_DRINK;

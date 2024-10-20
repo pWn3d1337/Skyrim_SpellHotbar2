@@ -80,10 +80,9 @@ Event OnConfigInit()
 	input_modes[1] = "Equip"
 	input_modes[2] = "Oblivion-Style"
 
-	bar_layouts = new String[3]
+	bar_layouts = new String[2]
 	bar_layouts[0] = "Bar"
 	bar_layouts[1] = "Circle"
-	bar_layouts[2] = "Cross"
 EndEvent
 
 ; reinit config on update
@@ -676,7 +675,7 @@ State BarLayout
 		SetMenuOptionValueST(bar_layouts[SpellHotbar.setBarLayout(index)])
 	EndEvent
 	Event OnHighlightST()
-		SetInfoText("Set the basic bar shape type, circle and cross need at least 3 slots per bar")
+		SetInfoText("Set the basic bar shape type, circle needs at least 3 slots per bar")
 	EndEvent
 	Event OnDefaultST()
 		SetMenuOptionValueST(bar_layouts[SpellHotbar.setBarLayout(0)])
