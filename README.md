@@ -62,10 +62,14 @@ It is now possible to chose the input mode.
 * Equip Mode - Will equip a spell or power instead of casting it. By setting hand it can be chosen which hand it will be equipped.
 * Oblivion Mode - Tries to recreate Oblivion style casting. Adds a 2nd bar to show the currently equipped Spell and Potion. (Power can also be displayed). There is an extra shortcut for casting the equipped spell like in 'Direct Cast' mode. The regular keybinds will change the current selected spell/power/potion
 
+![#Oblivion_mode](docs/images/oblivion_mode.jpg)  
+
 ## Battlemage Perktree [Optional]
 Requires [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) to access the perktree, alternatively there is an MCM option under 'Perks' to disable Perk requirements.
 Uses regular perk points. Allows to get "Spell Procs" which turns the next casted spell into near-instant cast and 50% less mana cost. Spell Procs are visible as animated golden border around spells. And the spell learn sound is played on trigger.
 At start only novice and apprentice spell can consume procs and there is a 10s (configurable in mcm) cooldown in gaining a new proc after consuming one.
+
+![#Spell_Procs](docs/images/spell_proc.jpg)
 
 ### Available Perks:
 Note: chances and timing is configurable in MCM
@@ -78,6 +82,11 @@ Note: chances and timing is configurable in MCM
 #### Advanced Perks
 * Expert Battlemage (Requires at least one trigger): Spell Procs can trigger Adept and Expert spells. Reduces Cooldown by 20%. Requires 'Alteration' 50.
 * Master Battlemage (Requires Expert Battlemage): Spell Procs can trigger Master spells. Reduces Cooldown by 40%. Requires 'Alteration' 75.   (Note 40% reduction in total, not additive)
+* 
+![#BattleMage_Perks1](docs/images/battlemage_1.jpg) ![#BattleMage_Perks2](docs/images/battlemage_2.jpg)  
 
 ## Ingame Editor
 In the MCM an editor for Spells and Potions can be opened to edit the spell data, this allows to set custom Icons and some other values like animation for the spell and is savegame specific (stored in SKSE co-save).
+
+![#Ingame_Editor](docs/images/spell_editor1.jpg) ![#Ingame_Editor2](docs/images/spell_editor2.jpg)  
+
