@@ -59,7 +59,7 @@ Spells now can be bound to either Hand or both hands (Indicated by R, L and D in
 No R,L or D text indicated 'Auto' mode, there a spell will chose the hand depending on equipped items and uses Dual Casting if enabled. Dual Casting can be toggled by a power that is automatically added to the player
 or by holding Keybind modifier that can be defined in the MCM. A spell can only be set to dual cast (D) in the menu if the spell supports dual casting and the player has the corresponding perk. (During the fomod installer select your correct perk overhaul so the dual cast perks are configured correctly). For balancing and animation reasons Dual casting blocks movement. (Technically by capturing your movement inputs, so no scripts are going to break from it)
 
-### FP, Concentration and Dual Casting in Youtube Preview:  
+### First Person, Concentration and Dual Casting in Youtube Preview:  
 [![spellhotbar2_yt_preview](https://img.youtube.com/vi/5aj7-3XC50I/0.jpg)](https://www.youtube.com/watch?v=5aj7-3XC50I)
 
 ## Support for Potions, Food Items and Scrolls
