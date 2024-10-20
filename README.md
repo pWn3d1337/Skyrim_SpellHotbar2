@@ -20,6 +20,7 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu
+[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
 All papyrus lib requirements have been dropped.
@@ -38,6 +39,14 @@ The mod is built with CommonLib-NG and was tested on 1.5.97, 1.6.640 and 1.6.107
 ## SKSE based
 All spell casting is now triggered by SKSE plugin and not by papyrus. Casting is now strongly tied to animations. 
 
+## FOMOD Installer
+Spell Packs and Perk Overhauls can now be selected inside a FOMOD installer. Spell Packs auto check depending on your installed plugins.
+You can also chose an "Auto Profile" that will be applied on new game or first install.
+![#installer](docs/images/installer.jpg)  
+
+## Auto Profiles
+If a file called "..Data\SKSE\Plugins\SpellHotbar\presets\auto_profile.json" is present in your install it will automatically load on new game or first init. This allows to redestribute the MCM config in mod packs. An auto profile can be chosen during the installer.
+
 ## Input improvements
 Modifiers are no longer hardcoded to CTRL, SHIFT and ALT and up to 3 modifiers can now be freely configured. All controller buttons should also be supported.
 Key inputs are instantly registered without papyrus delay.
@@ -50,7 +59,7 @@ Spells now can be bound to either Hand or both hands (Indicated by R, L and D in
 No R,L or D text indicated 'Auto' mode, there a spell will chose the hand depending on equipped items and uses Dual Casting if enabled. Dual Casting can be toggled by a power that is automatically added to the player
 or by holding Keybind modifier that can be defined in the MCM. A spell can only be set to dual cast (D) in the menu if the spell supports dual casting and the player has the corresponding perk. (During the fomod installer select your correct perk overhaul so the dual cast perks are configured correctly). For balancing and animation reasons Dual casting blocks movement. (Technically by capturing your movement inputs, so no scripts are going to break from it)
 
-### FP, Concentration and Dual Casting in Youtube Preview:  
+### First Person, Concentration and Dual Casting in Youtube Preview:  
 [![spellhotbar2_yt_preview](https://img.youtube.com/vi/5aj7-3XC50I/0.jpg)](https://www.youtube.com/watch?v=5aj7-3XC50I)
 
 ## Support for Potions, Food Items and Scrolls
@@ -99,3 +108,37 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 
 ![#Ingame_Editor](docs/images/spell_editor1.jpg) ![#Ingame_Editor2](docs/images/spell_editor2.jpg)  
 
+## Currently supported Spell/Perk mods with icons
+[Abyss](https://www.nexusmods.com/skyrimspecialedition/mods/83329)  
+[Abyssal Tides Magic](https://www.nexusmods.com/skyrimspecialedition/mods/97892)  
+[Abyssal Wind Magic](https://www.nexusmods.com/skyrimspecialedition/mods/96352)  
+[Ancient Blood Magic II](https://www.nexusmods.com/skyrimspecialedition/mods/115106)  
+[Andromeda - Unique Standing Stones of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/14910)  
+[Apocalypse - Magic Of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/1090)  
+[Arclight](https://www.nexusmods.com/skyrimspecialedition/mods/90405)  
+[Astral Magic 2](https://www.nexusmods.com/skyrimspecialedition/mods/69938)  
+[Constellation Magic](https://www.nexusmods.com/skyrimspecialedition/mods/92104)  
+[Dark Hierophant Magic](https://www.nexusmods.com/skyrimspecialedition/mods/108499)  
+[Desecration](https://www.nexusmods.com/skyrimspecialedition/mods/90832)  
+[Elemental Destruction Magic Redux](https://www.nexusmods.com/skyrimspecialedition/mods/37211)  
+[Holy Templar Magic](https://www.nexusmods.com/skyrimspecialedition/mods/113360)  
+[Miracles of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/71708)  
+[Mysticism - A Magic Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/27839)  
+[Obscure Magic](https://www.nexusmods.com/skyrimspecialedition/mods/103805)  
+[Odin - Skyrim Magic Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/46000)  
+[Ordinator - Perks of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/1137)  
+[Path of Sorcery - Magic Perk Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/6660)  
+[Sacrosanct - Vampires of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/3928)  
+[Sonic Magic](https://www.nexusmods.com/skyrimspecialedition/mods/76360)  
+[SPERG - Skyrim Perk Enhancements and Rebalanced Gameplay SE](https://www.nexusmods.com/skyrimspecialedition/mods/14180)  
+[Stellaris](https://www.nexusmods.com/skyrimspecialedition/mods/86833)  
+[Storm Calling Magic 2](https://www.nexusmods.com/skyrimspecialedition/mods/89643)  
+[Thunderchild - Epic Shouts and Immersion](https://www.nexusmods.com/skyrimspecialedition/mods/1460)  
+[Triumvirate - Mage Archetypes](https://www.nexusmods.com/skyrimspecialedition/mods/39170)  
+[Vulcano](https://www.nexusmods.com/skyrimspecialedition/mods/88689)  
+[Winter Wonderland Magic](https://www.nexusmods.com/skyrimspecialedition/mods/93871)  
+[The Witcher Signs](https://www.nexusmods.com/skyrimspecialedition/mods/90645)  
+
+# Known Issues
+* Some Perk mods change the costs of spells to health, this is currently not working when casting through the hotbar
+* Casting while moving in sneak mode has animation issues (walking in regular speed while counting as sneaking)
