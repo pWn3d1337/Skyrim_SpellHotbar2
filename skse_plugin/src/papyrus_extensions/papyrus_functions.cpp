@@ -452,6 +452,11 @@ bool toggle_oblivion_bar_vertical(RE::StaticFunctionTag*) {
     return SpellHotbar::Bars::oblivion_bar_vertical = !SpellHotbar::Bars::oblivion_bar_vertical;
 }
 
+std::string get_user_dir_bars_path(RE::StaticFunctionTag*) {
+    auto folder = SpellHotbar::Storage::IO::get_bars_user_dir();
+    return folder.string();
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -527,5 +532,6 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("getOblivionModeShowTime", "SpellHotbar", get_oblivion_mode_show_time);
     vm->RegisterFunction("isOblivionBarVertical", "SpellHotbar", is_oblivion_bar_vertical);
     vm->RegisterFunction("toggleOblivionBarVertical", "SpellHotbar", toggle_oblivion_bar_vertical);
+    vm->RegisterFunction("get_user_dir_bars_path", "SpellHotbar", get_user_dir_bars_path);
     return true;
 }

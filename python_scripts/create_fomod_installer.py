@@ -138,9 +138,12 @@ def _get_battle_mage_perk_config(folder: str) -> str:
                         </plugin>"""
 
 
-def _get_profile_config(name: str, json_name: str, desc: str) -> str:
+def _get_profile_config(name: str, json_name: str, desc: str, image: str | None = None) -> str:
     return f"""
                          <plugin name="{name}">
+                            {
+                                f'<image path = "installer_images\\{image}"/>' if image is not None else ""
+                            }
                             <description>{desc}</description>
                             <files>
                                 <file source="0000 Required - Main Mod/SKSE/Plugins/SpellHotbar/presets/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
@@ -151,7 +154,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
     return f"""
 <config xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>Spell Hotbar 2 - {version} Installer</moduleName>
-    <moduleImage path="installer_images/spell_hotbar_logo.png" />
+    <moduleImage path="installer_images\\spell_hotbar_logo.jpg" />
     <requiredInstallFiles>
         <folder source="{required_folder}" destination="" priority="0"/>
     </requiredInstallFiles>
@@ -188,11 +191,11 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                             </typeDescriptor>
                         </plugin>
                         {_get_profile_config("Simple", "simple",
-                                             "Only 1 Bar, no modifiers, Keybinds: 1-10.=")}
+                                             "Only 1 Bar, no modifiers, Keybinds: 1-10.=", "simple.jpg")}
                         {_get_profile_config("All Bars", "all_bars",
-                                             "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu")}
+                                             "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu", "simple.jpg")}
                         {_get_profile_config("Oblivion Mode", "oblivion_mode", 
-                                             "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion")}
+                                             "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion", "oblivion_mode.jpg")}
                     </plugins>
                 </group>
             </optionalFileGroups>
@@ -319,6 +322,10 @@ released_files_main_plugin_v2 = [
 
 battlemage_perk_files = [
     (dev_mod_root_battlemage / "SpellHotbar_BattleMage.esp", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "meshes/interface/intbattlemageperkskydome.nif", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "textures/interface/battlemage_bluemoon.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "textures/interface/battlemage_constellation.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
     # yes the scripts are located in the main mods folder in the dev setup
     (dev_mod_root / "Scripts/SpellHotbarBattleMageInitQuestScript.pex", (dev_mod_root, battlemage_mod_folder)),
     (dev_mod_root / "Scripts/SpellHotbarOpenBattleMagePerkTree.pex", (dev_mod_root, battlemage_mod_folder)),
@@ -437,7 +444,9 @@ if __name__ == "__main__":
         release_files += (dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_sperg"),
 
         # installer images
-        release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.png", "installer_images"))
+        release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.jpg", "installer_images"))
+        release_files.append((Path(__file__).parent / "installer_images/simple.jpg", "installer_images"))
+        release_files.append((Path(__file__).parent / "installer_images/oblivion_mode.jpg", "installer_images"))
 
         if ONLY_PRINT_FILES:
             for p1, p2 in release_files:

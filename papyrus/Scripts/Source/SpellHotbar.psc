@@ -75,3 +75,4 @@ float function setOblivionModeShowTime(float time) native global
 float function getOblivionModeShowTime() native global
 bool function isOblivionBarVertical() global native
 bool function toggleOblivionBarVertical() global native
+string function get_user_dir_bars_path() global native

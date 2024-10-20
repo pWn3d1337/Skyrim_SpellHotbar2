@@ -23,11 +23,7 @@ string[] anchor_points
 string[] input_modes
 string[] bar_layouts
 
-string presets_root = "Data/SKSE/Plugins/SpellHotbar/presets/"
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
-string user_presets_path = "SpellHotbar/presets/"
-string user_bars_path = "SpellHotbar/bars/"
-int presets_json_format = 2
 
 ; SCRIPT VERSION
 int function GetVersion()
@@ -607,7 +603,7 @@ State SaveBarsState
 	Event OnInputAcceptST(string name)
 		if name != ""
 			if ShowMessage("Save current bars as '" + name +".json'?", true, "$Yes", "$No")
-				string out_file = JContainers.userDirectory() + user_bars_path + name + ".json"
+				string out_file = SpellHotbar.get_user_dir_bars_path() + "/" + name + ".json"
 				bool exists = SpellHotbar.fileExists(out_file)
 				if !exists || ShowMessage("'" + name +".json' exists, overwrite?", true, "$Yes", "$No")
 					if SpellHotbar.saveBarsToFile(out_file)
@@ -637,7 +633,7 @@ State LoadBarsState
 	Event OnMenuAcceptST(int index)
 		if index > 0
 			string preset = known_bar_presets[index]
-			string file_path_user = JContainers.userDirectory() + user_bars_path + preset
+			string file_path_user = SpellHotbar.get_user_dir_bars_path() + "/" + preset
 			string file_path_mod = bars_root + preset
 			if ShowMessage("Load bars from '" + preset +"'?", true, "$Yes", "$No")
 				if (SpellHotbar.loadBarsFromFile(file_path_mod, file_path_user))

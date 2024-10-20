@@ -101,7 +101,6 @@ namespace SpellHotbar::Input {
             } else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
                 RE::ButtonEvent* bEvent = event->AsButtonEvent();
                 if (bEvent) {
-                    //logger::info("ButtonEvent: {}", bEvent->GetIDCode());
 
                     auto& io = ImGui::GetIO();
 
@@ -215,7 +214,6 @@ namespace SpellHotbar::Input {
                                         if (bEvent->IsDown()) {
                                             handled = true;
                                             auto skill = GameData::get_current_spell_info_in_slot(i);
-
                                             if (GameData::isVampireLord() &&
                                                 GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f &&
                                                 !Input::is_equip_mode())
@@ -310,7 +308,6 @@ namespace SpellHotbar::Input {
             event = nextEvent;
         }
         if (addEvent) {
-            //logger::info("Adding Event to Queue: {}, {}", addEvent->AsButtonEvent()->GetIDCode(), addEvent->AsButtonEvent()->Value());
             if (prev) {
                 prev->next = addEvent;
             }
@@ -518,7 +515,7 @@ namespace SpellHotbar::Input {
         }
 
         const auto* control_map = RE::ControlMap::GetSingleton();
-        if (!control_map || !control_map->IsMovementControlsEnabled() || !control_map->IsFightingControlsEnabled())
+        if (!control_map || !control_map->IsMovementControlsEnabled()) // || !control_map->IsFightingControlsEnabled()) this is not working in 1170 and probably not needed anyway
         {
             return false;
         }
@@ -546,7 +543,6 @@ namespace SpellHotbar::Input {
     {
         RE::UI* ui = RE::UI::GetSingleton();
         if (!ui) return nullptr;
-
         if (!SpellHotbar::GameData::hasFavMenuSlotBinding()) {
             // totally stolen from Wheeler
             auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
@@ -556,7 +552,6 @@ namespace SpellHotbar::Input {
             if (invMenu) {
                 valid_tab = RenderManager::current_inv_menu_tab_valid_for_hotbar();
             };
-
             if (!magMenu && !valid_tab) return nullptr;
 
             RE::GFxValue selection;
@@ -568,7 +563,6 @@ namespace SpellHotbar::Input {
             }
             if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
                 RE::FormID formID = static_cast<std::uint32_t>(selection.GetNumber());
-                //logger::info("Selection: {:08x}", formID);
                 return RE::TESForm::LookupByID(formID);
             }
         }
@@ -630,9 +624,10 @@ namespace SpellHotbar::Input {
         if (!ui) {
             return false;
         }
-
         const auto* control_map = RE::ControlMap::GetSingleton();
-        if (control_map && (control_map->textEntryCount != 0))
+        if (!control_map) {
+        }
+        if (control_map && (control_map->textEntryCount > 0))
         {
             return false;
         }

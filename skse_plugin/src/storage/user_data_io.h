@@ -13,4 +13,8 @@ namespace SpellHotbar::Storage::IO {
 	std::vector<std::string> get_config_presets();
 
     std::vector<std::string> get_bar_presets();
+
+	std::filesystem::path get_preset_user_dir();
+
+	std::filesystem::path get_bars_user_dir();
 }
