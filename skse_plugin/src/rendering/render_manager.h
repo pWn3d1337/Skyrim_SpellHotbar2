@@ -20,6 +20,7 @@ namespace SpellHotbar {
         virtual ~TextureImage() = default;
 
         bool load(const std::string& path);
+        bool load_dds(const std::string& path);
 
         virtual void draw(float w, float h);
         virtual void draw(float w, float h, float alpha);

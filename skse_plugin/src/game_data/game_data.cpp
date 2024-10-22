@@ -57,6 +57,7 @@ namespace SpellHotbar::GameData {
     RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack = nullptr;
     RE::BGSPerk* spellhotbar_perk_cast_on_crit = nullptr;
     RE::BGSPerk* spellhotbar_perk_cast_on_block = nullptr;
+    RE::BGSPerk* spellhotbar_perk_cast_on_concentration = nullptr;
     RE::BGSPerk* spellhotbar_perk_expert = nullptr;
     RE::BGSPerk* spellhotbar_perk_master = nullptr;
 
@@ -347,6 +348,7 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x846, "SpellHotbar.esp", &spellhotbar_perk_cast_on_sneak_attack, "SpellHotbar_BattleMage_PerkProcSneakAttack", RE::FormType::Perk);
         load_form_from_game(0x847, "SpellHotbar.esp", &spellhotbar_perk_cast_on_crit, "SpellHotbar_BattleMage_PerkProcCrit", RE::FormType::Perk);
         load_form_from_game(0x848, "SpellHotbar.esp", &spellhotbar_perk_cast_on_block, "SpellHotbar_BattleMage_PerkProcBlock", RE::FormType::Perk);
+        load_form_from_game(0x849, "SpellHotbar.esp", &spellhotbar_perk_cast_on_concentration, "SpellHotbar_BattleMage_PerkProcConcentrationCast", RE::FormType::Perk);
         load_form_from_game(0x84A, "SpellHotbar.esp", &spellhotbar_perk_expert, "SpellHotbar_BattleMage_PerkExpert", RE::FormType::Perk);
         load_form_from_game(0x84B, "SpellHotbar.esp", &spellhotbar_perk_master, "SpellHotbar_BattleMage_PerkMaster", RE::FormType::Perk);
 
@@ -986,7 +988,6 @@ namespace SpellHotbar::GameData {
         if (cal) {
             float curr_time = cal->GetCurrentGameTime();
             float gt_value = hours / 24.0f;
-            logger::info("GT Cooldown {}, curr_time: {}", gt_value, curr_time);
 
             if (gametime_cooldowns.contains(skill)) {
                 auto cd = gametime_cooldowns.find(skill);

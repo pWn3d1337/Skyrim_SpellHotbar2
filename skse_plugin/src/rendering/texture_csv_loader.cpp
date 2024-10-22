@@ -211,11 +211,16 @@ namespace SpellHotbar::TextureCSVLoader {
     inline void _load_images(const std::string & str_path) {
         // find matching .png
         std::string png_path = str_path.substr(0, str_path.size() - 3) + "png";
-        if (fs::exists(fs::path(png_path))) {
+        std::string dds_path = str_path.substr(0, str_path.size() - 3) + "dds";
+
+        if (fs::exists(fs::path(dds_path))) {
+            logger::info("Loading icons: {}", dds_path);
+
+            load_texture_from_csv(str_path, dds_path);
+        } else if (fs::exists(fs::path(png_path))) {
             logger::info("Loading icons: {}", png_path);
 
             load_texture_from_csv(str_path, png_path);
-
         }
         else {
             logger::warn("No matching image file for {}", str_path);

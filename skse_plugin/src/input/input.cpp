@@ -534,7 +534,10 @@ namespace SpellHotbar::Input {
             pc->GetGraphVariableBool("bInJumpState"sv, inJumpState);
             //pc->GetGraphVariableBool("bInJumpState"sv, bowDrawn); //TODO look for bow anim
 
-            return !(as->IsSprinting() || as->IsSwimming() || inJumpState); //|| bowDrawn);
+            //Check if player currently is casting, also check staffs
+            bool isCasting = pc->IsCasting(nullptr);
+
+            return !(isCasting || as->IsSprinting() || as->IsSwimming() || inJumpState); //|| bowDrawn);
         }
         else return false;
     }

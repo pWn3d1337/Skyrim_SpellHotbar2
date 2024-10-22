@@ -11,6 +11,7 @@ set(OUTPUT_FOLDER "F:/Skyrim Dev/ADT/mods/Spell Hotbar 2")
 find_package(imgui CONFIG REQUIRED)
 find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
+find_package(directxtk CONFIG REQUIRED)
 
 set(source_files src/plugin.cpp
                  src/logger/logger.h
@@ -84,6 +85,7 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/PCH.h)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXTK)
 
 #automatically copy to output folder if set
 if(DEFINED OUTPUT_FOLDER)

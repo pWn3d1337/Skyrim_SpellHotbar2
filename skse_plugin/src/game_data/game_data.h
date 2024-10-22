@@ -152,6 +152,7 @@ namespace SpellHotbar::GameData {
     extern RE::BGSPerk* spellhotbar_perk_cast_on_sneak_attack;
     extern RE::BGSPerk* spellhotbar_perk_cast_on_crit;
     extern RE::BGSPerk* spellhotbar_perk_cast_on_block;
+    extern RE::BGSPerk* spellhotbar_perk_cast_on_concentration;
     extern RE::BGSPerk* spellhotbar_perk_expert;
     extern RE::BGSPerk* spellhotbar_perk_master;
 

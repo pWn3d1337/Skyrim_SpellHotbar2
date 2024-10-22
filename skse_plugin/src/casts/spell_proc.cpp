@@ -163,7 +163,7 @@ namespace SpellHotbar::casts {
 			auto playerMagicCaster = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
 
 			if (!GameData::spellhotbar_apply_spellproc_cd->effects.empty() && GameData::spellhotbar_apply_spellproc_cd->effects[0]) {
-				GameData::spellhotbar_apply_spellproc_cd->effects[0]->effectItem.duration = get_proc_cd(pc);
+				GameData::spellhotbar_apply_spellproc_cd->effects[0]->effectItem.duration = static_cast<uint32_t>(std::round(get_proc_cd(pc)));
 			}
 
 			playerMagicCaster->CastSpellImmediate(GameData::spellhotbar_apply_spellproc_cd, true, pc, 1.0f, false, 0.0f, nullptr);

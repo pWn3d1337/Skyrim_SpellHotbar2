@@ -41,7 +41,17 @@ namespace SpellHotbar {
 
 bool TextureImage::load(const std::string& path)
 {
-    return TextureLoader::fromFile(path.c_str(), &res, &width, &height);
+    if (path.ends_with("dds")) {
+        return TextureLoader::fromDDSFile(path, &res, &width, &height);
+    }
+    else {
+        return TextureLoader::fromFile(path.c_str(), &res, &width, &height);
+    }
+}
+
+bool TextureImage::load_dds(const std::string& path)
+{
+    return TextureLoader::fromDDSFile(path, &res, &width, &height);
 }
 
 void TextureImage::draw(float w, float h)
@@ -440,10 +450,10 @@ void load_font_resources(float window_height) {
 
     ImGuiIO& io = ImGui::GetIO();
     font_text = io.Fonts->AddFontFromFileTTF(
-        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\9_$ConsoleFont_Futura Condensed.ttf", font_text_size);
+        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\text_font.ttf", font_text_size);
 
     font_symbols = io.Fonts->AddFontFromFileTTF(
-        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\2_$SkyrimSymbolsFont_SkyrimSymbols.ttf",
+        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\skyrim_symbols_font.ttf",
        size_symbols);
 
     CHECK_PTR(font_text);
@@ -633,7 +643,6 @@ void RenderManager::D3DInitHook::thunk() {
     } else {
         //ImGui_ImplWin32_EnableAlphaCompositing(sd.outputWindow);
     }
-    //TODO think about this casts
     if (!ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)context)) {
         logger::error("ImGui initialization failed (DX11)");
         return;

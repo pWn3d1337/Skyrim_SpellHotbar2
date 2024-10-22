@@ -38,25 +38,27 @@ namespace SpellHotbar::events {
             was_blocking = blocking;
 
 
-            auto caster_l = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kLeftHand);
-            auto caster_r = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kRightHand);
+            if (GameData::player_has_trigger_perk(GameData::spellhotbar_perk_cast_on_concentration)) {
+                auto caster_l = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kLeftHand);
+                auto caster_r = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kRightHand);
 
-            float ct_l = 0.0f;
-            float ct_r = 0.0f;
+                float ct_l = 0.0f;
+                float ct_r = 0.0f;
 
-            if (caster_l->currentSpell && caster_l->currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
-                ct_l = caster_l->castingTimer;
-            }
-            if (caster_r->currentSpell && caster_r->currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
-                ct_r = caster_r->castingTimer;
-            }
+                if (caster_l->currentSpell && caster_l->currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+                    ct_l = caster_l->castingTimer;
+                }
+                if (caster_r->currentSpell && caster_r->currentSpell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+                    ct_r = caster_r->castingTimer;
+                }
 
-            constexpr float dur = 4.0f;
-            if(ct_l >= dur || ct_r >= dur)
-            {
-                //only cause proc if spell is not procced itself
-                if (!casts::CastingController::is_currently_using_procced_spell()) {
-                    casts::SpellProc::trigger_spellproc();
+                constexpr float dur = 4.0f;
+                if (ct_l >= dur || ct_r >= dur)
+                {
+                    //only cause proc if spell is not procced itself
+                    if (!casts::CastingController::is_currently_using_procced_spell()) {
+                        casts::SpellProc::trigger_spellproc();
+                    }
                 }
             }
         }

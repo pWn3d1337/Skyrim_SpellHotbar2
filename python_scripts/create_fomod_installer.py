@@ -178,6 +178,72 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                 </group>
             </optionalFileGroups>
         </installStep>
+        <installStep name="UI Config">
+            <optionalFileGroups order="Explicit">
+                <group name="Chose UI Textures" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                         <plugin name="Default">
+                            <description>Keep SpellHotbar's default look matching vanilla skyrim</description>
+                            <files>
+                            </files>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Nordic UI">
+                            <description>Install bronze colored bar overlay textures matching Nordic UI color scheme. Chose Sovngarde font to best match Nordic UI</description>
+                            <files>
+                                <file source="4000 Interface Files/SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv" destination="SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv" priority="0" /> 
+                                <file source="4000 Interface Files/SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds" destination="SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds" priority="0" /> 
+                            </files>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Chose a Text Font" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                         <plugin name="Default">
+                            <description>Install Skyrims 'Futura Condensed' Font</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Sovngarde Font">
+                            <description>Install the Sovngarde (https://www.nexusmods.com/skyrimspecialedition/mods/386) Font, use together with Nordic UI, does not support JP/CN, should work with RU and PL</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font_sovngarde.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                        </plugin>
+                        <plugin name="PL">
+                            <description>Install Skyrims 'Futura Condensed' Font with PL support</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font_pl.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                        </plugin>
+                        <plugin name="RU">
+                            <description>Install Skyrims 'Futura Condensed' Font with RU support</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                        </plugin>
+                        <plugin name="JP">
+                            <description>Install Skyrims 'Futura Condensed' Font with JP support</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                        </plugin>
+                        <plugin name="CN">
+                            <description>Install some CN font from fonts_cn.swf</description>
+                            <files>
+                                <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                            </files>
+                        </plugin>
+                    </plugins>
+                </group>
+            </optionalFileGroups>
+        </installStep>
         <installStep name="Config Options">
             <optionalFileGroups order="Explicit">
                 <group name="Chose a Profile that automatically gets loaded" type="SelectExactlyOne">
@@ -262,7 +328,7 @@ def _get_spell_list(modname: str, num: int, folder_name_getter: Callable[[int, s
     return [
         (dev_mod_root / f"Interface/SpellHotbar/{modname}_icons.swf", (dev_mod_root, folder_name)),
         (dev_mod_root / f"SKSE/Plugins/SpellHotbar/images/icons_{modname}.csv", (dev_mod_root, folder_name)),
-        (dev_mod_root / f"SKSE/Plugins/SpellHotbar/images/icons_{modname}.png", (dev_mod_root, folder_name)),
+        (dev_mod_root / f"SKSE/Plugins/SpellHotbar/images/icons_{modname}.dds", (dev_mod_root, folder_name)),
         (dev_mod_root / f"SKSE/Plugins/SpellHotbar/spelldata/spells_{modname}.csv", (dev_mod_root, folder_name)),
         (dev_mod_root / f"SKSE/Plugins/InventoryInjector/{esp_name}.json", (dev_mod_root, folder_name)),
     ]
@@ -292,23 +358,23 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/animationdata/*.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/effectdata/vanilla_cast_effects.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/*.ttf", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/skyrim_symbols_font.ttf", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_poisons.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_poisons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_potions.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_potions.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_powers.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_powers.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_powers.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_spellproc_overlay.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_spellproc_overlay.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_spellproc_overlay.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.png", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/keynames/keynames.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/all_bars.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/oblivion_mode.json", (dev_mod_root, main_mod_folder)),
@@ -438,10 +504,20 @@ if __name__ == "__main__":
         release_files += get_perk_overhaul_list("sperg",2, "SPERG-SSE")
         release_files += get_perk_overhaul_list("path_of_sorcery",3, "PathOfSorcery")
 
+        # ui files
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font.ttf", "4000 Interface Files/fonts"))
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_sovngarde.ttf", "4000 Interface Files/fonts"))
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_cn.ttf", "4000 Interface Files/fonts"))
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_jp.ttf", "4000 Interface Files/fonts"))
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_ru.ttf", "4000 Interface Files/fonts"))
+        ## nordic UI texture
+        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv", "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
+        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds", "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
+
         # conditionalFiles
-        release_files += (dev_mod_root / "SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_vanilla"),
-        release_files += (dev_mod_root / "../Spell Hotbar 2 Adamant/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_adamant"),
-        release_files += (dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_sperg"),
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_vanilla"))
+        release_files.append((dev_mod_root / "../Spell Hotbar 2 Adamant/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_adamant"))
+        release_files.append((dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_sperg"))
 
         # installer images
         release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.jpg", "installer_images"))
