@@ -142,3 +142,5 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 # Known Issues
 * Some Perk mods change the costs of spells to health, this is currently not working when casting through the hotbar
 * Casting while moving in sneak mode has animation issues (walking in regular speed while counting as sneaking)
+* I have know Idea if fonts for other languages work, feedback/suggestions welcome
+* It seems be possible to cast spells with hotbar while channeling a staff
