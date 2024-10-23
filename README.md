@@ -19,7 +19,7 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)  
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
-[Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu
+[Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu  
 [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
