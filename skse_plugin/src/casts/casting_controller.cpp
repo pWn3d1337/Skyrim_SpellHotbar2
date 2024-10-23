@@ -463,7 +463,8 @@ namespace SpellHotbar::casts::CastingController {
 				}
 			}
 
-			if ((m_manacost*0.5f) > pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)) {
+			//if ((m_manacost*0.5f) > pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)) {
+			if (pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)<=0.0f) {
 				//cancel if out of magicka
 				keydown = false;
 				RE::HUDMenu::FlashMeter(RE::ActorValue::kMagicka);
@@ -670,7 +671,7 @@ namespace SpellHotbar::casts::CastingController {
 							}
 						}
 						bool dual_cast{ false };
-						if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast() || hand == dual_hand)) && GameData::player_can_dualcast_spell(spell)) {
+						if (!spell->GetNoDualCastModifications() && ((hand == auto_hand && GameData::should_dual_cast()) || hand == dual_hand) && GameData::player_can_dualcast_spell(spell)) {
 
 							RE::GameSettingCollection* game_settings = RE::GameSettingCollection::GetSingleton();
 							if (game_settings) {
@@ -687,7 +688,9 @@ namespace SpellHotbar::casts::CastingController {
 							}
 						}
 
-						if (manacost <= pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka)) {
+						if (manacost <= pc->AsActorValueOwner()->GetActorValue(RE::ActorValue::kMagicka) 
+							|| (spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration)) { 
+
 							//set casttime
 
 							auto spell_data = GameData::get_spell_data(spell);
@@ -912,7 +915,6 @@ namespace SpellHotbar::casts::CastingController {
 	bool cast_spell(RE::SpellItem* spell, bool dual_cast, std::optional<float> concentration_manacost)
 	{
 		//Credits to https://github.com/ArcEarth/DynamicAnimationCasting/
-
 		if (!spell) return false;
 
 		auto pc = RE::PlayerCharacter::GetSingleton();

@@ -1273,7 +1273,6 @@ namespace SpellHotbar::GameData {
                  break;
              }
          }
-
          return hasPerk;
      }
      void set_animtype_global(int value)
@@ -1291,19 +1290,25 @@ namespace SpellHotbar::GameData {
 
              switch (hand) {
              case hand_mode::auto_hand:
-                 castsource = SpellHotbar::GameData::get_cast_hand_from_equip();
-                 if (castsource == RE::MagicSystem::CastingSource::kLeftHand || dual_cast) {
-                     used_hand = hand_mode::left_hand;
+                 if (dual_cast) {
+                     used_hand = hand_mode::dual_hand;
+                     castsource = RE::MagicSystem::CastingSource::kLeftHand;
                  }
-                 else if (castsource == RE::MagicSystem::CastingSource::kRightHand) {
-                     used_hand = hand_mode::right_hand;
+                 else {
+                     castsource = SpellHotbar::GameData::get_cast_hand_from_equip();
+                     if (castsource == RE::MagicSystem::CastingSource::kLeftHand) {
+                         used_hand = hand_mode::left_hand;
+                     }
+                     else if (castsource == RE::MagicSystem::CastingSource::kRightHand) {
+                         used_hand = hand_mode::right_hand;
+                     }
                  }
                  break;
              case hand_mode::right_hand:
                  castsource = RE::MagicSystem::CastingSource::kRightHand;
                  break;
-             case hand_mode::left_hand:
              case hand_mode::dual_hand:
+             case hand_mode::left_hand:
                  castsource = RE::MagicSystem::CastingSource::kLeftHand;
                  break;
              case hand_mode::voice:

@@ -407,7 +407,7 @@ if __name__ == "__main__":
 
     debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
-    version = "0.0.1"
+    version = "0.0.3"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
 
     _add_spell_pack("vulcano")
