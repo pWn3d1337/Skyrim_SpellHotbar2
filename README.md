@@ -144,3 +144,29 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 * Casting while moving in sneak mode has animation issues (walking in regular speed while counting as sneaking)
 * I have know Idea if fonts for other languages work, feedback/suggestions welcome
 * It seems be possible to cast spells with hotbar while channeling a staff
+
+# Credits
+[Mrowpurr](https://github.com/mrowrpurr) for Tutorials & Templates  
+
+## SKSE
+[CommonLibSSE-NG](https://github.com/CharmedBaryon/CommonLibSSE-NG)  
+[Dear ImGui](https://github.com/ocornut/imgui)  
+[RapidCSV](https://github.com/d99kris/rapidcsv)  
+[RapidJSON](https://rapidjson.org/)   
+[spdlog](https://github.com/gabime/spdlog)  
+[stb_image](https://github.com/nothings/stb)  
+[SKSE](https://skse.silverlock.org/)  
+[Address Library](https://www.nexusmods.com/skyrimspecialedition/mods/32444)  
+[DirectXTK](https://github.com/microsoft/DirectXTK)  
+
+### Important References
+[Wheeler](https://github.com/D7ry/wheeler)  
+[LamasTinyHUD](https://github.com/mlthelama/LamasTinyHUD)  
+[Immersive Equipment Displays](https://github.com/SlavicPotato/ied-dev)  
+
+## Papyrus / esp
+[Thu'um - Fully Animated Shouts](https://www.nexusmods.com/skyrimspecialedition/mods/50559), big thanks for open permission shout anims  
+[SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
+
+## Tools
+[SWF Tools](http://www.swftools.org/) - png2swf.exe
