@@ -141,18 +141,20 @@ def _get_battle_mage_perk_config(folder: str) -> str:
 def _get_profile_config(name: str, json_name: str, desc: str, image: str | None = None) -> str:
     return f"""
                          <plugin name="{name}">
+                            <description>{desc}</description>
                             {
                                 f'<image path = "installer_images\\{image}"/>' if image is not None else ""
                             }
-                            <description>{desc}</description>
                             <files>
                                 <file source="0000 Required - Main Mod/SKSE/Plugins/SpellHotbar/presets/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>"""
 
 def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]) -> str:
-    return f"""
-<config xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    return f"""<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>Spell Hotbar 2 - {version} Installer</moduleName>
     <moduleImage path="installer_images\\spell_hotbar_logo.jpg" />
     <requiredInstallFiles>
@@ -196,6 +198,9 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                                 <file source="4000 Interface Files/SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv" destination="SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv" priority="0" /> 
                                 <file source="4000 Interface Files/SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds" destination="SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                     </plugins>
                 </group>
@@ -215,30 +220,45 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                             <files>
                                 <file source="4000 Interface Files/fonts/text_font_sovngarde.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                         <plugin name="PL">
                             <description>Install Skyrims 'Futura Condensed' Font with PL support</description>
                             <files>
                                 <file source="4000 Interface Files/fonts/text_font_pl.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                         <plugin name="RU">
                             <description>Install Skyrims 'Futura Condensed' Font with RU support</description>
                             <files>
                                 <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                         <plugin name="JP">
                             <description>Install Skyrims 'Futura Condensed' Font with JP support</description>
                             <files>
                                 <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                         <plugin name="CN">
                             <description>Install some CN font from fonts_cn.swf</description>
                             <files>
                                 <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
                             </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
                         </plugin>
                     </plugins>
                 </group>
@@ -407,7 +427,7 @@ if __name__ == "__main__":
 
     debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
-    version = "0.0.3"
+    version = "0.0.4"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
 
     _add_spell_pack("vulcano")

@@ -520,6 +520,10 @@ namespace SpellHotbar::Input {
             return false;
         }
 
+        if (pc->GetOccupiedFurniture()) {
+            return false;
+        }
+
         return !pc->IsOnMount();
     }
 

@@ -276,8 +276,8 @@ namespace SpellHotbar::Input {
 		ImGuiKey_GamepadDpadRight, //269  DPAD_RIGHT
 		ImGuiKey_GamepadStart, //270  START
 		ImGuiKey_GamepadBack, //271  BACK
-		ImGuiKey_GamepadL1, //272  LEFT_THUMB
-		ImGuiKey_GamepadR1, //273  RIGHT_THUMB
+		ImGuiKey_GamepadL3, //272  LEFT_THUMB
+		ImGuiKey_GamepadR3, //273  RIGHT_THUMB
 		ImGuiKey_GamepadL1, //274  LEFT_SHOULDER
 		ImGuiKey_GamepadR1, //275  RIGHT_SHOULDER
 		ImGuiKey_GamepadFaceDown, //276  A

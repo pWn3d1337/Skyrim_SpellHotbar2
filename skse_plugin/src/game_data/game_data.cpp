@@ -645,6 +645,10 @@ namespace SpellHotbar::GameData {
 
         auto* pc = RE::PlayerCharacter::GetSingleton();
         if (pc) {
+            if (pc->GetOccupiedFurniture()) {
+                return std::make_tuple(false, fast_fade);
+            }
+
             if (GameData::isVampireLord()) {
                 switch (Bars::bar_show_setting_vampire_lord) {
                     case Bars::bar_show_mode::always:
