@@ -42,7 +42,7 @@ namespace SpellHotbar::Input {
         KeyModifier(RE::INPUT_DEVICE device, uint8_t code1, uint8_t code2 = 0Ui8);
 		~KeyModifier() = default;
 
-		void update(RE::ButtonEvent* bEvent);
+		void update(uint32_t key_code, RE::INPUT_DEVICE key_device, bool is_pressed);
 
 		void rebind(int dx_scancode);
 		int get_dx_scancode();
@@ -71,7 +71,7 @@ namespace SpellHotbar::Input {
 		KeyBind(RE::INPUT_DEVICE device, uint8_t code);
 		~KeyBind() = default;
 
-		bool matches(RE::ButtonEvent* bEvent) const;
+		bool matches(uint32_t key_code, RE::INPUT_DEVICE key_device) const;
 		/*
 		* device independant code used by game
 		*/
@@ -79,7 +79,7 @@ namespace SpellHotbar::Input {
 
 		void assign_from_dx_scancode(int code);
 
-		void update(RE::ButtonEvent* bEvent);
+		void update(uint32_t key_code, RE::INPUT_DEVICE key_device, bool is_pressed);
 
 		inline bool isDown() const
 		{

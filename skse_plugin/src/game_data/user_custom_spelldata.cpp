@@ -27,7 +27,7 @@ namespace SpellHotbar::GameData {
 		if (ok && (flags & save_flags::icon_str)) {
 			uint16_t len = static_cast<uint16_t>(m_icon_str.length()); //Hopefully there is no icon string longer than 65536 chars :)
 			ok = serializer->WriteRecordData(&len, sizeof(uint16_t));
-			if (ok) ok = serializer->WriteRecordData(&m_icon_str, len);
+			if (ok) ok = serializer->WriteRecordData(m_icon_str.c_str(), len);
 		}
 
 		if (!ok) {
@@ -71,12 +71,17 @@ namespace SpellHotbar::GameData {
 			if (ok) ok = serializer->ResolveFormID(data.m_icon_form, data.m_icon_form);
 		}
 					
-		if (ok && (flags & save_flags::icon_str)) {
-			uint16_t len{ 0U };
-			ok = serializer->ReadRecordData(&len, sizeof(uint16_t));
-			std::vector<char> buf(len, '\0');
-			if (ok) ok = serializer->ReadRecordData(&buf[0], len);
-			data.m_icon_str = std::string(buf.begin(), buf.end());
+		if (ok){
+			if (flags & save_flags::icon_str) {
+				uint16_t len{ 0U };
+				ok = serializer->ReadRecordData(&len, sizeof(uint16_t));
+				std::vector<char> buf(len, '\0');
+				if (ok) ok = serializer->ReadRecordData(&buf[0], len);
+				data.m_icon_str = std::string(buf.begin(), buf.end());
+			}
+			else {
+				data.m_icon_str = "";
+			}
 		}
 
 		if (ok) {

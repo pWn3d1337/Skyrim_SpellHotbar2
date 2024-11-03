@@ -938,6 +938,16 @@ namespace SpellHotbar::casts::CastingController {
 		//logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
 
+		//This is to fix failed target location spells
+		if (spell->GetDelivery() == RE::MagicSystem::Delivery::kTargetLocation && spell->GetCastingType() != RE::MagicSystem::CastingType::kConcentration) {
+			//if spell cast fails, this keeps hanging
+			if (pc->IsCasting(spell)) {
+				pc->InterruptCast(false);
+				RE::PlaySound(Input::sound_MagFail);
+				return false;
+			}
+		}
+
 		return true;
 	}
 

@@ -42,6 +42,79 @@ namespace {
 }
 namespace SpellHotbar::Input {
 
+    inline constexpr std::tuple<uint32_t, RE::INPUT_DEVICE> get_device_and_input(const RE::ButtonEvent* bEvent) {
+        uint32_t key = 0;
+        RE::INPUT_DEVICE dev = RE::INPUT_DEVICE::kNone;
+        if (bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard) {
+            key = bEvent->GetIDCode();
+            dev = RE::INPUT_DEVICE::kKeyboard;
+        }
+        else if (bEvent->GetDevice() == RE::INPUT_DEVICE::kMouse) {
+            key = bEvent->GetIDCode();
+            dev = RE::INPUT_DEVICE::kMouse;
+        }
+        else if (bEvent->GetDevice() == RE::INPUT_DEVICE::kGamepad) {
+            dev = RE::INPUT_DEVICE::kGamepad;
+            //Map Gamepad keys to 0-x
+            switch (bEvent->GetIDCode()) {
+            case RE::BSWin32GamepadDevice::Keys::Key::kUp:
+                key = 0;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kDown:
+                key = 1;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kLeft:
+                key = 2;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kRight:
+                key = 3;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kStart:
+                key = 4;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kBack:
+                key = 5;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kLeftThumb:
+                key = 6;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kRightThumb:
+                key = 7;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kLeftShoulder:
+                key = 8;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kRightShoulder:
+                key = 9;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kA:
+                key = 10;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kB:
+                key = 11;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kX:
+                key = 12;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kY:
+                key = 13;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kLeftTrigger:
+                key = 14;
+                break;
+            case RE::BSWin32GamepadDevice::Keys::Key::kRightTrigger:
+                key = 15;
+                break;
+            default:
+                //Invalid key
+                key = 0;
+                dev = RE::INPUT_DEVICE::kNone;
+            }
+        }
+
+        return std::make_tuple(key, dev);
+    }
+
     void install_hook() { OnInputEventDispatch::Install(); }
 
     void processAndFilter(RE::InputEvent** a_event)
@@ -101,35 +174,39 @@ namespace SpellHotbar::Input {
             } else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
                 RE::ButtonEvent* bEvent = event->AsButtonEvent();
                 if (bEvent) {
-
                     auto& io = ImGui::GetIO();
 
-                    //update imgui mods
-                    if (bEvent->GetIDCode() == 29 || bEvent->GetIDCode() == 157) {
-                        io.AddKeyEvent(ImGuiKey_ModCtrl, bEvent->IsPressed());
+                    auto [key_code, key_device] = get_device_and_input(bEvent);
+                    bool is_pressed = bEvent->IsPressed();
+
+                    if (key_device == RE::INPUT_DEVICE::kKeyboard) {
+                        //update imgui mods
+                        if (key_code == 29 || key_code == 157) {
+                            io.AddKeyEvent(ImGuiKey_ModCtrl, is_pressed);
+                        }
+                        if (key_code == 42 || key_code == 54) {
+                            io.AddKeyEvent(ImGuiKey_ModShift, is_pressed);
+                            //mod_shift.update(bEvent);
+                        }
+                        if (key_code == 56 || key_code == 184) {
+                            io.AddKeyEvent(ImGuiKey_ModAlt, is_pressed);
+                            mod_alt.update(key_code, key_device, is_pressed);
+                        }
                     }
-                    if (bEvent->GetIDCode() == 42 || bEvent->GetIDCode() == 54) {
-                        io.AddKeyEvent(ImGuiKey_ModShift, bEvent->IsPressed());
-                        //mod_shift.update(bEvent);
-                    }
-                    if (bEvent->GetIDCode() == 56 || bEvent->GetIDCode() == 184) {
-                        io.AddKeyEvent(ImGuiKey_ModAlt, bEvent->IsPressed());
-                        mod_alt.update(bEvent);
-                    }
-                    mod_1.update(bEvent);
-                    mod_2.update(bEvent);
-                    mod_3.update(bEvent);
-                    mod_dual_cast.update(bEvent);
-                    mod_show_bar.update(bEvent);
+                    mod_1.update(key_code, key_device, is_pressed);
+                    mod_2.update(key_code, key_device, is_pressed);
+                    mod_3.update(key_code, key_device, is_pressed);
+                    mod_dual_cast.update(key_code, key_device, is_pressed);
+                    mod_show_bar.update(key_code, key_device, is_pressed);
 
                     //update all keybind states
                     for (size_t i = 0; i < key_spells.size(); ++i) {
-                        key_spells[i].update(bEvent);
+                        key_spells[i].update(key_code, key_device, is_pressed);
                     }
-                    key_oblivion_cast.update(bEvent);
-                    key_oblivion_potion.update(bEvent);
+                    key_oblivion_cast.update(key_code, key_device, is_pressed);
+                    key_oblivion_potion.update(key_code, key_device, is_pressed);
 
-                    if (bEvent->GetDevice() == RE::INPUT_DEVICE::kMouse) {
+                    if (key_device == RE::INPUT_DEVICE::kMouse) {
                         // credits open animation replacer
                         //forward the mouse inputs to ImGUI
                         if (bEvent->GetIDCode() > 7) {
@@ -143,44 +220,43 @@ namespace SpellHotbar::Input {
                         }
                     }
 
-                    if (!captureEvent && RenderManager::is_dragging_bar() && bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard && bEvent->GetIDCode() == 1) {
+                    if (!captureEvent && RenderManager::is_dragging_bar() && key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1) {
                         RenderManager::stop_bar_dragging();
                         captureEvent = true;
                     }
 
                     //Block control inputs when a special frame is opened (SpellEditor)
                     if (!captureEvent && RenderManager::should_block_game_key_inputs()) {
-                        if (bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard || bEvent->GetDevice() == RE::INPUT_DEVICE::kGamepad) {
+                        if (key_device == RE::INPUT_DEVICE::kKeyboard || key_device == RE::INPUT_DEVICE::kGamepad) {
                             captureEvent = true;
 
-                            if (bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard && bEvent->GetIDCode() == 1 && bEvent->IsDown()) {
+                            if (key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1 && bEvent->IsDown()) {
                                 //Close Frames when ESC is pressed
                                 RenderManager::close_key_blocking_frames();
                             }
                             else {
-                                int dx_code = input_to_dx_scancode(bEvent->GetDevice(), static_cast<uint8_t>(bEvent->GetIDCode()));
+                                int dx_code = input_to_dx_scancode(key_device, static_cast<uint8_t>(key_code));
                                 if (dx_code >= 0 && dx_code < dx_to_imgui.size()) {
                                     ImGuiKey key = dx_to_imgui[dx_code];
                                     if (key != ImGuiKey_None) {
-                                        io.AddKeyEvent(key, bEvent->IsPressed());
+                                        io.AddKeyEvent(key, is_pressed);
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (!captureEvent && (bEvent->GetDevice() == RE::INPUT_DEVICE::kKeyboard || bEvent->GetDevice() == RE::INPUT_DEVICE::kGamepad || bEvent->GetDevice() == RE::INPUT_DEVICE::kMouse)) {
+                    if (!captureEvent && (key_device == RE::INPUT_DEVICE::kKeyboard || key_device == RE::INPUT_DEVICE::kGamepad || key_device == RE::INPUT_DEVICE::kMouse)) {
 
                         if (casts::CastingController::is_movement_blocking_cast() && in_ingame_state()) {
                             auto cm = RE::ControlMap::GetSingleton();
                             if (cm) {
-                                RE::INPUT_DEVICE device = bEvent->GetDevice();
-                                uint32_t key_forward = cm->GetMappedKey("Forward"sv, device);
-                                uint32_t key_back= cm->GetMappedKey("Back"sv, device);
-                                uint32_t key_left = cm->GetMappedKey("Strafe Left"sv, device);
-                                uint32_t key_right = cm->GetMappedKey("Strafe Right"sv, device);
+                                uint32_t key_forward = cm->GetMappedKey("Forward"sv, key_device);
+                                uint32_t key_back= cm->GetMappedKey("Back"sv, key_device);
+                                uint32_t key_left = cm->GetMappedKey("Strafe Left"sv, key_device);
+                                uint32_t key_right = cm->GetMappedKey("Strafe Right"sv, key_device);
 
-                                if (bEvent->GetIDCode() == key_forward || bEvent->GetIDCode() == key_back || bEvent->GetIDCode() == key_left || bEvent->GetIDCode() == key_right) {
+                                if (key_code == key_forward || key_code == key_back || key_code == key_left || key_code == key_right) {
                                     if (!bEvent->IsUp()) {
                                         captureEvent = true;
                                     }
@@ -197,7 +273,7 @@ namespace SpellHotbar::Input {
                             for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
                                 const auto& bind = key_spells[i];
 
-                                if (bind.matches(bEvent))
+                                if (bind.matches(key_code, key_device))
                                 {
                                     if (in_binding_menu())
                                     {
@@ -206,6 +282,10 @@ namespace SpellHotbar::Input {
                                             RE::TESForm* form = get_current_selected_spell_in_menu();
                                             if (form) {
                                                 slot_spell(form, i);
+                                            }
+                                            if (mod_1.isDown() || mod_2.isDown() || mod_3.isDown()) {
+                                                //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
+                                                captureEvent = true;
                                             }
                                         }
                                     }
@@ -251,8 +331,8 @@ namespace SpellHotbar::Input {
                         }
                         if (!handled && Input::is_oblivion_mode() && in_ingame_state())
                         {
-                            bool cast = key_oblivion_cast.matches(bEvent);
-                            bool potion = key_oblivion_potion.matches(bEvent);
+                            bool cast = key_oblivion_cast.matches(key_code, key_device);
+                            bool potion = key_oblivion_potion.matches(key_code, key_device);
                             if (cast || potion)
                             {
                                 if (bEvent->IsDown()) {
@@ -277,12 +357,12 @@ namespace SpellHotbar::Input {
 
                         if (!handled && in_binding_menu())
                         {
-                            if (key_next.matches(bEvent) && bEvent->IsDown()) {
+                            if (key_next.matches(key_code, key_device) && bEvent->IsDown()) {
                                 handled = true;
                                 Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
                                 RE::PlaySound(sound_UISkillsForward);
                             }
-                            else if (key_prev.matches(bEvent) && bEvent->IsDown()) {
+                            else if (key_prev.matches(key_code, key_device) && bEvent->IsDown()) {
                                 handled = true;
                                 Bars::menu_bar_id = Bars::getPreviousMenuBar(Bars::menu_bar_id);
                                 RE::PlaySound(sound_UISkillsBackward);
@@ -321,18 +401,20 @@ namespace SpellHotbar::Input {
         : input_device(device), keycode(code1), keycode2(code2), isDown1(false), isDown2(false)
     {}
 
-    void KeyModifier::update(RE::ButtonEvent* bEvent) {
-        if (bEvent->GetDevice() == input_device) {
-            if (keycode > 0 && bEvent->idCode == keycode)
+    void KeyModifier::update(uint32_t key_code, RE::INPUT_DEVICE key_device, bool is_pressed)
+    {
+        if (key_device == input_device) {
+            if (keycode > 0 && key_code == keycode)
             {
-                isDown1 = bEvent->IsPressed();
+                isDown1 = is_pressed;
             }
-            else if (keycode2 > 0 && bEvent->idCode == keycode2)
+            else if (keycode2 > 0 && key_code == keycode2)
             {
-                isDown2 = bEvent->IsPressed();
+                isDown2 = is_pressed;
             }
         }
     }
+
     void KeyModifier::rebind(int dx_scancode)
     {
         auto [device, code] = dx_scan_code_to_input(dx_scancode);
@@ -381,9 +463,9 @@ namespace SpellHotbar::Input {
     {
     }
 
-    bool KeyBind::matches(RE::ButtonEvent* bEvent) const
+    bool KeyBind::matches(uint32_t key_code, RE::INPUT_DEVICE key_device) const
     {
-        return bEvent->GetDevice() == input_device && bEvent->GetIDCode() == keycode;
+        return key_device == input_device && key_code == keycode;
     }
 
     int KeyBind::get_dx_scancode() const
@@ -398,10 +480,10 @@ namespace SpellHotbar::Input {
         keycode = key;
     }
 
-    void KeyBind::update(RE::ButtonEvent* bEvent)
+    void KeyBind::update(uint32_t key_code, RE::INPUT_DEVICE key_device, bool is_pressed)
     {
-        if (matches(bEvent)) {
-            m_isDown = bEvent->IsPressed();
+        if (matches(key_code, key_device)) {
+            m_isDown = is_pressed;
         }
     }
 
@@ -632,8 +714,6 @@ namespace SpellHotbar::Input {
             return false;
         }
         const auto* control_map = RE::ControlMap::GetSingleton();
-        if (!control_map) {
-        }
         if (control_map && (control_map->textEntryCount > 0))
         {
             return false;

@@ -457,6 +457,10 @@ std::string get_user_dir_bars_path(RE::StaticFunctionTag*) {
     return folder.string();
 }
 
+void log_message(RE::StaticFunctionTag*, std::string msg) {
+    logger::info("Papyrus Logged: {}", msg);
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -533,5 +537,6 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("isOblivionBarVertical", "SpellHotbar", is_oblivion_bar_vertical);
     vm->RegisterFunction("toggleOblivionBarVertical", "SpellHotbar", toggle_oblivion_bar_vertical);
     vm->RegisterFunction("get_user_dir_bars_path", "SpellHotbar", get_user_dir_bars_path);
+    vm->RegisterFunction("log_info", "SpellHotbar", log_message);
     return true;
 }

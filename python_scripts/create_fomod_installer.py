@@ -269,7 +269,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                 <group name="Chose a Profile that automatically gets loaded" type="SelectExactlyOne">
                     <plugins order="Explicit">
                          <plugin name="No Auto Profile">
-                            <description>All variables will be set to default and no keybinds will be set on initialisation. Will require manual configuration of the mod</description>
+                            <description>All variables will be set to default and no keybinds will be set on initialisation. Will require manual configuration of the mod or manual loading of a profile through MCM.</description>
                             <files>
                             </files>
                             <typeDescriptor>
@@ -282,6 +282,8 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                                              "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu", "simple.jpg")}
                         {_get_profile_config("Oblivion Mode", "oblivion_mode", 
                                              "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion", "oblivion_mode.jpg")}
+                        {_get_profile_config("Controller Simple", "controller_simple", 
+                                             "Starting point for controller config, binds DPad + ABXY with RS/LS as modifiers, non-modifier bar is disabled. Might need config adjustments to not conflict with your setup/MCM menus", "controller_simple.jpg")}
                     </plugins>
                 </group>
             </optionalFileGroups>
@@ -399,6 +401,7 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/all_bars.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/oblivion_mode.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/simple.json", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/controller_simple.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
