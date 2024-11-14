@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 import cv2
@@ -130,7 +131,10 @@ def write_png_and_dds(cvImage: np.ndarray, output_base: str) -> None:
     im_rgba = cv2.cvtColor(cvImage, cv2.COLOR_BGRA2RGBA)
     with wand_image.Image.from_array(im_rgba) as img:
         img.compression = "dxt5"
-        img.save(filename=f"{output_base}.dds")
+        output_path = Path(f"{output_base}.dds")
+        if output_path.exists():
+            os.remove(output_path)
+        img.save(filename=str(output_path))
 
 def _get_image_name(spell_name: str) -> str:
     return spell_name.lower().replace(" ", "_").replace("'", "").replace(":", "").replace("-", "_").replace("’", "")
@@ -171,6 +175,13 @@ def add_rank_text_to_image(img: np.ndarray, img_size: int, ranktext: str, rank_f
     draw.text(xy=(img_size * rank_text_pos_x, img_size * rank_text_pox_y), text=ranktext, font=rank_font,
               anchor="rm", align="center", fill=rank_text_color_fill, stroke_fill=rank_text_color_border,
               stroke_width=stroke_width, spacing=0)
+    img_out = np.array(pil_img)
+    return img_out
+
+def resize_image_with_pil(img: np.ndarray, img_size: int) -> np.ndarray:
+    """PIL has higher quality downsampling with LANCZOS"""
+    pil_img = Image.fromarray(img)
+    pil_img = pil_img.resize((img_size, img_size), Image.Resampling.LANCZOS)
     img_out = np.array(pil_img)
     return img_out
 
@@ -216,7 +227,8 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     cvImage = np.zeros((atlas_size, atlas_size, 4), dtype="uint8")
 
@@ -244,7 +256,8 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
             im = cv2.imread(v, cv2.IMREAD_UNCHANGED)
             if im is None:
                 raise IOError(f"Could not load {v}")
-            im = cv2.resize(im, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+            #im = cv2.resize(im, (image_size, image_size), interpolation=cv2.INTER_AREA)
+            im = resize_image_with_pil(im, image_size)
             overlay_images[k] = im
 
     for i in range(num_icons):
@@ -253,7 +266,8 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
             unique_key = df.iloc[i, unique_key_index]
             if str(unique_key) not in already_used_textures:
                 img = cv2.imread(path_to_load, cv2.IMREAD_UNCHANGED)
-                img = cv2.resize(img, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+                #img = cv2.resize(img, (image_size, image_size), interpolation=cv2.INTER_AREA)
+                img = resize_image_with_pil(img, image_size)
 
                 if img.ndim < 3:
                     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGBA)
@@ -412,7 +426,8 @@ def create_cooldown_progress_overlay(output_base: Path | str, alpha_mask_path: s
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     alpha_factor = alpha_mask.astype(float) / 255.0
 
@@ -561,7 +576,8 @@ def create_i4_icons(spell_list: list[str], icon_root: list[str], output_path: Pa
         out_pathes = []
         for index, row in df_icons.iterrows():
             img = cv2.imread(row['Path'], cv2.IMREAD_UNCHANGED)
-            img = cv2.resize(img, (swf_icon_size, swf_icon_size), interpolation=cv2.INTER_LANCZOS4)
+            #img = cv2.resize(img, (swf_icon_size, swf_icon_size), interpolation=cv2.INTER_LANCZOS4)
+            img = resize_image_with_pil(img, swf_icon_size)
 
             if not pd.isna(row["Shouttext"]):
                 img = add_dragonlang_text_to_image(img, swf_icon_size, row["Shouttext"], dragon_font, stroke_width=1)
@@ -649,7 +665,8 @@ def create_spellproc_overlay(input_folder: Path | str, output_base: Path | str, 
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     images = list()
     for img in folder_path.glob("*.png"):
@@ -685,7 +702,8 @@ def create_spellproc_overlay(input_folder: Path | str, output_base: Path | str, 
         img_exp = np.zeros((bgr.shape[0]+expansion_pixels*2, bgr.shape[1]+expansion_pixels*2, 4), dtype="uint8")
         img_exp[expansion_pixels:-expansion_pixels,expansion_pixels:-expansion_pixels,:] = img_a
 
-        im = cv2.resize(img_exp, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        #im = cv2.resize(img_exp, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        im = resize_image_with_pil(img_exp, image_size)
 
         # multiply alpha mask
         alpha_factor = alpha_mask.astype(float) / 255.0
@@ -801,10 +819,8 @@ if __name__ == "__main__":
     if redo_all_img or False:
         create_cooldown_progress_overlay(mod_root_path / "images/icons_cooldown", alpha_mask, radius=1.0, alpha=0.8)
 
-    # tmp_swf_path = r"F:\Skyrim Dev\WORK\TMP\tmp_spell_icons.swf"
-
     tmp_icons_dir = r"F:\Skyrim Dev\WORK\TMP\icons"
-    if False:
+    if redo_all_img or False:
         swf_path = str(mod_folder_path / "Interface/SpellHotbar/spell_icons.swf")
         create_i4_icons(spell_lists + spell_lists_powers + spell_lists_i4_only,
                         icon_root_folders + default_icons_folders + icon_root_folders_powers,
@@ -816,11 +832,11 @@ if __name__ == "__main__":
     if redo_all_img or False:
         # mods: vulcano
         stitch_mod("vulcano")
-        # i4_mod("vulcano", tmp_icons_dir)
+        i4_mod("vulcano", tmp_icons_dir)
         stitch_mod("arclight")
-        # i4_mod("arclight", tmp_icons_dir)
+        i4_mod("arclight", tmp_icons_dir)
         stitch_mod("desecration")
-        # i4_mod("desecration", tmp_icons_dir)
+        i4_mod("desecration", tmp_icons_dir)
 
     if redo_all_img or False:
         t_archetypes = ["druid", "cleric", "shadow_mage", "warlock", "shaman"]
@@ -830,7 +846,6 @@ if __name__ == "__main__":
         stitch_folder(triumvirate_spell_lists, triumvirate_icon_folders, mod_root_path / f"images/icons_triumvirate", alpha_mask,
                       output_data=mod_root_path / "spelldata/spells_triumvirate")
 
-    if False:
         i4_mod("triumvirate", tmp_icons_dir,
                triumvirate_spell_lists,
                triumvirate_icon_folders,
@@ -846,19 +861,19 @@ if __name__ == "__main__":
 
     if redo_all_img or False:
         stitch_mod("thunderchild")
-        # i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
+        i4_mod("thunderchild", tmp_icons_dir, esp_name="Thunderchild - Epic Shout Package")
 
         stitch_mod("sonic_magic")
-        # i4_mod("sonic_magic", tmp_icons_dir, esp_name="Shockwave")
+        i4_mod("sonic_magic", tmp_icons_dir, esp_name="Shockwave")
 
         stitch_mod("storm_calling_magic2")
-        # i4_mod("storm_calling_magic2", tmp_icons_dir, esp_name="StormCalling")
+        i4_mod("storm_calling_magic2", tmp_icons_dir, esp_name="StormCalling")
 
         stitch_mod("astral_magic_2")
-        # i4_mod("astral_magic_2", tmp_icons_dir, esp_name="Astral")
+        i4_mod("astral_magic_2", tmp_icons_dir, esp_name="Astral")
 
         stitch_mod("elemental_destruction_magic_redux")
-        # i4_mod("elemental_destruction_magic_redux", tmp_icons_dir, esp_name="Elemental Destruction Magic Redux")
+        i4_mod("elemental_destruction_magic_redux", tmp_icons_dir, esp_name="Elemental Destruction Magic Redux")
 
     a_schools = ["alteration", "conjuration", "destruction", "illusion", "restoration"]
     apoc_spell_lists = [rf"{project_root}\spell_lists2\mods\apocalypse_{s}.csv" for s in a_schools]
@@ -867,7 +882,6 @@ if __name__ == "__main__":
         stitch_folder(apoc_spell_lists, apoc_icon_folders, mod_root_path / f"images/icons_apocalypse", alpha_mask,
                       output_data=mod_root_path / "spelldata/spells_apocalypse")
 
-    if False:
         i4_mod("apocalypse", tmp_icons_dir, apoc_spell_lists, apoc_icon_folders,
                esp_name="Apocalypse - Magic of Skyrim")
 
@@ -878,59 +892,58 @@ if __name__ == "__main__":
         stitch_folder(odin_spell_lists, odin_icon_folders, mod_root_path / f"images/icons_odin", alpha_mask,
                       output_data=mod_root_path / "spelldata/spells_odin")
 
-    if False:
         i4_mod("odin", tmp_icons_dir, odin_spell_lists, odin_icon_folders,
                esp_name="Odin - Skyrim Magic Overhaul")
 
     if redo_all_img or False:
         stitch_mod("constellation_magic")
-        # i4_mod("constellation_magic", tmp_icons_dir, esp_name="Supernova")
+        i4_mod("constellation_magic", tmp_icons_dir, esp_name="Supernova")
 
         stitch_mod("miracles_of_skyrim")
-        # i4_mod("miracles_of_skyrim", tmp_icons_dir, esp_name="DS2Miracles")
+        i4_mod("miracles_of_skyrim", tmp_icons_dir, esp_name="DS2Miracles")
 
         stitch_mod("dark_hierophant_magic")
-        # i4_mod("dark_hierophant_magic", tmp_icons_dir, esp_name="Ghostlight")
+        i4_mod("dark_hierophant_magic", tmp_icons_dir, esp_name="Ghostlight")
 
         stitch_extra_icons(rf"{project_root}\extra_icons", mod_root_path / "images/extra_icons", alpha_mask)
 
         stitch_mod("andromeda")
-        # i4_mod("andromeda", tmp_icons_dir, esp_name="Andromeda - Unique Standing Stones of Skyrim")
+        i4_mod("andromeda", tmp_icons_dir, esp_name="Andromeda - Unique Standing Stones of Skyrim")
 
         stitch_mod("ordinator")
-        # i4_mod("ordinator", tmp_icons_dir, esp_name="Ordinator - Perks of Skyrim")
+        i4_mod("ordinator", tmp_icons_dir, esp_name="Ordinator - Perks of Skyrim")
 
         stitch_mod("sacrosanct")
-        # i4_mod("sacrosanct", tmp_icons_dir, esp_name="Sacrosanct - Vampires of Skyrim")
+        i4_mod("sacrosanct", tmp_icons_dir, esp_name="Sacrosanct - Vampires of Skyrim")
 
         stitch_mod("abyssal_tides_magic")
-        # i4_mod("abyssal_tides_magic", tmp_icons_dir, esp_name="Aqua")
+        i4_mod("abyssal_tides_magic", tmp_icons_dir, esp_name="Aqua")
 
         stitch_mod("abyssal_wind_magic")
-        # i4_mod("abyssal_wind_magic", tmp_icons_dir, esp_name="Aero")
+        i4_mod("abyssal_wind_magic", tmp_icons_dir, esp_name="Aero")
 
         stitch_mod("winter_wonderland_magic")
-        # i4_mod("winter_wonderland_magic", tmp_icons_dir, esp_name="Icebloom")
+        i4_mod("winter_wonderland_magic", tmp_icons_dir, esp_name="Icebloom")
 
         stitch_mod("abyss")
-        # i4_mod("abyss", tmp_icons_dir, esp_name="Abyss")
+        i4_mod("abyss", tmp_icons_dir, esp_name="Abyss")
 
         stitch_mod("ancient_blood_magic_2")
-        # i4_mod("ancient_blood_magic_2", tmp_icons_dir, esp_name="AncientBloodII")
+        i4_mod("ancient_blood_magic_2", tmp_icons_dir, esp_name="AncientBloodII")
 
         create_spellproc_overlay(rf"{project_root}\icons\spellproc_anim", mod_root_path / "images/icons_spellproc_overlay", alpha_mask, 10)
 
         stitch_mod("stellaris")
-        #i4_mod("stellaris", tmp_icons_dir)
+        i4_mod("stellaris", tmp_icons_dir)
 
         stitch_mod("obscure_magic")
-        #i4_mod("obscure_magic", tmp_icons_dir, esp_name="KittySpellPack01")
+        i4_mod("obscure_magic", tmp_icons_dir, esp_name="KittySpellPack01")
 
         stitch_mod("holy_templar_magic")
-        #i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")
+        i4_mod("holy_templar_magic", tmp_icons_dir, esp_name="Lightpower")
 
         stitch_mod("witcher_signs")
-        # i4_mod("witcher_signs", tmp_icons_dir, esp_name="W3S")
+        i4_mod("witcher_signs", tmp_icons_dir, esp_name="W3S")
 
     m_schools = ["alteration", "conjuration", "destruction", "illusion", "restoration"]
     mysticism_spell_lists = [rf"{project_root}\spell_lists2\mods\mysticism_{s}.csv" for s in m_schools]
@@ -939,10 +952,14 @@ if __name__ == "__main__":
     if redo_all_img or False:
         stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
 
-        #i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
+        i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
 
         stitch_mod("sperg")
-        #i4_mod("sperg", tmp_icons_dir, esp_name="SPERG-SSE")
+        i4_mod("sperg", tmp_icons_dir, esp_name="SPERG-SSE")
 
         stitch_mod("path_of_sorcery")
-        #i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
+        i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
+
+
+    # icons done by user request
+    #stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)

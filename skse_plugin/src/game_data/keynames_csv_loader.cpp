@@ -13,6 +13,12 @@ bool is_keynames_file(rapidcsv::Document& doc) {
 
 void load_keynames(const std::string & keynames_csv)
 {
+    auto keynames_path = std::filesystem::path(keynames_csv);
+    if (!std::filesystem::exists(keynames_path)) {
+        logger::error("Missing '{}', this is an installation error!", keynames_csv);
+        return;
+    }
+
     rapidcsv::Document doc(keynames_csv, rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams('\t'));
 
     // check the column names

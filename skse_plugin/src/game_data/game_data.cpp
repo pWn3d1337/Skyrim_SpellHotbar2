@@ -299,6 +299,10 @@ namespace SpellHotbar::GameData {
 
     //Growl
     RE::EffectSetting* growl_beast_form_cd_magic_effect = nullptr;
+
+    //Ordinator
+    RE::BGSPerk* ordinator_perk_vancian_magic = nullptr;
+    RE::TESGlobal* ordinator_global_vancian_magic_count = nullptr;
     
     template<typename T>
     void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type) {
@@ -417,6 +421,14 @@ namespace SpellHotbar::GameData {
         if (RE::TESDataHandler::GetSingleton()->GetModIndex(growl_esp_name).has_value()) {
             logger::info("Loading Growl compatibility...");
             load_form_from_game(0x13A7D6, growl_esp_name, &growl_beast_form_cd_magic_effect, "HRI_Lycan_Effect_BeastFormCooldown", RE::FormType::MagicEffect);
+        }
+
+        //Ordinator Vancian Magic
+        constexpr std::string_view ordinator_esp_name = "Ordinator - Perks of Skyrim.esp";
+        if (RE::TESDataHandler::GetSingleton()->GetModIndex(ordinator_esp_name).has_value()) {
+            logger::info("Loading Ordinator compatibility...");
+            load_form_from_game(0x02CB20, ordinator_esp_name, &ordinator_perk_vancian_magic, "ORD_Alt30_VancianMagic_Perk_30_OrdASISExclude", RE::FormType::Perk);
+            load_form_from_game(0x167A0E, ordinator_esp_name, &ordinator_global_vancian_magic_count, "ORD_Alt_NewVancianMagic_Global_Count", RE::FormType::Global);
         }
     }
 
@@ -1491,6 +1503,40 @@ namespace SpellHotbar::GameData {
          }
 
          return proc;
+     }
+
+     void casted_spell_mod_callback(RE::SpellItem* spell)
+     {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         //Ordinator, check vancian magic and reduce spell count
+         if (pc != nullptr &&
+             ordinator_perk_vancian_magic != nullptr &&
+             ordinator_global_vancian_magic_count != nullptr &&
+             pc->HasPerk(ordinator_perk_vancian_magic))
+         {
+             if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                 if (ordinator_global_vancian_magic_count->value > 0.0f) {
+                     ordinator_global_vancian_magic_count->value -= 1.0f;
+                 }
+             }
+         }
+     }
+
+     int get_spell_charges_mod_compat(RE::SpellItem* spell)
+     {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         //Ordinator, check vancian magic and return spell count
+         if (pc != nullptr &&
+             ordinator_perk_vancian_magic != nullptr &&
+             ordinator_global_vancian_magic_count != nullptr &&
+             pc->HasPerk(ordinator_perk_vancian_magic))
+         {
+             if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                 return static_cast<int>(ordinator_global_vancian_magic_count->value);
+             }
+         }
+
+         return -1;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {

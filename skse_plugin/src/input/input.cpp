@@ -633,7 +633,7 @@ namespace SpellHotbar::Input {
         RE::UI* ui = RE::UI::GetSingleton();
         if (!ui) return nullptr;
         if (!SpellHotbar::GameData::hasFavMenuSlotBinding()) {
-            // totally stolen from Wheeler
+            // code taken from Wheeler
             auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
             auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
             bool valid_tab = false;
@@ -643,16 +643,33 @@ namespace SpellHotbar::Input {
             };
             if (!magMenu && !valid_tab) return nullptr;
 
-            RE::GFxValue selection;
             if (magMenu) {
+                RE::GFxValue selection;
                 magMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+                if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
+                    RE::FormID formID = static_cast<std::uint32_t>(selection.GetNumber());
+                    return RE::TESForm::LookupByID(formID);
+                }
             }
             else if (invMenu) {
-                invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
-            }
-            if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
-                RE::FormID formID = static_cast<std::uint32_t>(selection.GetNumber());
-                return RE::TESForm::LookupByID(formID);
+                //invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+                RE::ItemList* item_list = invMenu->GetRuntimeData().itemList;
+                if (item_list != nullptr) {
+                    RE::ItemList::Item* item = item_list->GetSelectedItem();
+                    if (item != nullptr && item->data.objDesc != nullptr) {
+#undef GetObject // undefine stupid windows definition so GetObject() can be called
+                        RE::TESBoundObject* obj = item->data.objDesc->GetObject();
+#ifdef UNICODE //redefine it
+#define GetObject  GetObjectW
+#else
+#define GetObject  GetObjectA
+#endif // !UNICODE
+                        if (obj != nullptr) {
+                            RE::FormID formID = obj->GetFormID();
+                            return RE::TESForm::LookupByID(formID);
+                        }
+                    }
+                }
             }
         }
         else {

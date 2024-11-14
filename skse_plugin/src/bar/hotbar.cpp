@@ -561,16 +561,28 @@ namespace SpellHotbar
         GameData::Spell_cast_data skill_dat;
         bool has_spell_proc{ false };
         auto form = RE::TESForm::LookupByID(skill.formID);
+        RE::SpellItem* spell_item = nullptr;
         if (form) {
             skill_dat = GameData::get_spell_data(form, true, true);
             if (form->GetFormType() == RE::FormType::Spell) {
-                has_spell_proc = casts::SpellProc::has_spell_proc(form->As<RE::SpellItem>());
+                spell_item = form->As<RE::SpellItem>();
+                has_spell_proc = casts::SpellProc::has_spell_proc(spell_item);
             }
         }
 
-        size_t count{ 0 };
+        int count{ -1 };
+        bool has_charges{ false };
         if (skill.consumed != consumed_type::none) {
             count = GameData::count_item_in_inv(skill.formID);
+            has_charges = true;
+        }
+        else {
+            if (spell_item != nullptr) {
+                count = GameData::get_spell_charges_mod_compat(spell_item);
+                if (count >= 0) {
+                    has_charges = true;
+                }
+            }
         }
 
         int alpha_i = static_cast<int>(255 * alpha);
@@ -607,7 +619,7 @@ namespace SpellHotbar
                 RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
             }
 
-            if ((skill.consumed != consumed_type::none && count == 0) || GameData::is_on_binary_cd(skill.formID)) {
+            if ((has_charges && count == 0) || GameData::is_on_binary_cd(skill.formID)) {
                 RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
             }
             else {
@@ -646,9 +658,9 @@ namespace SpellHotbar
         ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
         RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
 
-        if (skill.consumed != consumed_type::none) {
+        if (has_charges) {
             //clamp text to 999
-            std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
+            std::string text = std::to_string(std::clamp(count, 0, 999));
             ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
             ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
             ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());

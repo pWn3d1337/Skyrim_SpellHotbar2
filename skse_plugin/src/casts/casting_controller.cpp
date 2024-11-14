@@ -651,6 +651,10 @@ namespace SpellHotbar::casts::CastingController {
 						spell_allowed = false;
 						RE::DebugNotification("Spell is no longer known!");
 					}
+					else if (form->GetFormType() == RE::FormType::Spell && GameData::get_spell_charges_mod_compat(spell) == 0) {
+						spell_allowed = false;
+						RE::DebugNotification("No Spell charges left!");
+					}
 					else if (form->GetFormType() == RE::FormType::Scroll && GameData::count_item_in_inv(form->GetFormID()) <= 0) {
 						spell_allowed = false;
 						RE::DebugNotification("No more scrolls left!");
@@ -935,6 +939,7 @@ namespace SpellHotbar::casts::CastingController {
 		if (concentration_manacost.has_value()) {
 			playerMagicCaster->currentSpellCost = concentration_manacost.value();
 		}
+
 		//logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
 
@@ -947,6 +952,9 @@ namespace SpellHotbar::casts::CastingController {
 				return false;
 			}
 		}
+
+		//mod support Ordinator: Vancian magic
+		GameData::casted_spell_mod_callback(spell);
 
 		return true;
 	}

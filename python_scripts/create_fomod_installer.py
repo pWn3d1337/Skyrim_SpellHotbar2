@@ -366,6 +366,7 @@ main_mod_folder = f"./{required_folder}/"
 
 released_files_main_plugin_v2 = [
     (project_root / "skse_plugin/build/release/SpellHotbar2.dll", main_mod_folder + "SKSE/Plugins"),
+    (project_root / "skse_plugin/build/release/SpellHotbar2.pdb", main_mod_folder + "SKSE/Plugins"),
     (dev_mod_root / "SpellHotbar.esp", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "Scripts/SpellHotbar.pex", (dev_mod_root, main_mod_folder)),
     # if Path, add relative path to root in zip
@@ -430,7 +431,7 @@ if __name__ == "__main__":
 
     debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
-    version = "0.0.4"
+    version = "0.0.5"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
 
     _add_spell_pack("vulcano")

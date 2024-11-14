@@ -314,5 +314,15 @@ namespace SpellHotbar::GameData {
     bool player_has_trigger_perk(RE::BGSPerk* perk);
 
     bool calc_random_proc(RE::TESGlobal* chance);
+
+    /*
+    * Called when a spell is casted to handle some mod compatiblity things
+    */
+    void casted_spell_mod_callback(RE::SpellItem* spell);
+
+    /**
+    * Get how many spells are allowed to be casted, handles compatibility with mods
+    */
+    int get_spell_charges_mod_compat(RE::SpellItem* spell);
 }
 

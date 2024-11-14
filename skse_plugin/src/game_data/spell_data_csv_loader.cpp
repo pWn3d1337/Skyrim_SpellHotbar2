@@ -213,6 +213,13 @@ namespace SpellHotbar::SpellDataCSVLoader {
         //load perk data
         logger::info("Loading dual cast perk data...");
         const std::string perk_data_file = ".\\data\\SKSE\\Plugins\\SpellHotbar\\perkdata\\dual_cast_perks.csv";
+
+        auto perk_data_path = std::filesystem::path(perk_data_file);
+        if (!std::filesystem::exists(perk_data_path)) {
+            logger::error("Missing '{}', this is an installation error!", perk_data_file);
+            return;
+        }
+
         rapidcsv::Document doc(perk_data_file, rapidcsv::LabelParams(0, 0), rapidcsv::SeparatorParams('\t'));
 
         std::vector<std::string> columns = doc.GetColumnNames();
