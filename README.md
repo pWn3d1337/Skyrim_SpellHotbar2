@@ -20,7 +20,8 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu  
-[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree
+[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree  
+[Sprint Sneak Movement Speed Fix](https://www.nexusmods.com/skyrimspecialedition/mods/86631) - fixes sneak hotbar casting related movement speed  
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
 All papyrus lib requirements have been dropped.
