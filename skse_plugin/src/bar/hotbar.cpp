@@ -578,9 +578,10 @@ namespace SpellHotbar
         }
         else {
             if (spell_item != nullptr) {
-                count = GameData::get_spell_charges_mod_compat(spell_item);
-                if (count >= 0) {
+                auto c = GameData::get_spell_charges_mod_compat(spell_item);
+                if (c.has_value()) {
                     has_charges = true;
+                    count = c.value();
                 }
             }
         }
@@ -659,11 +660,15 @@ namespace SpellHotbar
         RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
 
         if (has_charges) {
-            //clamp text to 999
-            std::string text = std::to_string(std::clamp(count, 0, 999));
+            ImU32 count_text_color = ImColor(255, 255, 255, alpha_i);
+            if (count <= 0 && spell_item != nullptr && GameData::player_has_ordinator_bloodmagic()) {
+                count = GameData::get_health_cost_mod_ordinator(spell_item);
+                count_text_color = ImColor(255, 50, 50, alpha_i);
+            }
+            std::string text = std::to_string(std::clamp(count, -9999, 9999));
             ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
             ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
-            ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255, alpha_i), text.c_str());
+            ImGui::GetWindowDrawList()->AddText(count_text_pos, count_text_color, text.c_str());
         }
 
         if (!new_line) {

@@ -4,6 +4,7 @@
 #include "spell_cast_data.h"
 #include "user_custom_spelldata.h"
 #include "../bar/oblivion_bar.h"
+#include <optional>
 
 namespace SpellHotbar::GameData {
 
@@ -323,6 +324,21 @@ namespace SpellHotbar::GameData {
     /**
     * Get how many spells are allowed to be casted, handles compatibility with mods
     */
-    int get_spell_charges_mod_compat(RE::SpellItem* spell);
+    std::optional<int> get_spell_charges_mod_compat(RE::SpellItem* spell);
+
+    /**
+    * Check if the passed spell is allowed to be casted, handles mod compatibility
+    */
+    bool can_cast_spell_mod_compat(RE::SpellItem* spell);
+
+    /**
+    * Get the health cost of a spell when using ordinator's dungeon master blood magic side effects
+    */
+    float get_health_cost_mod_ordinator(RE::SpellItem* spell);
+
+    /**
+    * Return if the player has the vancian magic dungeon master life tap side effect
+    */
+    bool player_has_ordinator_bloodmagic();
 }
 

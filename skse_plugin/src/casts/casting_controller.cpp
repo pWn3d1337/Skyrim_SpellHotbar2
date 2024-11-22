@@ -651,9 +651,8 @@ namespace SpellHotbar::casts::CastingController {
 						spell_allowed = false;
 						RE::DebugNotification("Spell is no longer known!");
 					}
-					else if (form->GetFormType() == RE::FormType::Spell && GameData::get_spell_charges_mod_compat(spell) == 0) {
+					else if (form->GetFormType() == RE::FormType::Spell && !GameData::can_cast_spell_mod_compat(spell)) {
 						spell_allowed = false;
-						RE::DebugNotification("No Spell charges left!");
 					}
 					else if (form->GetFormType() == RE::FormType::Scroll && GameData::count_item_in_inv(form->GetFormID()) <= 0) {
 						spell_allowed = false;

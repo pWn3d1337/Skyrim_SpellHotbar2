@@ -302,16 +302,26 @@ namespace SpellHotbar::GameData {
 
     //Ordinator
     RE::BGSPerk* ordinator_perk_vancian_magic = nullptr;
+    RE::BGSPerk* ordinator_perk_dungeon_master = nullptr;
     RE::TESGlobal* ordinator_global_vancian_magic_count = nullptr;
+    RE::TESGlobal* ordinator_global_vancian_magic_blood_magic_cost = nullptr;
+    RE::TESGlobal* ordinator_global_vancian_dungeon_master_side_effects = nullptr; // 3.0 = Blood Magic
+    RE::BGSPerk* ordinator_perk_intuitive_magic_1 = nullptr;
+    RE::BGSPerk* ordinator_perk_intuitive_magic_2 = nullptr;
     
+    //PathOfSorvery
+    RE::BGSPerk* pos_perk_bloodmage_1 = nullptr;
+    RE::BGSPerk* pos_perk_bloodmage_2 = nullptr;
+    RE::TESGlobal* pos_global_blood_ritual_active = nullptr; //version 3.0
+
     template<typename T>
-    void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type) {
+    void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type, bool log_error = true) {
         auto form = SpellHotbar::GameData::get_form_from_file(formId, plugin);
 
         if (form && form->GetFormType() == type) {
             *out_ptr = form->As<T>();
         }
-        else {
+        else if(log_error) {
             logger::error("Could not get '{}' from {}", name, plugin);
         }
     }
@@ -428,7 +438,25 @@ namespace SpellHotbar::GameData {
         if (RE::TESDataHandler::GetSingleton()->GetModIndex(ordinator_esp_name).has_value()) {
             logger::info("Loading Ordinator compatibility...");
             load_form_from_game(0x02CB20, ordinator_esp_name, &ordinator_perk_vancian_magic, "ORD_Alt30_VancianMagic_Perk_30_OrdASISExclude", RE::FormType::Perk);
+            load_form_from_game(0x02CB1C, ordinator_esp_name, &ordinator_perk_dungeon_master, "ORD_Alt70_DungeonMaster_Perk_70_OrdASISExclude", RE::FormType::Perk);
             load_form_from_game(0x167A0E, ordinator_esp_name, &ordinator_global_vancian_magic_count, "ORD_Alt_NewVancianMagic_Global_Count", RE::FormType::Global);
+            load_form_from_game(0x167A22, ordinator_esp_name, &ordinator_global_vancian_magic_blood_magic_cost, "ORD_Alt_NewVancianMagic_Global_DungeonMaster_BloodMagicMult", RE::FormType::Global);
+            load_form_from_game(0x167A21, ordinator_esp_name, &ordinator_global_vancian_dungeon_master_side_effects, "ORD_Alt_NewVancianMagic_Global_DungeonMaster_SideEffects", RE::FormType::Global);
+        
+            //intuitive Magic, needed when using vokriinator black together with POS blood magic
+            load_form_from_game(0x01B57F, ordinator_esp_name, &ordinator_perk_intuitive_magic_1, "ORD_Alt50_IntuitiveMagic_Perk_50", RE::FormType::Perk);
+            load_form_from_game(0x01B580, ordinator_esp_name, &ordinator_perk_intuitive_magic_2, "ORD_Alt50_IntuitiveMagic_Perk_80", RE::FormType::Perk);
+
+        }
+
+        //Path of Sorcery Blood Magic
+        constexpr std::string_view pos_esp_name = "PathOfSorcery.esp";
+        if (RE::TESDataHandler::GetSingleton()->GetModIndex(pos_esp_name).has_value()) {
+            logger::info("Loading Path of Sorcery compatibility...");
+            load_form_from_game(0x000BB5, pos_esp_name, &pos_perk_bloodmage_1, "IMP_PERK_ALT_BloodMage1", RE::FormType::Perk);
+            load_form_from_game(0x000BB6, pos_esp_name, &pos_perk_bloodmage_2, "IMP_PERK_ALT_BloodMage2", RE::FormType::Perk);
+            //only in v3.0, do not log error, nullptr = assume v2.7
+            load_form_from_game(0x094129, pos_esp_name, &pos_global_blood_ritual_active, "IMP_GLO_ALT_BloodRitualActive", RE::FormType::Global, false);
         }
     }
 
@@ -1509,20 +1537,42 @@ namespace SpellHotbar::GameData {
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //Ordinator, check vancian magic and reduce spell count
-         if (pc != nullptr &&
-             ordinator_perk_vancian_magic != nullptr &&
-             ordinator_global_vancian_magic_count != nullptr &&
-             pc->HasPerk(ordinator_perk_vancian_magic))
-         {
-             if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
-                 if (ordinator_global_vancian_magic_count->value > 0.0f) {
-                     ordinator_global_vancian_magic_count->value -= 1.0f;
+         if (pc != nullptr) {
+             if (ordinator_perk_vancian_magic != nullptr &&
+                 ordinator_global_vancian_magic_count != nullptr &&
+                 pc->HasPerk(ordinator_perk_vancian_magic))
+             {
+                 if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                     // check for blood magic
+                     bool has_blood_magic = player_has_ordinator_bloodmagic();
+
+                     if (ordinator_global_vancian_magic_count->value > 0.0f || has_blood_magic) {
+                         ordinator_global_vancian_magic_count->value -= 1.0f;
+                     }
+
+                     // check for blood magic
+                     int casts = static_cast<int>(ordinator_global_vancian_magic_count->value);
+                     if (has_blood_magic && casts < 0) {
+                         float cost = ordinator_global_vancian_magic_blood_magic_cost->value * casts;
+                         pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, cost);
+                     }
+                 }
+             }
+             else if (pos_perk_bloodmage_1 != nullptr &&
+                 pos_perk_bloodmage_2 != nullptr &&
+                 pc->HasPerk(pos_perk_bloodmage_1))
+             {
+                 bool v3 = pos_global_blood_ritual_active != nullptr;
+                 //on v3 blood ritual must be active
+                 if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
+                     float cost = get_pos_spell_health_cost(spell);
+                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
                  }
              }
          }
      }
 
-     int get_spell_charges_mod_compat(RE::SpellItem* spell)
+     std::optional<int> get_spell_charges_mod_compat(RE::SpellItem* spell)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //Ordinator, check vancian magic and return spell count
@@ -1536,10 +1586,109 @@ namespace SpellHotbar::GameData {
              }
          }
 
-         return -1;
+         return std::nullopt;
+     }
+
+     bool can_cast_spell_mod_compat(RE::SpellItem* spell)
+     {
+         auto count = get_spell_charges_mod_compat(spell);
+         if (count.has_value()) {
+             if (count.value() > 0) {
+                 return true;
+             }
+             else {
+                 //Handle Vancian Blood Magic - casting with negative charges
+                 if (player_has_ordinator_bloodmagic())
+                 {
+                     return true;
+                 }
+                 else {
+                     RE::DebugNotification("No Spell charges left!");
+                 }
+             }
+         }
+         return true;
+     }
+
+     bool player_has_ordinator_bloodmagic() {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         bool has_blood_magic = pc != nullptr &&
+             ordinator_perk_dungeon_master != nullptr &&
+             ordinator_global_vancian_magic_blood_magic_cost != nullptr &&
+             ordinator_global_vancian_dungeon_master_side_effects != nullptr &&
+             ordinator_global_vancian_magic_count != nullptr &&
+             pc->HasPerk(ordinator_perk_dungeon_master) &&
+             static_cast<int>(ordinator_global_vancian_dungeon_master_side_effects->value) == 3;
+         return has_blood_magic;
+     }
+
+     float get_health_cost_mod_ordinator(RE::SpellItem* spell)
+     {
+         bool has_blood_magic = player_has_ordinator_bloodmagic();
+         if (has_blood_magic && ordinator_global_vancian_magic_count->value <= 0.0f) {
+             int negative_casts = -static_cast<int>(ordinator_global_vancian_magic_count->value) +1;
+             float cost = ordinator_global_vancian_magic_blood_magic_cost->value * negative_casts;
+             return cost;
+         }
+         return 0.0f;
      }
 
      uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {
          return Spell_cast_data::chose_default_anim_for_spell(form, anim, anim2);
+     }
+
+     float get_pos_spell_health_cost(RE::SpellItem* spell) {
+         //Check cost according to spell rank
+
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         if (pc != nullptr && spell->effects.size() > 0U) {
+
+             std::vector<int> ranks;
+             for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size(); i++) {
+                 RE::Effect* effect = spell->effects[i];
+                 if (effect != nullptr && effect->baseEffect != nullptr) {
+                     int rank = get_spell_rank(effect->baseEffect->GetMinimumSkillLevel());
+                     ranks.push_back(rank);
+                 }
+             }
+             int highest_rank = *std::max_element(ranks.begin(), ranks.end());
+             float health_cost{ 0.0f };
+             switch (highest_rank)
+             {
+             case 4:
+                 health_cost = 42.0f;
+                 break;
+             case 3:
+                 health_cost = 30.0f;
+                 break;
+             case 2:
+                 health_cost = 20.0f;
+                 break;
+             case 1:
+                 //When using Vokriinator Black, check Ordinator perks for free spells
+                 if (ordinator_perk_intuitive_magic_2 != nullptr && pc->HasPerk(ordinator_perk_intuitive_magic_2)) {
+                     health_cost = 0.0f;
+                 }
+                 else {
+                     health_cost = 12.0f;
+                 }
+                 break;
+             default:
+                 //When using Vokriinator Black, check Ordinator perks for free spells
+                 if (ordinator_perk_intuitive_magic_1 != nullptr && pc->HasPerk(ordinator_perk_intuitive_magic_1)) {
+                     health_cost = 0.0f;
+                 }
+                 else {
+                     health_cost = 8.0f;
+                 }
+                 break;
+             }
+
+             if (pc != nullptr && pos_perk_bloodmage_2 != nullptr && pc->HasPerk(pos_perk_bloodmage_2)) {
+                 health_cost *= 0.5f;
+             }
+
+         }
+         return 0.0f;
      }
 }
