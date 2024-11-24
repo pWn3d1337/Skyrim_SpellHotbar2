@@ -1565,8 +1565,8 @@ namespace SpellHotbar::GameData {
                  bool v3 = pos_global_blood_ritual_active != nullptr;
                  //on v3 blood ritual must be active
                  if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
-                     float cost = get_pos_spell_health_cost(spell);
-                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
+                    float cost = get_pos_spell_health_cost(spell);
+                    pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
                  }
              }
          }
@@ -1639,7 +1639,7 @@ namespace SpellHotbar::GameData {
 
      float get_pos_spell_health_cost(RE::SpellItem* spell) {
          //Check cost according to spell rank
-
+         float health_cost{ 0.0f };
          auto pc = RE::PlayerCharacter::GetSingleton();
          if (pc != nullptr && spell->effects.size() > 0U) {
 
@@ -1652,7 +1652,6 @@ namespace SpellHotbar::GameData {
                  }
              }
              int highest_rank = *std::max_element(ranks.begin(), ranks.end());
-             float health_cost{ 0.0f };
              switch (highest_rank)
              {
              case 4:
@@ -1689,6 +1688,6 @@ namespace SpellHotbar::GameData {
              }
 
          }
-         return 0.0f;
+         return health_cost;
      }
 }

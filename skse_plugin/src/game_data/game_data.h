@@ -340,5 +340,10 @@ namespace SpellHotbar::GameData {
     * Return if the player has the vancian magic dungeon master life tap side effect
     */
     bool player_has_ordinator_bloodmagic();
+
+    /**
+    * Return health cost when using PathOfSorcery Blood Magic
+    */
+    float get_pos_spell_health_cost(RE::SpellItem* spell);
 }
 
