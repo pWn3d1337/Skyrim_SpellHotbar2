@@ -160,12 +160,18 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
         if (invMenu) {
             //get current tab
             RE::GFxValue selection;
-            invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedEntry.text");
+            //invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedEntry.text");
+            invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedIndex");
 
-            if (selection.GetType() == RE::GFxValue::ValueType::kString) {
-                std::string tabtype = selection.GetString();
-                return tabtype == tab_scrolls || tabtype == tab_potions || tabtype == tab_food;
+            //if (selection.GetType() == RE::GFxValue::ValueType::kString) {
+            //    std::string tabtype = selection.GetString();
+            //    return tabtype == tab_scrolls || tabtype == tab_potions || tabtype == tab_food;
+            //}
+            if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
+                int index = static_cast<int>(selection.GetNumber());
+                return index >= 4 && index <= 6; //indices for scrolls, options and food
             }
+
         }
     }
     return false;
@@ -449,8 +455,54 @@ void load_font_resources(float window_height) {
     logger::info("Loading Fonts with sizes {}, {}", font_text_size, size_symbols);
 
     ImGuiIO& io = ImGui::GetIO();
+
+    std::string_view text_font_folder(".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts");
+    //look for files named text_font-codepage.ttf, if no "-" found in the filename, use default.
+    //first file starting with 'text_font' and ending in .ttf will be used
+    std::string text_font_name = "text_font.ttf";
+    const ImWchar* glyph_range = 0;
+    for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(text_font_folder))) {
+        if (entry.is_regular_file()) {
+            std::string str_filename = entry.path().filename().string();
+            if (str_filename.ends_with(".ttf") && str_filename.starts_with("text_font")) {
+                size_t ind = str_filename.find_last_of('-');
+                text_font_name = entry.path().filename().string();
+                if (ind != std::string::npos) {
+                    ind += 1; //text starts after -
+                    std::string glyph_range_text = text_font_name.substr(ind, text_font_name.length() - ind - 4);
+                    logger::info("loading glyph ranges for '{}'", glyph_range_text);
+                    if (glyph_range_text == "chinese") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
+                    }
+                    else if (glyph_range_text == "cyrillic") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
+                    }
+                    else if (glyph_range_text == "greek") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesGreek();
+                    }
+                    else if (glyph_range_text == "japanese") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesJapanese();
+                    }
+                    else if (glyph_range_text == "korean") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesKorean();
+                    }
+                    else if (glyph_range_text == "thai") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesThai();
+                    }
+                    else if (glyph_range_text == "vietnamese") {
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesVietnamese();
+                    }
+                    else {
+                        logger::error("Unkown glyph range in text_font filename: '{}'", glyph_range_text);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    auto font_path = std::filesystem::path(text_font_folder) / text_font_name;
     font_text = io.Fonts->AddFontFromFileTTF(
-        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\text_font.ttf", font_text_size);
+        font_path.string().c_str(), font_text_size, NULL, glyph_range);
 
     font_symbols = io.Fonts->AddFontFromFileTTF(
         ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\skyrim_symbols_font.ttf",

@@ -83,10 +83,6 @@ namespace SpellHotbar {
 
         static SubTextureImage* get_tex_for_skill_internal(RE::FormID formID);
 
-        static constexpr std::string_view tab_scrolls = "SCROLLS";
-        static constexpr std::string_view tab_potions = "POTIONS";
-        static constexpr std::string_view tab_food = "FOOD";
-
     public:
         static bool install();
         static inline REX::W32::ID3D11Device* device = nullptr;

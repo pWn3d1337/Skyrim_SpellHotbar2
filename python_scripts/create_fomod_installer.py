@@ -236,7 +236,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                         <plugin name="RU">
                             <description>Install Skyrims 'Futura Condensed' Font with RU support</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-cyrillic.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -245,16 +245,16 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                         <plugin name="JP">
                             <description>Install Skyrims 'Futura Condensed' Font with JP support</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-japanese.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
                             </typeDescriptor>
                         </plugin>
                         <plugin name="CN">
-                            <description>Install some CN font from fonts_cn.swf</description>
+                            <description>Install a CN font from fonts_cn.swf</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-chinese.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>

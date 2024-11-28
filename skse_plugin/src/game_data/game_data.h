@@ -345,5 +345,20 @@ namespace SpellHotbar::GameData {
     * Return health cost when using PathOfSorcery Blood Magic
     */
     float get_pos_spell_health_cost(RE::SpellItem* spell);
+
+    /**
+    * Called before a spell is casted
+    */
+    void pre_cast_mod_callback(RE::SpellItem* spell);
+    
+    /**
+    * Called after a spell is cast
+    */
+    void post_cast_mod_callback(RE::SpellItem* spell);
+
+    /**
+    * Called every 0.5s during concentrating a spell
+    */
+    void concentration_cast_mod_callback(RE::SpellItem* spell);
 }
 

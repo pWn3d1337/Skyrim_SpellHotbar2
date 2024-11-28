@@ -312,6 +312,7 @@ namespace SpellHotbar::GameData {
     //PathOfSorvery
     RE::BGSPerk* pos_perk_bloodmage_1 = nullptr;
     RE::BGSPerk* pos_perk_bloodmage_2 = nullptr;
+    RE::BGSPerk* pos_perk_blood_to_power = nullptr;
     RE::TESGlobal* pos_global_blood_ritual_active = nullptr; //version 3.0
 
     template<typename T>
@@ -455,8 +456,10 @@ namespace SpellHotbar::GameData {
             logger::info("Loading Path of Sorcery compatibility...");
             load_form_from_game(0x000BB5, pos_esp_name, &pos_perk_bloodmage_1, "IMP_PERK_ALT_BloodMage1", RE::FormType::Perk);
             load_form_from_game(0x000BB6, pos_esp_name, &pos_perk_bloodmage_2, "IMP_PERK_ALT_BloodMage2", RE::FormType::Perk);
+            load_form_from_game(0x000C34, pos_esp_name, &pos_perk_blood_to_power, "IMP_PERK_ALT_BloodToPower", RE::FormType::Perk);
             //only in v3.0, do not log error, nullptr = assume v2.7
             load_form_from_game(0x094129, pos_esp_name, &pos_global_blood_ritual_active, "IMP_GLO_ALT_BloodRitualActive", RE::FormType::Global, false);
+        
         }
     }
 
@@ -1688,6 +1691,66 @@ namespace SpellHotbar::GameData {
              }
 
          }
+         if (spell != nullptr && spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+             constexpr float concencration_cost_factor = 0.33f;
+             health_cost *= concencration_cost_factor;
+         }
          return health_cost;
+     }
+
+
+     inline void update_pos_fame_values(RE::PlayerCharacter* pc) {
+         auto pc_av = pc->AsActorValueOwner();
+         if (pc_av) {
+
+             float hp_cur = pc_av->GetActorValue(RE::ActorValue::kHealth);
+             float hp_max = pc_av->GetPermanentActorValue(RE::ActorValue::kHealth);
+             float missing_hp = hp_max - hp_cur;
+
+             pc_av->SetActorValue(RE::ActorValue::kFame, missing_hp);
+             //logger::info("Setting Fame: {}", missing_hp);
+         }
+     }
+
+     void pre_cast_mod_callback(RE::SpellItem* spell)
+     {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         //if using PathOfSorcery Blood to Power, set Fame to missing HP
+         if (pc != nullptr && pos_perk_blood_to_power != nullptr && pc->HasPerk(pos_perk_blood_to_power)) {
+             update_pos_fame_values(pc);
+         }
+     }
+     void post_cast_mod_callback(RE::SpellItem* spell)
+     {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         //if using PathOfSorcery Blood to Power, reset fame to 0 after cast
+         if (pc != nullptr && pos_perk_blood_to_power != nullptr && pc->HasPerk(pos_perk_blood_to_power)) {
+             auto pc_av = pc->AsActorValueOwner();
+             if (pc_av) {
+                 pc_av->SetActorValue(RE::ActorValue::kFame, 0.0f);
+                 //logger::info("Resetting Fame");
+             }
+         }
+     }
+     void concentration_cast_mod_callback(RE::SpellItem* spell)
+     {
+         auto pc = RE::PlayerCharacter::GetSingleton();
+         //if using PathOfSorcery Blood to Power, set Fame to missing HP
+         if (pc != nullptr && pos_perk_blood_to_power != nullptr && pc->HasPerk(pos_perk_blood_to_power)) {
+             update_pos_fame_values(pc);
+
+             bool v3 = pos_global_blood_ritual_active != nullptr;
+             //drain hp if spell is concentration
+             constexpr float update_interval = 0.5f; // SpellHotbar drains every 0.5s
+             if (spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
+                 
+                 //on v3 blood ritual must be active
+                 if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
+                     float cost = get_pos_spell_health_cost(spell);
+                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost*update_interval);
+                 }
+
+             }
+         }
      }
 }

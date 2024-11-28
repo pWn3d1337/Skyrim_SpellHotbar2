@@ -36,7 +36,7 @@ namespace SpellHotbar::casts::CastingController {
 	BaseCastingInstance::BaseCastingInstance(RE::TESForm* form, float casttime) : m_form(form),
 		m_cast_timer(casttime),
 		m_total_casttime(casttime),
-		m_gcd(1.5f),
+		m_gcd(1.0f),
 		m_casted(false)
 	{
 	}
@@ -177,25 +177,11 @@ namespace SpellHotbar::casts::CastingController {
 		BaseCastingInstance::on_reset();
 		auto pc = RE::PlayerCharacter::GetSingleton();
 		if (pc) {
-			/*auto magic_target = pc->GetMagicTarget();
-
-			if (magic_target) {
-				auto effect_list = magic_target->GetActiveEffectList();
-
-				if (effect_list) {
-					for (auto it = effect_list->begin(); it != effect_list->end(); ++it) {
-
-						auto effect = *it;
-						if (!effect->flags.all(RE::ActiveEffect::Flag::kInactive) && !(effect->flags.all(RE::ActiveEffect::Flag::kDispelled))) {
-							if (effect->spell && effect->spell->formID == GameData::spellhotbar_castfx_spell->GetFormID()) {
-								effect->Dispel(false);
-							}
-						}
-					}
-
-				}
-			}*/
 			pc->RemoveSpell(GameData::spellhotbar_castfx_spell);
+		}
+		if (m_form->GetFormType() == RE::FormType::Spell || m_form->GetFormType() == RE::FormType::Scroll) {
+			RE::SpellItem* spell = m_form->As<RE::SpellItem>();
+			GameData::post_cast_mod_callback(spell);
 		}
 	}
 
@@ -333,7 +319,7 @@ namespace SpellHotbar::casts::CastingController {
 	CastingInstanceRitual::CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc)
 	{
 		m_release_anim_time = 0.25f;
-		m_gcd = 2.0f;
+		m_gcd = 1.5f;
 	}
 
 	bool CastingInstanceRitual::blocks_movement() const
@@ -350,7 +336,7 @@ namespace SpellHotbar::casts::CastingController {
 		m_cast_timer = 0;
 		m_total_casttime = spell->data.castDuration;
 		m_release_anim_time = casttime;
-		m_gcd = 0.5f;
+		m_gcd = 0.25f;
 	}
 
 	void CastingInstanceSpellConcentration::apply_cast_start_spell(RE::PlayerCharacter* pc)
@@ -451,7 +437,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 			}
 			else if (static_cast<int>(timer_old / loop_timer) < static_cast<int>(m_cast_timer / loop_timer)) {
-				//Check for anim reloop
+				//Check for anim reloop & do loop callbacks
 
 				pc->NotifyAnimationGraph(get_start_anim());
 				if (!is_anim_ok(pc)) {
@@ -460,6 +446,10 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				else {
 					RenderManager::highlight_skill_slot(m_slot, loop_timer*2.0f, false);
+					auto spell = m_form->As<RE::SpellItem>();
+					if (spell != nullptr) {
+						GameData::concentration_cast_mod_callback(spell);
+					}
 				}
 			}
 
@@ -938,6 +928,8 @@ namespace SpellHotbar::casts::CastingController {
 		if (concentration_manacost.has_value()) {
 			playerMagicCaster->currentSpellCost = concentration_manacost.value();
 		}
+
+		GameData::pre_cast_mod_callback(spell);
 
 		//logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
