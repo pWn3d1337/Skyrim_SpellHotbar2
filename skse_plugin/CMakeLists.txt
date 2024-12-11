@@ -78,6 +78,8 @@ set(source_files src/plugin.cpp
                  src/rendering/icon_edit_dialog.cpp
                  src/casts/spell_proc.h
                  src/casts/spell_proc.cpp
+                 src/rendering/bar_dragging_config_window.h
+                 src/rendering/bar_dragging_config_window.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

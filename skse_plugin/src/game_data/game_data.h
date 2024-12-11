@@ -319,7 +319,7 @@ namespace SpellHotbar::GameData {
     /*
     * Called when a spell is casted to handle some mod compatiblity things
     */
-    void casted_spell_mod_callback(RE::SpellItem* spell);
+    void casted_spell_mod_callback(RE::SpellItem* spell, bool spell_proc);
 
     /**
     * Get how many spells are allowed to be casted, handles compatibility with mods
@@ -359,6 +359,6 @@ namespace SpellHotbar::GameData {
     /**
     * Called every 0.5s during concentrating a spell
     */
-    void concentration_cast_mod_callback(RE::SpellItem* spell);
+    void concentration_cast_mod_callback(RE::SpellItem* spell, bool spell_proc);
 }
 

@@ -461,6 +461,14 @@ void log_message(RE::StaticFunctionTag*, std::string msg) {
     logger::info("Papyrus Logged: {}", msg);
 }
 
+float set_bar_cross_distance(RE::StaticFunctionTag*, float value) {
+    return SpellHotbar::Bars::bar_cross_distance = std::clamp(value, 0.0f, 1.0f);
+}
+
+float get_bar_cross_distance(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::bar_cross_distance;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -538,5 +546,7 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("toggleOblivionBarVertical", "SpellHotbar", toggle_oblivion_bar_vertical);
     vm->RegisterFunction("get_user_dir_bars_path", "SpellHotbar", get_user_dir_bars_path);
     vm->RegisterFunction("log_info", "SpellHotbar", log_message);
+    vm->RegisterFunction("setBarCrossDistance", "SpellHotbar", set_bar_cross_distance);
+    vm->RegisterFunction("getBarCrossDistance", "SpellHotbar", get_bar_cross_distance);
     return true;
 }

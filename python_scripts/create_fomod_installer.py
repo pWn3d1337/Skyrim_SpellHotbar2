@@ -12,6 +12,12 @@ dev_mod_root_battlemage = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemag
 
 project_root = Path(__file__).parent.parent
 
+used_presets = [
+    "all_bars.json",
+    "oblivion_mode.json",
+    "simple.json",
+    "controller_simple.json"
+]
 
 def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], main_folder: str = "data"):
     print(f"Copying to folder: {outfile}...")
@@ -146,7 +152,7 @@ def _get_profile_config(name: str, json_name: str, desc: str, image: str | None 
                                 f'<image path = "installer_images\\{image}"/>' if image is not None else ""
                             }
                             <files>
-                                <file source="0000 Required - Main Mod/SKSE/Plugins/SpellHotbar/presets/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
+                                <file source="9000 ConditionalFiles/auto_profiles/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -365,8 +371,8 @@ def get_spell_pack_list(modname: str, num: int, esp_name: str | None = None) -> 
 main_mod_folder = f"./{required_folder}/"
 
 released_files_main_plugin_v2 = [
-    (project_root / "skse_plugin/build/release/SpellHotbar2.dll", main_mod_folder + "SKSE/Plugins"),
-    (project_root / "skse_plugin/build/release/SpellHotbar2.pdb", main_mod_folder + "SKSE/Plugins"),
+    (project_root / "skse_plugin/build/release_with_debug_info/SpellHotbar2.dll", main_mod_folder + "SKSE/Plugins"),
+    (project_root / "skse_plugin/build/release_with_debug_info/SpellHotbar2.pdb", main_mod_folder + "SKSE/Plugins"),
     (dev_mod_root / "SpellHotbar.esp", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "Scripts/SpellHotbar.pex", (dev_mod_root, main_mod_folder)),
     # if Path, add relative path to root in zip
@@ -399,16 +405,17 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/keynames/keynames.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/all_bars.json", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/oblivion_mode.json", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/simple.json", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/presets/controller_simple.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_powers.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/transformdata/", (dev_mod_root, main_mod_folder)),
 ]
+
+released_files_main_plugin_v2 += [
+    (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", (dev_mod_root, main_mod_folder)) for preset in used_presets
+]
+
 
 battlemage_perk_files = [
     (dev_mod_root_battlemage / "SpellHotbar_BattleMage.esp", (dev_mod_root_battlemage, battlemage_mod_folder)),
@@ -475,7 +482,7 @@ if __name__ == "__main__":
     sperg_folder = _get_perk_overhaul_folder_name(2,"sperg")
     pos_folder = _get_perk_overhaul_folder_name(3,"path_of_sorcery")
 
-    _add_perk_overhaul("Vanilla/Vorkii", None, [], DualCastPerkConfig.VANILLA)
+    _add_perk_overhaul("Vanilla/Vokrii", None, [], DualCastPerkConfig.VANILLA)
     _add_perk_overhaul("Ordinator", "Ordinator - Perks of Skyrim.esp", ordinator_folder, DualCastPerkConfig.VANILLA)
     _add_perk_overhaul("SPERG", "SPERG-SSE.esp", sperg_folder, DualCastPerkConfig.SPERG)
     _add_perk_overhaul("Path of Sorcery", "PathOfSorcery.esp", pos_folder, DualCastPerkConfig.VANILLA)
@@ -547,6 +554,11 @@ if __name__ == "__main__":
         release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.jpg", "installer_images"))
         release_files.append((Path(__file__).parent / "installer_images/simple.jpg", "installer_images"))
         release_files.append((Path(__file__).parent / "installer_images/oblivion_mode.jpg", "installer_images"))
+        release_files.append((Path(__file__).parent / "installer_images/controller_simple.jpg", "installer_images"))
+
+        #auto profiles, this is duplicated because vortex did not handle copying an existing file a second time correctly
+        for preset in used_presets:
+            release_files.append((dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", f"9000 ConditionalFiles/auto_profiles"))
 
         if ONLY_PRINT_FILES:
             for p1, p2 in release_files:

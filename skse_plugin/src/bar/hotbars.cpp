@@ -45,6 +45,7 @@ namespace SpellHotbar::Bars {
     uint8_t bar_row_len = 12U;
     bar_layout layout = bar_layout::BARS;
     float bar_circle_radius = 2.2f;
+    float bar_cross_distance = 0.0f;
 
     //non-persistent
     uint32_t menu_bar_id;

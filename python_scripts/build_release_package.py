@@ -80,19 +80,22 @@ def build_release_zip(outfile: Path, files: list[tuple[Path, str | Path]], main_
     with ZipFile(outfile, mode="w", compression=ZIP_LZMA) as zfile:
         for entry in files:
             file_list = glob(str(entry[0]), recursive=True)
-            for file_name in file_list:
-                if isinstance(entry[1], Path):
-                    arcname = str(main_path / Path(file_name).relative_to(entry[1]))
-                elif isinstance(entry[1], tuple):
-                    rel_path = Path(entry[1][0])
-                    arc_folders = Path(entry[1][1])
-                    arcname = str(main_path / arc_folders / Path(file_name).relative_to(rel_path))
-                else:
-                    fname = Path(file_name).name
-                    zip_path = Path(entry[1]) / fname
-                    arcname = str(main_path / zip_path)
-                print(f"Adding: {arcname}")
-                zfile.write(str(file_name), arcname=arcname)
+            if file_list:
+                for file_name in file_list:
+                    if isinstance(entry[1], Path):
+                        arcname = str(main_path / Path(file_name).relative_to(entry[1]))
+                    elif isinstance(entry[1], tuple):
+                        rel_path = Path(entry[1][0])
+                        arc_folders = Path(entry[1][1])
+                        arcname = str(main_path / arc_folders / Path(file_name).relative_to(rel_path))
+                    else:
+                        fname = Path(file_name).name
+                        zip_path = Path(entry[1]) / fname
+                        arcname = str(main_path / zip_path)
+                    print(f"Adding: {arcname}")
+                    zfile.write(str(file_name), arcname=arcname)
+            else:
+                raise FileNotFoundError(f"No files found matching: {entry[0]}")
     print("Done\n")
 
 

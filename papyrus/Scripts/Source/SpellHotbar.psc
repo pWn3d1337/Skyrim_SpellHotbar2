@@ -77,3 +77,5 @@ bool function isOblivionBarVertical() global native
 bool function toggleOblivionBarVertical() global native
 string function get_user_dir_bars_path() global native
 function log_info(string msg) native global
+float function getBarCrossDistance() global native
+float function setBarCrossDistance(float value) global native

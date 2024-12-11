@@ -84,6 +84,10 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&Bars::oblivion_bar_held_show_time_threshold, sizeof(float));
             a_intfc->WriteRecordData(&Bars::oblivion_bar_vertical, sizeof(bool));
 
+            //V3: Since SpellHotbar2 0.0.5
+            a_intfc->WriteRecordData(&Bars::bar_cross_distance, sizeof(float));
+            //Version end
+
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
             a_intfc->WriteRecordData(&num_keybinds, sizeof(uint8_t));
@@ -360,6 +364,21 @@ namespace SpellHotbar::Storage {
                 if (!a_intfc->ReadRecordData(&Bars::oblivion_bar_vertical, sizeof(bool))) {
                     logger::error("Failed to read oblivion_bar_vertical!");
                     break;
+                }
+
+                if (version >= 3U) { //Since SpellHotbar2 0.0.5
+                    float read_bar_cross_distance{ 0 };
+                    if (!a_intfc->ReadRecordData(&read_bar_cross_distance, sizeof(float))) {
+                        logger::error("Failed to read bar_cross_distance!");
+                        break;
+                    }
+                    else {
+                        Bars::bar_cross_distance = std::clamp(read_bar_cross_distance, 0.0f, 1.0f);
+                    }
+                }
+                else
+                {
+                    Bars::bar_cross_distance = 0.0f;
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

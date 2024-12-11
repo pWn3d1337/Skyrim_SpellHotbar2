@@ -1,7 +1,11 @@
 #pragma once
 
 namespace SpellHotbar::Storage {
-    constexpr uint32_t save_format = 2U;
+    /*
+    * 2 - SpellHotbar2, alpha until 0.0.4
+    * 3 - SpellHotbar2, alpha 0.0.5
+    */
+    constexpr uint32_t save_format = 3U;
 
     extern std::array<RE::FormID, 12> hotbar_main;
 

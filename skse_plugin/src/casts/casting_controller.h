@@ -248,7 +248,7 @@ namespace SpellHotbar::casts::CastingController {
 	/**
 	* Actually casts the spell, do not call directly
 	*/
-	bool cast_spell(RE::SpellItem* spell, bool dual_cast, std::optional<float> concentration_manacost = std::nullopt);
+	bool cast_spell(RE::SpellItem* spell, bool dual_cast, bool spell_proc, std::optional<float> concentration_manacost = std::nullopt);
 
 	void cast_spell_on_player(RE::SpellItem* spell, float magnitude = 0.0f, bool no_art = false);
 

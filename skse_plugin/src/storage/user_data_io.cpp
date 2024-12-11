@@ -135,6 +135,7 @@ namespace SpellHotbar::Storage::IO {
         Bars::bar_row_len = std::clamp(static_cast<uint8_t>(get_int_or_default(d, "settings.bar_row_ren", static_cast<int>(max_bar_size))), 1Ui8, static_cast<uint8_t>(max_bar_size));
         Bars::layout = Bars::bar_layout(std::clamp(get_int_or_default(d, "settings.bar_layout", 0), 0, 2));
         Bars::bar_circle_radius = std::max(get_float_or_default(d, "settings.bar_circle_radius", 2.2f), 0.1f);
+        Bars::bar_cross_distance = std::clamp(get_float_or_default(d, "settings.bar_cross_distance", 0.0f), 0.0f, 1.0f);
 
         //battlemage perks
         load_global_from_json(d, GameData::global_spellhotbar_perks_override, "battlemage.overrideperks", 0.0f);
@@ -304,6 +305,7 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.bar_row_ren", Bars::bar_row_len);
         add_int(d, "settings.bar_layout", static_cast<int>(Bars::layout));
         add_float(d, "settings.bar_circle_radius", Bars::bar_circle_radius);
+        add_float(d, "settings.bar_cross_distance", Bars::bar_cross_distance);
 
         save_global_to_json(d, GameData::global_spellhotbar_perks_override, "battlemage.overrideperks");
         save_global_to_json(d, GameData::global_spellhotbar_perks_timed_block_window, "battlemage.timedblockwindow");

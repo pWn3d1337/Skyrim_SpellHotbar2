@@ -467,11 +467,14 @@ namespace SpellHotbar
        return false;
     }
 
-    void Hotbar::draw_in_hud(ImFont* font, float /* screensize_x*/, float screensize_y, int highlight_slot,
+    void Hotbar::draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot,
                              float highlight_factor, key_modifier mod, bool highlight_isred, float alpha, float shout_cd, float shout_cd_dur) {
         ImGui::PushFont(font);
 
-        int icon_size = static_cast<int>(get_hud_slot_height(screensize_y));
+        ImVec2 spacing(Bars::slot_spacing, Bars::slot_spacing);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
+
+        int icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::slot_scale));
         float text_offset_x = icon_size * 0.05f;
         float text_offset_y = icon_size * 0.0125f;
 
@@ -515,9 +518,59 @@ namespace SpellHotbar
                 offset = rotate_around_origin(offset, _sin, _cos);
             }
         }
-        //else if (Bars::layout == Bars::bar_layout::CROSS && m_barsize >= 3) {
-        // TODO
-        //}
+        else if (Bars::layout == Bars::bar_layout::CROSS && m_barsize >= 4) {
+            int numcrosses = static_cast<int>(std::ceil(static_cast<float>(m_barsize) / 4.0f));
+            float cross_spacing = (screensize_x * Bars::bar_cross_distance) * (numcrosses - 1);
+            for (int cross = 0; cross < numcrosses; cross++) {
+                if (cross != 0) {
+                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
+                    ImGui::SameLine();
+                }
+                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
+                ImGui::SameLine();
+                int ind = cross * 4;
+                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
+                ImVec2 p = ImGui::GetCursorScreenPos();
+                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
+                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
+                if (cross < numcrosses - 1) {
+                    ImGui::SameLine();
+                }
+            }
+            for (int cross = 0; cross < numcrosses; cross++) {
+                if (cross != 0) {
+                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
+                    ImGui::SameLine();
+                }
+                int ind = 1 + cross * 4;
+                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
+                ImVec2 p = ImGui::GetCursorScreenPos();
+                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
+                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
+                ImGui::SameLine();
+                ind++;
+                bool new_line = !(cross < numcrosses - 1);
+                auto [skill2, inherited2] = get_skill_in_bar_with_inheritance(ind, mod, true);
+                p = ImGui::GetCursorScreenPos();
+                draw_single_skill(skill2, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, new_line);
+            }
+            for (int cross = 0; cross < numcrosses; cross++) {
+                if (cross != 0) {
+                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
+                    ImGui::SameLine();
+                }
+                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
+                ImGui::SameLine();
+                int ind = 3 + cross * 4;
+                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
+                ImVec2 p = ImGui::GetCursorScreenPos();
+                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
+                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
+                if (cross < numcrosses - 1) {
+                    ImGui::SameLine();
+                }
+            }
+        }
         else {
 
             int c = 0;
@@ -533,6 +586,7 @@ namespace SpellHotbar
 
             }
         }
+        ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
         ImGui::PopFont();
     }
 
@@ -666,9 +720,12 @@ namespace SpellHotbar
                 count_text_color = ImColor(255, 50, 50, alpha_i);
             }
             std::string text = std::to_string(std::clamp(count, -9999, 9999));
+
             ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
-            ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
-            ImGui::GetWindowDrawList()->AddText(count_text_pos, count_text_color, text.c_str());
+            float mult = RenderManager::get_scaled_text_size_multiplier();
+            ImVec2 count_text_pos(p.x + icon_size - textsize.x * mult, p.y + icon_size - textsize.y * mult - text_offset_y);
+            RenderManager::draw_scaled_text(count_text_pos, count_text_color, text.c_str());
+
         }
 
         if (!new_line) {

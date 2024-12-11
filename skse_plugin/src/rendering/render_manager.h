@@ -46,7 +46,7 @@ namespace SpellHotbar {
 
     inline float get_slot_height(float screensize_y) { return screensize_y / 26.0f; }
 
-    inline float get_hud_slot_height(float screensize_y) { return (screensize_y / 13.0f) * Bars::slot_scale; }
+    inline float get_hud_slot_height(float screensize_y, float bar_slot_scale) { return (screensize_y / 13.0f) * bar_slot_scale; }
 
     // Hook render stuff for imgui, mostly copied from wheeler
     class RenderManager {
@@ -114,6 +114,7 @@ namespace SpellHotbar {
         static void draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);
         static void draw_scaled_text(ImVec2 pos, ImU32 col, const char* text);
+        static float get_scaled_text_size_multiplier();
         static void draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col);
 
         static void highlight_skill_slot(int id, float dur = 1.0F, bool error = false);

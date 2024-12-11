@@ -27,7 +27,7 @@ string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
 
 ; SCRIPT VERSION
 int function GetVersion()
-	return 1
+	return 2
 endFunction
 
 Event OnConfigInit()
@@ -80,9 +80,10 @@ Event OnConfigInit()
 	input_modes[1] = "Equip"
 	input_modes[2] = "Oblivion-Style"
 
-	bar_layouts = new String[2]
+	bar_layouts = new String[3]
 	bar_layouts[0] = "Bar"
 	bar_layouts[1] = "Circle"
+	bar_layouts[2] = "Cross"
 EndEvent
 
 ; reinit config on update
@@ -160,7 +161,8 @@ Event OnPageReset(string page)
         AddSliderOptionST("BarOffsetY", "Offset Y", SpellHotbar.getOffsetY(false))		
 		AddSliderOptionST("BarRowLen", "Slots per Row", SpellHotbar.getBarRowLength())
 		AddSliderOptionST("BarCircleRadius", "Circle Radius", SpellHotbar.getBarCircleRadius(),"{2}")
-		;AddEmptyOption()
+		AddSliderOptionST("BarCrossDistance", "Cross Distance", SpellHotbar.getBarCrossDistance(),"{2}")
+		AddEmptyOption()
 
 		AddHeaderOption("Gameplay")
 		AddHeaderOption("")
@@ -705,12 +707,28 @@ State BarCircleRadius
         SetSliderDialogInterval(0.1)
     EndEvent
     Event OnSliderAcceptST(float a_value)
-        SetSliderOptionValueST(SpellHotbar.setBarCircleRadius(a_value));
+        SetSliderOptionValueST(SpellHotbar.setBarCircleRadius(a_value), "{2}");
     EndEvent
     Event OnHighlightST()
         SetInfoText("Set the radius when using 'Circle' Layout, unit is 'icon_size'");
     EndEvent
 EndState
+
+State BarCrossDistance
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(SpellHotbar.getBarCrossDistance())
+        SetSliderDialogDefaultValue(0.0)
+        SetSliderDialogRange(0.0, 1.0)
+        SetSliderDialogInterval(0.005)
+    EndEvent
+    Event OnSliderAcceptST(float a_value)
+        SetSliderOptionValueST(SpellHotbar.setBarCrossDistance(a_value), "{2}");
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Set the distance between crosses when using 'Cross' Layout, unit is '% of screen width'");
+    EndEvent
+EndState
+
 
 State OblivionSlotScale
     Event OnSliderOpenST()

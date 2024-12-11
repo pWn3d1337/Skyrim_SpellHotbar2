@@ -20,6 +20,7 @@
 #include "../input/modes.h"
 #include "spell_editor.h"
 #include "potion_editor.h"
+#include "bar_dragging_config_window.h"
 
 #include <imgui_internal.h>
 
@@ -984,8 +985,13 @@ void RenderManager::draw_highlight_overlay(ImVec2 pos, int size, ImU32 col)
 
 void RenderManager::draw_scaled_text(ImVec2 pos, ImU32 col, const char* text)
 {
-    float size = (Bars::slot_scale +0.25f)* font_text_size;
+    float size = get_scaled_text_size_multiplier() * font_text_size;
     ImGui::GetWindowDrawList()->AddText(font_text, size, pos, col, text);
+}
+
+float RenderManager::get_scaled_text_size_multiplier()
+{
+    return (Bars::slot_scale + 0.25f);
 }
 
 void RenderManager::draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col)
@@ -1020,8 +1026,9 @@ inline bool is_ultrawide(const float & screen_size_x, const float & screen_size_
 */
 inline std::tuple<float, float, float> calculate_menu_window_size(bool include_icon_height = true)
 {
+    const ImVec2 default_spacing = ImVec2(8, 4);
     //use default spacing in menu
-    ImGui::GetStyle().ItemSpacing = ImVec2(8, 4);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, default_spacing);
 
     const float screen_size_x = ImGui::GetIO().DisplaySize.x, screen_size_y = ImGui::GetIO().DisplaySize.y;
 
@@ -1045,6 +1052,7 @@ inline std::tuple<float, float, float> calculate_menu_window_size(bool include_i
     }
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
     ImGui::SetNextWindowBgAlpha(0.65F);
+    ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
     return std::make_tuple(screen_size_x, screen_size_y, window_width);
 }
 
@@ -1066,46 +1074,47 @@ inline int get_oblivion_bar_row_length() {
     return row_len;
 }
 
-
 /*
 * return screen_size_x, screen_size_y, window_width, window_height
 */
-inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize, int row_len, Bars::bar_layout layout)
+inline std::tuple<float, float, float, float> calculate_hud_window_size(int barsize, int row_len, Bars::bar_layout layout, float bar_slot_spacing, float bar_slot_scale, bool include_bar_text)
 {
     auto& io = ImGui::GetIO();
     const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
 
-    ImVec2 spacing = ImGui::GetStyle().ItemSpacing;
 
-    spacing.x = Bars::slot_spacing;
-    spacing.y = Bars::slot_spacing;
-    ImGui::GetStyle().ItemSpacing = spacing;
+    ImVec2 spacing(bar_slot_spacing, bar_slot_spacing);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
 
     ImVec2 inner_spacing = ImGui::GetStyle().ItemInnerSpacing;
     ImVec2 frame_padding = ImGui::GetStyle().FramePadding;
-    float slot_h = std::floor(get_hud_slot_height(screen_size_y));
+    float slot_h = std::floor(get_hud_slot_height(screen_size_y, bar_slot_scale));
     float window_height{ 0 };
     float window_width{ 0 };
 
     ImGui::PushFont(font_text);
-    float font_height = ImGui::CalcTextSize("M").y + frame_padding.y; //spacing.y + inner_spacing.y;
+    float font_height = include_bar_text ? ImGui::CalcTextSize("M").y + frame_padding.y: 0.0f; //spacing.y + inner_spacing.y;
     ImGui::PopFont();
 
     if (layout == Bars::bar_layout::CIRCLE && barsize >= 3) {
         window_width = (Bars::bar_circle_radius + 1.125f) * slot_h * 2.0f;
-        window_height = font_height + window_width;
+        window_height = font_height + window_width + inner_spacing.y;
     }
-    //else if (layout == Bars::bar_layout::CROSS && barsize >= 3) {
-    // //TODO 
-    //}
+    else if (layout == Bars::bar_layout::CROSS && barsize >= 4) {
+        int numcrosses = static_cast<int>(std::ceil(static_cast<float>(barsize) / 4.0f));
+        //3 rows, 3 icons len per cross
+        window_height = font_height + (slot_h + spacing.y) * 2.0f + slot_h + inner_spacing.y * 2 + frame_padding.y * 2;
+        window_width = (slot_h + spacing.x) * (numcrosses*3 -1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
+        window_width += (screen_size_x * Bars::bar_cross_distance) * (numcrosses-1);
+    }
     else {
         int numrows = Bars::get_num_rows(barsize, row_len);
         //window_height = font_height + (slot_h + spacing.y) * (numrows);
         window_height = font_height + (slot_h + spacing.y) * static_cast<float>(numrows - 1) + slot_h + inner_spacing.y * 2 + frame_padding.y * 2;
         window_width = (slot_h + spacing.x) * static_cast<float>(row_len - 1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
-
     }
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
+    ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
 
@@ -1177,17 +1186,21 @@ void draw_drag_menu() {
     float* slot_scale = &Bars::slot_scale;
     float offset_x = Bars::offset_x;
     float offset_y = Bars::offset_y;
+    bool include_bar_text{ true };
+    Bars::bar_layout used_layout = Bars::layout;
     if (dragged_window == 1) {
         barsize = static_cast<uint8_t>(get_oblivion_bar_size());
-        barrowlen = barsize;
+        barrowlen = static_cast<uint8_t>(get_oblivion_bar_row_length());
         anchor = Bars::oblivion_bar_anchor_point;
         slot_spacing = &Bars::oblivion_slot_spacing;
         slot_scale = &Bars::oblivion_slot_scale;
         offset_x = Bars::oblivion_offset_x;
         offset_y = Bars::oblivion_offset_y;
+        used_layout = Bars::bar_layout::BARS;
+        include_bar_text = false;
     }
+    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize, barrowlen, used_layout, *slot_spacing, *slot_scale, include_bar_text);
 
-    auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(barsize, barrowlen, Bars::layout);
     if (!drag_frame_initialized) {
         adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, anchor, offset_x, offset_y);
     }
@@ -1195,8 +1208,7 @@ void draw_drag_menu() {
 
     float alpha = 0.5f;
 
-    const std::string text = "Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing";
-    SpellHotbar::Hotbar dummy(text, barsize);
+    //const std::string text = "Drag Position, Mouse Wheel: Scale, ALT + Mouse Wheel: Spacing";
     ImGui::Begin("Drag Bar", &show_drag_frame, window_flag);
 
     drag_window_pos = ImGui::GetWindowPos();
@@ -1249,10 +1261,20 @@ void draw_drag_menu() {
             }
         }
     }
-    drawCenteredText(text.c_str());
-    dummy.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
-                    highlight_isred, alpha, 0.0f, 0);
-
+    if (dragged_window == 1)
+    {
+        SpellHotbar::Bars::OblivionBar dummy;
+        dummy.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
+            highlight_isred, alpha, 0.0f, 0);
+    }
+    else {
+        const std::string text = "Bar Text";
+        SpellHotbar::Hotbar dummy(text, barsize);
+        drawCenteredText(text.c_str());
+        dummy.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
+            highlight_isred, alpha, 0.0f, 0);
+    }
+    BarDraggingConfigWindow::draw_info();
 }
 
 //Draw Custom stuff 
@@ -1458,7 +1480,7 @@ void RenderManager::draw() {
 
             if (should_show || main_bar_fade.is_hud_fading()) {
 
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize, Bars::bar_row_len, Bars::layout);
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(Bars::barsize, Bars::bar_row_len, Bars::layout, Bars::slot_spacing, Bars::slot_scale, true);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::bar_anchor_point, Bars::offset_x, Bars::offset_y);
 
@@ -1501,7 +1523,7 @@ void RenderManager::draw() {
             if (Input::is_oblivion_mode() && (should_show_oblivion || oblivion_bar_fade.is_hud_fading())) {
                 int obl_bar_size = get_oblivion_bar_size();
                 int obl_bar_row = get_oblivion_bar_row_length();
-                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_row, Bars::bar_layout::BARS);
+                auto [screen_size_x, screen_size_y, window_width, window_height] = calculate_hud_window_size(obl_bar_size, obl_bar_row, Bars::bar_layout::BARS, Bars::oblivion_slot_spacing, Bars::oblivion_slot_scale, false);
 
                 adjust_window_pos_to_anchor(screen_size_x, screen_size_y, window_width, window_height, Bars::oblivion_bar_anchor_point, Bars::oblivion_offset_x, Bars::oblivion_offset_y);
 

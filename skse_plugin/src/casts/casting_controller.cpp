@@ -265,7 +265,7 @@ namespace SpellHotbar::casts::CastingController {
 			if (should_cast) {
 				stop_charge_sound();
 				play_release_sound();
-				if (cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand)) {
+				if (cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_spell_proc)) {
 					if (m_spell_proc) {
 						casts::SpellProc::consume_proc();
 					}
@@ -424,7 +424,7 @@ namespace SpellHotbar::casts::CastingController {
 
 			if (timer_old < m_release_anim_time) {
 				//first cast update
-				cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_manacost);
+				cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_spell_proc, m_manacost);
 				if (m_spell_proc) {
 					casts::SpellProc::consume_proc();
 				}
@@ -448,7 +448,7 @@ namespace SpellHotbar::casts::CastingController {
 					RenderManager::highlight_skill_slot(m_slot, loop_timer*2.0f, false);
 					auto spell = m_form->As<RE::SpellItem>();
 					if (spell != nullptr) {
-						GameData::concentration_cast_mod_callback(spell);
+						GameData::concentration_cast_mod_callback(spell, m_spell_proc);
 					}
 				}
 			}
@@ -905,7 +905,7 @@ namespace SpellHotbar::casts::CastingController {
 		return false;
 	}
 
-	bool cast_spell(RE::SpellItem* spell, bool dual_cast, std::optional<float> concentration_manacost)
+	bool cast_spell(RE::SpellItem* spell, bool dual_cast, bool spell_proc, std::optional<float> concentration_manacost)
 	{
 		//Credits to https://github.com/ArcEarth/DynamicAnimationCasting/
 		if (!spell) return false;
@@ -945,7 +945,7 @@ namespace SpellHotbar::casts::CastingController {
 		}
 
 		//mod support Ordinator: Vancian magic
-		GameData::casted_spell_mod_callback(spell);
+		GameData::casted_spell_mod_callback(spell, spell_proc);
 
 		return true;
 	}

@@ -961,5 +961,15 @@ if __name__ == "__main__":
         i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
 
 
+    #contributed mods:
+    if redo_all_img or False:
+        stitch_folder([rf"{project_root}\spell_lists2\mods_contributed\shadow_spell_package.csv"],
+                      [rf"{project_root}\modded_spell_icons_contributed\shadow_spell_package"],
+                      mod_root_path / f"images/icons_shadow_spell_package", alpha_mask,
+                      output_data=mod_root_path / f"spelldata/spells_shadow_spell_package")
+
+        i4_mod("shadow_spell_package", tmp_icons_dir, esp_name="ShadowSpellPackage",spell_list=[rf"{project_root}\spell_lists2\mods_contributed\shadow_spell_package.csv"], icon_root=[rf"{project_root}\modded_spell_icons_contributed\shadow_spell_package"])
+
     # icons done by user request
     #stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)
+

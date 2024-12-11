@@ -1536,7 +1536,7 @@ namespace SpellHotbar::GameData {
          return proc;
      }
 
-     void casted_spell_mod_callback(RE::SpellItem* spell)
+     void casted_spell_mod_callback(RE::SpellItem* spell, bool spell_proc)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //Ordinator, check vancian magic and reduce spell count
@@ -1545,7 +1545,7 @@ namespace SpellHotbar::GameData {
                  ordinator_global_vancian_magic_count != nullptr &&
                  pc->HasPerk(ordinator_perk_vancian_magic))
              {
-                 if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                 if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell && !spell_proc) {
                      // check for blood magic
                      bool has_blood_magic = player_has_ordinator_bloodmagic();
 
@@ -1569,6 +1569,7 @@ namespace SpellHotbar::GameData {
                  //on v3 blood ritual must be active
                  if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
                     float cost = get_pos_spell_health_cost(spell);
+                    if (spell_proc) cost *= 0.5f;
                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
                  }
              }
@@ -1732,7 +1733,7 @@ namespace SpellHotbar::GameData {
              }
          }
      }
-     void concentration_cast_mod_callback(RE::SpellItem* spell)
+     void concentration_cast_mod_callback(RE::SpellItem* spell, bool spell_proc)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //if using PathOfSorcery Blood to Power, set Fame to missing HP
@@ -1747,6 +1748,7 @@ namespace SpellHotbar::GameData {
                  //on v3 blood ritual must be active
                  if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
                      float cost = get_pos_spell_health_cost(spell);
+                     if (spell_proc) cost *= 0.5f;
                      pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost*update_interval);
                  }
 

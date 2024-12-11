@@ -21,7 +21,7 @@ namespace SpellHotbar::Bars {
 		//TODO duplicate to bar draw_in_hud
 		ImGui::PushFont(font);
 
-		int icon_size = static_cast<int>(get_hud_slot_height(screensize_y));
+		int icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::oblivion_slot_scale));
 		float text_offset_x = icon_size * 0.05f;
 		float text_offset_y = icon_size * 0.0125f;
 

@@ -132,7 +132,7 @@ namespace SpellHotbar::SpellEditor {
         list_of_skills_filtered.clear();
 
         RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
-        if (pc) {
+        if (pc && pc->GetActorBase() != nullptr) {
             auto list = pc->GetActorBase()->GetSpellList();
             
             auto& added_spells = pc->GetActorRuntimeData().addedSpells;
