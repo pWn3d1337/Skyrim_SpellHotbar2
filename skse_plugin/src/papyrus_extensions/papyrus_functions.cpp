@@ -201,6 +201,7 @@ bool load_bars_from_file(RE::StaticFunctionTag*, std::string filename_mod_dir, s
 void clear_bars(RE::StaticFunctionTag*)
 {
     SpellHotbar::Bars::clear_bars();
+    SpellHotbar::GameData::oblivion_bar.clear();
 }
 
 float get_slot_spacing(RE::StaticFunctionTag*)

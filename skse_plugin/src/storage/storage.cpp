@@ -103,6 +103,7 @@ namespace SpellHotbar::Storage {
         {
             v.serialize(a_intfc, k);
         }
+        GameData::oblivion_bar.serialize(a_intfc, 'OBLB');
 
         // Save GameData values
         if (!a_intfc->OpenRecord('GDAT', Storage::save_format)) {
@@ -153,6 +154,7 @@ namespace SpellHotbar::Storage {
 
         //clear all bars
         SpellHotbar::Bars::clear_bars();
+        GameData::oblivion_bar.clear();
 
         uint32_t type{0};
         uint32_t version{0};
@@ -409,6 +411,10 @@ namespace SpellHotbar::Storage {
             else if (type == 'UDAT') {
                 logger::trace("Reading 'UDAT' data from save...");
                 GameData::load_user_entry_info_from_SKSE_save(a_intfc, version);
+            }
+            else if (type == 'OBLB') {
+                logger::trace("Reading 'OBLB' data from save...");
+                GameData::oblivion_bar.deserialize(a_intfc, type, version, length);
             }
             else if (SpellHotbar::Bars::hotbars.contains(type))
             {

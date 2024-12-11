@@ -57,6 +57,8 @@ struct SlottedSkill
     SlottedSkill();
     void clear();
     bool isEmpty() const;
+
+    bool serialize_skill(uint8_t index, SKSE::SerializationInterface* serializer, const std::string& name) const;
 };
 
 struct SubBar {

@@ -21,7 +21,7 @@ namespace SpellHotbar::GameData {
 			if (!m_icon_str.empty()) {
 				uint16_t len = static_cast<uint16_t>(m_icon_str.length());
 				ok = serializer->WriteRecordData(&len, sizeof(uint16_t));
-				if (ok) ok = serializer->WriteRecordData(&m_icon_str, len);
+				if (ok) ok = serializer->WriteRecordData(m_icon_str.c_str(), len);
 			}
 			else {
 				constexpr uint16_t zero{ 0Ui16 };

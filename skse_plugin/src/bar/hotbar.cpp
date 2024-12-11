@@ -43,7 +43,9 @@ namespace SpellHotbar
         // write index + formID + hand_mode
         for (int i = 0U; i < bar.m_slotted_skills.size(); i++) {
             if (bar.m_slotted_skills.at(i).formID != 0) {
-                uint8_t index = static_cast<uint8_t>(i);
+
+                bar.m_slotted_skills.at(i).serialize_skill(static_cast<uint8_t>(i), serializer, name);
+                /*uint8_t index = static_cast<uint8_t>(i);
                 if (!serializer->WriteRecordData(&index, sizeof(uint8_t))) {
                     logger::error("Failed to write data for {}_{}", name, i);
                     break;
@@ -55,7 +57,7 @@ namespace SpellHotbar
                 if (!serializer->WriteRecordData(&bar.m_slotted_skills[i].hand, sizeof(hand_mode))) {
                     logger::error("Failed to write data for {}_{}", name, i);
                     break;
-                }
+                }*/
             }
         }
 
@@ -917,6 +919,29 @@ namespace SpellHotbar
     bool SlottedSkill::isEmpty() const {
         return type==slot_type::empty;
     }
+
+    bool SlottedSkill::serialize_skill(uint8_t index, SKSE::SerializationInterface* serializer, const std::string & name) const
+    {
+        bool ok{true};
+        if (!serializer->WriteRecordData(&index, sizeof(uint8_t))) {
+            ok = false;
+            logger::error("Failed to write data for {}_{}", name, index);
+        }
+        if (ok) {
+            if (!serializer->WriteRecordData(&this->formID, sizeof(RE::FormID))) {
+                ok = false;
+                logger::error("Failed to write data for {}_{}", name, index);
+            }
+        }
+        if (ok) {
+            if (!serializer->WriteRecordData(&this->hand, sizeof(hand_mode))) {
+                ok = false;
+                logger::error("Failed to write data for {}_{}", name, index);
+            }
+        }
+        return ok;
+    }
+
 
     void SlottedSkill::clear()
     { 
