@@ -73,10 +73,6 @@ namespace SpellHotbar::SpellEditor {
         return show_frame;
     }
 
-    bool should_add_to_editor(RE::SpellItem* spell) {
-        return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
-    }
-
     void update_filter(const std::string filter_text, bool filter_predefined, bool filter_custom_dat) {
         if (filter_text.empty() && !filter_predefined && !filter_custom_dat) {
             list_of_skills_filtered = list_of_skills;
@@ -133,32 +129,7 @@ namespace SpellHotbar::SpellEditor {
 
         RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
         if (pc && pc->GetActorBase() != nullptr) {
-            auto list = pc->GetActorBase()->GetSpellList();
-            
-            auto& added_spells = pc->GetActorRuntimeData().addedSpells;
-
-            list_of_skills.reserve(list->numSpells + list->numShouts + added_spells.size());
-
-            //logger::info("Spells: {}, {}, {}", list->numSpells, list->numShouts, added_spells.size());
-
-            for (uint32_t i = 0U; i < list->numSpells; ++i) {
-                auto spell = list->spells[i];
-                if (should_add_to_editor(spell)) {
-                    list_of_skills.push_back(spell);
-                }
-            }
-
-            for (RE::BSTArrayBase::size_type i = 0U; i < added_spells.size(); ++i) {
-                auto spell = added_spells[i];
-                if (should_add_to_editor(spell)) {
-                    list_of_skills.push_back(spell);
-                }
-            }
-
-            for (uint32_t i = 0U; i < list->numShouts; ++i) {
-                auto shout = list->shouts[i];
-                list_of_skills.push_back(shout);
-            }
+            GameData::get_player_known_spells(pc, list_of_skills);
 
             filter_buf[0] = '\0';
             update_filter("", filter_predefined_data, filter_user_data);

@@ -26,6 +26,7 @@ namespace SpellHotbar::Input {
 		oblivion_cast = 19,
 		oblivion_potion = 20,
 		oblivion_show_bar_mod = 21,
+		open_advanced_bind_menu = 22,
 		num_keys,
 
 		dummy_key_vanilla_shout = 99 //dummy value used for oblivion mode shout slot
@@ -35,6 +36,7 @@ namespace SpellHotbar::Input {
 	extern std::array<KeyBind,12> key_spells;
 	extern KeyBind key_prev;
 	extern KeyBind key_next;
+	extern KeyBind key_open_advanced_bind_menu;
 
 	extern KeyModifier mod_1;
 	extern KeyModifier mod_2;

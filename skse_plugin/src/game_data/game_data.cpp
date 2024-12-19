@@ -501,6 +501,25 @@ namespace SpellHotbar::GameData {
         return 0;
     }
 
+    std::string get_modifier_text(key_modifier mod) {
+        std::string key_text;
+        switch (mod) {
+        case SpellHotbar::key_modifier::ctrl:
+            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).second + "]";
+            break;
+        case SpellHotbar::key_modifier::shift:
+            key_text = "Mod [" +key_names.at(Input::mod_2.get_dx_scancode()).second + "]";
+            break;
+        case SpellHotbar::key_modifier::alt:
+            key_text = "Mod [" +key_names.at(Input::mod_3.get_dx_scancode()).second + "]";
+            break;
+        default:
+            key_text= "No Mod";
+            break;
+        }
+        return key_text;
+    }
+
     std::string get_keybind_text(int slot_index, key_modifier mod)
     {
         int keybind = get_spell_keybind(slot_index);
@@ -789,7 +808,7 @@ namespace SpellHotbar::GameData {
         return std::make_tuple(false, fast_fade);
     }
 
-    inline int get_spell_rank(int32_t minlevel) {
+    int GameData::get_spell_rank(int32_t minlevel) {
         int ret{0};
         if (minlevel >= 100) {
             ret = 4;
@@ -1753,6 +1772,40 @@ namespace SpellHotbar::GameData {
                  }
 
              }
+         }
+     }
+
+     bool is_spell_ingame_visible(RE::SpellItem* spell) {
+         return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
+     }
+
+     void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills)
+     {
+         auto list = pc->GetActorBase()->GetSpellList();
+
+         auto& added_spells = pc->GetActorRuntimeData().addedSpells;
+
+         list_of_skills.reserve(list->numSpells + list->numShouts + added_spells.size());
+
+         //logger::info("Spells: {}, {}, {}", list->numSpells, list->numShouts, added_spells.size());
+
+         for (uint32_t i = 0U; i < list->numSpells; ++i) {
+             auto spell = list->spells[i];
+             if (is_spell_ingame_visible(spell)) {
+                 list_of_skills.push_back(spell);
+             }
+         }
+
+         for (RE::BSTArrayBase::size_type i = 0U; i < added_spells.size(); ++i) {
+             auto spell = added_spells[i];
+             if (is_spell_ingame_visible(spell)) {
+                 list_of_skills.push_back(spell);
+             }
+         }
+
+         for (uint32_t i = 0U; i < list->numShouts; ++i) {
+             auto shout = list->shouts[i];
+             list_of_skills.push_back(shout);
          }
      }
 }

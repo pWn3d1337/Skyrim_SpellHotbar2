@@ -24,6 +24,8 @@ namespace SpellHotbar::Input {
 	KeyBind key_oblivion_cast{ RE::INPUT_DEVICE::kNone, 0 }; // 47 V
 	KeyBind key_oblivion_potion{ RE::INPUT_DEVICE::kNone, 0 }; //45 B
 
+	KeyBind key_open_advanced_bind_menu{ RE::INPUT_DEVICE::kKeyboard, 76 }; //TODO no default bind, 76 - Num 5
+
 	KeyModifier mod_1(RE::INPUT_DEVICE::kNone, 0, 0); //ctrl 29, 157
 	KeyModifier mod_2(RE::INPUT_DEVICE::kNone, 0, 0); //shift 42, 54
 	KeyModifier mod_3(RE::INPUT_DEVICE::kNone, 0, 0);  //alt 56, 184
@@ -58,6 +60,7 @@ namespace SpellHotbar::Input {
 		_check_unbind(mod_2, code);
 		_check_unbind(mod_3, code);
 		_check_unbind(mod_show_bar, code);
+		_check_unbind(key_open_advanced_bind_menu, code);
 	}
 
 	int rebind_key(int slot, int code, bool check_conflicts)
@@ -107,6 +110,10 @@ namespace SpellHotbar::Input {
 			mod_oblivion_show_bar.rebind(code);
 			return mod_oblivion_show_bar.get_dx_scancode();
 		}
+		else if (slot == keybind_id::open_advanced_bind_menu) {
+			key_open_advanced_bind_menu.assign_from_dx_scancode(code);
+			return key_open_advanced_bind_menu.get_dx_scancode();
+		}
 
 		return 0;
 	}
@@ -145,6 +152,9 @@ namespace SpellHotbar::Input {
 		}
 		else if (slot == keybind_id::oblivion_show_bar_mod) {
 			return mod_oblivion_show_bar.get_dx_scancode();
+		}
+		else if (slot == keybind_id::open_advanced_bind_menu) {
+			return key_open_advanced_bind_menu.get_dx_scancode();
 		}
 		return 0;
 	}

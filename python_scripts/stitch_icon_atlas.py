@@ -35,6 +35,7 @@ swf_jar_path = str(Path(__file__).parent / "../SWF_Generator/out/artifacts/SWF_G
 overlay_icons = {}
 
 image_size = 128
+swf_icon_size = 32
 
 # default icon names used
 default_icons = [
@@ -136,6 +137,7 @@ def write_png_and_dds(cvImage: np.ndarray, output_base: str) -> None:
             os.remove(output_path)
         img.save(filename=str(output_path))
 
+
 def _get_image_name(spell_name: str) -> str:
     return spell_name.lower().replace(" ", "_").replace("'", "").replace(":", "").replace("-", "_").replace("’", "")
 
@@ -177,6 +179,7 @@ def add_rank_text_to_image(img: np.ndarray, img_size: int, ranktext: str, rank_f
               stroke_width=stroke_width, spacing=0)
     img_out = np.array(pil_img)
     return img_out
+
 
 def resize_image_with_pil(img: np.ndarray, img_size: int) -> np.ndarray:
     """PIL has higher quality downsampling with LANCZOS"""
@@ -227,7 +230,7 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        # alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_AREA)
         alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     cvImage = np.zeros((atlas_size, atlas_size, 4), dtype="uint8")
@@ -256,7 +259,7 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
             im = cv2.imread(v, cv2.IMREAD_UNCHANGED)
             if im is None:
                 raise IOError(f"Could not load {v}")
-            #im = cv2.resize(im, (image_size, image_size), interpolation=cv2.INTER_AREA)
+            # im = cv2.resize(im, (image_size, image_size), interpolation=cv2.INTER_AREA)
             im = resize_image_with_pil(im, image_size)
             overlay_images[k] = im
 
@@ -266,7 +269,7 @@ def _stitch_images_internal(df: pd.DataFrame, alpha_mask_path: str | None) -> tu
             unique_key = df.iloc[i, unique_key_index]
             if str(unique_key) not in already_used_textures:
                 img = cv2.imread(path_to_load, cv2.IMREAD_UNCHANGED)
-                #img = cv2.resize(img, (image_size, image_size), interpolation=cv2.INTER_AREA)
+                # img = cv2.resize(img, (image_size, image_size), interpolation=cv2.INTER_AREA)
                 img = resize_image_with_pil(img, image_size)
 
                 if img.ndim < 3:
@@ -426,7 +429,7 @@ def create_cooldown_progress_overlay(output_base: Path | str, alpha_mask_path: s
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        # alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
         alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     alpha_factor = alpha_mask.astype(float) / 255.0
@@ -481,8 +484,6 @@ def create_i4_icons(spell_list: list[str], icon_root: list[str], output_path: Pa
                     tmp_icons_dir: Path | str, swf_out_path: Path | str, swf_prefix: str = "spell",
                     write_icons_and_swf: bool = True, add_unbind_slot: bool = False):
     schema_link = "https://raw.githubusercontent.com/Exit-9B/InventoryInjector/main/docs/InventoryInjector.schema.json"
-
-    swf_icon_size = 32
 
     dragon_font_path = Path(__file__).parent / 'icons/6_$DragonFont_Dragon_script.ttf'
     dragon_font = ImageFont.truetype(str(dragon_font_path), round(swf_icon_size * 0.5))
@@ -576,7 +577,7 @@ def create_i4_icons(spell_list: list[str], icon_root: list[str], output_path: Pa
         out_pathes = []
         for index, row in df_icons.iterrows():
             img = cv2.imread(row['Path'], cv2.IMREAD_UNCHANGED)
-            #img = cv2.resize(img, (swf_icon_size, swf_icon_size), interpolation=cv2.INTER_LANCZOS4)
+            # img = cv2.resize(img, (swf_icon_size, swf_icon_size), interpolation=cv2.INTER_LANCZOS4)
             img = resize_image_with_pil(img, swf_icon_size)
 
             if not pd.isna(row["Shouttext"]):
@@ -625,6 +626,32 @@ def i4_mod(modname: str, tmp_icons_dir: str, spell_list: list[str] = None, icon_
                     swf_prefix=modname)
 
 
+def i4_extra_icons(icon_dir: str | Path, tmp_icons_dir: str | Path, swf_out_path: str | Path):
+    dir_path = Path(icon_dir)
+    names = [img.stem for img in dir_path.glob("*.png")]
+
+    ser = pd.Series(names)
+    df = pd.DataFrame(ser)
+    df.columns = ["IconName"]
+
+    out_pathes = []
+    for index, row in df.iterrows():
+        img_path = dir_path / f"{row['IconName']}.png"
+        img = cv2.imread(str(img_path), cv2.IMREAD_UNCHANGED)
+        img = resize_image_with_pil(img, swf_icon_size)
+
+        out_img_path = f"{tmp_icons_dir}/{row['IconName']}.png"
+        cv2.imwrite(out_img_path, img)  # no dds needed here
+        out_pathes.append(out_img_path)
+
+    proc = subprocess.run([png2swf_executable_path, "-o", f"{swf_out_path}", "-X", "128", "-Y", "128"] + out_pathes)
+
+    labels = df['IconName'].to_list()
+    proc2 = subprocess.run(
+        ["java", "-jar", swf_jar_path,
+         f"{swf_out_path}", f"{swf_out_path}"] + labels)
+
+
 def stitch_extra_icons(dir: str, output_base: Path | str, alpha_mask_path: str | None):
     dir_path = Path(dir)
     names = [img.stem for img in dir_path.glob("*.png")]
@@ -665,7 +692,7 @@ def create_spellproc_overlay(input_folder: Path | str, output_base: Path | str, 
         alpha_mask = np.ones((image_size, image_size), dtype="uint8") * 255
     else:
         alpha_mask = cv2.imread(alpha_mask_path, cv2.IMREAD_GRAYSCALE)
-        #alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
+        # alpha_mask = cv2.resize(alpha_mask, (image_size, image_size), interpolation=cv2.INTER_LANCZOS4)
         alpha_mask = resize_image_with_pil(alpha_mask, image_size)
 
     images = list()
@@ -696,13 +723,13 @@ def create_spellproc_overlay(input_folder: Path | str, output_base: Path | str, 
         hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 
         img_a = np.zeros((bgr.shape[0], bgr.shape[1], 4), dtype="uint8")
-        img_a[:,:,0:3] = bgr
-        img_a[:,:,3] = hsv[:,:,2]
+        img_a[:, :, 0:3] = bgr
+        img_a[:, :, 3] = hsv[:, :, 2]
 
-        img_exp = np.zeros((bgr.shape[0]+expansion_pixels*2, bgr.shape[1]+expansion_pixels*2, 4), dtype="uint8")
-        img_exp[expansion_pixels:-expansion_pixels,expansion_pixels:-expansion_pixels,:] = img_a
+        img_exp = np.zeros((bgr.shape[0] + expansion_pixels * 2, bgr.shape[1] + expansion_pixels * 2, 4), dtype="uint8")
+        img_exp[expansion_pixels:-expansion_pixels, expansion_pixels:-expansion_pixels, :] = img_a
 
-        #im = cv2.resize(img_exp, (image_size, image_size), interpolation=cv2.INTER_AREA)
+        # im = cv2.resize(img_exp, (image_size, image_size), interpolation=cv2.INTER_AREA)
         im = resize_image_with_pil(img_exp, image_size)
 
         # multiply alpha mask
@@ -722,6 +749,24 @@ def create_spellproc_overlay(input_folder: Path | str, output_base: Path | str, 
 
     write_png_and_dds(cvImage, output_base)
     df.to_csv(f"{output_base}.csv", index=False, sep='\t')
+
+
+def stitch_folder_contributed(mod_name: str, alpha_mask, icon_folder_name: str | None = None):
+    if icon_folder_name is None:
+        icon_folder_name = mod_name
+    stitch_folder([rf"{project_root}\spell_lists2\mods_contributed\{mod_name}.csv"],
+                  [rf"{project_root}\modded_spell_icons_contributed\{icon_folder_name}"],
+                  mod_root_path / f"images/icons_{mod_name}", alpha_mask,
+                  output_data=mod_root_path / f"spelldata/spells_{mod_name}")
+
+
+def i4_mod_contributed(mod_name: str, esp_name: str | None, icon_folder_name: str | None = None):
+    if icon_folder_name is None:
+        icon_folder_name = mod_name
+    i4_mod(mod_name, tmp_icons_dir, esp_name=esp_name,
+           spell_list=[rf"{project_root}\spell_lists2\mods_contributed\{mod_name}.csv"],
+           icon_root=[rf"{project_root}\modded_spell_icons_contributed\{icon_folder_name}"])
+
 
 if __name__ == "__main__":
     project_root = Path(__file__).parent
@@ -843,7 +888,8 @@ if __name__ == "__main__":
 
         triumvirate_spell_lists = [rf"{project_root}\spell_lists2\mods\triumvirate_{a}.csv" for a in t_archetypes]
         triumvirate_icon_folders = [rf"{project_root}\modded_spell_icons\triumvirate_{a}" for a in t_archetypes]
-        stitch_folder(triumvirate_spell_lists, triumvirate_icon_folders, mod_root_path / f"images/icons_triumvirate", alpha_mask,
+        stitch_folder(triumvirate_spell_lists, triumvirate_icon_folders, mod_root_path / f"images/icons_triumvirate",
+                      alpha_mask,
                       output_data=mod_root_path / "spelldata/spells_triumvirate")
 
         i4_mod("triumvirate", tmp_icons_dir,
@@ -884,7 +930,6 @@ if __name__ == "__main__":
 
         i4_mod("apocalypse", tmp_icons_dir, apoc_spell_lists, apoc_icon_folders,
                esp_name="Apocalypse - Magic of Skyrim")
-
 
     odin_spell_lists = [rf"{project_root}\spell_lists2\mods\odin_{s}.csv" for s in a_schools]
     odin_icon_folders = [rf"{project_root}\modded_spell_icons\odin_{s}" for s in a_schools]
@@ -931,7 +976,8 @@ if __name__ == "__main__":
         stitch_mod("ancient_blood_magic_2")
         i4_mod("ancient_blood_magic_2", tmp_icons_dir, esp_name="AncientBloodII")
 
-        create_spellproc_overlay(rf"{project_root}\icons\spellproc_anim", mod_root_path / "images/icons_spellproc_overlay", alpha_mask, 10)
+        create_spellproc_overlay(rf"{project_root}\icons\spellproc_anim",
+                                 mod_root_path / "images/icons_spellproc_overlay", alpha_mask, 10)
 
         stitch_mod("stellaris")
         i4_mod("stellaris", tmp_icons_dir)
@@ -950,7 +996,8 @@ if __name__ == "__main__":
     mysticism_icon_folders = [rf"{project_root}\modded_spell_icons\mysticism_{s}" for s in m_schools]
 
     if redo_all_img or False:
-        stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism", alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
+        stitch_folder(mysticism_spell_lists, mysticism_icon_folders, mod_root_path / f"images/icons_mysticism",
+                      alpha_mask, output_data=mod_root_path / "spelldata/spells_mysticism")
 
         i4_mod("mysticism", tmp_icons_dir, mysticism_spell_lists, mysticism_icon_folders, esp_name="MysticismMagic")
 
@@ -960,16 +1007,22 @@ if __name__ == "__main__":
         stitch_mod("path_of_sorcery")
         i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
 
-
-    #contributed mods:
+    """contributed mods:"""
     if redo_all_img or False:
-        stitch_folder([rf"{project_root}\spell_lists2\mods_contributed\shadow_spell_package.csv"],
-                      [rf"{project_root}\modded_spell_icons_contributed\shadow_spell_package"],
-                      mod_root_path / f"images/icons_shadow_spell_package", alpha_mask,
-                      output_data=mod_root_path / f"spelldata/spells_shadow_spell_package")
+        #credits ArchAngelAries
+        stitch_folder_contributed("shadow_spell_package", alpha_mask)
+        i4_mod_contributed("shadow_spell_package", esp_name="ShadowSpellPackage")
 
-        i4_mod("shadow_spell_package", tmp_icons_dir, esp_name="ShadowSpellPackage",spell_list=[rf"{project_root}\spell_lists2\mods_contributed\shadow_spell_package.csv"], icon_root=[rf"{project_root}\modded_spell_icons_contributed\shadow_spell_package"])
+    if redo_all_img or True:
+        # credits ArchAngelAries
+        stitch_folder_contributed("star_wars_spell_pack", alpha_mask)
+        i4_mod_contributed("star_wars_spell_pack", esp_name="starwarsspellpack")
+
+        stitch_folder_contributed("star_wars_spell_pack_esl", alpha_mask, icon_folder_name="star_wars_spell_pack")
+        i4_mod_contributed("star_wars_spell_pack_esl", esp_name="starwarsspellpack_ESLversion", icon_folder_name="star_wars_spell_pack")
+
 
     # icons done by user request
-    #stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)
-
+    # stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)
+    # i4_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", tmp_icons_dir,
+    #               mod_folder_path / "Interface/SpellHotbar/squeetsquib_icons.swf")

@@ -21,6 +21,7 @@
 #include "spell_editor.h"
 #include "potion_editor.h"
 #include "bar_dragging_config_window.h"
+#include "advanced_bind_menu.h"
 
 #include <imgui_internal.h>
 
@@ -352,9 +353,16 @@ void RenderManager::close_potion_editor()
     PotionEditor::hide();
 }
 
+void RenderManager::open_advanced_binding_menu()
+{
+    if (!BindMenu::is_opened()) {
+        BindMenu::show();
+    }
+}
+
 bool RenderManager::should_block_game_key_inputs()
 {
-    return SpellEditor::is_opened() || PotionEditor::is_opened();
+    return SpellEditor::is_opened() || PotionEditor::is_opened() || BindMenu::is_opened();
 }
 
 void RenderManager::close_key_blocking_frames()
@@ -364,6 +372,9 @@ void RenderManager::close_key_blocking_frames()
     }
     if (PotionEditor::is_opened()) {
         close_potion_editor();
+    }
+    if (BindMenu::is_opened()) {
+        BindMenu::hide();
     }
 }
 
@@ -910,14 +921,18 @@ bool RenderManager::draw_skill(RE::FormID formID, int size, ImU32 col) {
     }
 }
 
-void RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size)
+bool RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size)
 {
     SubTextureImage* img = get_tex_for_skill_internal(formID);
-    if (img) {
+    if (img != nullptr) {
         ImGui::GetWindowDrawList()->AddImage((void*)img->res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img->uv0, img->uv1,
             ImColor(1.0f, 1.0f, 1.0f, 1.0f));
 
         draw_slot_overlay(pos, size);
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
@@ -1316,6 +1331,9 @@ void RenderManager::draw() {
     }
     else if (PotionEditor::is_opened()) {
         PotionEditor::renderEditor();
+    }
+    else if (BindMenu::is_opened()) {
+        BindMenu::drawFrame(font_text);
     }
     else
     {

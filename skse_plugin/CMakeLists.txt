@@ -80,6 +80,8 @@ set(source_files src/plugin.cpp
                  src/casts/spell_proc.cpp
                  src/rendering/bar_dragging_config_window.h
                  src/rendering/bar_dragging_config_window.cpp
+                 src/rendering/advanced_bind_menu.h
+                 src/rendering/advanced_bind_menu.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

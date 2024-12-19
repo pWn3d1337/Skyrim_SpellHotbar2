@@ -106,7 +106,7 @@ namespace SpellHotbar {
 
         static void draw_bg(int size, float alpha = 1.0f);
         static bool draw_skill(RE::FormID formID, int size, ImU32 col = IM_COL32_WHITE);
-        static void draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
+        static bool draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
         static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size);
         static void draw_extra_icon_in_editor(const std::string &key, ImVec2 pos, int size);
         static void draw_slot_overlay(ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
@@ -142,5 +142,7 @@ namespace SpellHotbar {
 
         static void open_potion_editor();
         static void close_potion_editor();
+
+        static void open_advanced_binding_menu();
     };
 }

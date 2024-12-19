@@ -8,6 +8,7 @@
 #include "../storage/storage.h"
 #include "keycode_helper.h"
 #include "modes.h"
+#include "../rendering/advanced_bind_menu.h"
 
 namespace {
 
@@ -357,7 +358,12 @@ namespace SpellHotbar::Input {
 
                         if (!handled && in_binding_menu())
                         {
-                            if (key_next.matches(key_code, key_device) && bEvent->IsDown()) {
+                            if (key_open_advanced_bind_menu.matches(key_code, key_device) && bEvent->IsDown()) {
+                                handled = true;
+                                RenderManager::open_advanced_binding_menu();
+                                RE::PlaySound(sound_UISkillsForward);
+                            }
+                            else if (key_next.matches(key_code, key_device) && bEvent->IsDown()) {
                                 handled = true;
                                 Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
                                 RE::PlaySound(sound_UISkillsForward);

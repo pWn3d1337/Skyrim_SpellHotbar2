@@ -137,6 +137,7 @@ namespace SpellHotbar::GameData {
     extern RE::TESGlobal* global_casting_conc_spell;
 
     extern RE::SpellItem* spellhotbar_castfx_spell;
+    extern RE::SpellItem* spellhotbar_unbind_slot;
     extern RE::EffectSetting* spellhotbar_spellproc_cd;
     extern RE::SpellItem* spellhotbar_apply_spellproc_cd;
 
@@ -309,6 +310,8 @@ namespace SpellHotbar::GameData {
 
     float get_special_cd(RE::FormID formID);
 
+    int get_spell_rank(int32_t minlevel);
+
     /*
     * Checks for this perk, or if the ignore perks global is set
     */
@@ -360,5 +363,12 @@ namespace SpellHotbar::GameData {
     * Called every 0.5s during concentrating a spell
     */
     void concentration_cast_mod_callback(RE::SpellItem* spell, bool spell_proc);
+
+    /**
+    * Fill list with player known spells, filters out non gui visible skills
+    */
+    void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills);
+
+    std::string get_modifier_text(key_modifier mod);
 }
 

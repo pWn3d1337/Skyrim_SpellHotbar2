@@ -45,19 +45,6 @@ namespace SpellHotbar
             if (bar.m_slotted_skills.at(i).formID != 0) {
 
                 bar.m_slotted_skills.at(i).serialize_skill(static_cast<uint8_t>(i), serializer, name);
-                /*uint8_t index = static_cast<uint8_t>(i);
-                if (!serializer->WriteRecordData(&index, sizeof(uint8_t))) {
-                    logger::error("Failed to write data for {}_{}", name, i);
-                    break;
-                }
-                if (!serializer->WriteRecordData(&bar.m_slotted_skills[i].formID, sizeof(RE::FormID))) {
-                    logger::error("Failed to write data for {}_{}", name, i);
-                    break;
-                }
-                if (!serializer->WriteRecordData(&bar.m_slotted_skills[i].hand, sizeof(hand_mode))) {
-                    logger::error("Failed to write data for {}_{}", name, i);
-                    break;
-                }*/
             }
         }
 
@@ -166,18 +153,6 @@ namespace SpellHotbar
             m_enabled = true; // Mainbar MUST be enabled
             m_inherit_mode = inherit_mode::none; // Mainbar can't inherit
         }
-        /* uint32_t num_bars = 1;
-        num_bars += (Bars::enable_ctrl_bars ? 1U : 0U);
-        num_bars += (Bars::enable_shift_bars ? 1U : 0U);
-        num_bars += (Bars::enable_alt_bars ? 1U : 0U);
-        uint32_t expected_length = (max_bar_size * sizeof(RE::FormID) + sizeof(uint8_t)) * num_bars;
-
-        if (length != expected_length) {
-            logger::error("Invalid Length ({}) for Hotbar {}, expected {}", length, type, expected_length);
-        } else {
-
-            deserialize_bar(m_bar, serializer, name, type, length);
-        }*/
     }
 
     SubBar& Hotbar::get_sub_bar(key_modifier mod)

@@ -93,6 +93,18 @@ namespace SpellHotbar::Bars {
         return static_cast<int>(std::ceil(static_cast<float>(bar_size) / static_cast<float>(row_len)));
     }
 
+    std::vector<std::pair<uint32_t, std::string>> get_list_of_bars()
+    {
+        std::vector<std::pair<uint32_t, std::string>> ret;
+        for (uint32_t id : bar_cycle) {
+            const auto & bar = hotbars.at(id);
+            if (bar.is_enabled()) {
+                ret.push_back(std::make_pair(id, bar.get_name()));
+            }
+        }
+        return ret;
+    }
+
     uint32_t get_enabled_hotbar(uint32_t barID)
     { 
         if (hotbars.contains(barID)) {

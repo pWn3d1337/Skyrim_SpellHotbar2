@@ -148,6 +148,7 @@ public:
 
     static bool is_valid_formtype_for_hotbar(const RE::TESForm* form);
 
+    inline uint8_t& get_bar_size() const;
 private:
     bool m_enabled;
     SubBar m_bar;
@@ -166,4 +167,5 @@ inline bool SpellHotbar::Hotbar::is_enabled() const { return m_enabled; }
 inline const std::string& SpellHotbar::Hotbar::get_name() const { return m_name; }
 inline int SpellHotbar::Hotbar::get_inherit_mode() const { return static_cast<int>(m_inherit_mode); }
 inline uint32_t SpellHotbar::Hotbar::get_parent() const { return m_parent_bar; };
+inline uint8_t& SpellHotbar::Hotbar::get_bar_size() const { return m_barsize; };
 }

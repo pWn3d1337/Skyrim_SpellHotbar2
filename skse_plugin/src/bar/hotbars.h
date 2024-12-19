@@ -145,4 +145,6 @@ namespace SpellHotbar::Bars {
 
     int get_num_rows(int barsize, int row_len);
 
+    std::vector<std::pair<uint32_t, std::string>> get_list_of_bars();
+
 }
