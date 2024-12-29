@@ -212,6 +212,29 @@ namespace SpellHotbar
         return false;;
     }
 
+    void Hotbar::rotate_skill_hand_assingment(RE::SpellItem* spell, SlottedSkill & skill)
+    {
+        switch (skill.hand) {
+        case hand_mode::auto_hand:
+            skill.hand = hand_mode::left_hand;
+            break;
+        case hand_mode::left_hand:
+            skill.hand = hand_mode::right_hand;
+            break;
+        case hand_mode::right_hand:
+            if (!spell->GetNoDualCastModifications() && GameData::player_can_dualcast_spell(spell)) {
+                skill.hand = hand_mode::dual_hand;
+            }
+            else {
+                skill.hand = hand_mode::auto_hand;
+            }
+            break;
+        case hand_mode::dual_hand:
+        default:
+            skill.hand = hand_mode::auto_hand;
+        }
+    }
+
     std::tuple<SlottedSkill, bool> Hotbar::get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited, std::optional<key_modifier> original_mod)
     {
@@ -247,6 +270,16 @@ namespace SpellHotbar
                 return std::make_tuple(SlottedSkill(), false);
             }
         }
+    }
+
+    SlottedSkill& Hotbar::get_skill_in_bar_by_ref(int index, key_modifier mod)
+    {
+        return get_sub_bar(mod).m_slotted_skills[index];
+    }
+
+    SlottedSkill* Hotbar::get_skill_in_bar_ptr(int index, key_modifier mod)
+    {
+        return &get_sub_bar(mod).m_slotted_skills[index];
     }
 
     int Hotbar::set_inherit_mode(int value)
@@ -563,7 +596,7 @@ namespace SpellHotbar
 
             }
         }
-        ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
+        ImGui::PopStyleVar();
         ImGui::PopFont();
     }
 
@@ -693,7 +726,7 @@ namespace SpellHotbar
         if (has_charges) {
             ImU32 count_text_color = ImColor(255, 255, 255, alpha_i);
             if (count <= 0 && spell_item != nullptr && GameData::player_has_ordinator_bloodmagic()) {
-                count = GameData::get_health_cost_mod_ordinator(spell_item);
+                count = static_cast<int>(GameData::get_health_cost_mod_ordinator(spell_item));
                 count_text_color = ImColor(255, 50, 50, alpha_i);
             }
             std::string text = std::to_string(std::clamp(count, -9999, 9999));
@@ -721,25 +754,7 @@ namespace SpellHotbar
 
                 if (spell && spell->GetEquipSlot() == GameData::equip_slot_either_hand)
                 {
-                    switch (skills[index].hand) {
-                    case hand_mode::auto_hand:
-                        skills[index].hand = hand_mode::left_hand;
-                        break;
-                    case hand_mode::left_hand:
-                        skills[index].hand = hand_mode::right_hand;
-                        break;
-                    case hand_mode::right_hand:
-                        if (!spell->GetNoDualCastModifications() && GameData::player_can_dualcast_spell(spell)) {
-                            skills[index].hand = hand_mode::dual_hand;
-                        }
-                        else {
-                            skills[index].hand = hand_mode::auto_hand;
-                        }
-                        break;
-                    case hand_mode::dual_hand:
-                    default:
-                        skills[index].hand = hand_mode::auto_hand;
-                    }
+                    Hotbar::rotate_skill_hand_assingment(spell, skills[index]);
                     RE::PlaySound(Input::sound_UISkillsFocus);
                 }
             }
@@ -806,89 +821,9 @@ namespace SpellHotbar
 
     SlottedSkill::SlottedSkill() : SlottedSkill(0U){};
 
-    SlottedSkill::SlottedSkill(RE::FormID id) : formID(id), type(slot_type::empty), hand(hand_mode::auto_hand), consumed(consumed_type::none), color(0xFFFFFFFF)
+    SlottedSkill::SlottedSkill(RE::FormID id) : formID(0U), type(slot_type::empty), hand(hand_mode::auto_hand), consumed(consumed_type::none), color(0xFFFFFFFF)
     { 
-        if (formID > 0U)
-        {
-            if (GameData::is_clear_spell(formID)) {
-                type = slot_type::blocked;
-                hand = hand_mode::voice;
-            } else {
-                auto form = RE::TESForm::LookupByID(formID);
-                RE::SpellItem* spell{nullptr};
-                if (form) {
-                    switch (form->GetFormType()) {
-
-                        case RE::FormType::Scroll:
-                            consumed = consumed_type::scroll;
-                            [[fallthrough]]; //scrolls are also spells
-                        case RE::FormType::Spell:
-                            spell = form->As<RE::SpellItem>();
-                            if (spell) {  // this should not be able to be null
-                                if (spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) {
-                                    type = slot_type::lesser_power;
-                                } else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower) {
-                                    type = slot_type::power;
-                                } else {
-                                    type = slot_type::spell;
-                                }
-
-                                if (spell->GetEquipSlot() == GameData::equip_slot_left_hand) {
-                                    hand = hand_mode::left_hand;
-                                }
-                                else if (spell->GetEquipSlot() == GameData::equip_slot_right_hand) {
-                                    hand = hand_mode::right_hand;
-                                }
-                                else if (spell->GetEquipSlot() == GameData::equip_slot_either_hand) {
-                                    hand = hand_mode::auto_hand;
-                                }
-                                else if (spell->GetEquipSlot() == GameData::equip_slot_both_hand) {
-                                    hand = hand_mode::dual_hand;
-                                }
-                                else {
-                                    hand = hand_mode::voice;
-                                }
-
-                                if ((type == slot_type::lesser_power || type == slot_type::power) && hand != hand_mode::voice) {
-                                    //fixes spells that are flagged as power
-                                    type = slot_type::spell;
-                                }
-
-                            } else {
-                                type = slot_type::unknown;
-                            }
-                            break;
-                        case RE::FormType::Shout:
-                            type = slot_type::shout;
-                            hand = hand_mode::voice;
-                            break;
-                        case RE::FormType::AlchemyItem:
-                            type = slot_type::potion;
-                            hand = hand_mode::voice;
-                            consumed = consumed_type::potion;
-
-                            //If brewed potion, chose color dynamically
-                            if (form->IsDynamicForm()) {
-                                auto* alch_item = form->As<RE::AlchemyItem>();
-                                if (alch_item) {
-                                    auto* effect = alch_item->GetCostliestEffectItem();
-                                    if (effect) {
-                                        //RE::EffectArchetypes::ArchetypeID arch = effect->baseEffect->GetArchetype();
-                                        color = Hotbar::calculate_potion_color(effect);
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                            type = slot_type::unknown;
-                            break;
-                    }
-
-                } else {
-                    type = slot_type::unknown;
-                }
-            }
-        }
+        update_skill_assignment(id);
     }
 
     bool SlottedSkill::isEmpty() const {
@@ -917,6 +852,97 @@ namespace SpellHotbar
         return ok;
     }
 
+    void SlottedSkill::update_skill_assignment(RE::FormID p_formID)
+    {
+        clear();
+        if (p_formID > 0U)
+        {
+            formID = p_formID;
+            if (GameData::is_clear_spell(formID)) {
+                type = slot_type::blocked;
+                hand = hand_mode::voice;
+            }
+            else {
+                auto form = RE::TESForm::LookupByID(formID);
+                RE::SpellItem* spell{ nullptr };
+                if (form) {
+                    switch (form->GetFormType()) {
+
+                    case RE::FormType::Scroll:
+                        consumed = consumed_type::scroll;
+                        [[fallthrough]]; //scrolls are also spells
+                    case RE::FormType::Spell:
+                        spell = form->As<RE::SpellItem>();
+                        if (spell) {  // this should not be able to be null
+                            if (spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) {
+                                type = slot_type::lesser_power;
+                            }
+                            else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower) {
+                                type = slot_type::power;
+                            }
+                            else {
+                                type = slot_type::spell;
+                            }
+
+                            if (spell->GetEquipSlot() == GameData::equip_slot_left_hand) {
+                                hand = hand_mode::left_hand;
+                            }
+                            else if (spell->GetEquipSlot() == GameData::equip_slot_right_hand) {
+                                hand = hand_mode::right_hand;
+                            }
+                            else if (spell->GetEquipSlot() == GameData::equip_slot_either_hand) {
+                                hand = hand_mode::auto_hand;
+                            }
+                            else if (spell->GetEquipSlot() == GameData::equip_slot_both_hand) {
+                                hand = hand_mode::dual_hand;
+                            }
+                            else {
+                                hand = hand_mode::voice;
+                            }
+
+                            if ((type == slot_type::lesser_power || type == slot_type::power) && hand != hand_mode::voice) {
+                                //fixes spells that are flagged as power
+                                type = slot_type::spell;
+                            }
+
+                        }
+                        else {
+                            type = slot_type::unknown;
+                        }
+                        break;
+                    case RE::FormType::Shout:
+                        type = slot_type::shout;
+                        hand = hand_mode::voice;
+                        break;
+                    case RE::FormType::AlchemyItem:
+                        type = slot_type::potion;
+                        hand = hand_mode::voice;
+                        consumed = consumed_type::potion;
+
+                        //If brewed potion, chose color dynamically
+                        if (form->IsDynamicForm()) {
+                            auto* alch_item = form->As<RE::AlchemyItem>();
+                            if (alch_item) {
+                                auto* effect = alch_item->GetCostliestEffectItem();
+                                if (effect) {
+                                    //RE::EffectArchetypes::ArchetypeID arch = effect->baseEffect->GetArchetype();
+                                    color = Hotbar::calculate_potion_color(effect);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        type = slot_type::unknown;
+                        break;
+                    }
+
+                }
+                else {
+                    type = slot_type::unknown;
+                }
+            }
+        }
+    }
 
     void SlottedSkill::clear()
     { 

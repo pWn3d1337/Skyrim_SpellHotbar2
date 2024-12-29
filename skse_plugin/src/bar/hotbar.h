@@ -59,6 +59,7 @@ struct SlottedSkill
     bool isEmpty() const;
 
     bool serialize_skill(uint8_t index, SKSE::SerializationInterface* serializer, const std::string& name) const;
+    void update_skill_assignment(RE::FormID p_formID);
 };
 
 struct SubBar {
@@ -138,6 +139,12 @@ public:
     std::tuple<SlottedSkill, bool> get_skill_in_bar_with_inheritance(
         int index, key_modifier mod, bool hide_clear_spell, bool inherited = false, std::optional<key_modifier> original_mod = std::nullopt);
 
+    SlottedSkill & get_skill_in_bar_by_ref(
+        int index, key_modifier mod);
+
+    SlottedSkill* get_skill_in_bar_ptr(
+        int index, key_modifier mod);
+
     void to_json(rapidjson::Document& doc, uint32_t key, rapidjson::Value& bars);
 
     void clear();
@@ -147,6 +154,8 @@ public:
     static ImU32 calculate_potion_color(RE::Effect* effect);
 
     static bool is_valid_formtype_for_hotbar(const RE::TESForm* form);
+
+    static void rotate_skill_hand_assingment(RE::SpellItem* spell, SlottedSkill& skill);
 
     inline uint8_t& get_bar_size() const;
 private:

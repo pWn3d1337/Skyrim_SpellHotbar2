@@ -40,8 +40,67 @@ namespace stl {
 namespace SpellHotbar {
 
     constexpr std::string_view images_root_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\" };
+    constexpr std::string_view texture_frame_bg_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\inv_bg.dds" };
 
-bool TextureImage::load(const std::string& path)
+
+    void apply_imgui_style() {
+        //set imgui style
+
+        ImGui::StyleColorsDark();
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImVec4* colors = style.Colors;
+
+        //Set all roundings to 0
+        style.WindowRounding = 0.0f;
+        style.FrameRounding = 0.0f;
+        style.GrabRounding = 0.0f;
+        style.ScrollbarRounding = 0.0f;
+        style.ChildRounding = 0.0f;
+        style.PopupRounding = 0.0f;
+        style.TabRounding = 0.0f;
+        
+        constexpr ImVec4 color_black = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+        constexpr ImVec4 color_dark_gray = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
+        constexpr ImVec4 color_very_dark_gray = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
+        constexpr ImVec4 color_light_gray = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
+        constexpr ImVec4 color_medium_gray = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+        constexpr ImVec4 color_highlight = ImVec4(0.6f, 0.6f, 0.6f, 1.00f);
+
+        colors[ImGuiCol_TitleBg] = color_black;
+        colors[ImGuiCol_TitleBgActive] = color_dark_gray;
+        colors[ImGuiCol_TitleBgCollapsed] = color_light_gray;
+
+        colors[ImGuiCol_Button] = color_dark_gray;
+        colors[ImGuiCol_ButtonHovered] = color_light_gray;
+        colors[ImGuiCol_ButtonActive] = color_medium_gray;
+
+        colors[ImGuiCol_FrameBg] = color_dark_gray;
+        colors[ImGuiCol_FrameBgActive] = color_medium_gray;
+        colors[ImGuiCol_FrameBgHovered] = color_highlight;
+
+        colors[ImGuiCol_CheckMark] = color_light_gray;
+
+        colors[ImGuiCol_Header] = color_medium_gray;
+        colors[ImGuiCol_HeaderHovered] = color_highlight;
+        colors[ImGuiCol_HeaderActive] = color_light_gray;
+
+        colors[ImGuiCol_DragDropTarget] = color_highlight;
+
+        colors[ImGuiCol_Separator] = color_medium_gray;
+        colors[ImGuiCol_SeparatorHovered] = color_light_gray;
+        colors[ImGuiCol_SeparatorActive] = color_highlight;
+
+        colors[ImGuiCol_TableRowBg] = color_black;
+        colors[ImGuiCol_TableRowBgAlt] = color_very_dark_gray;
+    } 
+
+
+    TextureImage::TextureImage() : res(nullptr), width(0), height(0)
+    {
+    }
+
+    bool TextureImage::load(const std::string& path)
 {
     if (path.ends_with("dds")) {
         return TextureLoader::fromDDSFile(path, &res, &width, &height);
@@ -111,7 +170,17 @@ void SubTextureImage::draw_on_top(ImVec2 pos, float w, float h, ImU32 col)
     ImGui::GetWindowDrawList()->AddImage((void*)res, pos, ImVec2(pos.x + w, pos.y + h), uv0, uv1, col);
 }
 
+void SubTextureImage::draw_with_scale_at(ImVec2 pos, float w, float h, ImU32 col, float scale) {
+    float dx = ((w * scale) - w) * 0.5f;
+    float dy = ((h * scale) - h) * 0.5f;
+
+    ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
+        col);
+}
+
 ImFont* font_text = nullptr;
+ImFont* font_text_title = nullptr;
+ImFont* font_text_big = nullptr;
 ImFont* font_symbols = nullptr;
 
 float font_text_size{0};
@@ -122,6 +191,7 @@ std::unordered_map<GameData::DefaultIconType, SubTextureImage> default_icons;
 std::unordered_map<std::string, SubTextureImage> extra_icons;
 std::vector<SubTextureImage> cooldown_icons;
 std::vector<SubTextureImage> spellproc_overlay_icons;
+std::vector<SubTextureImage> frame_bg_textures;
 
 // nested templates <3 
 std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>> editor_icon_list;
@@ -152,6 +222,12 @@ float SpellHotbar::RenderManager::scale_from_resolution(float scaled_value)
 {
     auto& io = ImGui::GetIO();
     return scaled_value / io.DisplaySize.y * 1080.0f;
+}
+
+void RenderManager::draw_custom_mouse_cursor() {
+    auto& io = ImGui::GetIO();
+    io.MouseDrawCursor = false;
+    ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), IM_COL32_WHITE, "<CURSOR");
 }
 
 bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
@@ -321,7 +397,7 @@ void RenderManager::start_bar_dragging(int type)
     dragged_window = type;
 }
 
-bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened() || PotionEditor::is_opened(); }
+bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened() || PotionEditor::is_opened() || BindMenu::is_opened(); }
 
 void RenderManager::stop_bar_dragging()
 { 
@@ -358,6 +434,46 @@ void RenderManager::open_advanced_binding_menu()
     if (!BindMenu::is_opened()) {
         BindMenu::show();
     }
+}
+
+void RenderManager::ImGui_push_title_style()
+{
+    constexpr ImVec4 col_transparent(0.0f, 0.0f, 0.0f, 0.0f);
+    ImGui::PushStyleColor(ImGuiCol_TitleBg, col_transparent);
+    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, col_transparent);
+    ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, col_transparent);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f)); //Center
+    ImGui::PushFont(font_text_title);
+}
+
+void RenderManager::ImGui_pop_title_style()
+{
+    ImGui::PopFont();
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(3);
+}
+
+std::tuple<float, float, float> RenderManager::calculate_frame_size(float screen_percent, float aspect_ratio)
+{
+    auto& io = ImGui::GetIO();
+    const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
+
+    float frame_height = screen_size_y * screen_percent;
+    float frame_width = frame_height * aspect_ratio;
+
+    ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
+    ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.5f));
+
+    return std::make_tuple(screen_size_x, screen_size_y, frame_width);
+}
+
+void RenderManager::set_large_font()
+{
+    ImGui::PushFont(font_text_big);
+}
+void RenderManager::revert_font()
+{
+    ImGui::PopFont();
 }
 
 bool RenderManager::should_block_game_key_inputs()
@@ -462,6 +578,8 @@ void load_font_resources(float window_height) {
     float scale_factor = window_height / 1080.0f;
 
     font_text_size = std::roundf(24.0f * scale_factor);
+    float font_text_title_size = std::round(font_text_size * 1.5f);
+    float font_text_big_size = std::round(font_text_size * 1.25f);
     float size_symbols = std::roundf(36.0f * scale_factor); 
 
     logger::info("Loading Fonts with sizes {}, {}", font_text_size, size_symbols);
@@ -516,16 +634,49 @@ void load_font_resources(float window_height) {
     font_text = io.Fonts->AddFontFromFileTTF(
         font_path.string().c_str(), font_text_size, NULL, glyph_range);
 
+    font_text_title = io.Fonts->AddFontFromFileTTF(
+        font_path.string().c_str(), font_text_title_size, NULL, glyph_range);
+
+    font_text_big = io.Fonts->AddFontFromFileTTF(
+        font_path.string().c_str(), font_text_big_size, NULL, glyph_range);
+
     font_symbols = io.Fonts->AddFontFromFileTTF(
         ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\skyrim_symbols_font.ttf",
        size_symbols);
 
     CHECK_PTR(font_text);
+    CHECK_PTR(font_text_title);
+    CHECK_PTR(font_text_big);
     CHECK_PTR(font_symbols);
 }
 
 void RenderManager::load_gamedata_dependant_resources() {
     TextureCSVLoader::load_icons(std::filesystem::path(images_root_path));
+}
+
+void RenderManager::load_fixed_textures() {
+    if (std::filesystem::exists(std::filesystem::path(texture_frame_bg_path))) {
+        TextureImage& main_tex = RenderManager::load_texture(std::string(texture_frame_bg_path));
+        frame_bg_textures.clear();
+        frame_bg_textures.reserve(9);
+
+        constexpr float one_third = 1.0f / 3.0f;
+        constexpr float two_third = 1.0f - one_third;
+        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, 0.0f), ImVec2(one_third, one_third)); //TOP Left
+        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, 0.0f), ImVec2(two_third, one_third)); //TOP Mid
+        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, 0.0f), ImVec2(1.0f, one_third)); //TOP Right
+
+        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, one_third), ImVec2(one_third, two_third)); //Center Left
+        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, one_third), ImVec2(two_third, two_third)); //Center Mid
+        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, one_third), ImVec2(1.0f, two_third)); //Center Right
+
+        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, two_third), ImVec2(one_third, 1.0f)); //Bottom Left
+        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, two_third), ImVec2(two_third, 1.0f)); //Bottom Mid
+        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, two_third), ImVec2(1.0f, 1.0f)); //Bottom Right
+    }
+    else {
+        logger::error("Could not Load texture {}", texture_frame_bg_path);
+    }
 }
 
 void RenderManager::reload_resouces() {
@@ -546,9 +697,11 @@ void RenderManager::reload_resouces() {
         teximg.res->Release();
     }
     loaded_textures.clear();
+    frame_bg_textures.clear();
 
     logger::info("Reloading Resources...");
     GameData::load_keynames_file();
+    RenderManager::load_fixed_textures();
     RenderManager::load_gamedata_dependant_resources();
 }
 
@@ -556,7 +709,7 @@ void RenderManager::on_game_load()
 {
 }
 
-TextureImage & RenderManager::load_texture(std::string path) {
+TextureImage & RenderManager::load_texture(const std::string path) {
     TextureImage tex_img;
 
     if (tex_img.load(path)) {
@@ -729,6 +882,7 @@ void RenderManager::D3DInitHook::thunk() {
     } else {
         logger::error("Could not get window size for font loading");
     }
+    load_fixed_textures();
 
     logger::info("RenderManager: Initialized");
 }
@@ -909,6 +1063,145 @@ void RenderManager::draw_bg(int size, float alpha)
     }
 }
 
+void RenderManager::draw_frame_bg(bool *show_frame) {
+    ImGui::SetNextWindowBgAlpha(0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+    ImGui::Begin("##background_image", show_frame, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoInputs);
+    RenderManager::draw_frame_bg_texture(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y, 1.0f);
+    ImGui::PopStyleVar(3);
+    ImGui::End();
+}
+
+void RenderManager::draw_frame_bg_texture(float size_x, float size_y, float alpha)
+{
+    constexpr float tex_size = 256.0f;
+    constexpr float segment_size = tex_size / 3.0f;
+
+    constexpr float one_third = 1.0f / 3.0f;
+    constexpr float two_third = 1.0f - one_third;
+
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    auto res = frame_bg_textures[0].res;
+
+    //logger::info("SizeX {}, SizeY {}", size_x, size_y);
+
+    if (size_x > tex_size && size_y > tex_size) {
+        int num_segments_x = static_cast<int>(size_x / segment_size);
+        int num_segments_y = static_cast<int>(size_y / segment_size);
+    
+        //logger::info("NumSegX {}, NumSegY {}", num_segments_x, num_segments_y);
+        //logger::info("Pos: {}, {}", pos.x, pos.y);
+
+        auto col = ImColor(1.0f, 1.0f, 1.0f, alpha);
+        for (int y = 0; y < num_segments_y; y++) for (int x=0; x < num_segments_x; x++)
+        {
+            ImVec2 p = ImVec2(pos.x + x * segment_size, pos.y + y * segment_size);
+            //logger::info("Pos.x:{}, x:{}, p.x{}", pos.x, x, p.x);
+
+            if (y == 0 && x == 0) {
+                ImGui::GetWindowDrawList()->AddImage((void*)res, p, ImVec2(p.x + segment_size, p.y + segment_size),
+                    ImVec2(0.0f,0.0f), ImVec2(one_third, one_third), col);
+            }
+            else if (y == 0 && x == num_segments_x - 1) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x -segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
+                    ImVec2(two_third, 0.0f), ImVec2(1.0f, one_third), col);
+
+                //draw partial segment
+                float partial_size = pos.x + size_x - segment_size - p.x;
+                float partial_percent = partial_size / segment_size * one_third;
+
+                //logger::info("Partial Xtop: {}, {}", partial_size, partial_percent);
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
+                    ImVec2(one_third, 0.0f), ImVec2(one_third+partial_percent, one_third), col);
+
+            }
+            else if (y == num_segments_y - 1  && x == 0) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
+                    ImVec2(0.0f, two_third), ImVec2(one_third, 1.0f), col);
+
+                //draw partial segment
+                float partial_size = pos.y + size_y - segment_size - p.y;
+                float partial_percent = partial_size / segment_size * one_third;
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
+                    ImVec2(0.0f, one_third+partial_percent), ImVec2(one_third, two_third), col);
+            }
+            else if (y == num_segments_y - 1 && x == num_segments_x - 1) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size), ImVec2(pos.x + size_x, pos.y + size_y),
+                    ImVec2(two_third, two_third), ImVec2(1.0f, 1.0f), col);
+
+                //draw partial segments
+                float partial_size_x = pos.x + size_x -segment_size - p.x;
+                float partial_percent_x = partial_size_x / segment_size * one_third;
+                float partial_size_y = pos.y + size_y -segment_size - p.y;
+                float partial_percent_y = partial_size_y / segment_size * one_third;
+
+                //top
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + partial_size_y),
+                    ImVec2(two_third, one_third+partial_percent_y), ImVec2(1.0f, two_third), col);
+
+                //left
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + partial_size_x, pos.y + size_y),
+                    ImVec2(one_third+ partial_percent_x, two_third), ImVec2(two_third, 1.0f), col);
+
+                //top-left
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size),
+                    ImVec2(one_third + partial_percent_x, one_third + partial_percent_y), ImVec2(two_third, two_third), col);
+
+            }
+            else if (x == 0) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y+segment_size),
+                    ImVec2(0.0f, one_third), ImVec2(one_third, two_third), col);
+            }
+            else if (x == num_segments_x - 1) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
+                    ImVec2(two_third, one_third), ImVec2(1.0f, two_third), col);
+
+                //draw partial segment
+                float partial_size = pos.x + size_x -segment_size - p.x;
+                float partial_percent = partial_size / segment_size * one_third;
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
+                    ImVec2(one_third, one_third), ImVec2(one_third + partial_percent, two_third), col);
+            }
+            else if (y == 0) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + segment_size),
+                    ImVec2(one_third, 0.0f), ImVec2(two_third, one_third), col);
+            }
+            else if (y == num_segments_y - 1) {
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
+                    ImVec2(one_third, two_third), ImVec2(two_third, 1.0f), col);
+
+                //draw partial segment
+                float partial_size = pos.y + size_y -segment_size - p.y;
+                float partial_percent = partial_size / segment_size * one_third;
+
+                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
+                    ImVec2(one_third, one_third + partial_percent), ImVec2(two_third, two_third), col);
+            }
+            else
+            {
+                ImGui::GetWindowDrawList()->AddImage((void*)res, p, ImVec2(p.x+segment_size, p.y+segment_size),
+                    ImVec2(one_third, one_third), ImVec2(two_third, two_third), col);
+            }
+        
+        }
+    
+    }
+}
+
+
 bool RenderManager::draw_skill(RE::FormID formID, int size, ImU32 col) {
     constexpr float scale = 1.0f;
     SubTextureImage* img = get_tex_for_skill_internal(formID);
@@ -1067,7 +1360,7 @@ inline std::tuple<float, float, float> calculate_menu_window_size(bool include_i
     }
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
     ImGui::SetNextWindowBgAlpha(0.65F);
-    ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
+    ImGui::PopStyleVar();
     return std::make_tuple(screen_size_x, screen_size_y, window_width);
 }
 
@@ -1129,7 +1422,7 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size(int bars
         window_width = (slot_h + spacing.x) * static_cast<float>(row_len - 1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
     }
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
-    ImGui::PopStyleVar(ImGuiStyleVar_ItemSpacing);
+    ImGui::PopStyleVar();
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);
 }
 
@@ -1321,6 +1614,8 @@ void RenderManager::draw() {
 
     bool validTabActive = current_inv_menu_tab_valid_for_hotbar();
 
+    apply_imgui_style();
+
     if (show_drag_frame) {
         // show frame to drag the bar
         draw_drag_menu();
@@ -1333,7 +1628,7 @@ void RenderManager::draw() {
         PotionEditor::renderEditor();
     }
     else if (BindMenu::is_opened()) {
-        BindMenu::drawFrame(font_text);
+        BindMenu::drawFrame(font_text, font_text_big, font_text_title);
     }
     else
     {

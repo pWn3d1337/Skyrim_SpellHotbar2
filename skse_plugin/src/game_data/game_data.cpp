@@ -1245,7 +1245,7 @@ namespace SpellHotbar::GameData {
 
      bool is_clear_spell(RE::FormID spell)
      { 
-         if (spellhotbar_unbind_slot)
+         if (spellhotbar_unbind_slot != nullptr)
          {
              return spell == spellhotbar_unbind_slot->formID;
          }
@@ -1779,7 +1779,7 @@ namespace SpellHotbar::GameData {
          return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
      }
 
-     void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills)
+     void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills, bool add_unbind_skill)
      {
          auto list = pc->GetActorBase()->GetSpellList();
 
@@ -1791,14 +1791,14 @@ namespace SpellHotbar::GameData {
 
          for (uint32_t i = 0U; i < list->numSpells; ++i) {
              auto spell = list->spells[i];
-             if (is_spell_ingame_visible(spell)) {
+             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID()))) {
                  list_of_skills.push_back(spell);
              }
          }
 
          for (RE::BSTArrayBase::size_type i = 0U; i < added_spells.size(); ++i) {
              auto spell = added_spells[i];
-             if (is_spell_ingame_visible(spell)) {
+             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID()))) {
                  list_of_skills.push_back(spell);
              }
          }
@@ -1806,6 +1806,18 @@ namespace SpellHotbar::GameData {
          for (uint32_t i = 0U; i < list->numShouts; ++i) {
              auto shout = list->shouts[i];
              list_of_skills.push_back(shout);
+         }
+     }
+     void add_player_owned_bindable_items(RE::PlayerCharacter* pc, std::vector<RE::TESForm*>& list_of_skills)
+     {
+         if (pc != nullptr) {
+             auto refs = pc->GetInventoryCounts([](const RE::TESBoundObject& object)
+                 {
+                     return object.formType == RE::FormType::AlchemyItem || object.formType == RE::FormType::Scroll;
+                 });
+             for (auto& [k, v] : refs) {
+                list_of_skills.push_back(k);
+             }
          }
      }
 }

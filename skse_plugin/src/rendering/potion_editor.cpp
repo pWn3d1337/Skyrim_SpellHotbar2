@@ -74,23 +74,6 @@ namespace SpellHotbar::PotionEditor {
         }
     }
 
-    /*
-    * return screen_size_x, screen_size_y, window_width
-    */
-    inline std::tuple<float, float, float> calculate_frame_size()
-    {
-        auto& io = ImGui::GetIO();
-        const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
-
-        float frame_height = screen_size_y * 0.8f;
-        float frame_width = frame_height * 4.0f / 3.0f;
-
-        ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
-        ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.5f));
-
-        return std::make_tuple(screen_size_x, screen_size_y, frame_width);
-    }
-
     void load_entries() {
         list_of_entries.clear();
         list_of_entries_filtered.clear();
@@ -198,17 +181,24 @@ namespace SpellHotbar::PotionEditor {
 
     void drawTableFrame()
     {
-        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
 
         auto& io = ImGui::GetIO();
         io.MouseDrawCursor = true;
 
-        auto [screen_size_x, screen_size_y, window_width] = calculate_frame_size();
-        ImGui::SetNextWindowBgAlpha(1.0F);
+        constexpr float window_aspect_ratio = 4.0f / 3.0f;
+        RenderManager::calculate_frame_size(0.825f, window_aspect_ratio);
+        RenderManager::draw_frame_bg(&show_frame);
+
+        auto [screen_size_x, screen_size_y, window_width] = RenderManager::calculate_frame_size(0.8f, window_aspect_ratio);
+        ImGui::SetNextWindowBgAlpha(0.0F);
 
         float scale_factor = screen_size_y / 1080.0f;
-
+        RenderManager::ImGui_push_title_style();
         ImGui::Begin("Potion Editor", &show_frame, window_flag);
+        RenderManager::ImGui_pop_title_style();
+
+        ImGui::BeginChild("##potion_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
 
         bool button_clear_filter_clicked{ false };
         if (ImGui::SmallButton("X")) {
@@ -388,7 +378,7 @@ namespace SpellHotbar::PotionEditor {
                 }
             }
         }
-
+        ImGui::EndChild();
         ImGui::End();
     }
 }

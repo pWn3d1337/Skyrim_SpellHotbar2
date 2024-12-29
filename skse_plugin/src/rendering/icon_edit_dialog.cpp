@@ -5,36 +5,22 @@
 
 namespace SpellHotbar::PotionEditor {
 
-    /*
-    * return screen_size_x, screen_size_y, window_width
-    */
-    inline std::tuple<float, float, float> calculate_frame_size()
-    {
-        auto& io = ImGui::GetIO();
-        const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
-
-        float frame_height = screen_size_y * 0.75f;
-        float frame_width = frame_height * 16.0f / 9.0f;
-
-        ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
-        ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.5f));
-
-        return std::make_tuple(screen_size_x, screen_size_y, frame_width);
-    }
-
     void close() {
         PotionEditor::closeEditDialog();
     }
 
     void drawEditDialog(const RE::TESForm* form, GameData::User_custom_entry& data)
     {
-        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
 
         auto& io = ImGui::GetIO();
         io.MouseDrawCursor = true;
 
-        auto [screen_size_x, screen_size_y, window_width] = calculate_frame_size();
-        ImGui::SetNextWindowBgAlpha(1.0F);
+        RenderManager::calculate_frame_size(0.775f);
+        RenderManager::draw_frame_bg(nullptr);
+
+        auto [screen_size_x, screen_size_y, window_width] = RenderManager::calculate_frame_size(0.75f);
+        ImGui::SetNextWindowBgAlpha(0.0F);
 
         float scale_factor = screen_size_y / 1080.0f;
 
@@ -43,13 +29,18 @@ namespace SpellHotbar::PotionEditor {
             alchitem = form->As<RE::AlchemyItem>();
         }
 
+        RenderManager::ImGui_push_title_style();
         ImGui::Begin("Edit Icon", nullptr, window_flag);
+        RenderManager::ImGui_pop_title_style();
+        ImGui::BeginChild("##icon_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
 
         static ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
             | ImGuiTableFlags_ScrollY;
 
-        //constexpr int child_window_height = 500;
-        float child_window_height = ImGui::GetContentRegionAvail().y * 0.9f;
+        RenderManager::set_large_font();
+        float button_height = ImGui::CalcTextSize("Cancel").y + ImGui::GetStyle().FramePadding.y * 2.0f + ImGui::GetStyle().ItemSpacing.y * 2.0f;
+        RenderManager::revert_font();
+        float child_window_height = ImGui::GetContentRegionAvail().y - button_height;
 
         constexpr ImU32 col_gray = IM_COL32(127, 127, 127, 255);
 
@@ -247,6 +238,8 @@ namespace SpellHotbar::PotionEditor {
 
         save_enabled = icon_change;
 
+        RenderManager::set_large_font();
+
         if (!save_enabled) ImGui::BeginDisabled();
         if (ImGui::Button("Save")) {
             //save changes
@@ -267,7 +260,9 @@ namespace SpellHotbar::PotionEditor {
         if (ImGui::Button("Cancel")) {
             close();
         }
+        RenderManager::revert_font();
 
+        ImGui::EndChild();
         ImGui::End();
     }
 

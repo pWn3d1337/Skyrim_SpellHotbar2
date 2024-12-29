@@ -367,7 +367,9 @@ namespace SpellHotbar::GameData {
     /**
     * Fill list with player known spells, filters out non gui visible skills
     */
-    void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills);
+    void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills, bool add_unbind_skill = true);
+
+    void add_player_owned_bindable_items(RE::PlayerCharacter* pc, std::vector<RE::TESForm*>& list_of_skills);
 
     std::string get_modifier_text(key_modifier mod);
 }

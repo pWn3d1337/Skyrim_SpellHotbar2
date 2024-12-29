@@ -16,7 +16,7 @@ namespace SpellHotbar {
         int width;
         int height;
 
-        TextureImage() = default;
+        TextureImage();
         virtual ~TextureImage() = default;
 
         bool load(const std::string& path);
@@ -39,6 +39,7 @@ namespace SpellHotbar {
         virtual void draw(float w, float h, float alpha) override;
         virtual void draw_with_scale(float w, float h, ImU32 col, float scale);
         virtual void draw_on_top(ImVec2 pos, float w, float h, ImU32 col) override;
+        virtual void draw_with_scale_at(ImVec2 pos, float w, float h, ImU32 col, float scale);
 
         ImVec2 uv0;
         ImVec2 uv1;
@@ -90,11 +91,16 @@ namespace SpellHotbar {
         static void spell_slotted_draw_anim(int index);
 
         static void load_gamedata_dependant_resources();
+        /*
+        * load textures independent of gamedata
+        */
+        static void load_fixed_textures();
         static void reload_resouces();
 
         static void on_game_load();
 
-        static TextureImage & load_texture(std::string path);
+        static TextureImage & load_texture(const std::string path);
+        static TextureImage * load_texture_ptr(const std::string path);
 
         static void add_spell_texture(TextureImage & main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename);
         static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string& icon_name);
@@ -105,6 +111,8 @@ namespace SpellHotbar {
         static void init_spellproc_overlay_icons(size_t amount);
 
         static void draw_bg(int size, float alpha = 1.0f);
+        static void draw_frame_bg_texture(float size_x, float size_y, float alpha = 1.0f);
+        static void draw_frame_bg(bool* show_frame);
         static bool draw_skill(RE::FormID formID, int size, ImU32 col = IM_COL32_WHITE);
         static bool draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
         static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size);
@@ -144,5 +152,27 @@ namespace SpellHotbar {
         static void close_potion_editor();
 
         static void open_advanced_binding_menu();
+
+        static void ImGui_push_title_style();
+        static void ImGui_pop_title_style();
+        /**
+        * Set Size of next frame by x% of screen height, width will be height * aspect_ratio
+        * return screen_size_x, screen_size_y, frame_width
+        */
+        static std::tuple<float, float, float> calculate_frame_size(float screen_percent, float aspect_ratio = 16.0f/9.0f);
+
+        /**
+        * push the 25% larger font
+        */
+        static void set_large_font();
+        /**
+        * pop the last font change
+        */
+        static void revert_font();
+#
+        /*
+        * Draw custom mouse cursor
+        */
+        static void draw_custom_mouse_cursor();
     };
 }

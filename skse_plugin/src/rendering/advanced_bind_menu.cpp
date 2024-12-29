@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include "render_manager.h"
 #include "../input/keybinds.h"
+#include "gui_tab_button.h"
 
 namespace SpellHotbar::BindMenu {
 
@@ -13,10 +14,63 @@ namespace SpellHotbar::BindMenu {
     std::vector<RE::TESForm*> list_of_skills;
     std::vector<RE::TESForm*> list_of_skills_filtered;
 
-    struct dragged_skill {
-        const RE::TESForm* form;
+    std::array<std::string, 6> rank_texts = { "-", "Novice", "Apprentice", "Adept", "Expert", "Master"};
+    std::array<std::string, 6> school_texts = { "-", "Alteration", "Conjuration", "Destruction", "Illusion", "Restoration" };
 
-        dragged_skill(const RE::TESForm* tesform) : form(tesform) {};
+    std::array<std::string, 9> type_texts = { "Potion", "Spell", "Lesser Power", "Greater Power", "Shout", "Scroll", "Poison", "Food", "-" };
+
+    std::array<std::string, 13> tab_texts = {
+        "All",
+        "Spells",
+        "Alteration",
+        "Illusion",
+        "Destruction",
+        "Conjuration",
+        "Restoration",
+        "Shouts",
+        "Powers",
+        "Scrolls",
+        "Potions",
+        "Poisons",
+        "Food"
+    };
+
+    enum tab_index : uint8_t {
+        TabIndex_All = 0Ui8,
+        TabIndex_Spells,
+        TabIndex_Alteration,
+        TabIndex_Illusion,
+        TabIndex_Destruction,
+        TabIndex_Conjuration,
+        TabIndex_Restoration,
+        TabIndex_Shouts,
+        TabIndex_Powers,
+        TabIndex_Scrolls,
+        TabIndex_Potions,
+        TabIndex_Poisons,
+        TabIndex_Food
+    };
+
+    struct Dragged_skill {
+        const RE::TESForm* form;
+        SlottedSkill* source_slot;
+
+        Dragged_skill() : form(nullptr), source_slot(nullptr) {};
+        //Dragged_skill(const RE::TESForm* tesform) : form(tesform), source_slot(nullptr) {};
+        //Dragged_skill(const RE::TESForm* tesform, SlottedSkill* source) : form(tesform), source_slot(source) {};
+
+        void set_dragged(const RE::TESForm* tesform) {
+            form = tesform;
+            source_slot = nullptr;
+        }
+        void set_dragged(const RE::TESForm* tesform, SlottedSkill* source) {
+            form = tesform;
+            source_slot = source;
+        }
+
+        inline bool has_dragged_from() const {
+            return form != nullptr;
+        }
 
         inline RE::FormID get_form_id() const
         {
@@ -24,11 +78,12 @@ namespace SpellHotbar::BindMenu {
         }
     };
 
-    std::unique_ptr<dragged_skill> current_dragged_skill{ nullptr };
+    Dragged_skill current_dragged_skill;
 
     enum bind_menu_column_id : ImGuiID {
         column_id_Icon = 0U,
         column_id_Name,
+        column_id_Type,
         column_id_School,
         column_id_Rank,
 
@@ -63,32 +118,126 @@ namespace SpellHotbar::BindMenu {
 
         RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
         if (pc && pc->GetActorBase() != nullptr) {
-            GameData::get_player_known_spells(pc, list_of_skills);
+            GameData::get_player_known_spells(pc, list_of_skills, false);
+            GameData::add_player_owned_bindable_items(pc, list_of_skills);
 
             filter_buf[0] = '\0';
-            update_filter("");
+            update_filter("", 0Ui8);
         }
     }
 
-    /*
-    * return screen_size_x, screen_size_y, window_width
-    */
-    inline std::tuple<float, float, float> calculate_frame_size()
-    {
-        auto& io = ImGui::GetIO();
-        const float screen_size_x = io.DisplaySize.x, screen_size_y = io.DisplaySize.y;
-
-        float frame_height = screen_size_y * 0.9f;
-        float frame_width = frame_height * 16.0f / 9.0f;
-
-        ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
-        ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.5f));
-
-        return std::make_tuple(screen_size_x, screen_size_y, frame_width);
+    const char* get_rank_text(int rank) {
+        if (rank >= 0 && rank < 6) {
+            return rank_texts.at(rank).c_str();
+        }
+        else
+        {
+            return rank_texts.at(0).c_str();
+        }
     }
 
-    void update_filter(const std::string filter_text) {
-        if (filter_text.empty()) {
+    size_t get_school_order(RE::ActorValue av) {
+        size_t val{ 0 };
+        switch (av) {
+        case RE::ActorValue::kAlteration:
+            val = 1;
+            break;
+        case RE::ActorValue::kIllusion:
+            val = 4;
+            break;
+        case RE::ActorValue::kDestruction:
+            val = 3;
+            break;
+        case RE::ActorValue::kConjuration:
+            val = 2;
+            break;
+        case RE::ActorValue::kRestoration:
+            val = 5;
+            break;
+        default:
+            val = 0;
+            break;
+        }
+        return val;
+    }
+
+    const char* get_school_text(RE::ActorValue av) {
+        return school_texts.at(get_school_order(av)).c_str();
+    }
+
+    const char* get_type_text(const RE::TESForm* item) {
+        if (item != nullptr) {
+            if (item->GetFormType() == RE::FormType::Shout) {
+                return type_texts[4].c_str();
+            }
+            else if (item->GetFormType() == RE::FormType::AlchemyItem) {
+                const RE::AlchemyItem* alch = item->As<RE::AlchemyItem>();
+                if (alch != nullptr) {
+                    if (alch->IsPoison()) {
+                        return type_texts[6].c_str();
+                    }
+                    else if (alch->IsFood()) {
+                        return type_texts[7].c_str();
+                    }
+                }
+                return type_texts[0].c_str();
+            }
+            else if (item->GetFormType() == RE::FormType::Scroll) {
+                return type_texts[5].c_str();
+            }
+            else if (item->GetFormType() == RE::FormType::Spell)
+            {
+                const RE::SpellItem* spell = item->As<RE::SpellItem>();
+                if (spell != nullptr) {
+                    if (spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell)
+                    {
+                        return type_texts[1].c_str();
+                    }
+                    else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower)
+                    {
+                        return type_texts[3].c_str();
+                    }
+                    else if (spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower)
+                    {
+                        return type_texts[2].c_str();
+                    }
+                }
+            }
+        }
+        return type_texts[8].c_str();;
+    }
+
+    std::tuple<int, RE::ActorValue> get_rank_school(const RE::TESForm* item) {
+        int rank{ 0 };
+        RE::ActorValue school{ RE::ActorValue::kNone };
+
+        if (item->GetFormType() == RE::FormType::Spell) {
+            const RE::SpellItem* spell = item->As<RE::SpellItem>();
+
+            if (spell != nullptr && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                if (spell->effects.size() > 0U) {
+
+                    bool found{ false };
+                    for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size() && !found; i++) {
+                        //find first spell effect that has a magic school
+                        const RE::Effect* effect = spell->effects[i];
+                        if (effect->baseEffect != nullptr) {
+                            auto av = effect->baseEffect->GetMagickSkill();
+                            if (av != RE::ActorValue::kNone) {
+                                school = av;
+                                rank = GameData::get_spell_rank(effect->baseEffect->GetMinimumSkillLevel()) +1;
+                                found = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return std::make_tuple(rank, school);
+    }
+
+    void update_filter(const std::string filter_text, uint8_t tab_index) {
+        if (filter_text.empty() && tab_index == 0Ui8) {
             list_of_skills_filtered = list_of_skills;
         }
         else {
@@ -97,6 +246,7 @@ namespace SpellHotbar::BindMenu {
             for (size_t i = 0U; i < list_of_skills.size(); i++) {
 
                 bool match_text{ false };
+                bool match_tab{ tab_index == 0Ui8 };
 
                 if (!filter_text.empty()) {
                     //Check if name matches filter
@@ -109,27 +259,101 @@ namespace SpellHotbar::BindMenu {
                     match_text = true;
                 }
 
-                if (match_text) list_of_skills_filtered.emplace_back(list_of_skills[i]);
+                //check_tab
+                if (!match_tab) {
+                    auto form_type = list_of_skills[i]->GetFormType();
+                    if (form_type == RE::FormType::Shout) {
+                        match_tab = tab_index == TabIndex_Shouts;
+                    }
+                    else if (form_type == RE::FormType::Scroll) {
+                        match_tab = tab_index == TabIndex_Scrolls;
+                    }
+                    else if (form_type == RE::FormType::Spell) {
+                        if (tab_index == TabIndex_Spells) {
+                            RE::SpellItem* spell = list_of_skills[i]->As<RE::SpellItem>();
+                            if (spell != nullptr && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
+                                match_tab = true;
+                            }
+                        }
+                        else {
+                            RE::SpellItem* spell = list_of_skills[i]->As<RE::SpellItem>();
+                            if (spell != nullptr) {
+
+                                if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower || spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) {
+                                    match_tab = tab_index == TabIndex_Powers;
+                                }
+                                else {
+                                    auto [rank, school] = get_rank_school(list_of_skills[i]);
+                                    switch (tab_index) {
+                                    case TabIndex_Alteration:
+                                        match_tab = school == RE::ActorValue::kAlteration;
+                                        break;
+                                    case TabIndex_Conjuration:
+                                        match_tab = school == RE::ActorValue::kConjuration;
+                                        break;
+                                    case TabIndex_Destruction:
+                                        match_tab = school == RE::ActorValue::kDestruction;
+                                        break;
+                                    case TabIndex_Illusion:
+                                        match_tab = school == RE::ActorValue::kIllusion;
+                                        break;
+                                    case TabIndex_Restoration:
+                                        match_tab = school == RE::ActorValue::kRestoration;
+                                        break;
+                                    default:
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (form_type == RE::FormType::AlchemyItem) {
+                        RE::AlchemyItem* alch = list_of_skills[i]->As<RE::AlchemyItem>();
+                        if (alch != nullptr) {
+                            if ((alch->IsFood() && tab_index == TabIndex_Food) || (alch->IsPoison() && tab_index == TabIndex_Poisons)) {
+                                match_tab = true;
+                            }
+                            else if (!alch->IsFood() && !alch->IsPoison() && (tab_index == TabIndex_Potions)) {
+                                match_tab = true;
+                            }
+                        }
+                    }                
+                }
+
+                if (match_text && match_tab) list_of_skills_filtered.emplace_back(list_of_skills[i]);
             }
         }
     }
 
-    const ImGuiTableSortSpecs* s_current_sort_specs;
+    const ImGuiTableSortSpecs* s_current_sort_specs{ nullptr };
     bool compare_entries_for_sort(const RE::TESForm* lhs, const RE::TESForm* rhs) {
         for (int n = 0; n < s_current_sort_specs->SpecsCount; n++)
         {
             // Here we identify columns using the ColumnUserID value that we ourselves passed to TableSetupColumn()
             // We could also choose to identify columns based on their index (sort_spec->ColumnIndex), which is simpler!
             const ImGuiTableColumnSortSpecs* sort_spec = &s_current_sort_specs->Specs[n];
-            bool is_less = 0;
+            bool is_less{ false };
 
-            switch (sort_spec->ColumnUserID)
+            if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Name)
             {
-            case bind_menu_column_id::column_id_Name:
-                is_less = lhs->GetName() < rhs->GetName();
-                break;
-                //TODO Rank & school
-            default:
+                is_less = std::string(lhs->GetName()) < std::string(rhs->GetName());
+            }
+            else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Rank)
+            {
+                auto [lrank, _l] = get_rank_school(lhs);
+                auto [rrank, _r] = get_rank_school(rhs);
+                is_less = lrank < rrank;
+            }
+            else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_School)
+            {
+                auto [_l, lschool] = get_rank_school(lhs);
+                auto [_r, rschool] = get_rank_school(rhs);
+                is_less = get_school_order(lschool) < get_school_order(rschool);
+            }
+            else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Type) {
+                is_less = std::string(get_type_text(lhs)) < std::string(get_type_text(rhs));
+            }
+            else {
                 is_less = lhs->formID < rhs->formID;
             }
             return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? is_less : !is_less;
@@ -137,56 +361,83 @@ namespace SpellHotbar::BindMenu {
         return lhs->formID < rhs->formID;
     }
 
-    void set_drag_source(const RE::TESForm* item, float scale_factor) {
+    void set_drag_source(const RE::TESForm* item, float scale_factor, SlottedSkill* source = nullptr) {
         if (item != nullptr) {
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
             {
-
-                current_dragged_skill = std::make_unique<dragged_skill>(item);
+                current_dragged_skill.set_dragged(item, source);
                 // Set payload to carry the index of our item (could be anything)
-                ImGui::SetDragDropPayload("SPELL_SLOT", &current_dragged_skill, sizeof(dragged_skill));
-
+                ImGui::SetDragDropPayload("SPELL_SLOT", &current_dragged_skill, sizeof(Dragged_skill));
                 // Display preview (could be anything, e.g. when dragging an image we could decide to display
                 // the filename and a small preview of the image, etc.)
                 //ImGui::Text("%08x", item->formID);
-                if (current_dragged_skill != nullptr) {
-                    RenderManager::draw_skill(current_dragged_skill->get_form_id(), static_cast<int>(std::round(60.0f * scale_factor)));
+                if (current_dragged_skill.has_dragged_from()) {
+                    RenderManager::draw_skill(current_dragged_skill.get_form_id(), static_cast<int>(std::round(60.0f * scale_factor)));
                     ImGui::SameLine();
-                    ImGui::Text(current_dragged_skill->form->GetName());
+                    ImGui::Text(current_dragged_skill.form->GetName());
                 }
                 ImGui::EndDragDropSource();
             }
         }
     }
 
-	void drawFrame(ImFont* font_text) {
-        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+	void drawFrame(ImFont* font_text, ImFont* font_text_big, ImFont* font_title) {
+        ImGui::PushFont(font_text);
+        static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
 
         auto& io = ImGui::GetIO();
         io.MouseDrawCursor = true;
 
-        auto [screen_size_x, screen_size_y, window_width] = calculate_frame_size();
-        ImGui::SetNextWindowBgAlpha(1.0F);
+        RenderManager::calculate_frame_size(0.925f);
+        RenderManager::draw_frame_bg(&show_frame);
+
+        auto [screen_size_x, screen_size_y, window_width] = RenderManager::calculate_frame_size(0.9f);
+        ImGui::SetNextWindowBgAlpha(0.0F);
 
         float scale_factor = screen_size_y / 1080.0f;
 
+        RenderManager::ImGui_push_title_style();
         ImGui::Begin("Binding Menu", &show_frame, window_flag);
+        RenderManager::ImGui_pop_title_style();
+
         float child_window_height = ImGui::GetContentRegionAvail().y;
         ImGui::BeginChild("BindMenuTabLeft", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, child_window_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
         static int tab_index = 0;
-        ImGui::RadioButton("All", & tab_index, 0); ImGui::SameLine();
-        ImGui::RadioButton("Alteration", & tab_index, 1); ImGui::SameLine();
-        ImGui::RadioButton("Illusion", & tab_index, 2); ImGui::SameLine();
-        ImGui::RadioButton("Destruction", & tab_index, 3); ImGui::SameLine();
-        ImGui::RadioButton("Conjuration", & tab_index, 4); ImGui::SameLine();
-        ImGui::RadioButton("Restoration", & tab_index, 5); ImGui::SameLine();
-        ImGui::RadioButton("Shouts", & tab_index, 6); ImGui::SameLine();
-        ImGui::RadioButton("Powers", & tab_index, 7);
+        bool filter_dirty = false;
 
+        ImGui::PushFont(font_text_big);
+        ImGui::TextUnformatted(tab_texts[tab_index].c_str());
+        ImGui::PopFont();
+
+        int tab_icon_size = static_cast<int>(60.0f * scale_factor);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
+        Rendering::GuiTabButton::draw("##TabAll", TabIndex_All, GameData::DefaultIconType::BAR_EMPTY, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabSpells", TabIndex_Spells, GameData::DefaultIconType::DUAL_CAST, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabAlteration", TabIndex_Alteration, GameData::DefaultIconType::ALTERATION_ADEPT, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabIllusion", TabIndex_Illusion, GameData::DefaultIconType::ILLUSION_FRIENDLY_ADEPT, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabDestruction", TabIndex_Destruction, GameData::DefaultIconType::DESTRUCTION_FIRE_ADEPT, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabConjuration", TabIndex_Conjuration, GameData::DefaultIconType::CONJURATION_SUMMON_ADEPT, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabRestoration", TabIndex_Restoration, GameData::DefaultIconType::RESTORATION_FRIENDLY_ADEPT, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabShouts", TabIndex_Shouts, GameData::DefaultIconType::SHOUT_GENERIC, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPowers", TabIndex_Powers, GameData::DefaultIconType::GREATER_POWER, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabScrolls", TabIndex_Scrolls, GameData::DefaultIconType::SCROLL_OVERLAY, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPotions", TabIndex_Potions, GameData::DefaultIconType::GENERIC_POTION, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPoisons", TabIndex_Poisons, GameData::DefaultIconType::GENERIC_POISON_LARGE, tab_icon_size, tab_index, filter_dirty); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabFood", TabIndex_Food, GameData::DefaultIconType::GENERIC_FOOD, tab_icon_size, tab_index, filter_dirty);
+        ImGui::PopStyleVar();
+
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        int bsize = static_cast<int>(30.0f * scale_factor);
         bool button_clear_filter_clicked{ false };
-        if (ImGui::SmallButton("X")) {
+        if (ImGui::InvisibleButton("X", ImVec2(static_cast<float>(bsize), static_cast<float>(bsize)))) {
             button_clear_filter_clicked = true;
+            RE::PlaySound(Input::sound_UIFavorite);
+        }
+        bool clear_button_hovered = ImGui::IsItemHovered();
+        RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType::UNBIND_SLOT, p, bsize);
+        if (clear_button_hovered) {
+            RenderManager::draw_highlight_overlay(p, bsize, ImColor(255,127,127));
         }
         ImGui::SameLine();
 
@@ -194,7 +445,6 @@ namespace SpellHotbar::BindMenu {
 
         static auto filter_input_flags = ImGuiInputTextFlags_EscapeClearsAll;
 
-        bool filter_dirty = false;
 
         if (button_clear_filter_clicked) {
             filter_buf[0] = '\0';
@@ -205,7 +455,7 @@ namespace SpellHotbar::BindMenu {
         }
         last_filter = filter_buf;
 
-        ImGui::InputTextWithHint("Filter", "Filter spell names containing text", filter_buf, filter_buf_size, filter_input_flags);
+        ImGui::InputTextWithHint("##Filter", "Filter text", filter_buf, filter_buf_size, filter_input_flags);
 
         static ImGuiTableFlags flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
@@ -221,10 +471,11 @@ namespace SpellHotbar::BindMenu {
             // - ImGuiTableColumnFlags_DefaultSort
             // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
             // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Name);
-            ImGui::TableSetupColumn("School", ImGuiTableColumnFlags_WidthFixed, 0.0f, bind_menu_column_id::column_id_School);
-            ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed, 0.0f, bind_menu_column_id::column_id_Rank);
             ImGui::TableSetupColumn("Drag Icon", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 65.0f, bind_menu_column_id::column_id_Icon);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Name);
+            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Type);
+            ImGui::TableSetupColumn("School", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_School);
+            ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Rank);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -236,14 +487,14 @@ namespace SpellHotbar::BindMenu {
                     std::sort(list_of_skills.begin(), list_of_skills.end(), compare_entries_for_sort);
                     sort_specs->SpecsDirty = false;
 
-                    update_filter(filter_buf);
+                    update_filter(filter_buf, static_cast<uint8_t>(tab_index));
                     filter_dirty = false;
                 }
             }
 
             //apply filtering
             if (filter_dirty) {
-                update_filter(filter_buf);
+                update_filter(filter_buf, static_cast<uint8_t>(tab_index));
                 filter_dirty = false;
             }
 
@@ -255,52 +506,27 @@ namespace SpellHotbar::BindMenu {
                 {
                     // Display a data item
                     const RE::TESForm* item = list_of_skills_filtered[row_n];
-                    const RE::SpellItem* spell = nullptr;
 
-                    int rank = 0;
-                    RE::ActorValue school = RE::ActorValue::kNone;
-                    if (item->GetFormType() == RE::FormType::Spell) {
-                        spell = item->As<RE::SpellItem>();
-                       
-                        if (spell != nullptr && spell->effects.size() > 0U) {
-
-                            bool found{ false };
-                            for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size() && !found; i++) {
-                                //find first spell effect that has a magic school
-                                RE::Effect* effect = spell->effects[i];
-                                if (effect->baseEffect) {
-                                    school = effect->baseEffect->GetMagickSkill();
-                                    rank = GameData::get_spell_rank(effect->baseEffect->GetMinimumSkillLevel());
-                                }
-                            }
-                        }
-                    }
+                    auto [rank, school] = get_rank_school(item);
+                   
                     ImGui::PushID(item->GetFormID());
                     ImGui::TableNextRow();
                    
                     ImGui::TableNextColumn();
+                    RenderManager::draw_skill(item->GetFormID(), static_cast<int>(std::round(60.0f * scale_factor)));
+                    set_drag_source(item, scale_factor);
+
+                    ImGui::TableNextColumn();
                     ImGui::TextUnformatted(item->GetName());
 
                     ImGui::TableNextColumn();
-                    if (rank > 0) {
-                        ImGui::Text("%d", rank);
-                    }
-                    else {
-                        ImGui::TextUnformatted("");
-                    }
+                    ImGui::TextUnformatted(get_type_text(item));
 
                     ImGui::TableNextColumn();
-                    if (school != RE::ActorValue::kNone) {
-                        ImGui::Text("%d", static_cast<int>(school));
-                    }
-                    else {
-                        ImGui::TextUnformatted("");
-                    }
+                    ImGui::TextUnformatted(get_school_text(school));
 
                     ImGui::TableNextColumn();
-
-                    RenderManager::draw_skill(item->GetFormID(), static_cast<int>(std::round(60.0f * scale_factor)));
-                    set_drag_source(item, scale_factor);
+                    ImGui::TextUnformatted(get_rank_text(rank));
 
                     ImGui::PopID();
                 }
@@ -357,17 +583,14 @@ namespace SpellHotbar::BindMenu {
         }
 
         //draw Hotbar slots
-        ImGui::PushFont(font_text);
+        //ImGui::PushFont(font_text);
 
         int icon_size = static_cast<int>(std::round(60.0f * scale_factor));
         float text_offset_x = icon_size * 0.05f;
         float text_offset_x_right = icon_size * 0.95f - ImGui::CalcTextSize("R").x;
         float text_offset_y = icon_size * 0.0125f;
-        //float text_height = ImGui::CalcTextSize("M").y;
 
         key_modifier mod = static_cast<key_modifier>(modifier_index);
-
-        //SpellHotbar::Hotbar& bar = Bars::hotbars[Bars::menu_bar_id];
 
         for (int i = 0; i < bar.get_bar_size(); i++) {
             auto [skill, inherited] = bar.get_skill_in_bar_with_inheritance(i, mod, false);
@@ -378,8 +601,6 @@ namespace SpellHotbar::BindMenu {
                 skill_dat = GameData::get_spell_data(form, true, true);
             }
 
-            ImVec2 p = ImGui::GetCursorScreenPos();
-
             size_t count{ 0 };
             if (skill.consumed != consumed_type::none) {
                 count = GameData::count_item_in_inv(skill.formID);
@@ -387,46 +608,105 @@ namespace SpellHotbar::BindMenu {
 
             ImVec2 bpos = ImGui::GetCursorScreenPos();
             std::string button_label = "##slot_button_" + std::to_string(i);
-            if (ImGui::Button(button_label.c_str(), ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)))) {
-                
+            if (ImGui::InvisibleButton(button_label.c_str(), ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)))) {
+                if (!inherited) {
+                    if (form != nullptr && form->GetFormType() == RE::FormType::Spell) {
+                        RE::SpellItem* spell = form->As<RE::SpellItem>();
+
+                        if (spell != nullptr && spell->GetEquipSlot() == GameData::equip_slot_either_hand)
+                        {
+                            //skill for rendering is a copy, we need to get the ref here, no inheritence is needed
+                            auto& skill_ref = bar.get_skill_in_bar_by_ref(i, mod);
+                            if (!skill_ref.isEmpty() && skill_ref.formID == form->GetFormID()) {
+                                Hotbar::rotate_skill_hand_assingment(spell, skill_ref);
+                                RE::PlaySound(Input::sound_UISkillsFocus);
+                            }
+                        }
+                    }
+                }
+                else {
+                    //inherited skill, toggle between blocked and empty
+                    auto& skill_ref = bar.get_skill_in_bar_by_ref(i, mod);
+                    if (!skill_ref.isEmpty() && GameData::is_clear_spell(skill_ref.formID)) {
+                        //unblock
+                        skill_ref.clear();
+                    }
+                    else
+                    {
+                        //set to blocked
+                        if (GameData::spellhotbar_unbind_slot != nullptr)
+                        {
+                            skill_ref = GameData::spellhotbar_unbind_slot->formID;
+                        }
+                    }
+                    RE::PlaySound(Input::sound_UISkillsFocus);
+                }
             }
 
             bool drawn_skill{ false };
-            if (ImGui::IsItemHovered() && inherited) {
+            bool button_hovered = ImGui::IsItemHovered();
+            if (button_hovered && inherited) {
                 if (GameData::spellhotbar_unbind_slot != nullptr) {
                     RenderManager::draw_skill_in_editor(GameData::spellhotbar_unbind_slot->GetFormID(), bpos, icon_size);
                 }
                 else {
-                    //RenderManager::draw_bg(icon_size);
                     RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType::BAR_EMPTY, bpos, icon_size);
                 }
             }
             else {
                 drawn_skill = RenderManager::draw_skill_in_editor(skill.formID, bpos, icon_size);
-                //bool drawn = RenderManager::draw_skill(skill.formID, icon_size, skill.color);
                 if (!drawn_skill) {
-                    //RenderManager::draw_bg(icon_size);
                     RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType::BAR_EMPTY, bpos, icon_size);
                 }
             }
 
             if (!inherited) {
-                set_drag_source(form, scale_factor);
+                SlottedSkill* source_skill{nullptr};
+                if (!skill.isEmpty()) {
+                    source_skill = bar.get_skill_in_bar_ptr(i, mod);
+                }
+                set_drag_source(form, scale_factor, source_skill);
             }
             if (ImGui::BeginDragDropTarget())
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SPELL_SLOT"))
                 {
-                    IM_ASSERT(payload->DataSize == sizeof(dragged_skill));
-                    dragged_skill payload_n = *(const dragged_skill*)payload->Data;
-                    logger::info("Dropped: {:08x}", payload_n.get_form_id());
+                    IM_ASSERT(payload->DataSize == sizeof(Dragged_skill));
+                    Dragged_skill payload_n = *(const Dragged_skill*)payload->Data;
+                    if (payload_n.has_dragged_from()) {
+                        auto& target = bar.get_skill_in_bar_by_ref(i, mod);
+
+                        std::optional<hand_mode> source_hand(std::nullopt);
+                        if (payload_n.source_slot != nullptr) {
+                            source_hand = payload_n.source_slot->hand;
+                            if (!target.isEmpty()) {
+                                payload_n.source_slot->update_skill_assignment(target.formID);
+                                payload_n.source_slot->hand = target.hand;
+                            }
+                            else {
+                                payload_n.source_slot->clear();
+                            }
+                        }
+
+                        if (payload_n.get_form_id() != 0U) {
+                            target.update_skill_assignment(payload_n.get_form_id());
+                            if (source_hand.has_value()) {
+                                target.hand = source_hand.value();
+                            }
+                        }
+                        else
+                        {
+                            target.clear();
+                        }
+                        RE::PlaySound(Input::sound_UISkillsFocus);
+                    }
                 }
                 ImGui::EndDragDropTarget();
             }
 
             if (drawn_skill) {
                 if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
-                    RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
+                    RenderManager::draw_icon_overlay(bpos, icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
                 }
 
                 ImU32 col = IM_COL32_WHITE;
@@ -434,12 +714,26 @@ namespace SpellHotbar::BindMenu {
                     col = IM_COL32(255, 255, static_cast<int>(127 + 128 * (1.0 - highlight_factor)), 255);
                 }*/
 
-                RenderManager::draw_slot_overlay(p, icon_size, col);
+                RenderManager::draw_slot_overlay(bpos, icon_size, col);
+            }
+
+            bool is_being_dragged{ false };
+            if (const ImGuiPayload* payload = ImGui::GetDragDropPayload())
+            {
+                IM_ASSERT(payload->DataSize == sizeof(Dragged_skill));
+                Dragged_skill payload_n = *(const Dragged_skill*)payload->Data;
+                if (payload_n.source_slot != nullptr && payload_n.source_slot == bar.get_skill_in_bar_ptr(i, mod)) {
+                    is_being_dragged = true;
+                }
+            }
+
+            if (button_hovered || is_being_dragged) {
+                RenderManager::draw_highlight_overlay(bpos, icon_size, ImColor(127, 127, 255));
             }
             ImGui::SameLine();
 
             std::string key_text = GameData::get_keybind_text(i, mod);
-            ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
+            ImVec2 tex_pos(bpos.x + text_offset_x, bpos.y + text_offset_y);
             ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
 
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
@@ -453,7 +747,7 @@ namespace SpellHotbar::BindMenu {
                 else if (skill.hand == hand_mode::dual_hand) {
                     hand_text = "D";
                 }
-                ImVec2 tex_pos_hand(p.x + text_offset_x_right, p.y + text_offset_y);
+                ImVec2 tex_pos_hand(bpos.x + text_offset_x_right, bpos.y + text_offset_y);
                 ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
             }
 
@@ -461,7 +755,7 @@ namespace SpellHotbar::BindMenu {
                 //clamp text to 999
                 std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
                 ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
-                ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
+                ImVec2 count_text_pos(bpos.x + icon_size - textsize.x, bpos.y + icon_size - textsize.y);
                 ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255), text.c_str());
             }
 
@@ -489,9 +783,11 @@ namespace SpellHotbar::BindMenu {
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SPELL_SLOT"))
             {
-                IM_ASSERT(payload->DataSize == sizeof(dragged_skill));
-                dragged_skill payload_n = *(const dragged_skill*)payload->Data;
-                logger::info("Deleting: {:08x}", payload_n.get_form_id());
+                IM_ASSERT(payload->DataSize == sizeof(Dragged_skill));
+                Dragged_skill payload_n = *(const Dragged_skill*)payload->Data;
+                if (payload_n.source_slot != nullptr) {
+                    payload_n.source_slot->clear();
+                }
             }
             ImGui::EndDragDropTarget();
         }
@@ -503,5 +799,7 @@ namespace SpellHotbar::BindMenu {
         ImGui::EndChild();
 
         ImGui::End();
+
+        RenderManager::draw_custom_mouse_cursor();
     }
 }
