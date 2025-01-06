@@ -13,6 +13,9 @@ namespace SpellHotbar::PotionEditor {
     {
         static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
 
+        static RE::FormID last_tooltip = 0;
+        static std::string description = "";
+
         auto& io = ImGui::GetIO();
         io.MouseDrawCursor = true;
 
@@ -28,6 +31,10 @@ namespace SpellHotbar::PotionEditor {
         if (form->GetFormType() == RE::FormType::AlchemyItem) {
             alchitem = form->As<RE::AlchemyItem>();
         }
+        if (form->GetFormID() != last_tooltip) {
+            description = RenderManager::get_skill_tooltip(form);
+        }
+        last_tooltip = form->GetFormID();
 
         RenderManager::ImGui_push_title_style();
         ImGui::Begin("Edit Icon", nullptr, window_flag);
@@ -43,6 +50,7 @@ namespace SpellHotbar::PotionEditor {
         float child_window_height = ImGui::GetContentRegionAvail().y - button_height;
 
         constexpr ImU32 col_gray = IM_COL32(127, 127, 127, 255);
+        ImU32 potion_color = RenderManager::get_skill_color(form);
 
         ImGui::BeginChild("LeftTab", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, child_window_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
@@ -67,6 +75,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::TextUnformatted("Name");
             ImGui::TableNextColumn();
             ImGui::TextUnformatted(form->GetName());
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -80,22 +89,22 @@ namespace SpellHotbar::PotionEditor {
 
             bool show_reset_button{ false };
             if (data.m_icon_form > 0) {
-                SpellHotbar::RenderManager::draw_skill_in_editor(data.m_icon_form, iconpos, static_cast<int>(ic_size));
+                SpellHotbar::RenderManager::draw_skill_in_editor(data.m_icon_form, iconpos, static_cast<int>(ic_size), potion_color);
                 show_reset_button = true;
             }
             else if (!data.m_icon_str.empty()) {
                 if (TextureCSVLoader::default_icon_names.contains(data.m_icon_str)) {
                     auto type = TextureCSVLoader::default_icon_names.at(data.m_icon_str);
-                    SpellHotbar::RenderManager::draw_default_icon_in_editor(type, iconpos, static_cast<int>(ic_size));
+                    SpellHotbar::RenderManager::draw_default_icon_in_editor(type, iconpos, static_cast<int>(ic_size), potion_color);
                 }
                 else {
-                    SpellHotbar::RenderManager::draw_extra_icon_in_editor(data.m_icon_str, iconpos, static_cast<int>(ic_size));
+                    SpellHotbar::RenderManager::draw_extra_icon_in_editor(data.m_icon_str, iconpos, static_cast<int>(ic_size), potion_color);
                 }
                 show_reset_button = true;
             }
             else {
                 //default
-                SpellHotbar::RenderManager::draw_skill_in_editor(form->GetFormID(), iconpos, static_cast<int>(ic_size));
+                SpellHotbar::RenderManager::draw_skill_in_editor(form->GetFormID(), iconpos, static_cast<int>(ic_size), potion_color);
             }
 
             if (show_reset_button) {
@@ -105,6 +114,17 @@ namespace SpellHotbar::PotionEditor {
                     data.m_icon_str = "";
                 }
             }
+            ImGui::PopID();
+
+            ImGui::PushID(id++);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Description");
+            ImGui::TableNextColumn();
+            ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
+            ImGui::TextUnformatted(description.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -120,6 +140,7 @@ namespace SpellHotbar::PotionEditor {
                 ImGui::TextUnformatted("<Dynamic Form>");
             }
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -129,6 +150,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::Text("%08x", form->GetFormID());
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -152,6 +174,7 @@ namespace SpellHotbar::PotionEditor {
                 ImGui::TextUnformatted("???");
             }
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::EndTable();
         }
@@ -205,15 +228,15 @@ namespace SpellHotbar::PotionEditor {
 
                     int icon_size = static_cast<int>(icon_button_size - 2.0f * inner_pad);
                     if (formid > 0) {
-                        SpellHotbar::RenderManager::draw_skill_in_editor(formid, inner_pos, icon_size);
+                        SpellHotbar::RenderManager::draw_skill_in_editor(formid, inner_pos, icon_size, potion_color);
                     }
                     else if (!icon_str.empty()) {
                         if (TextureCSVLoader::default_icon_names.contains(icon_str)) {
                             auto type = TextureCSVLoader::default_icon_names.at(icon_str);
-                            SpellHotbar::RenderManager::draw_default_icon_in_editor(type, inner_pos, icon_size);
+                            SpellHotbar::RenderManager::draw_default_icon_in_editor(type, inner_pos, icon_size, potion_color);
                         }
                         else {
-                            SpellHotbar::RenderManager::draw_extra_icon_in_editor(icon_str, inner_pos, icon_size);
+                            SpellHotbar::RenderManager::draw_extra_icon_in_editor(icon_str, inner_pos, icon_size, potion_color);
                         }
                     }
 
@@ -264,6 +287,8 @@ namespace SpellHotbar::PotionEditor {
 
         ImGui::EndChild();
         ImGui::End();
+
+        RenderManager::draw_custom_mouse_cursor();
     }
 
 }

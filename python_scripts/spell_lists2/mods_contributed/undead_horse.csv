@@ -1,0 +1,3 @@
+Name	FormID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Conjure Undead Horse	0xD68	Undead Horse.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Conjure Undead Horse	0xD68	Undead Horse.esl	ConjurationSummon	-1	-1	-1	-1	10003

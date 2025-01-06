@@ -1,0 +1,23 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Force Dominate Mind	0x000821		starwarsspellpack_ESLversion.esl	RestorationGold	-1	-1	-1	-1	-1
+Force Drain	0x000832		starwarsspellpack_ESLversion.esl	IllusionRed	-1	-1	-1	-1	10004
+Force Flame	0x000828		starwarsspellpack_ESLversion.esl	DestructionFire	-1	-1	-1	-1	-1
+Force Mend	0x00082E		starwarsspellpack_ESLversion.esl	RestorationGold	-1	-1	-1	-1	-1
+Force Oneness	0x00082B		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force Plague	0x000825		starwarsspellpack_ESLversion.esl	RestorationGold	-1	-1	-1	-1	-1
+Force Push	0x000820		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	10005
+Force Repulse	0x000824		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force Speedburst	0x000829		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force Stasis	0x000833		starwarsspellpack_ESLversion.esl	IllusionGreen	-1	-1	-1	-1	10004
+Force Stasis wave	0x000827		starwarsspellpack_ESLversion.esl	IllusionGreen	-1	-1	-1	-1	-1
+Force Storm	0x000823		starwarsspellpack_ESLversion.esl	DestructionShock	-1	-1	-1	-1	10002
+Force Summon Technobeast	0x000826		starwarsspellpack_ESLversion.esl	ConjurationSummon	-1	-1	-1	-1	10003
+Force Tutaminis	0x00082A		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Technobeast's Shields	0x00082F		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force Augmentation	0x000831		starwarsspellpack_ESLversion.esl	RestorationGold	-1	-1	-1	-1	-1
+Force Armor	0x000822		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	10002
+Force Heal	0x000830		starwarsspellpack_ESLversion.esl	RestorationGold	-1	-1	-1	-1	-1
+Jedi Skills	0x00082D		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force camo	0x00082C		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1
+Force disarm	0x00081F		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	10005
+Starkiller Repulse	0x000855		starwarsspellpack_ESLversion.esl	RestorationBlue	-1	-1	-1	-1	-1

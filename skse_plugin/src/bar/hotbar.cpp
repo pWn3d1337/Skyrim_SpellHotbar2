@@ -925,7 +925,6 @@ namespace SpellHotbar
                             if (alch_item) {
                                 auto* effect = alch_item->GetCostliestEffectItem();
                                 if (effect) {
-                                    //RE::EffectArchetypes::ArchetypeID arch = effect->baseEffect->GetArchetype();
                                     color = Hotbar::calculate_potion_color(effect);
                                 }
                             }

@@ -86,7 +86,13 @@ namespace SpellHotbar::TextureCSVLoader {
         {"GENERIC_POISON_LARGE", GameData::DefaultIconType::GENERIC_POISON_LARGE},
         {"GENERIC_FOOD", GameData::DefaultIconType::GENERIC_FOOD},
         {"GENERIC_FOOD_SOUP", GameData::DefaultIconType::GENERIC_FOOD_SOUP},
-        {"GENERIC_FOOD_DRINK", GameData::DefaultIconType::GENERIC_FOOD_DRINK}
+        {"GENERIC_FOOD_DRINK", GameData::DefaultIconType::GENERIC_FOOD_DRINK},
+        {"TAB_ALL", GameData::DefaultIconType::TAB_ALL},
+        {"TAB_SPELLS", GameData::DefaultIconType::TAB_SPELLS},
+        {"TAB_SCROLLS", GameData::DefaultIconType::TAB_SCROLLS},
+        {"TAB_POTIONS", GameData::DefaultIconType::TAB_POTIONS},
+        {"TAB_POISONS", GameData::DefaultIconType::TAB_POISONS},
+        {"TAB_FOOD", GameData::DefaultIconType::TAB_FOOD}
     };
 
     bool is_spell_icon_file(rapidcsv::Document& doc)

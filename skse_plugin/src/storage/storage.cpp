@@ -86,6 +86,10 @@ namespace SpellHotbar::Storage {
 
             //V3: Since SpellHotbar2 0.0.5
             a_intfc->WriteRecordData(&Bars::bar_cross_distance, sizeof(float));
+
+            //V4: since SpellHotbar2 0.0.7
+            a_intfc->WriteRecordData(&Bars::disable_menu_binding, sizeof(bool));
+
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -381,6 +385,16 @@ namespace SpellHotbar::Storage {
                 else
                 {
                     Bars::bar_cross_distance = 0.0f;
+                }
+
+                if (version >= 4U) { //Since SpellHotbar2 0.0.7
+                    if (!a_intfc->ReadRecordData(&Bars::disable_menu_binding, sizeof(bool))) {
+                        logger::error("Failed to read disable_menu_binding!");
+                        break;
+                    }
+                }
+                else {
+                    Bars::disable_menu_binding = false;
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

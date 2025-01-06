@@ -470,6 +470,14 @@ float get_bar_cross_distance(RE::StaticFunctionTag*) {
     return SpellHotbar::Bars::bar_cross_distance;
 }
 
+bool is_disable_menu_binding(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::disable_menu_binding;
+}
+
+bool toggle_disable_menu_binding(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::disable_menu_binding = !SpellHotbar::Bars::disable_menu_binding;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -549,5 +557,7 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("log_info", "SpellHotbar", log_message);
     vm->RegisterFunction("setBarCrossDistance", "SpellHotbar", set_bar_cross_distance);
     vm->RegisterFunction("getBarCrossDistance", "SpellHotbar", get_bar_cross_distance);
+    vm->RegisterFunction("isDisableMenuBinding", "SpellHotbar", is_disable_menu_binding);
+    vm->RegisterFunction("toggleDisableMenuBinding", "SpellHotbar", toggle_disable_menu_binding);
     return true;
 }

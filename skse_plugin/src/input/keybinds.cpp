@@ -24,7 +24,7 @@ namespace SpellHotbar::Input {
 	KeyBind key_oblivion_cast{ RE::INPUT_DEVICE::kNone, 0 }; // 47 V
 	KeyBind key_oblivion_potion{ RE::INPUT_DEVICE::kNone, 0 }; //45 B
 
-	KeyBind key_open_advanced_bind_menu{ RE::INPUT_DEVICE::kKeyboard, 76 }; //TODO no default bind, 76 - Num 5
+	KeyBind key_open_advanced_bind_menu{ RE::INPUT_DEVICE::kKeyboard, 0 }; // 76 - Num 5
 
 	KeyModifier mod_1(RE::INPUT_DEVICE::kNone, 0, 0); //ctrl 29, 157
 	KeyModifier mod_2(RE::INPUT_DEVICE::kNone, 0, 0); //shift 42, 54

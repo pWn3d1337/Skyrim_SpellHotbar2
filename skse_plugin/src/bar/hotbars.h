@@ -63,6 +63,7 @@ namespace SpellHotbar::Bars {
 
     extern bool use_default_bar_when_sheathed;
     extern bool disable_menu_rendering;
+    extern bool disable_menu_binding;
 
     extern anchor_point bar_anchor_point;
 

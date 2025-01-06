@@ -36,7 +36,7 @@ namespace SpellHotbar::casts::CastingController {
 	BaseCastingInstance::BaseCastingInstance(RE::TESForm* form, float casttime) : m_form(form),
 		m_cast_timer(casttime),
 		m_total_casttime(casttime),
-		m_gcd(1.0f),
+		m_gcd(1.5f),
 		m_casted(false)
 	{
 	}
@@ -314,6 +314,7 @@ namespace SpellHotbar::casts::CastingController {
 
 	CastingInstanceSpell::CastingInstanceSpell(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc)
 	{
+		m_gcd = (used_hand == hand_mode::dual_hand) ? 1.5f : 1.0f;
 	}
 
 	CastingInstanceRitual::CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc)
@@ -931,7 +932,6 @@ namespace SpellHotbar::casts::CastingController {
 
 		GameData::pre_cast_mod_callback(spell);
 
-		//logger::info("Cost: {}", playerMagicCaster->currentSpellCost);
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
 
 		//This is to fix failed target location spells
@@ -944,8 +944,8 @@ namespace SpellHotbar::casts::CastingController {
 			}
 		}
 
-		//mod support Ordinator: Vancian magic
-		GameData::casted_spell_mod_callback(spell, spell_proc);
+		//mod support Ordinator: Vancian magic, Energy Roil, Spellblade
+		GameData::casted_spell_mod_callback(spell, dual_cast, spell_proc);
 
 		return true;
 	}

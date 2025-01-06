@@ -93,7 +93,7 @@ EndEvent
 
 Event OnPageReset(string page)
     if page == "Keybinds"
-        oid_spellkeybinds = new int[22]
+        oid_spellkeybinds = new int[23]
         SetCursorFillMode(LEFT_TO_RIGHT)
         AddHeaderOption("Skill Bindings")
         AddHeaderOption("")
@@ -113,6 +113,7 @@ Event OnPageReset(string page)
 		; the 13 and 12 are intentionally swapped, internally next is saved before, but in the gui it will be swapped
 		oid_spellkeybinds[13] = AddKeyMapOption("Previous Bar", SpellHotbar.getKeyBind(13))
 		oid_spellkeybinds[12] = AddKeyMapOption("Next Bar", SpellHotbar.getKeyBind(12))
+		oid_spellkeybinds[22] = AddKeyMapOption("Open Binding Menu", SpellHotbar.getKeyBind(22))
 
 		AddHeaderOption("Modifier Bindings")
         AddHeaderOption("")
@@ -148,6 +149,8 @@ Event OnPageReset(string page)
 	
 		AddToggleOptionST("UseDefaultBarWhenSheathed", "Use Default bar when Sheated", SpellHotbar.isDefaultBarWhenSheathed())
         AddToggleOptionST("DisableMenuRendering", "Disable Menu Rendering", SpellHotbar.isDisableMenuRendering())
+		AddToggleOptionST("DisableMenuBinding", "Disable Menu Binding", SpellHotbar.isDisableMenuBinding())
+		AddEmptyOption()
 
         AddHeaderOption("Bar Positioning")
 		AddHeaderOption("")
@@ -1047,6 +1050,15 @@ State DisableMenuRendering
     EndEvent
     Event OnHighlightST()
         SetInfoText("Disable the rendering of menus for slotting spells, hotkeys and slotting still works");
+    EndEvent
+EndState
+
+State DisableMenuBinding
+    Event OnSelectST()
+        SetToggleOptionValueST(SpellHotbar.toggleDisableMenuBinding())
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Disable the slotting of skills in Magic Menu and Inventory");
     EndEvent
 EndState
 

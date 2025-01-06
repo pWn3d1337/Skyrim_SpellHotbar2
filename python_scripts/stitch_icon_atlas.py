@@ -114,7 +114,13 @@ default_icons = [
     "GENERIC_POISON_LARGE",
     "GENERIC_FOOD",
     "GENERIC_FOOD_SOUP",
-    "GENERIC_FOOD_DRINK"
+    "GENERIC_FOOD_DRINK",
+    "TAB_ALL",
+    "TAB_SPELLS",
+    "TAB_SCROLLS",
+    "TAB_POTIONS",
+    "TAB_POISONS",
+    "TAB_FOOD"
 ]
 
 
@@ -1013,7 +1019,7 @@ if __name__ == "__main__":
         stitch_folder_contributed("shadow_spell_package", alpha_mask)
         i4_mod_contributed("shadow_spell_package", esp_name="ShadowSpellPackage")
 
-    if redo_all_img or True:
+    if redo_all_img or False:
         # credits ArchAngelAries
         stitch_folder_contributed("star_wars_spell_pack", alpha_mask)
         i4_mod_contributed("star_wars_spell_pack", esp_name="starwarsspellpack")
@@ -1021,6 +1027,10 @@ if __name__ == "__main__":
         stitch_folder_contributed("star_wars_spell_pack_esl", alpha_mask, icon_folder_name="star_wars_spell_pack")
         i4_mod_contributed("star_wars_spell_pack_esl", esp_name="starwarsspellpack_ESLversion", icon_folder_name="star_wars_spell_pack")
 
+    if redo_all_img or False:
+        #credits ArchAngelAries
+        stitch_folder_contributed("undead_horse", alpha_mask)
+        i4_mod_contributed("undead_horse", esp_name="Undead Horse")
 
     # icons done by user request
     # stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)

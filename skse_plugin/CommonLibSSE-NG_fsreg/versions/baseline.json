@@ -4,5 +4,8 @@
   },
   "2024-04-11": {
     "commonlibsse-ng": { "baseline": "0.1.1", "port-version": 0 }
+  },
+  "2024-12-30": {
+    "commonlibsse-ng": { "baseline": "0.1.2", "port-version": 0 }
   }
 }

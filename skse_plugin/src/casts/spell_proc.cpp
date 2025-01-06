@@ -82,7 +82,7 @@ namespace SpellHotbar::casts {
 		return std::nullopt;
 	}
 
-	float SpellProc::adjust_casttime(float original_ct, RE::SpellItem* casted_spell)
+	float SpellProc::adjust_casttime(float original_ct, RE::SpellItem*)
 	{
 		if (original_ct > 0.25f) {
 			original_ct = 0.25f;

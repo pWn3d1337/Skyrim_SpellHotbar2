@@ -46,6 +46,9 @@ namespace SpellHotbar::SpellEditor {
         static constexpr ImGuiWindowFlags window_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
         check_init(data, dat_unfilled);
 
+        static RE::FormID last_tooltip = 0;
+        static std::string description = "";
+
         auto& dat = data.m_spell_data;
 
         auto& io = ImGui::GetIO();
@@ -68,6 +71,10 @@ namespace SpellHotbar::SpellEditor {
         if (form->GetFormType() == RE::FormType::Shout) {
             shout = form->As<RE::TESShout>();
         }
+        if (form->GetFormID() != last_tooltip) {
+            description = RenderManager::get_skill_tooltip(form);
+        }
+        last_tooltip = form->GetFormID();
 
         RenderManager::ImGui_push_title_style();
         ImGui::Begin("Edit Spell Data", nullptr, window_flag);
@@ -108,6 +115,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::TextUnformatted("Name");
             ImGui::TableNextColumn();
             ImGui::TextUnformatted(form->GetName());
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -146,6 +154,17 @@ namespace SpellHotbar::SpellEditor {
                     data.m_icon_str = "";
                 }
             }
+            ImGui::PopID();
+
+            ImGui::PushID(id++);
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Description");
+            ImGui::TableNextColumn();
+            ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
+            ImGui::TextUnformatted(description.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -161,6 +180,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted("<Dynamic Form>");
             }
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -170,6 +190,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::Text("%08x", form->GetFormID());
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -209,6 +230,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted("???");
             }
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -241,7 +263,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted("???");
             }
             ImGui::PopStyleColor();
-
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -271,6 +293,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted("???");
             }
             ImGui::PopStyleColor();
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -319,6 +342,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted("No Effect");
                 ImGui::PopStyleColor();
             }
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -348,6 +372,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::Text("%.2fs", dat_filled.gcd);
                 ImGui::PopStyleColor();
             }
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -380,6 +405,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::Text("%.1fs", dat_filled.cooldown * (1.0f/seconds_to_days));
                 ImGui::PopStyleColor();
             }
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -410,6 +436,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::PopStyleColor();
             }
             //ImGui::SliderFloat("", &dat.casttime, 0.25f, 10.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -464,6 +491,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::Text("%d", -1);
                 ImGui::PopStyleColor();
             }
+            ImGui::PopID();
 
             ImGui::PushID(id++);
             ImGui::TableNextRow();
@@ -517,6 +545,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::Text("%d", -1);
                 ImGui::PopStyleColor();
             }
+            ImGui::PopID();
 
             ImGui::EndTable();
         }
@@ -629,6 +658,8 @@ namespace SpellHotbar::SpellEditor {
         RenderManager::revert_font();
         ImGui::EndChild();
         ImGui::End();
+
+        RenderManager::draw_custom_mouse_cursor();
 	}
 
 }

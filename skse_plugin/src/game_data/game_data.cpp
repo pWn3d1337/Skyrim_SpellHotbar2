@@ -308,6 +308,11 @@ namespace SpellHotbar::GameData {
     RE::TESGlobal* ordinator_global_vancian_dungeon_master_side_effects = nullptr; // 3.0 = Blood Magic
     RE::BGSPerk* ordinator_perk_intuitive_magic_1 = nullptr;
     RE::BGSPerk* ordinator_perk_intuitive_magic_2 = nullptr;
+
+    RE::BGSPerk* ordinator_perk_spellblade = nullptr;
+    RE::BGSPerk* ordinator_perk_energy_roil = nullptr;
+    RE::SpellItem* ordinator_spell_spellblade_proc = nullptr;
+    RE::SpellItem* ordinator_spell_energy_roil_proc = nullptr;
     
     //PathOfSorvery
     RE::BGSPerk* pos_perk_bloodmage_1 = nullptr;
@@ -324,6 +329,42 @@ namespace SpellHotbar::GameData {
         }
         else if(log_error) {
             logger::error("Could not get '{}' from {}", name, plugin);
+        }
+    }
+
+    void GameData::print_perks(RE::PlayerCharacter* pc) {
+        //TODO remove this
+        auto av_list = RE::ActorValueList::GetSingleton();
+        for (uint32_t i = 0; i < static_cast<uint32_t>(std::to_underlying(RE::ActorValue::kTotal)); i++) {
+            auto ptree = av_list->actorValues[i]->perkTree;
+            if (ptree != nullptr) {
+
+                logger::info("Child Perks: {}", ptree->children.size());
+
+                for (uint32_t j = 0; j < ptree->children.size(); j++) {
+                    auto subnode = ptree->children[j];
+                    if (subnode != nullptr) {
+                        //logger::info("Has Child");
+                        if (subnode->perk != nullptr) {
+                            //logger::info("Has Perk");
+                            //RE::BSString buf = "";
+                            //subnode->perk->GetDescription(buf, nullptr);
+                            //if (subnode->perk->data.playable && !subnode->perk->data.hidden) {
+                            //    logger::info("{}", subnode->perk->GetName());
+                            //}
+                            if (pc != nullptr) {
+                                logger::info("Player Has {}: {}", subnode->perk->GetName(), subnode->perk->perkConditions.IsTrue(pc, pc));
+                            }
+                        }
+                    }
+
+                }
+
+                RE::BGSPerk* perk = ptree->perk;
+                if (perk != nullptr) {
+                    logger::info("Perk not null");
+                }
+            }
         }
     }
 
@@ -448,6 +489,11 @@ namespace SpellHotbar::GameData {
             load_form_from_game(0x01B57F, ordinator_esp_name, &ordinator_perk_intuitive_magic_1, "ORD_Alt50_IntuitiveMagic_Perk_50", RE::FormType::Perk);
             load_form_from_game(0x01B580, ordinator_esp_name, &ordinator_perk_intuitive_magic_2, "ORD_Alt50_IntuitiveMagic_Perk_80", RE::FormType::Perk);
 
+            //SpellBlade & Energy Roil
+            load_form_from_game(0x01BB34, ordinator_esp_name, &ordinator_perk_energy_roil, "ORD_Alt70_EnergyRoil_Perk_70", RE::FormType::Perk);
+            load_form_from_game(0x01B58E, ordinator_esp_name, &ordinator_perk_spellblade, "ORD_Alt40_Spellblade_Perk_40_OrdASISExclude", RE::FormType::Perk);
+            load_form_from_game(0x01BB32, ordinator_esp_name, &ordinator_spell_energy_roil_proc, "ORD_Alt_EnergyRoil_Spell_Proc", RE::FormType::Spell);
+            load_form_from_game(0x01B589, ordinator_esp_name, &ordinator_spell_spellblade_proc, "ORD_Alt_Spellblade_Spell_Proc", RE::FormType::Spell);
         }
 
         //Path of Sorcery Blood Magic
@@ -518,6 +564,88 @@ namespace SpellHotbar::GameData {
             break;
         }
         return key_text;
+    }
+
+    std::string get_modifier_text_long(key_modifier mod) {
+        std::string key_text;
+        switch (mod) {
+        case SpellHotbar::key_modifier::ctrl:
+            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).first + "]";
+            break;
+        case SpellHotbar::key_modifier::shift:
+            key_text = "Mod [" + key_names.at(Input::mod_2.get_dx_scancode()).first + "]";
+            break;
+        case SpellHotbar::key_modifier::alt:
+            key_text = "Mod [" + key_names.at(Input::mod_3.get_dx_scancode()).first + "]";
+            break;
+        default:
+            key_text = "No Mod";
+            break;
+        }
+        return key_text;
+    }
+
+    std::string get_key_text_long(int code)
+    {
+        std::string key_name;
+        if (key_names.contains(code)) {
+            return key_names.at(code).first;
+        }
+        else {
+            key_name= "Unknown Key";
+        }
+        return key_name;
+    }
+
+    std::string strip_tooltip(const std::string& input, float magnitude, uint32_t duration)
+    {
+        std::stringstream ss;
+        std::stringstream tmp;
+
+        //< without closing >
+        bool in_brackets{ false };
+
+        for (const char& c : input) {
+            if (c == '<') {
+                in_brackets = true;
+            }
+            else if (c == '>' && in_brackets) {
+                in_brackets = false;
+                std::string part = tmp.str();
+                tmp=std::stringstream();
+
+                if (part == "dur") {
+                    ss << std::to_string(duration);
+                }
+                else if (part == "mag") {
+                    ss << std::to_string(static_cast<int>(std::roundf(magnitude)));
+                }
+                else if (part.starts_with("Global=") || part.starts_with("global=")) {
+                    std::string global_name = part.substr(7);
+                    auto form = RE::TESForm::LookupByEditorID(global_name);
+                    if (form != nullptr && form->GetFormType() == RE::FormType::Global) {
+                        RE::TESGlobal* glob = form->As<RE::TESGlobal>();
+                        if (glob != nullptr) {
+                            ss << std::to_string(static_cast<int>(std::roundf(glob->value)));
+                        }
+                    }
+                }
+                else {
+                    ss << part;
+                }
+            }
+            else {
+                if (in_brackets) {
+                    tmp << c;
+                }
+                else {
+                    ss << c;
+                }
+            }
+
+        }
+
+        return ss.str();
     }
 
     std::string get_keybind_text(int slot_index, key_modifier mod)
@@ -1555,7 +1683,7 @@ namespace SpellHotbar::GameData {
          return proc;
      }
 
-     void casted_spell_mod_callback(RE::SpellItem* spell, bool spell_proc)
+     void casted_spell_mod_callback(RE::SpellItem* spell, bool dual_cast, bool spell_proc)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //Ordinator, check vancian magic and reduce spell count
@@ -1590,6 +1718,16 @@ namespace SpellHotbar::GameData {
                     float cost = get_pos_spell_health_cost(spell);
                     if (spell_proc) cost *= 0.5f;
                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
+                 }
+             }
+
+             //Ordinator check for EnergyRoil and SpellBlade procs
+             if (!dual_cast) {
+                 if (ordinator_perk_energy_roil != nullptr && pc->HasPerk(ordinator_perk_energy_roil)) {
+                     casts::CastingController::cast_spell_on_player(ordinator_spell_energy_roil_proc);
+                 }
+                 else if (ordinator_perk_spellblade != nullptr && pc->HasPerk(ordinator_perk_spellblade)) {
+                     casts::CastingController::cast_spell_on_player(ordinator_spell_spellblade_proc);
                  }
              }
          }
@@ -1645,7 +1783,7 @@ namespace SpellHotbar::GameData {
          return has_blood_magic;
      }
 
-     float get_health_cost_mod_ordinator(RE::SpellItem* spell)
+     float get_health_cost_mod_ordinator(RE::SpellItem*)
      {
          bool has_blood_magic = player_has_ordinator_bloodmagic();
          if (has_blood_magic && ordinator_global_vancian_magic_count->value <= 0.0f) {
@@ -1732,7 +1870,7 @@ namespace SpellHotbar::GameData {
          }
      }
 
-     void pre_cast_mod_callback(RE::SpellItem* spell)
+     void pre_cast_mod_callback(RE::SpellItem*)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //if using PathOfSorcery Blood to Power, set Fame to missing HP
@@ -1740,7 +1878,7 @@ namespace SpellHotbar::GameData {
              update_pos_fame_values(pc);
          }
      }
-     void post_cast_mod_callback(RE::SpellItem* spell)
+     void post_cast_mod_callback(RE::SpellItem*)
      {
          auto pc = RE::PlayerCharacter::GetSingleton();
          //if using PathOfSorcery Blood to Power, reset fame to 0 after cast

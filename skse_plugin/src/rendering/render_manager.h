@@ -27,6 +27,7 @@ namespace SpellHotbar {
         virtual void draw_on_top(ImVec2 pos, float w, float h, ImU32 col);
 
         void draw();
+        ImTextureID get_res();
     };
 
     struct SubTextureImage : public TextureImage {
@@ -100,7 +101,6 @@ namespace SpellHotbar {
         static void on_game_load();
 
         static TextureImage & load_texture(const std::string path);
-        static TextureImage * load_texture_ptr(const std::string path);
 
         static void add_spell_texture(TextureImage & main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename);
         static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string& icon_name);
@@ -114,9 +114,9 @@ namespace SpellHotbar {
         static void draw_frame_bg_texture(float size_x, float size_y, float alpha = 1.0f);
         static void draw_frame_bg(bool* show_frame);
         static bool draw_skill(RE::FormID formID, int size, ImU32 col = IM_COL32_WHITE);
-        static bool draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size);
-        static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size);
-        static void draw_extra_icon_in_editor(const std::string &key, ImVec2 pos, int size);
+        static bool draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
+        static void draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
+        static void draw_extra_icon_in_editor(const std::string &key, ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_slot_overlay(ImVec2 pos, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
         static void draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha);
@@ -173,6 +173,12 @@ namespace SpellHotbar {
         /*
         * Draw custom mouse cursor
         */
-        static void draw_custom_mouse_cursor();
+        static void draw_custom_mouse_cursor(float cursor_size = 64.0f);
+
+        static std::string get_skill_tooltip(const RE::TESForm* item);
+        static void show_skill_tooltip(const RE::TESForm* item, float offset_x = 32.0f);
+
+        /*returns a color depending on most expensive effect for self brewed potions, white otherwise */
+        static ImU32 get_skill_color(const RE::TESForm* form);
     };
 }

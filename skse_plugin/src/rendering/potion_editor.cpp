@@ -300,7 +300,8 @@ namespace SpellHotbar::PotionEditor {
                     }
 
                     ImGui::TableNextColumn();
-                    RenderManager::draw_skill(item->GetFormID(), static_cast<int>(std::round(40.0f * scale_factor)));
+                    RenderManager::draw_skill(item->GetFormID(), static_cast<int>(std::round(40.0f * scale_factor)), RenderManager::get_skill_color(item));
+                    RenderManager::show_skill_tooltip(item);
 
                     ImGui::TableNextColumn();
                     ImGui::TextUnformatted(item->GetName());
@@ -380,5 +381,7 @@ namespace SpellHotbar::PotionEditor {
         }
         ImGui::EndChild();
         ImGui::End();
+
+        RenderManager::draw_custom_mouse_cursor();
     }
 }

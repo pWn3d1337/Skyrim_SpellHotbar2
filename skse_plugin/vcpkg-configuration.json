@@ -2,13 +2,13 @@
   "default-registry": {
     "kind": "git",
     "repository": "https://github.com/microsoft/vcpkg.git",
-    "baseline": "dd3adcf020e69077e83e92a0a293ceca734f6288"
+    "baseline": "80d54ff62d528339c626a6fbc3489a7f25956ade"
   },
     "registries": [
       {
         "kind": "filesystem",
         "path": "CommonLibSSE-NG_fsreg",
-        "baseline": "2024-04-11",
+        "baseline": "2024-12-30",
         "packages": [
           "commonlibsse-ng"
         ]

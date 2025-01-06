@@ -278,7 +278,7 @@ namespace SpellHotbar::Input {
                                 {
                                     if (in_binding_menu())
                                     {
-                                        if (bEvent->IsDown()) {
+                                        if (!Bars::disable_menu_binding && bEvent->IsDown()) {
                                             handled = true;
                                             RE::TESForm* form = get_current_selected_spell_in_menu();
                                             if (form) {

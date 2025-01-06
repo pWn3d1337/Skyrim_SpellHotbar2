@@ -41,13 +41,13 @@ namespace SpellHotbar {
 
     constexpr std::string_view images_root_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\" };
     constexpr std::string_view texture_frame_bg_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\inv_bg.dds" };
+    constexpr std::string_view texture_cursor_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\cursor.dds" };
 
 
     void apply_imgui_style() {
         //set imgui style
 
         ImGui::StyleColorsDark();
-        ImGuiIO& io = ImGui::GetIO();
         ImGuiStyle& style = ImGui::GetStyle();
         ImVec4* colors = style.Colors;
 
@@ -93,6 +93,9 @@ namespace SpellHotbar {
 
         colors[ImGuiCol_TableRowBg] = color_black;
         colors[ImGuiCol_TableRowBgAlt] = color_very_dark_gray;
+
+        colors[ImGuiCol_SliderGrab] = color_light_gray;
+        colors[ImGuiCol_SliderGrabActive] = color_highlight;
     } 
 
 
@@ -117,21 +120,26 @@ bool TextureImage::load_dds(const std::string& path)
 
 void TextureImage::draw(float w, float h)
 {
-    ImGui::Image((void*)res, ImVec2(w, h));
+    ImGui::Image(get_res(), ImVec2(w, h));
 }
 
 void TextureImage::draw(float w, float h, float alpha)
 {
-    ImGui::Image((void*)res, ImVec2(w, h), ImVec2(0,0), ImVec2(1,1), ImVec4(1.0, 1.0, 1.0, alpha));
+    ImGui::Image(get_res(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1.0, 1.0, 1.0, alpha));
 }
 
 void TextureImage::draw_on_top(ImVec2 pos, float w, float h, ImU32 col) {
-    ImGui::GetWindowDrawList()->AddImage((void*)res, pos, ImVec2(pos.x + w, pos.y + h), ImVec2(0.0,0.0), ImVec2(1.0,1.0), col);
+    ImGui::GetWindowDrawList()->AddImage(get_res(), pos, ImVec2(pos.x + w, pos.y + h), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0), col);
 }
 
 void TextureImage::draw()
 {
     draw(static_cast<float>(width), static_cast<float>(height));
+}
+
+ImTextureID TextureImage::get_res()
+{
+    return (ImTextureID)res;
 }
 
 SubTextureImage::SubTextureImage(const TextureImage& other, ImVec2 uv0, ImVec2 uv1)
@@ -147,11 +155,11 @@ SubTextureImage::SubTextureImage(const TextureImage& other, ImVec2 uv0, ImVec2 u
 
 void SubTextureImage::draw(float w, float h)
 {
-    ImGui::Image((void*)res, ImVec2(w, h), uv0, uv1); }
-
+    ImGui::Image(get_res(), ImVec2(w, h), uv0, uv1);
+}
 void SubTextureImage::draw(float w, float h, float alpha)
 { 
-    ImGui::Image((void*)res, ImVec2(w, h), uv0, uv1, ImVec4(1.0f, 1.0f, 1.0f, alpha));
+    ImGui::Image(get_res(), ImVec2(w, h), uv0, uv1, ImVec4(1.0f, 1.0f, 1.0f, alpha));
 }
 
 void SubTextureImage::draw_with_scale(float w, float h, ImU32 col, float scale) {
@@ -161,20 +169,20 @@ void SubTextureImage::draw_with_scale(float w, float h, ImU32 col, float scale) 
     float dx = ((w * scale) - w) * 0.5f;
     float dy = ((h * scale) - h) * 0.5f;
 
-    ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
+    ImGui::GetWindowDrawList()->AddImage(get_res(), ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
                                          col);
 }
 
 void SubTextureImage::draw_on_top(ImVec2 pos, float w, float h, ImU32 col)
 {
-    ImGui::GetWindowDrawList()->AddImage((void*)res, pos, ImVec2(pos.x + w, pos.y + h), uv0, uv1, col);
+    ImGui::GetWindowDrawList()->AddImage(get_res(), pos, ImVec2(pos.x + w, pos.y + h), uv0, uv1, col);
 }
 
 void SubTextureImage::draw_with_scale_at(ImVec2 pos, float w, float h, ImU32 col, float scale) {
     float dx = ((w * scale) - w) * 0.5f;
     float dy = ((h * scale) - h) * 0.5f;
 
-    ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
+    ImGui::GetWindowDrawList()->AddImage(get_res(), ImVec2(pos.x - dx, pos.y - dy), ImVec2(pos.x + w + dx, pos.y + h + dy), uv0, uv1,
         col);
 }
 
@@ -191,7 +199,9 @@ std::unordered_map<GameData::DefaultIconType, SubTextureImage> default_icons;
 std::unordered_map<std::string, SubTextureImage> extra_icons;
 std::vector<SubTextureImage> cooldown_icons;
 std::vector<SubTextureImage> spellproc_overlay_icons;
-std::vector<SubTextureImage> frame_bg_textures;
+
+long frame_bg_texture_index{ -1 };
+long cursor_texture_index{ -1 };
 
 // nested templates <3 
 std::vector<std::tuple<std::string, std::vector<std::tuple<RE::FormID, std::string, SubTextureImage*>>>> editor_icon_list;
@@ -224,10 +234,16 @@ float SpellHotbar::RenderManager::scale_from_resolution(float scaled_value)
     return scaled_value / io.DisplaySize.y * 1080.0f;
 }
 
-void RenderManager::draw_custom_mouse_cursor() {
-    auto& io = ImGui::GetIO();
-    io.MouseDrawCursor = false;
-    ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), IM_COL32_WHITE, "<CURSOR");
+void RenderManager::draw_custom_mouse_cursor(float cursor_size) {
+    if (cursor_texture_index >= 0 && cursor_texture_index < loaded_textures.size()) {
+        auto& io = ImGui::GetIO();
+        io.MouseDrawCursor = false;
+        auto res = loaded_textures[cursor_texture_index].get_res();
+        float scale_factor = io.DisplaySize.y / 1080.0f;
+        ImVec2 p1 = ImGui::GetMousePos();
+        ImVec2 p2 = ImVec2(p1.x + cursor_size * scale_factor, p1.y + cursor_size * scale_factor);
+        ImGui::GetForegroundDrawList()->AddImage(res, p1, p2);
+    }
 }
 
 bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
@@ -656,26 +672,19 @@ void RenderManager::load_gamedata_dependant_resources() {
 
 void RenderManager::load_fixed_textures() {
     if (std::filesystem::exists(std::filesystem::path(texture_frame_bg_path))) {
-        TextureImage& main_tex = RenderManager::load_texture(std::string(texture_frame_bg_path));
-        frame_bg_textures.clear();
-        frame_bg_textures.reserve(9);
-
-        constexpr float one_third = 1.0f / 3.0f;
-        constexpr float two_third = 1.0f - one_third;
-        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, 0.0f), ImVec2(one_third, one_third)); //TOP Left
-        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, 0.0f), ImVec2(two_third, one_third)); //TOP Mid
-        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, 0.0f), ImVec2(1.0f, one_third)); //TOP Right
-
-        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, one_third), ImVec2(one_third, two_third)); //Center Left
-        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, one_third), ImVec2(two_third, two_third)); //Center Mid
-        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, one_third), ImVec2(1.0f, two_third)); //Center Right
-
-        frame_bg_textures.emplace_back(main_tex, ImVec2(0.0f, two_third), ImVec2(one_third, 1.0f)); //Bottom Left
-        frame_bg_textures.emplace_back(main_tex, ImVec2(one_third, two_third), ImVec2(two_third, 1.0f)); //Bottom Mid
-        frame_bg_textures.emplace_back(main_tex, ImVec2(two_third, two_third), ImVec2(1.0f, 1.0f)); //Bottom Right
+        RenderManager::load_texture(std::string(texture_frame_bg_path));
+        frame_bg_texture_index = static_cast<long>(loaded_textures.size()) - 1;
     }
     else {
         logger::error("Could not Load texture {}", texture_frame_bg_path);
+    }
+
+    if (std::filesystem::exists(std::filesystem::path(texture_cursor_path))) {
+        RenderManager::load_texture(std::string(texture_cursor_path));
+        cursor_texture_index = static_cast<long>(loaded_textures.size()) - 1;
+    }
+    else {
+        logger::error("Could not Load texture {}", texture_cursor_path);
     }
 }
 
@@ -693,11 +702,12 @@ void RenderManager::reload_resouces() {
     cooldown_icons.clear();
     spellproc_overlay_icons.clear();
 
+    cursor_texture_index = -1;
+    frame_bg_texture_index = -1;
     for (const auto& teximg : loaded_textures) {
         teximg.res->Release();
     }
     loaded_textures.clear();
-    frame_bg_textures.clear();
 
     logger::info("Reloading Resources...");
     GameData::load_keynames_file();
@@ -1084,57 +1094,50 @@ void RenderManager::draw_frame_bg_texture(float size_x, float size_y, float alph
     constexpr float two_third = 1.0f - one_third;
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
-    auto res = frame_bg_textures[0].res;
-
-    //logger::info("SizeX {}, SizeY {}", size_x, size_y);
+    if (frame_bg_texture_index < 0 || frame_bg_texture_index >= loaded_textures.size()) return;
+    auto res = loaded_textures[frame_bg_texture_index].get_res();
 
     if (size_x > tex_size && size_y > tex_size) {
         int num_segments_x = static_cast<int>(size_x / segment_size);
         int num_segments_y = static_cast<int>(size_y / segment_size);
-    
-        //logger::info("NumSegX {}, NumSegY {}", num_segments_x, num_segments_y);
-        //logger::info("Pos: {}, {}", pos.x, pos.y);
 
         auto col = ImColor(1.0f, 1.0f, 1.0f, alpha);
         for (int y = 0; y < num_segments_y; y++) for (int x=0; x < num_segments_x; x++)
         {
             ImVec2 p = ImVec2(pos.x + x * segment_size, pos.y + y * segment_size);
-            //logger::info("Pos.x:{}, x:{}, p.x{}", pos.x, x, p.x);
 
             if (y == 0 && x == 0) {
-                ImGui::GetWindowDrawList()->AddImage((void*)res, p, ImVec2(p.x + segment_size, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, p, ImVec2(p.x + segment_size, p.y + segment_size),
                     ImVec2(0.0f,0.0f), ImVec2(one_third, one_third), col);
             }
             else if (y == 0 && x == num_segments_x - 1) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x -segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(pos.x + size_x -segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
                     ImVec2(two_third, 0.0f), ImVec2(1.0f, one_third), col);
 
                 //draw partial segment
                 float partial_size = pos.x + size_x - segment_size - p.x;
                 float partial_percent = partial_size / segment_size * one_third;
 
-                //logger::info("Partial Xtop: {}, {}", partial_size, partial_percent);
-
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
                     ImVec2(one_third, 0.0f), ImVec2(one_third+partial_percent, one_third), col);
 
             }
             else if (y == num_segments_y - 1  && x == 0) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
                     ImVec2(0.0f, two_third), ImVec2(one_third, 1.0f), col);
 
                 //draw partial segment
                 float partial_size = pos.y + size_y - segment_size - p.y;
                 float partial_percent = partial_size / segment_size * one_third;
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
                     ImVec2(0.0f, one_third+partial_percent), ImVec2(one_third, two_third), col);
             }
             else if (y == num_segments_y - 1 && x == num_segments_x - 1) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size), ImVec2(pos.x + size_x, pos.y + size_y),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size), ImVec2(pos.x + size_x, pos.y + size_y),
                     ImVec2(two_third, two_third), ImVec2(1.0f, 1.0f), col);
 
                 //draw partial segments
@@ -1144,55 +1147,55 @@ void RenderManager::draw_frame_bg_texture(float size_x, float size_y, float alph
                 float partial_percent_y = partial_size_y / segment_size * one_third;
 
                 //top
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + partial_size_y),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + partial_size_y),
                     ImVec2(two_third, one_third+partial_percent_y), ImVec2(1.0f, two_third), col);
 
                 //left
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + partial_size_x, pos.y + size_y),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + partial_size_x, pos.y + size_y),
                     ImVec2(one_third+ partial_percent_x, two_third), ImVec2(two_third, 1.0f), col);
 
                 //top-left
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(pos.x + size_x - segment_size, pos.y + size_y - segment_size),
                     ImVec2(one_third + partial_percent_x, one_third + partial_percent_y), ImVec2(two_third, two_third), col);
 
             }
             else if (x == 0) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y+segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y+segment_size),
                     ImVec2(0.0f, one_third), ImVec2(one_third, two_third), col);
             }
             else if (x == num_segments_x - 1) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(pos.x + size_x - segment_size, p.y), ImVec2(pos.x + size_x, p.y + segment_size),
                     ImVec2(two_third, one_third), ImVec2(1.0f, two_third), col);
 
                 //draw partial segment
                 float partial_size = pos.x + size_x -segment_size - p.x;
                 float partial_percent = partial_size / segment_size * one_third;
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + partial_size, p.y + segment_size),
                     ImVec2(one_third, one_third), ImVec2(one_third + partial_percent, two_third), col);
             }
             else if (y == 0) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + segment_size),
                     ImVec2(one_third, 0.0f), ImVec2(two_third, one_third), col);
             }
             else if (y == num_segments_y - 1) {
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, pos.y + size_y - segment_size), ImVec2(p.x + segment_size, pos.y + size_y),
                     ImVec2(one_third, two_third), ImVec2(two_third, 1.0f), col);
 
                 //draw partial segment
                 float partial_size = pos.y + size_y -segment_size - p.y;
                 float partial_percent = partial_size / segment_size * one_third;
 
-                ImGui::GetWindowDrawList()->AddImage((void*)res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
+                ImGui::GetWindowDrawList()->AddImage(res, ImVec2(p.x, p.y), ImVec2(p.x + segment_size, p.y + partial_size),
                     ImVec2(one_third, one_third + partial_percent), ImVec2(two_third, two_third), col);
             }
             else
             {
-                ImGui::GetWindowDrawList()->AddImage((void*)res, p, ImVec2(p.x+segment_size, p.y+segment_size),
+                ImGui::GetWindowDrawList()->AddImage(res, p, ImVec2(p.x+segment_size, p.y+segment_size),
                     ImVec2(one_third, one_third), ImVec2(two_third, two_third), col);
             }
         
@@ -1201,6 +1204,19 @@ void RenderManager::draw_frame_bg_texture(float size_x, float size_y, float alph
     }
 }
 
+ImU32 RenderManager::get_skill_color(const RE::TESForm* form) {
+    ImU32 color = IM_COL32_WHITE;
+    if (form != nullptr && form->GetFormType() == RE::FormType::AlchemyItem && form->IsDynamicForm()) {
+        auto* alch_item = form->As<RE::AlchemyItem>();
+        if (alch_item) {
+            auto* effect = alch_item->GetCostliestEffectItem();
+            if (effect) {
+                color = Hotbar::calculate_potion_color(effect);
+            }
+        }
+    }
+    return color;
+}
 
 bool RenderManager::draw_skill(RE::FormID formID, int size, ImU32 col) {
     constexpr float scale = 1.0f;
@@ -1214,12 +1230,12 @@ bool RenderManager::draw_skill(RE::FormID formID, int size, ImU32 col) {
     }
 }
 
-bool RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size)
+bool RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size, ImU32 col)
 {
     SubTextureImage* img = get_tex_for_skill_internal(formID);
     if (img != nullptr) {
-        ImGui::GetWindowDrawList()->AddImage((void*)img->res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img->uv0, img->uv1,
-            ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+        ImGui::GetWindowDrawList()->AddImage(img->get_res(), ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size),
+            img->uv0, img->uv1, col);
 
         draw_slot_overlay(pos, size);
         return true;
@@ -1229,24 +1245,23 @@ bool RenderManager::draw_skill_in_editor(RE::FormID formID, ImVec2 pos, int size
     }
 }
 
-void RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size)
+void RenderManager::draw_default_icon_in_editor(GameData::DefaultIconType icon_type, ImVec2 pos, int size, ImU32 col)
 {
     if (default_icons.contains(icon_type)) {
         auto & img = default_icons.at(icon_type);
-        ImGui::GetWindowDrawList()->AddImage((void*)img.res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img.uv0, img.uv1,
-            ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+        ImGui::GetWindowDrawList()->AddImage(img.get_res(), ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size),
+            img.uv0, img.uv1, col);
 
     }
     draw_slot_overlay(pos, size);
 }
 
-void RenderManager::draw_extra_icon_in_editor(const std::string& key, ImVec2 pos, int size)
+void RenderManager::draw_extra_icon_in_editor(const std::string& key, ImVec2 pos, int size, ImU32 col)
 {
     if (extra_icons.contains(key)) {
         auto& img = extra_icons.at(key);
-        ImGui::GetWindowDrawList()->AddImage((void*)img.res, ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size), img.uv0, img.uv1,
-            ImColor(1.0f, 1.0f, 1.0f, 1.0f));
-
+        ImGui::GetWindowDrawList()->AddImage(img.get_res(), ImVec2(pos.x, pos.y), ImVec2(pos.x + size, pos.y + size),
+            img.uv0, img.uv1, col);
     }
     draw_slot_overlay(pos, size);
 }
@@ -1529,7 +1544,7 @@ void draw_drag_menu() {
         drag_frame_initialized = true;
     }
 
-    ImGui::SetItemUsingMouseWheel();    
+    ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY);
 
     float constexpr scale_diff = 0.05f;
 
@@ -1583,6 +1598,113 @@ void draw_drag_menu() {
             highlight_isred, alpha, 0.0f, 0);
     }
     BarDraggingConfigWindow::draw_info();
+}
+
+std::string RenderManager::get_skill_tooltip(const RE::TESForm* item) {
+    std::string desc{ "" };
+    if (item->GetFormType() == RE::FormType::Spell || item->GetFormType() == RE::FormType::Scroll)
+    {
+        const RE::SpellItem* spell = item->As<RE::SpellItem>();
+        if (spell != nullptr) {
+            RE::BSString buffer = "";
+            RE::SpellItem* sp2 = const_cast<RE::SpellItem*>(spell);
+            sp2->GetDescription(buffer, nullptr);
+            std::stringstream desc_buf;
+            bool first{ true };
+
+            std::string b = buffer.c_str();
+            if (!b.empty()) {
+                desc_buf << b;
+                first = false;
+            }
+            for (uint32_t e = 0; e < spell->effects.size(); e++) {
+                auto eff = spell->effects[e];
+                if (eff != nullptr && eff->baseEffect != nullptr) {
+                    std::string eff_desc = eff->baseEffect->magicItemDescription.c_str();
+                    if (!eff_desc.empty()) {
+                        uint32_t dur = eff->GetDuration();
+                        float mag = eff->GetMagnitude();
+                        std::string eff_text = GameData::strip_tooltip(eff_desc, mag, dur);
+                        if (!first) {
+                            desc_buf << "\n";
+                        }
+                        else {
+                            first = false;
+                        }
+                        desc_buf << eff_text;
+                    }
+                }
+            }
+            desc = desc_buf.str();
+        }
+    }
+    else if (item->GetFormType() == RE::FormType::Shout) {
+        const RE::TESShout* shout = item->As<RE::TESShout>();
+        if (shout != nullptr) {
+            RE::BSString buffer = "";
+            RE::TESShout* sh2 = const_cast<RE::TESShout*>(shout);
+            sh2->GetDescription(buffer, nullptr);
+            desc = GameData::strip_tooltip(std::string(buffer.c_str()), 0.0f, 0);
+        }
+    }
+    else if (item->GetFormType() == RE::FormType::AlchemyItem) {
+        const RE::AlchemyItem* alch = item->As<RE::AlchemyItem>();
+        std::stringstream desc_buf;
+        bool first{ true };
+        if (alch != nullptr) {
+            for (uint32_t e = 0; e < alch->effects.size(); e++) {
+                auto eff = alch->effects[e];
+                if (eff != nullptr && eff->baseEffect != nullptr) {
+                    std::string eff_desc = eff->baseEffect->magicItemDescription.c_str();
+                    if (!eff_desc.empty()) {
+                        if (!first) {
+                            desc_buf << "\n";
+                        }
+                        else {
+                            first = false;
+                        }
+                        uint32_t dur = eff->GetDuration();
+                        float mag = eff->GetMagnitude();
+                        std::string fixed_desc = GameData::strip_tooltip(eff_desc, mag, dur);
+
+                        desc_buf << fixed_desc;
+                    }
+                }
+            }
+            desc = desc_buf.str();
+        }
+    }
+    return desc;
+}
+
+void RenderManager::show_skill_tooltip(const RE::TESForm* item, float offset_x) {
+    static RE::FormID last_tooltip = 0;
+    static std::string desc = "";
+
+    if (ImGui::BeginItemTooltip())
+    {
+        float scalef = ImGui::GetIO().DisplaySize.y / 1080.0f;
+        ImVec2 left_offset = ImVec2(offset_x * scalef, 0);
+
+        ImGui::Dummy(left_offset); ImGui::SameLine();
+        RenderManager::set_large_font();
+        ImGui::Text(item->GetName());
+        RenderManager::revert_font();
+
+        if (last_tooltip != item->GetFormID()) {
+            desc = RenderManager::get_skill_tooltip(item);
+        }
+        last_tooltip = item->GetFormID();
+
+        if (!desc.empty()) {
+            ImGui::Dummy(left_offset); ImGui::SameLine();
+            float text_wrap = ImGui::GetIO().DisplaySize.x * 0.35f;
+            ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + text_wrap);
+            ImGui::TextUnformatted(desc.c_str());
+            ImGui::PopTextWrapPos();
+        }
+        ImGui::EndTooltip();
+    }
 }
 
 //Draw Custom stuff 
@@ -1669,68 +1791,76 @@ void RenderManager::draw() {
                 Bars::menu_bar_id = Bars::getCurrentHotbar_ingame();
             }
             if (!Bars::disable_menu_rendering) {
-
-                // draw hotbar
+                
                 static constexpr ImGuiWindowFlags window_flag =
                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;  // ImGuiWindowFlags_NoBackground
 
-                bool render_icons = !Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown();
+                if (!Bars::disable_menu_binding) {
+                    // draw hotbar
 
-                auto [screen_size_x, screen_size_y, window_width] = calculate_menu_window_size(render_icons);
+                    bool render_icons = !Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown();
 
-                ImGui::Begin("SpellHotbar", nullptr, window_flag);
-                if (Bars::hotbars.contains(Bars::menu_bar_id)) {
-                    auto& bar = Bars::hotbars.at(Bars::menu_bar_id);
+                    auto [screen_size_x, screen_size_y, window_width] = calculate_menu_window_size(render_icons);
 
-                    auto& prev_bar = Bars::hotbars.at(SpellHotbar::Bars::getPreviousMenuBar(SpellHotbar::Bars::menu_bar_id));
-                    auto& next_bar = Bars::hotbars.at(SpellHotbar::Bars::getNextMenuBar(SpellHotbar::Bars::menu_bar_id));
+                    ImGui::Begin("SpellHotbar", nullptr, window_flag);
+                    if (Bars::hotbars.contains(Bars::menu_bar_id)) {
+                        auto& bar = Bars::hotbars.at(Bars::menu_bar_id);
 
-                    ImGui::PushFont(font_symbols);
-                    ImGui::Text("6");
-                    ImGui::PopFont();
-                    ImGui::SameLine();
+                        auto& prev_bar = Bars::hotbars.at(SpellHotbar::Bars::getPreviousMenuBar(SpellHotbar::Bars::menu_bar_id));
+                        auto& next_bar = Bars::hotbars.at(SpellHotbar::Bars::getNextMenuBar(SpellHotbar::Bars::menu_bar_id));
 
-                    bool table_ok = ImGui::BeginTable("SpellHotbarNavigation", 3, 0, ImVec2(window_width * 0.85f, 0.0f));
-                    if (table_ok) {
-                        ImGui::TableNextColumn();
-
-                        ImGui::PushFont(font_text);
-                        ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, ImColor(0, 0, 0, 0).Value);
-                        ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(192, 192, 192).Value);
-
-                        ImGui::Button(prev_bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
-                        ImGui::TableNextColumn();
-
-                        ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(255, 255, 255).Value);
-                        ImGui::Button(bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
-                        ImGui::PopStyleColor();
-                        ImGui::TableNextColumn();
-
-                        ImGui::Button(next_bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
-
-                        ImGui::PopStyleColor();
-                        ImGui::PopStyleColor();
+                        ImGui::PushFont(font_symbols);
+                        ImGui::Text("6");
                         ImGui::PopFont();
-                        ImGui::EndTable();
+                        ImGui::SameLine();
 
-                    }
-                    else {
-                        logger::trace("Error Rendering Table");
-                    }
-                    ImGui::SameLine();
-                    ImGui::PushFont(font_symbols);
-                    ImGui::Text("7");
-                    ImGui::PopFont();
+                        bool table_ok = ImGui::BeginTable("SpellHotbarNavigation", 3, 0, ImVec2(window_width * 0.85f, 0.0f));
+                        if (table_ok) {
+                            ImGui::TableNextColumn();
 
-                    if (render_icons) {
+                            ImGui::PushFont(font_text);
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, ImColor(0, 0, 0, 0).Value);
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(192, 192, 192).Value);
 
-                        bar.draw_in_menu(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), mod);
+                            ImGui::Button(prev_bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
+                            ImGui::TableNextColumn();
+
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(255, 255, 255).Value);
+                            ImGui::Button(bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
+                            ImGui::PopStyleColor();
+                            ImGui::TableNextColumn();
+
+                            ImGui::Button(next_bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+                            ImGui::PopStyleColor();
+                            ImGui::PopStyleColor();
+                            ImGui::PopFont();
+                            ImGui::EndTable();
+
+                        }
+                        ImGui::SameLine();
+                        ImGui::PushFont(font_symbols);
+                        ImGui::Text("7");
+                        ImGui::PopFont();
+
+                        if (render_icons) {
+
+                            bar.draw_in_menu(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), mod);
+                        }
                     }
+                    ImGui::End();
                 }
                 else {
-                    logger::error("Unknown Bar: {}", Bars::menu_bar_id);
+                    //Draw Hint to open Bind Menu
+                    if (Input::key_open_advanced_bind_menu.isValidBound()) {
+                        calculate_menu_window_size(false);
+                        ImGui::Begin("SpellHotbar", nullptr, window_flag);
+                        int code = Input::key_open_advanced_bind_menu.get_dx_scancode();
+                        std::string hint_text = "Press '" + GameData::get_key_text_long(code) + "' to open SpellHotbar Binding Menu";
+                        ImGui::TextUnformatted(hint_text.c_str());
+                        ImGui::End();
+                    }
                 }
-                ImGui::End();
             }
 
         } else if (favMenu && GameData::hasFavMenuSlotBinding()) {
@@ -1825,10 +1955,7 @@ void RenderManager::draw() {
 
 
 
-                } else {
-                    logger::error("Unknown Bar: {}", bar_id);
                 }
-
                 ImGui::End();
             }
 

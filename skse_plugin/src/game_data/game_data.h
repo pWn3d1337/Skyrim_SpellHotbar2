@@ -100,7 +100,13 @@ namespace SpellHotbar::GameData {
         GENERIC_POISON_LARGE,
         GENERIC_FOOD,
         GENERIC_FOOD_SOUP,
-        GENERIC_FOOD_DRINK
+        GENERIC_FOOD_DRINK,
+        TAB_ALL,
+        TAB_SPELLS,
+        TAB_SCROLLS,
+        TAB_POTIONS,
+        TAB_POISONS,
+        TAB_FOOD
     };
 
     struct Gametime_cooldown_value {
@@ -322,7 +328,7 @@ namespace SpellHotbar::GameData {
     /*
     * Called when a spell is casted to handle some mod compatiblity things
     */
-    void casted_spell_mod_callback(RE::SpellItem* spell, bool spell_proc);
+    void casted_spell_mod_callback(RE::SpellItem* spell, bool dual_cast, bool spell_proc);
 
     /**
     * Get how many spells are allowed to be casted, handles compatibility with mods
@@ -372,5 +378,13 @@ namespace SpellHotbar::GameData {
     void add_player_owned_bindable_items(RE::PlayerCharacter* pc, std::vector<RE::TESForm*>& list_of_skills);
 
     std::string get_modifier_text(key_modifier mod);
+    std::string get_modifier_text_long(key_modifier mod);
+
+    std::string get_key_text_long(int code);
+
+    std::string strip_tooltip(const std::string& input, float magnitude, uint32_t duration);
+
+    //TODO remove
+    void print_perks(RE::PlayerCharacter* pc);
 }
 

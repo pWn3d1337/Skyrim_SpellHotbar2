@@ -40,6 +40,7 @@ namespace SpellHotbar::Bars {
     bar_show_mode bar_show_setting_werewolf;
     bool use_default_bar_when_sheathed;
     bool disable_menu_rendering;
+    bool disable_menu_binding;
     anchor_point bar_anchor_point = anchor_point::BOTTOM;
 
     uint8_t bar_row_len = 12U;
@@ -196,6 +197,7 @@ namespace SpellHotbar::Bars {
 
         use_default_bar_when_sheathed = false;
         disable_menu_rendering = false;
+        disable_menu_binding = false;
 
         add_bars(MAIN_BAR);
         add_bars(MELEE_BAR, MAIN_BAR);

@@ -1,0 +1,45 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Dark Sun	0x80B		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Creeping Terror	0x28A0		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Crushing Darkness	0x2E30	0x14398	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Crushing Darkness	0x2E32		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadowbolt	0x2E2A	0x143AC	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Shadowbolt	0x2E2C	0x14397	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Shadowbolt	0x2E2F	0x143AB	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10004
+Life Tap	0x28AC		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Rend	0x28AB	0x1439C	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10002
+Sear	0x1DD3		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Sear	0x2E26		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Sear	0x2E27		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Sear	0x2E28		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse of Exhaustion	0xA161	0x14399	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse of Exhaustion	0xF0AB		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse of Fragility	0xC908	0x1439D	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse of Fragility	0xF0AC		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse of Decay	0xC909	0x1439F	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Consuming Shadows	0x745F		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadowform	0x1CAAB	0x1D016	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Hex Rune	0x1F073	0x2C4E4	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Withering Aura	0x2E35		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Mind Blast	0x21B9D	0x2C4E2	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Mind Control	0x22103	0x2C4E1	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Nighteye	0x46A40		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Darkness	0x2D511	0x47A71	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Umbra' Keth	0x32619	0x47A72	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Shadow Enchantments	0x47A7B		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Choke	0x4CB49		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Shadow Atronach	0x4E0E6	0x4E64E	ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Shadow Atronach	0x4F120		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Conjure Shadow Atronach	0x4F121		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Drain Soul Novice	0x51C54		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Drain Soul Apprentice	0x51C57		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Drain Soul Adept	0x51C58		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Drain Soul Expert	0x51C5A		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Mastery 1	0x521C8		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Shadow Mastery 2	0x521C9		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Essence Drain	0x521CB		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Despair	0x521CD		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Agony	0x521CF		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Torment	0x521D5		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Curse Mastery	0x521D1		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1
+Mind Shattering	0x521D3		ShadowSpellPackage.esp	ConjurationSummon	-1	-1	-1	-1	-1

@@ -1,0 +1,23 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Force Dominate Mind	0x000821		starwarsspellpack.esp	RestorationGold	-1	-1	-1	-1	-1
+Force Drain	0x000832		starwarsspellpack.esp	IllusionRed	-1	-1	-1	-1	10004
+Force Flame	0x000828		starwarsspellpack.esp	DestructionFire	-1	-1	-1	-1	-1
+Force Mend	0x00082E		starwarsspellpack.esp	RestorationGold	-1	-1	-1	-1	-1
+Force Oneness	0x00082B		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force Plague	0x000825		starwarsspellpack.esp	RestorationGold	-1	-1	-1	-1	-1
+Force Push	0x000820		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	10005
+Force Repulse	0x000824		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force Speedburst	0x000829		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force Stasis	0x000833		starwarsspellpack.esp	IllusionGreen	-1	-1	-1	-1	10004
+Force Stasis wave	0x000827		starwarsspellpack.esp	IllusionGreen	-1	-1	-1	-1	-1
+Force Storm	0x000823		starwarsspellpack.esp	DestructionShock	-1	-1	-1	-1	10002
+Force Summon Technobeast	0x000826		starwarsspellpack.esp	ConjurationSummon	-1	-1	-1	-1	10003
+Force Tutaminis	0x00082A		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Technobeast's Shields	0x00082F		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force Augmentation	0x000831		starwarsspellpack.esp	RestorationGold	-1	-1	-1	-1	-1
+Force Armor	0x000822		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	10002
+Force Heal	0x000830		starwarsspellpack.esp	RestorationGold	-1	-1	-1	-1	-1
+Jedi Skills	0x00082D		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force camo	0x00082C		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1
+Force disarm	0x00081F		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	10005
+Starkiller Repulse	0x000855		starwarsspellpack.esp	RestorationBlue	-1	-1	-1	-1	-1

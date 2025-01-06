@@ -6,7 +6,7 @@
 namespace SpellHotbar::Rendering {
 
 
-void GuiTabButton::draw(const char* id, int index, GameData::DefaultIconType icon_type, int icon_size, int & out_index, bool & changed)
+void GuiTabButton::draw(const char* id, int index, GameData::DefaultIconType icon_type, int icon_size, int & out_index, bool & changed, const char* tooltip_text)
 {
     bool selected = index == out_index;
 	ImVec2 b_size(static_cast<float>(icon_size), static_cast<float>(icon_size));
@@ -29,6 +29,17 @@ void GuiTabButton::draw(const char* id, int index, GameData::DefaultIconType ico
     }
     if (button_hovered) {
         RenderManager::draw_highlight_overlay(p, icon_size, ImColor(127, 127, 255));
+
+        float scalef = ImGui::GetIO().DisplaySize.y / 1080.0f;
+        ImVec2 left_offset = ImVec2(32 * scalef, 0);
+        if (tooltip_text != nullptr && ImGui::BeginItemTooltip())
+        {
+            ImGui::Dummy(left_offset); ImGui::SameLine();
+            RenderManager::set_large_font();
+            ImGui::TextUnformatted(tooltip_text);
+            RenderManager::revert_font();
+            ImGui::EndTooltip();
+        }
     }
 }
 }

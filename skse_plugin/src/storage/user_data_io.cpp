@@ -81,19 +81,20 @@ namespace SpellHotbar::Storage::IO {
             int keycode = get_int_or_default(d, "keybind." + std::to_string(i), -1);
             Input::rebind_key(i, keycode, false);
         }
-        Input::rebind_key(12, get_int_or_default(d, "keybind.next", -1), false);
-        Input::rebind_key(13, get_int_or_default(d, "keybind.prev", -1), false);
+        Input::rebind_key(Input::keybind_id::ui_next, get_int_or_default(d, "keybind.next", -1), false);
+        Input::rebind_key(Input::keybind_id::ui_prev, get_int_or_default(d, "keybind.prev", -1), false);
 
-        Input::rebind_key(14, get_int_or_default(d, "keybind.modifier.1", -1), false);
-        Input::rebind_key(15, get_int_or_default(d, "keybind.modifier.2", -1), false);
-        Input::rebind_key(16, get_int_or_default(d, "keybind.modifier.3", -1), false);
+        Input::rebind_key(Input::keybind_id::modifier_1, get_int_or_default(d, "keybind.modifier.1", -1), false);
+        Input::rebind_key(Input::keybind_id::modifier_2, get_int_or_default(d, "keybind.modifier.2", -1), false);
+        Input::rebind_key(Input::keybind_id::modifier_3, get_int_or_default(d, "keybind.modifier.3", -1), false);
 
-        Input::rebind_key(17, get_int_or_default(d, "keybind.modifier.dual_cast", -1), false);
-        Input::rebind_key(18, get_int_or_default(d, "keybind.modifier.show_bar", -1), false);
+        Input::rebind_key(Input::keybind_id::dual_casting_mod, get_int_or_default(d, "keybind.modifier.dual_cast", -1), false);
+        Input::rebind_key(Input::keybind_id::show_bar_mod, get_int_or_default(d, "keybind.modifier.show_bar", -1), false);
         
-        Input::rebind_key(19, get_int_or_default(d, "keybind.oblivion_mode.cast", -1), false);
-        Input::rebind_key(20, get_int_or_default(d, "keybind.oblivion_mode.potion", -1), false);
-        Input::rebind_key(21, get_int_or_default(d, "keybind.oblivion_mode.modifier_show_bar", -1), false);
+        Input::rebind_key(Input::keybind_id::oblivion_cast, get_int_or_default(d, "keybind.oblivion_mode.cast", -1), false);
+        Input::rebind_key(Input::keybind_id::oblivion_potion, get_int_or_default(d, "keybind.oblivion_mode.potion", -1), false);
+        Input::rebind_key(Input::keybind_id::oblivion_show_bar_mod, get_int_or_default(d, "keybind.oblivion_mode.modifier_show_bar", -1), false);
+        Input::rebind_key(Input::keybind_id::open_advanced_bind_menu, get_int_or_default(d, "keybind.open_advanced_bind_menu", -1), false);
 
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
 
@@ -115,6 +116,7 @@ namespace SpellHotbar::Storage::IO {
 
         Bars::use_default_bar_when_sheathed = get_int_or_default(d, "settings.use_default_bar_when_sheathed", 0) != 0;
         Bars::disable_menu_rendering = get_int_or_default(d, "settings.disable_menu_rendering", 0) != 0;
+        Bars::disable_menu_binding = get_int_or_default(d, "settings.disable_menu_binding", 0) != 0;
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
 
         GameData::potion_gcd = get_float_or_default(d, "settings.potion_gcd", 1.0f);
@@ -261,16 +263,17 @@ namespace SpellHotbar::Storage::IO {
 
             add_int(d, "keybind." + std::to_string(i), Input::get_keybind(i));
         }
-        add_int(d, "keybind.next", Input::get_keybind(12));
-        add_int(d, "keybind.prev", Input::get_keybind(13));
-        add_int(d, "keybind.modifier.1", Input::get_keybind(14));
-        add_int(d, "keybind.modifier.2", Input::get_keybind(15));
-        add_int(d, "keybind.modifier.3", Input::get_keybind(16));
-        add_int(d, "keybind.modifier.dual_cast", Input::get_keybind(17));
-        add_int(d, "keybind.modifier.show_bar", Input::get_keybind(18));
-        add_int(d, "keybind.oblivion_mode.cast", Input::get_keybind(19));
-        add_int(d, "keybind.oblivion_mode.potion", Input::get_keybind(20));
-        add_int(d, "keybind.oblivion_mode.modifier_show_bar", Input::get_keybind(21));
+        add_int(d, "keybind.next", Input::get_keybind(Input::keybind_id::ui_next));
+        add_int(d, "keybind.prev", Input::get_keybind(Input::keybind_id::ui_prev));
+        add_int(d, "keybind.modifier.1", Input::get_keybind(Input::keybind_id::modifier_1));
+        add_int(d, "keybind.modifier.2", Input::get_keybind(Input::keybind_id::modifier_2));
+        add_int(d, "keybind.modifier.3", Input::get_keybind(Input::keybind_id::modifier_3));
+        add_int(d, "keybind.modifier.dual_cast", Input::get_keybind(Input::keybind_id::dual_casting_mod));
+        add_int(d, "keybind.modifier.show_bar", Input::get_keybind(Input::keybind_id::show_bar_mod));
+        add_int(d, "keybind.oblivion_mode.cast", Input::get_keybind(Input::keybind_id::oblivion_cast));
+        add_int(d, "keybind.oblivion_mode.potion", Input::get_keybind(Input::keybind_id::oblivion_potion));
+        add_int(d, "keybind.oblivion_mode.modifier_show_bar", Input::get_keybind(Input::keybind_id::oblivion_show_bar_mod));
+        add_int(d, "keybind.open_advanced_bind_menu", Input::get_keybind(Input::keybind_id::open_advanced_bind_menu));
 
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
         add_int(d, "settings.number_of_slots", static_cast<int>(Bars::barsize));
@@ -287,6 +290,7 @@ namespace SpellHotbar::Storage::IO {
 
         add_int(d, "settings.use_default_bar_when_sheathed", Bars::use_default_bar_when_sheathed ? 1 : 0);
         add_int(d, "settings.disable_menu_rendering", Bars::disable_menu_rendering ? 1 : 0);
+        add_int(d, "settings.disable_menu_binding", Bars::disable_menu_binding ? 1 : 0);
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
 
         add_float(d, "settings.potion_gcd", GameData::potion_gcd);
