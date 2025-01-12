@@ -1,6 +1,7 @@
 #include "keynames_csv_loader.h"
 #include "game_data.h"
 #include "csv_loader.h"
+#include "rendering/render_manager.h"
 
 namespace SpellHotbar::KeyNamesCSVLoader {
 
@@ -8,7 +9,7 @@ bool is_keynames_file(rapidcsv::Document& doc) {
     std::vector<std::string> columns = doc.GetColumnNames();
 
     // check required column names
-    return csv::has_column(columns, "Code") && csv::has_column(columns, "Text") && csv::has_column(columns, "Short");
+    return csv::has_column(columns, "Code") && csv::has_column(columns, "Text") && csv::has_column(columns, "Short") && csv::has_column(columns, "IconPath");
 }
 
 void load_keynames(const std::string & keynames_csv)
@@ -33,7 +34,11 @@ void load_keynames(const std::string & keynames_csv)
                 std::string text = doc.GetCell<std::string>("Text", i);
                 std::string text_short = doc.GetCell<std::string>("Short", i);
 
-                GameData::key_names.emplace(code, std::make_pair(text, text_short));
+                std::string icon_path = doc.GetCell<std::string>("IconPath", i);
+
+                int tex_idx = RenderManager::load_texture_return_index("./data/" + icon_path);
+
+                GameData::key_names.emplace(code, GameData::Key_Data(text_short, text, tex_idx));
             }
             catch (const std::exception& e) {
                 std::string msg = e.what();

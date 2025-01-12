@@ -137,6 +137,14 @@ namespace SpellHotbar::GameData {
         bool inherited;
     };
 
+    struct Key_Data {
+        std::string short_text;
+        std::string long_text;
+        int texture_index;
+
+        Key_Data(const std::string & short_text, const std::string& long_text, int texture_index);
+    };
+
     extern RE::TESGlobal* global_animation_type;
     extern RE::TESGlobal* global_casting_source;
     extern RE::TESGlobal* global_vampire_lord_equip_mode;
@@ -182,7 +190,7 @@ namespace SpellHotbar::GameData {
     extern std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     extern std::vector<std::tuple<RE::BGSArtObject*, RE::BGSArtObject*, const std::string>> spell_casteffect_art;
 
-    extern std::unordered_map<int, std::pair<std::string, std::string>> key_names;
+    extern std::unordered_map<int, Key_Data> key_names;
 
     extern std::unordered_map<int, std::string> animation_names;
 
@@ -212,6 +220,7 @@ namespace SpellHotbar::GameData {
     int get_spell_keybind(int slot_index);
 
     std::string get_keybind_text(int slot_index, key_modifier mod);
+    std::tuple<int,int> get_keybind_icon_index(int slot_index, key_modifier mod);
 
     inline RE::TESForm* get_form_from_file(const uint32_t formID, const std::string_view& pluginFile)
     {

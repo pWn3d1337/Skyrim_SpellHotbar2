@@ -114,6 +114,7 @@ Event OnPageReset(string page)
 		oid_spellkeybinds[13] = AddKeyMapOption("Previous Bar", SpellHotbar.getKeyBind(13))
 		oid_spellkeybinds[12] = AddKeyMapOption("Next Bar", SpellHotbar.getKeyBind(12))
 		oid_spellkeybinds[22] = AddKeyMapOption("Open Binding Menu", SpellHotbar.getKeyBind(22))
+		AddEmptyOption()
 
 		AddHeaderOption("Modifier Bindings")
         AddHeaderOption("")

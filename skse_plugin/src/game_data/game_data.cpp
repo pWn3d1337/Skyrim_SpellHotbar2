@@ -77,6 +77,7 @@ namespace SpellHotbar::GameData {
     RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup = nullptr;
 
     RE::SpellItem* werewolf_change_power = nullptr;
+    RE::BGSListForm* formlist_vampire_lord_powers = nullptr;
 
     std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
     std::unordered_map<RE::FormID, User_custom_spelldata> user_spell_cast_info;
@@ -90,7 +91,7 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<RE::FormID, Transformation_data> custom_transformation_data;
 
-    std::unordered_map<int, std::pair<std::string, std::string>> key_names;
+    std::unordered_map<int, Key_Data> key_names;
 
     std::unordered_map<int, std::string> animation_names;
 
@@ -324,7 +325,7 @@ namespace SpellHotbar::GameData {
     void load_form_from_game(RE::FormID formId, const std::string_view & plugin, T** out_ptr, const std::string_view & name, RE::FormType type, bool log_error = true) {
         auto form = SpellHotbar::GameData::get_form_from_file(formId, plugin);
 
-        if (form && form->GetFormType() == type) {
+        if (form != nullptr && form->GetFormType() == type) {
             *out_ptr = form->As<T>();
         }
         else if(log_error) {
@@ -426,6 +427,8 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0xB6435, "Skyrim.esm", &sound_ITMPotionUse, "ITMPostionUse", RE::FormType::SoundRecord);
 
         load_form_from_game(0x092C48, "Skyrim.esm", &werewolf_change_power, "Beast Form", RE::FormType::Spell);
+
+        load_form_from_game(0x019AD9, "Dawnguard.esm", &formlist_vampire_lord_powers, "DLC1VampireSpellsPowers", RE::FormType::FormList);
 
         load_keynames_file();
 
@@ -551,13 +554,13 @@ namespace SpellHotbar::GameData {
         std::string key_text;
         switch (mod) {
         case SpellHotbar::key_modifier::ctrl:
-            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).second + "]";
+            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).short_text + "]";
             break;
         case SpellHotbar::key_modifier::shift:
-            key_text = "Mod [" +key_names.at(Input::mod_2.get_dx_scancode()).second + "]";
+            key_text = "Mod [" +key_names.at(Input::mod_2.get_dx_scancode()).short_text + "]";
             break;
         case SpellHotbar::key_modifier::alt:
-            key_text = "Mod [" +key_names.at(Input::mod_3.get_dx_scancode()).second + "]";
+            key_text = "Mod [" +key_names.at(Input::mod_3.get_dx_scancode()).short_text + "]";
             break;
         default:
             key_text= "No Mod";
@@ -570,13 +573,13 @@ namespace SpellHotbar::GameData {
         std::string key_text;
         switch (mod) {
         case SpellHotbar::key_modifier::ctrl:
-            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).first + "]";
+            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).long_text + "]";
             break;
         case SpellHotbar::key_modifier::shift:
-            key_text = "Mod [" + key_names.at(Input::mod_2.get_dx_scancode()).first + "]";
+            key_text = "Mod [" + key_names.at(Input::mod_2.get_dx_scancode()).long_text + "]";
             break;
         case SpellHotbar::key_modifier::alt:
-            key_text = "Mod [" + key_names.at(Input::mod_3.get_dx_scancode()).first + "]";
+            key_text = "Mod [" + key_names.at(Input::mod_3.get_dx_scancode()).long_text + "]";
             break;
         default:
             key_text = "No Mod";
@@ -589,7 +592,7 @@ namespace SpellHotbar::GameData {
     {
         std::string key_name;
         if (key_names.contains(code)) {
-            return key_names.at(code).first;
+            return key_names.at(code).long_text;
         }
         else {
             key_name= "Unknown Key";
@@ -654,17 +657,17 @@ namespace SpellHotbar::GameData {
 
         std::string key_text;
         if (key_names.contains(keybind)) {
-            key_text = key_names.at(keybind).first;
+            key_text = key_names.at(keybind).long_text;
 
             switch (mod) {
                 case SpellHotbar::key_modifier::ctrl:
-                    key_text = key_names.at(Input::mod_1.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_1.get_dx_scancode()).short_text + "-" + key_text;
                     break;
                 case SpellHotbar::key_modifier::shift:
-                    key_text = key_names.at(Input::mod_2.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_2.get_dx_scancode()).short_text + "-" + key_text;
                     break;
                 case SpellHotbar::key_modifier::alt:
-                    key_text = key_names.at(Input::mod_3.get_dx_scancode()).second + "-" + key_text;
+                    key_text = key_names.at(Input::mod_3.get_dx_scancode()).short_text + "-" + key_text;
                     break;
                 default:
                     break;
@@ -674,6 +677,33 @@ namespace SpellHotbar::GameData {
             key_text = "??";
         }
         return key_text;
+    }
+
+    std::tuple<int, int> get_keybind_icon_index(int slot_index, key_modifier mod)
+    {
+        int icon_main{ -1 };
+        int icon_mod{ -1 };
+        int keybind = get_spell_keybind(slot_index);
+
+        if (key_names.contains(keybind)) {
+            icon_main = key_names.at(keybind).texture_index;
+
+            switch (mod) {
+            case SpellHotbar::key_modifier::ctrl:
+                icon_mod = key_names.at(Input::mod_1.get_dx_scancode()).texture_index;
+                break;
+            case SpellHotbar::key_modifier::shift:
+                icon_mod = key_names.at(Input::mod_2.get_dx_scancode()).texture_index;
+                break;
+            case SpellHotbar::key_modifier::alt:
+                icon_mod = key_names.at(Input::mod_3.get_dx_scancode()).texture_index;
+                break;
+            default:
+                break;
+            }
+
+        }
+        return std::make_tuple(icon_main, icon_mod);
     }
 
     EquippedType getPlayerEquipmentType()
@@ -1917,38 +1947,52 @@ namespace SpellHotbar::GameData {
          return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
      }
 
+     inline
+     bool form_list_check(RE::BGSListForm* formlist, RE::TESForm* form) {
+         if (formlist != nullptr) {
+             return formlist->HasForm(form);
+         }
+         else {
+            return true;
+         }
+     }
+
      void get_player_known_spells(RE::PlayerCharacter* pc, std::vector<RE::TESForm*> & list_of_skills, bool add_unbind_skill)
      {
          auto list = pc->GetActorBase()->GetSpellList();
+         RE::BGSListForm* filter_list{ nullptr };
+         if (GameData::isVampireLord()) {
+             filter_list = formlist_vampire_lord_powers;
+         }
 
          auto& added_spells = pc->GetActorRuntimeData().addedSpells;
 
          list_of_skills.reserve(list->numSpells + list->numShouts + added_spells.size());
 
-         //logger::info("Spells: {}, {}, {}", list->numSpells, list->numShouts, added_spells.size());
-
          for (uint32_t i = 0U; i < list->numSpells; ++i) {
              auto spell = list->spells[i];
-             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID()))) {
+             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID())) && form_list_check(filter_list, spell)) {
                  list_of_skills.push_back(spell);
              }
          }
 
          for (RE::BSTArrayBase::size_type i = 0U; i < added_spells.size(); ++i) {
              auto spell = added_spells[i];
-             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID()))) {
+             if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID())) && form_list_check(filter_list, spell)) {
                  list_of_skills.push_back(spell);
              }
          }
 
          for (uint32_t i = 0U; i < list->numShouts; ++i) {
              auto shout = list->shouts[i];
-             list_of_skills.push_back(shout);
+             if (form_list_check(filter_list, shout)) {
+                 list_of_skills.push_back(shout);
+             }
          }
      }
      void add_player_owned_bindable_items(RE::PlayerCharacter* pc, std::vector<RE::TESForm*>& list_of_skills)
      {
-         if (pc != nullptr) {
+         if (pc != nullptr && !GameData::isVampireLord() && !GameData::isWerewolf()) {
              auto refs = pc->GetInventoryCounts([](const RE::TESBoundObject& object)
                  {
                      return object.formType == RE::FormType::AlchemyItem || object.formType == RE::FormType::Scroll;
@@ -1957,5 +2001,9 @@ namespace SpellHotbar::GameData {
                 list_of_skills.push_back(k);
              }
          }
+     }
+     Key_Data::Key_Data(const std::string& p_short_text, const std::string& p_long_text, int p_texture_index) :
+         short_text(p_short_text), long_text(p_long_text), texture_index(p_texture_index)
+     {
      }
 }

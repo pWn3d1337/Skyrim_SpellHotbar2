@@ -728,6 +728,19 @@ TextureImage & RenderManager::load_texture(const std::string path) {
     return loaded_textures.back();
 }
 
+int RenderManager::load_texture_return_index(const std::string path)
+{
+    TextureImage tex_img;
+
+    if (tex_img.load(path)) {
+        loaded_textures.push_back(std::move(tex_img));
+        return static_cast<int>(loaded_textures.size()) - 1;
+    }
+    else {
+        return -1;
+    }
+}
+
 void RenderManager::add_spell_texture(TextureImage& main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename) {
     SubTextureImage tex_img(main_texture, uv0, uv1);
     auto it = spell_icons.find(formID);
@@ -1303,6 +1316,15 @@ void RenderManager::draw_highlight_overlay(ImVec2 pos, int size, ImU32 col)
     if (default_icons.contains(GameData::DefaultIconType::BAR_HIGHLIGHT)) {
         auto& overlay = default_icons.at(GameData::DefaultIconType::BAR_HIGHLIGHT);
         overlay.draw_on_top(pos, static_cast<float>(size), static_cast<float>(size), col);
+    }
+}
+
+void RenderManager::draw_button_icon(ImVec2 pos, int tex_index, int size, ImU32 col)
+{
+    if (tex_index >= 0 && tex_index < loaded_textures.size()) {
+        auto& texture = loaded_textures.at(tex_index);
+        float s = static_cast<float>(size/2.0f);
+        texture.draw_on_top(pos, s, s, col);
     }
 }
 

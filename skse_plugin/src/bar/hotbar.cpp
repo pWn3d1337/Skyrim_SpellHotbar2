@@ -718,10 +718,16 @@ namespace SpellHotbar
 
         //ImGui::SameLine();
 
-        std::string key_text = GameData::get_keybind_text(slot_index, mod);
-        //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
-        ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-        RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+        if (false) {
+            std::string key_text = GameData::get_keybind_text(slot_index, mod);
+            //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
+            ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
+            RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+        }
+        else {
+            auto [icon_main, icon_mode] = GameData::get_keybind_icon_index(slot_index, mod);
+            RenderManager::draw_button_icon(p, icon_main, icon_size, IM_COL32(255, 255, 255, alpha_i));
+        }
 
         if (has_charges) {
             ImU32 count_text_color = ImColor(255, 255, 255, alpha_i);

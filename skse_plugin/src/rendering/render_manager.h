@@ -101,6 +101,7 @@ namespace SpellHotbar {
         static void on_game_load();
 
         static TextureImage & load_texture(const std::string path);
+        static int load_texture_return_index(const std::string path);
 
         static void add_spell_texture(TextureImage & main_texture, RE::FormID formID, ImVec2 uv0, ImVec2 uv1, const std::string& filename);
         static void add_default_icon(TextureImage & main_texture, GameData::DefaultIconType type, ImVec2 uv0, ImVec2 uv1, const std::string& icon_name);
@@ -121,6 +122,7 @@ namespace SpellHotbar {
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
         static void draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);
+        static void draw_button_icon(ImVec2 pos, int tex_index, int size, ImU32 col = IM_COL32_WHITE);
         static void draw_scaled_text(ImVec2 pos, ImU32 col, const char* text);
         static float get_scaled_text_size_multiplier();
         static void draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col);

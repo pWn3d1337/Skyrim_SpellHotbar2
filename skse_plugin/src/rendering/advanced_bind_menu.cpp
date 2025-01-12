@@ -16,6 +16,7 @@ namespace SpellHotbar::BindMenu {
     std::vector<RE::TESForm*> list_of_skills_filtered;
 
     std::array<std::string, 6> rank_texts = { "-", "Novice", "Apprentice", "Adept", "Expert", "Master"};
+    std::array<std::string, 4> rank_texts_shout = { "0 Words", "1 Word", "2 Words", "3 Words" };
     std::array<std::string, 6> school_texts = { "-", "Alteration", "Conjuration", "Destruction", "Illusion", "Restoration" };
 
     std::array<std::string, 9> type_texts = { "Potion", "Spell", "Lesser Power", "Greater Power", "Shout", "Scroll", "Poison", "Food", "-" };
@@ -87,6 +88,8 @@ namespace SpellHotbar::BindMenu {
         column_id_Type,
         column_id_School,
         column_id_Rank,
+        column_id_Magnitude,
+        column_id_Time,
 
         column_count
     };
@@ -128,13 +131,23 @@ namespace SpellHotbar::BindMenu {
         }
     }
 
-    const char* get_rank_text(int rank) {
-        if (rank >= 0 && rank < 6) {
-            return rank_texts.at(rank).c_str();
+    const char* get_rank_text(int rank, bool is_shout=false) {
+        if (is_shout) {
+            if (rank >= 0 && rank < 4) {
+                return rank_texts_shout.at(rank).c_str();
+            }
+            else {
+                return rank_texts_shout.at(0).c_str();
+            }
         }
-        else
-        {
-            return rank_texts.at(0).c_str();
+        else {
+            if (rank >= 0 && rank < 6) {
+                return rank_texts.at(rank).c_str();
+            }
+            else
+            {
+                return rank_texts.at(0).c_str();
+            }
         }
     }
 
@@ -209,9 +222,11 @@ namespace SpellHotbar::BindMenu {
         return type_texts[8].c_str();;
     }
 
-    std::tuple<int, RE::ActorValue> get_rank_school(const RE::TESForm* item) {
+    std::tuple<int, RE::ActorValue, int, float> get_rank_school_time_mag(const RE::TESForm* item) {
         int rank{ 0 };
         RE::ActorValue school{ RE::ActorValue::kNone };
+        int time{ 0 };
+        float mag{ 0.0f };
 
         if (item->GetFormType() == RE::FormType::Spell) {
             const RE::SpellItem* spell = item->As<RE::SpellItem>();
@@ -219,23 +234,53 @@ namespace SpellHotbar::BindMenu {
             if (spell != nullptr && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
                 if (spell->effects.size() > 0U) {
 
-                    bool found{ false };
-                    for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size() && !found; i++) {
+                    for (RE::BSTArrayBase::size_type i = 0U; i < spell->effects.size() && school == RE::ActorValue::kNone; i++) {
                         //find first spell effect that has a magic school
                         const RE::Effect* effect = spell->effects[i];
                         if (effect->baseEffect != nullptr) {
                             auto av = effect->baseEffect->GetMagickSkill();
-                            if (av != RE::ActorValue::kNone) {
+                            if (school == RE::ActorValue::kNone && av != RE::ActorValue::kNone) {
                                 school = av;
                                 rank = GameData::get_spell_rank(effect->baseEffect->GetMinimumSkillLevel()) +1;
-                                found = true;
                             }
                         }
+                    }
+                    auto main_effect = spell->GetCostliestEffectItem();
+                    if (main_effect != nullptr) {
+                        mag = main_effect->GetMagnitude();
+                        time = main_effect->GetDuration();
                     }
                 }
             }
         }
-        return std::make_tuple(rank, school);
+        else if (item->GetFormType() == RE::FormType::AlchemyItem) {
+            const RE::AlchemyItem* alch = item->As<RE::AlchemyItem>();
+
+            if (alch != nullptr) {
+                time = alch->GetLongestDuration();
+
+                auto main_effect = alch->GetCostliestEffectItem();
+                if (main_effect != nullptr) {
+                    mag = main_effect->GetMagnitude();
+                }
+            }
+        }
+        else if (item->GetFormType() == RE::FormType::Shout) {
+            const RE::TESShout* shout = item->As<RE::TESShout>();
+
+            // this flag seems to get set when a word gets unlocked
+            constexpr uint32_t flag_unlocked = 1 << 16;
+
+            if (shout != nullptr) {
+                for (int i = 2; i >=0 && rank == 0; i--) {
+                    auto word = shout->variations[i].word;
+                    if (word != nullptr && word->GetKnown() && (word->GetFormFlags() & flag_unlocked)) {
+                        rank = i+1;
+                    }
+                }
+            }
+        }
+        return std::make_tuple(rank, school, time, mag);
     }
 
     void update_filter(const std::string filter_text, uint8_t tab_ind) {
@@ -285,7 +330,7 @@ namespace SpellHotbar::BindMenu {
                                     match_tab = tab_ind == TabIndex_Powers;
                                 }
                                 else {
-                                    auto [rank, school] = get_rank_school(list_of_skills[i]);
+                                    auto [rank, school, _t, _m] = get_rank_school_time_mag(list_of_skills[i]);
                                     switch (tab_ind) {
                                     case TabIndex_Alteration:
                                         match_tab = school == RE::ActorValue::kAlteration;
@@ -342,15 +387,34 @@ namespace SpellHotbar::BindMenu {
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Rank)
             {
-                auto [lrank, _l] = get_rank_school(lhs);
-                auto [rrank, _r] = get_rank_school(rhs);
+                auto [lrank, _ls, _lt, _lm] = get_rank_school_time_mag(lhs);
+                auto [rrank, _rs, _rt, _rm] = get_rank_school_time_mag(rhs);
+                //sort shouts after spells
+                if (lhs->GetFormType() == RE::FormType::Shout) {
+                    lrank += 6;
+                }
+                if (rhs->GetFormType() == RE::FormType::Shout) {
+                    rrank += 6;
+                }
                 is_less = lrank < rrank;
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_School)
             {
-                auto [_l, lschool] = get_rank_school(lhs);
-                auto [_r, rschool] = get_rank_school(rhs);
+                auto [_lr, lschool, _lt, _lm] = get_rank_school_time_mag(lhs);
+                auto [_rr, rschool, _rt, _rm] = get_rank_school_time_mag(rhs);
                 is_less = get_school_order(lschool) < get_school_order(rschool);
+            }
+            else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Magnitude)
+            {
+                auto [_lr, _ls, _lt, mag_l] = get_rank_school_time_mag(lhs);
+                auto [_rr, _rs, _rt, mag_r] = get_rank_school_time_mag(rhs);
+                is_less = mag_l < mag_r;
+            }
+            else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Time)
+            {
+                auto [_lr, _ls, time_l, _lm] = get_rank_school_time_mag(lhs);
+                auto [_rr, _rs, time_r, _rm] = get_rank_school_time_mag(rhs);
+                is_less = time_l < time_r;
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Type) {
                 is_less = std::string(get_type_text(lhs)) < std::string(get_type_text(rhs));
@@ -379,6 +443,33 @@ namespace SpellHotbar::BindMenu {
                     ImGui::Text(current_dragged_skill.form->GetName());
                 }
                 ImGui::EndDragDropSource();
+            }
+        }
+    }
+
+    /*
+    * Check if the current tab index is active and if not use the first valid one
+    */
+    void check_tab_index_valid(int& index) {
+        bool valid = (index == 0 && !Bars::disable_non_modifier_bar) ||
+                     (index == 1 && Input::mod_1.isValidBound()) ||
+                     (index == 2 && Input::mod_2.isValidBound()) ||
+                     (index == 3 && Input::mod_3.isValidBound());
+        if (!valid) {
+            if (!Bars::disable_non_modifier_bar) {
+                index = 0;
+            }
+            else if (Input::mod_1.isValidBound()) {
+                index = 1;
+            }
+            else if (Input::mod_2.isValidBound()) {
+                index = 2;
+            }
+            else if (Input::mod_3.isValidBound()) {
+                index = 3;
+            }
+            else {
+                index = 0;
             }
         }
     }
@@ -494,6 +585,8 @@ namespace SpellHotbar::BindMenu {
             ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Type);
             ImGui::TableSetupColumn("School", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_School);
             ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Rank);
+            ImGui::TableSetupColumn("Mag", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Magnitude);
+            ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Time);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -524,8 +617,8 @@ namespace SpellHotbar::BindMenu {
                 {
                     // Display a data item
                     const RE::TESForm* item = list_of_skills_filtered[row_n];
-
-                    auto [rank, school] = get_rank_school(item);
+                    bool is_shout = item->GetFormType() == RE::FormType::Shout;
+                    auto [rank, school, time, mag] = get_rank_school_time_mag(item);
                    
                     ImGui::PushID(item->GetFormID());
                     ImGui::TableNextRow();
@@ -536,10 +629,17 @@ namespace SpellHotbar::BindMenu {
                     {
                         RenderManager::show_skill_tooltip(item);
                     }
-                    set_drag_source(item, scale_factor);
+                    if (!is_shout || rank > 0) {
+                        set_drag_source(item, scale_factor);
+                    }
 
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(item->GetName());
+                    if (is_shout && rank == 0) {
+                        ImGui::TextColored(ImColor(0.5f, 0.5f, 0.5f), item->GetName());
+                    }
+                    else {
+                        ImGui::TextUnformatted(item->GetName());
+                    }
 
                     ImGui::TableNextColumn();
                     ImGui::TextUnformatted(get_type_text(item));
@@ -548,7 +648,23 @@ namespace SpellHotbar::BindMenu {
                     ImGui::TextUnformatted(get_school_text(school));
 
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(get_rank_text(rank));
+                    ImGui::TextUnformatted(get_rank_text(rank, is_shout));
+
+                    ImGui::TableNextColumn();
+                    if (mag != 0.0f) {
+                        ImGui::Text("%.0f", mag);
+                    }
+                    else {
+                        ImGui::TextUnformatted("-");
+                    }
+
+                    ImGui::TableNextColumn();
+                    if (time > 0) {
+                        ImGui::Text("%d", time);
+                    }
+                    else {
+                        ImGui::TextUnformatted("-");
+                    }
 
                     ImGui::PopID();
                 }
@@ -561,45 +677,84 @@ namespace SpellHotbar::BindMenu {
         ImGui::SameLine();
         ImGui::BeginChild("BindMenuTabRight", ImVec2(0, child_window_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        auto list_of_bars = Bars::get_list_of_bars();
-
+        bool is_fav_menu_binding = GameData::hasFavMenuSlotBinding();
+        if (is_fav_menu_binding) {
+            Bars::menu_bar_id = Bars::getCurrentHotbar_ingame();
+        }
         auto& bar = Bars::hotbars.at(Bars::menu_bar_id);
-        if (ImGui::BeginCombo("##Hotbar", bar.get_name().c_str(), 0))
-        {
-            for (uint16_t n = 0; n < list_of_bars.size(); n++)
-            {
-                auto bar_id = list_of_bars.at(n).first;
-                const bool is_selected = (bar_id == Bars::menu_bar_id);
-                auto & name = list_of_bars.at(n).second;
 
-                if (ImGui::Selectable(name.c_str(), is_selected)) {
-                    Bars::menu_bar_id = list_of_bars.at(n).first;
-                }
+        if (is_fav_menu_binding) {
+            // Handle Vampire Lord and Werewolf bars
+            if (ImGui::BeginCombo("##Hotbar", bar.get_name().c_str(), 0))
+            {
+                ImGui::Selectable(bar.get_name().c_str(), true);
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                if (is_selected) {
-                    ImGui::SetItemDefaultFocus();
-                }
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
+        }
+        else {
+            auto list_of_bars = Bars::get_list_of_bars();
+
+            if (ImGui::BeginCombo("##Hotbar", bar.get_name().c_str(), 0))
+            {
+                for (uint16_t n = 0; n < list_of_bars.size(); n++)
+                {
+                    auto bar_id = list_of_bars.at(n).first;
+                    const bool is_selected = (bar_id == Bars::menu_bar_id);
+                    auto& name = list_of_bars.at(n).second;
+
+                    if (ImGui::Selectable(name.c_str(), is_selected)) {
+                        Bars::menu_bar_id = list_of_bars.at(n).first;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected) {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
         }
 
         static int modifier_index = 0;
-        std::string none_text = GameData::get_modifier_text_long(key_modifier::none);
-        ImGui::RadioButton(none_text.c_str(), &modifier_index, 0);
+        check_tab_index_valid(modifier_index);
+
+        bool first{ true };
+        if (!Bars::disable_non_modifier_bar) {
+            std::string none_text = GameData::get_modifier_text_long(key_modifier::none);
+            ImGui::RadioButton(none_text.c_str(), &modifier_index, 0);
+            first = false;
+        }
 
         if (Input::mod_1.isValidBound()) {
-            ImGui::SameLine();
+            if (!first) {
+                ImGui::SameLine();
+            }
+            else {
+                first = false;
+            }
             std::string ctrl_text = GameData::get_modifier_text_long(key_modifier::ctrl);
             ImGui::RadioButton(ctrl_text.c_str(), &modifier_index, 1);
         }
         if (Input::mod_2.isValidBound()) {
-            ImGui::SameLine();
+            if (!first) {
+                ImGui::SameLine();
+            }
+            else {
+                first = false;
+            }
             std::string shift_text = GameData::get_modifier_text_long(key_modifier::shift);
             ImGui::RadioButton(shift_text.c_str(), &modifier_index, 2);
         }
         if (Input::mod_3.isValidBound()) {
-            ImGui::SameLine();
+            if (!first) {
+                ImGui::SameLine();
+            }
+            else {
+                first = false;
+            }
             std::string alt_text = GameData::get_modifier_text_long(key_modifier::alt);
             ImGui::RadioButton(alt_text.c_str(), &modifier_index, 3);
         }
