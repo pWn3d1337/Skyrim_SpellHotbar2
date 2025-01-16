@@ -50,6 +50,8 @@ namespace SpellHotbar {
 
     inline float get_hud_slot_height(float screensize_y, float bar_slot_scale) { return (screensize_y / 13.0f) * bar_slot_scale; }
 
+    inline constexpr float keybind_icon_pos_factor = 0.8f;
+
     // Hook render stuff for imgui, mostly copied from wheeler
     class RenderManager {
 
@@ -122,7 +124,12 @@ namespace SpellHotbar {
         static void draw_cd_overlay(ImVec2 pos, int size, float cd, ImU32 col);
         static void draw_spellproc_overlay(ImVec2 pos, int size, float timer, float total, float alpha);
         static void draw_highlight_overlay(ImVec2 pos, int size, ImU32 col);
-        static void draw_button_icon(ImVec2 pos, int tex_index, int size, ImU32 col = IM_COL32_WHITE);
+        static void draw_button_icon(ImVec2 pos, int tex_index, int tex_index_modifier, int size, ImU32 col = IM_COL32_WHITE);
+        static void draw_button_icon_menu(ImVec2 pos, int tex_index, int tex_index_modifier, int size, ImU32 col = IM_COL32_WHITE);
+        /**
+        * Returns the "Aspect Ration" of button icons, -1 index will be ignored
+        */
+        static float get_button_icons_length(int tex_index_key, int tex_index_mod);
         static void draw_scaled_text(ImVec2 pos, ImU32 col, const char* text);
         static float get_scaled_text_size_multiplier();
         static void draw_icon_overlay(ImVec2 pos, int size, GameData::DefaultIconType type, ImU32 col);

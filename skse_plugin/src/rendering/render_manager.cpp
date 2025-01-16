@@ -43,7 +43,6 @@ namespace SpellHotbar {
     constexpr std::string_view texture_frame_bg_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\inv_bg.dds" };
     constexpr std::string_view texture_cursor_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\cursor.dds" };
 
-
     void apply_imgui_style() {
         //set imgui style
 
@@ -1319,13 +1318,85 @@ void RenderManager::draw_highlight_overlay(ImVec2 pos, int size, ImU32 col)
     }
 }
 
-void RenderManager::draw_button_icon(ImVec2 pos, int tex_index, int size, ImU32 col)
+void RenderManager::draw_button_icon(ImVec2 pos, int tex_index, int tex_index_modifier, int icon_size, ImU32 col)
 {
-    if (tex_index >= 0 && tex_index < loaded_textures.size()) {
-        auto& texture = loaded_textures.at(tex_index);
-        float s = static_cast<float>(size/2.0f);
-        texture.draw_on_top(pos, s, s, col);
+    if (tex_index_modifier < 0) {
+        if (tex_index >= 0 && tex_index < loaded_textures.size()) {
+            auto& texture = loaded_textures.at(tex_index);
+            float sizef = static_cast<float>(icon_size);
+            float s =sizef * 0.5f;
+            float aspect = static_cast<float>(texture.width) / static_cast<float>(texture.height);
+            
+            float total_width = aspect * s;
+
+            ImVec2 draw_pos = ImVec2(pos.x + icon_size * 0.5f - total_width*0.5f, pos.y + sizef* keybind_icon_pos_factor);
+
+            texture.draw_on_top(draw_pos, total_width, s, col);
+        }
     }
+    else {
+        if (tex_index >= 0 && tex_index < loaded_textures.size() && tex_index_modifier >= 0 && tex_index_modifier < loaded_textures.size()) {
+            
+            auto& texture_key = loaded_textures.at(tex_index);
+            auto& texture_mod = loaded_textures.at(tex_index_modifier);
+            
+            float sizef = static_cast<float>(icon_size);
+            float target_height = sizef * 0.5f;
+            float aspect_key = static_cast<float>(texture_key.width) / static_cast<float>(texture_key.height);
+            float aspect_mod = static_cast<float>(texture_mod.width) / static_cast<float>(texture_mod.height);
+
+            float total_width = target_height * aspect_key + target_height * aspect_mod;
+            float max_width = static_cast<float>(icon_size) * 0.95f;
+            if (total_width >  max_width) {
+                target_height *= max_width / total_width;
+                total_width = target_height * aspect_key + target_height * aspect_mod;
+            }
+
+            ImVec2 draw_pos = ImVec2(pos.x + icon_size * 0.5f - total_width * 0.5f, pos.y + sizef * keybind_icon_pos_factor);
+            texture_mod.draw_on_top(draw_pos, target_height * aspect_mod, target_height, col);
+            texture_key.draw_on_top(ImVec2(draw_pos.x + target_height * aspect_mod, draw_pos.y), target_height * aspect_key, target_height, col);
+        }
+    }
+}
+
+void RenderManager::draw_button_icon_menu(ImVec2 pos, int tex_index, int tex_index_modifier, int size, ImU32 col)
+{
+    if (tex_index_modifier < 0) {
+        if (tex_index >= 0 && tex_index < loaded_textures.size()) {
+            auto& texture = loaded_textures.at(tex_index);
+            float sizef = static_cast<float>(size);
+            float aspect = static_cast<float>(texture.width) / static_cast<float>(texture.height);
+
+            texture.draw_on_top(pos, sizef*aspect, sizef, col);
+        }
+    }
+    else {
+        if (tex_index >= 0 && tex_index < loaded_textures.size() && tex_index_modifier >= 0 && tex_index_modifier < loaded_textures.size()) {
+
+            auto& texture_key = loaded_textures.at(tex_index);
+            auto& texture_mod = loaded_textures.at(tex_index_modifier);
+
+            float sizef = static_cast<float>(size);
+            float aspect_key = static_cast<float>(texture_key.width) / static_cast<float>(texture_key.height);
+            float aspect_mod = static_cast<float>(texture_mod.width) / static_cast<float>(texture_mod.height);
+            texture_mod.draw_on_top(pos, sizef * aspect_mod, sizef, col);
+            texture_key.draw_on_top(ImVec2(pos.x + sizef * aspect_mod, pos.y), sizef * aspect_key, sizef, col);
+        }
+    }
+}
+
+float RenderManager::get_button_icons_length(int tex_index_key, int tex_index_mod)
+{
+    float ret{ 0.0f };
+    if (tex_index_key >= 0 && tex_index_key < loaded_textures.size()) {
+        auto& texture_key = loaded_textures.at(tex_index_key);
+        ret += texture_key.width / texture_key.height;
+    }
+    if (tex_index_mod >= 0 && tex_index_mod < loaded_textures.size()) {
+        auto& texture_mod = loaded_textures.at(tex_index_mod);
+        ret += texture_mod.width / texture_mod.height;
+    }
+    return ret;
 }
 
 void RenderManager::draw_scaled_text(ImVec2 pos, ImU32 col, const char* text)
@@ -1457,7 +1528,18 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size(int bars
         //window_height = font_height + (slot_h + spacing.y) * (numrows);
         window_height = font_height + (slot_h + spacing.y) * static_cast<float>(numrows - 1) + slot_h + inner_spacing.y * 2 + frame_padding.y * 2;
         window_width = (slot_h + spacing.x) * static_cast<float>(row_len - 1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
+
+        //Add height for extra rows
+        if (Bars::use_keybind_icons) {
+            window_height += slot_h * keybind_icon_pos_factor * (numrows - 1);
+        }
     }
+
+    //add extra height for keybind buttons
+    if (Bars::use_keybind_icons) {
+        window_height += slot_h * keybind_icon_pos_factor;
+    }
+
     ImGui::SetNextWindowSize(ImVec2(window_width, window_height));
     ImGui::PopStyleVar();
     return std::make_tuple(screen_size_x, screen_size_y, window_width, window_height);

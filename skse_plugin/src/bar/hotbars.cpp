@@ -48,6 +48,8 @@ namespace SpellHotbar::Bars {
     float bar_circle_radius = 2.2f;
     float bar_cross_distance = 0.0f;
 
+    bool use_keybind_icons{ true };
+
     //non-persistent
     uint32_t menu_bar_id;
     float oblivion_bar_press_show_timer = 0.0f;

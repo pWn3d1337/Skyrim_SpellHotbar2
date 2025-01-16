@@ -71,6 +71,7 @@ namespace SpellHotbar::Bars {
     extern bar_layout layout;
     extern float bar_circle_radius;
     extern float bar_cross_distance;
+    extern bool use_keybind_icons;
 
     constexpr uint32_t MAIN_BAR = 'MAIN';
     constexpr uint32_t MAIN_BAR_SNEAK = MAIN_BAR + 1;
