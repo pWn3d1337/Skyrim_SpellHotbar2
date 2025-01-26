@@ -3,6 +3,7 @@
 #include "render_manager.h"
 #include "../input/keybinds.h"
 #include "gui_tab_button.h"
+#include "../bar/hotbars.h"
 
 namespace SpellHotbar::BindMenu {
 
@@ -222,13 +223,14 @@ namespace SpellHotbar::BindMenu {
         return type_texts[8].c_str();;
     }
 
-    std::tuple<int, RE::ActorValue, int, float> get_rank_school_time_mag(const RE::TESForm* item) {
+    std::tuple<int, RE::ActorValue, int, float, int> get_rank_school_time_mag_count(const RE::TESForm* item) {
         int rank{ 0 };
         RE::ActorValue school{ RE::ActorValue::kNone };
         int time{ 0 };
         float mag{ 0.0f };
+        int count{ -1 };
 
-        if (item->GetFormType() == RE::FormType::Spell) {
+        if (item->GetFormType() == RE::FormType::Spell || item->GetFormType() == RE::FormType::Scroll) {
             const RE::SpellItem* spell = item->As<RE::SpellItem>();
 
             if (spell != nullptr && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
@@ -252,6 +254,9 @@ namespace SpellHotbar::BindMenu {
                     }
                 }
             }
+            if (item->GetFormType() == RE::FormType::Scroll) {
+                count = GameData::count_item_in_inv(item->GetFormID());
+            }
         }
         else if (item->GetFormType() == RE::FormType::AlchemyItem) {
             const RE::AlchemyItem* alch = item->As<RE::AlchemyItem>();
@@ -264,6 +269,7 @@ namespace SpellHotbar::BindMenu {
                     mag = main_effect->GetMagnitude();
                 }
             }
+            count = GameData::count_item_in_inv(item->GetFormID());
         }
         else if (item->GetFormType() == RE::FormType::Shout) {
             const RE::TESShout* shout = item->As<RE::TESShout>();
@@ -280,7 +286,7 @@ namespace SpellHotbar::BindMenu {
                 }
             }
         }
-        return std::make_tuple(rank, school, time, mag);
+        return std::make_tuple(rank, school, time, mag, count);
     }
 
     void update_filter(const std::string filter_text, uint8_t tab_ind) {
@@ -330,7 +336,7 @@ namespace SpellHotbar::BindMenu {
                                     match_tab = tab_ind == TabIndex_Powers;
                                 }
                                 else {
-                                    auto [rank, school, _t, _m] = get_rank_school_time_mag(list_of_skills[i]);
+                                    auto [rank, school, _t, _m, _c] = get_rank_school_time_mag_count(list_of_skills[i]);
                                     switch (tab_ind) {
                                     case TabIndex_Alteration:
                                         match_tab = school == RE::ActorValue::kAlteration;
@@ -387,8 +393,8 @@ namespace SpellHotbar::BindMenu {
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Rank)
             {
-                auto [lrank, _ls, _lt, _lm] = get_rank_school_time_mag(lhs);
-                auto [rrank, _rs, _rt, _rm] = get_rank_school_time_mag(rhs);
+                auto [lrank, _ls, _lt, _lm, _lc] = get_rank_school_time_mag_count(lhs);
+                auto [rrank, _rs, _rt, _rm, _rc] = get_rank_school_time_mag_count(rhs);
                 //sort shouts after spells
                 if (lhs->GetFormType() == RE::FormType::Shout) {
                     lrank += 6;
@@ -400,20 +406,20 @@ namespace SpellHotbar::BindMenu {
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_School)
             {
-                auto [_lr, lschool, _lt, _lm] = get_rank_school_time_mag(lhs);
-                auto [_rr, rschool, _rt, _rm] = get_rank_school_time_mag(rhs);
+                auto [_lr, lschool, _lt, _lm, _lc] = get_rank_school_time_mag_count(lhs);
+                auto [_rr, rschool, _rt, _rm, _rc] = get_rank_school_time_mag_count(rhs);
                 is_less = get_school_order(lschool) < get_school_order(rschool);
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Magnitude)
             {
-                auto [_lr, _ls, _lt, mag_l] = get_rank_school_time_mag(lhs);
-                auto [_rr, _rs, _rt, mag_r] = get_rank_school_time_mag(rhs);
+                auto [_lr, _ls, _lt, mag_l, _lc] = get_rank_school_time_mag_count(lhs);
+                auto [_rr, _rs, _rt, mag_r, _rc] = get_rank_school_time_mag_count(rhs);
                 is_less = mag_l < mag_r;
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Time)
             {
-                auto [_lr, _ls, time_l, _lm] = get_rank_school_time_mag(lhs);
-                auto [_rr, _rs, time_r, _rm] = get_rank_school_time_mag(rhs);
+                auto [_lr, _ls, time_l, _lm, _lc] = get_rank_school_time_mag_count(lhs);
+                auto [_rr, _rs, time_r, _rm, _rc] = get_rank_school_time_mag_count(rhs);
                 is_less = time_l < time_r;
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Type) {
@@ -473,6 +479,22 @@ namespace SpellHotbar::BindMenu {
             }
         }
     }
+
+    void draw_inline_keybind_icon(int icon_size, SpellHotbar::key_modifier mod) {
+
+        auto [_kb, tex_id_mod] = GameData::get_keybind_icon_index(0, mod);
+        float key_icon_size = icon_size * 2.0f / 3.0f;
+        float spacing_offset{ 0.0f };
+        if (tex_id_mod >= 0) {
+            spacing_offset = ImGui::GetStyle().ItemSpacing.x;
+            float key_icon_length = RenderManager::get_button_icons_length(tex_id_mod, -1);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            p.x -= ImGui::GetStyle().ItemSpacing.x;
+            ImGui::Dummy(ImVec2(key_icon_size * key_icon_length, static_cast<float>(icon_size))); ImGui::SameLine();
+            RenderManager::draw_button_icon_menu(p, tex_id_mod, -1, static_cast<int>(key_icon_size));
+        }
+    }
+
 
 	void drawFrame(ImFont* font_text, ImFont* font_text_big, ImFont* font_title) {
         ImGui::PushFont(font_text);
@@ -618,12 +640,13 @@ namespace SpellHotbar::BindMenu {
                     // Display a data item
                     const RE::TESForm* item = list_of_skills_filtered[row_n];
                     bool is_shout = item->GetFormType() == RE::FormType::Shout;
-                    auto [rank, school, time, mag] = get_rank_school_time_mag(item);
+                    auto [rank, school, time, mag, count] = get_rank_school_time_mag_count(item);
                    
                     ImGui::PushID(item->GetFormID());
                     ImGui::TableNextRow();
                    
                     ImGui::TableNextColumn();
+                    ImVec2 count_pos = ImGui::GetCursorScreenPos();
                     RenderManager::draw_skill(item->GetFormID(), table_icon_size, RenderManager::get_skill_color(item));
                     if (ImGui::IsItemHovered())
                     {
@@ -631,6 +654,18 @@ namespace SpellHotbar::BindMenu {
                     }
                     if (!is_shout || rank > 0) {
                         set_drag_source(item, scale_factor);
+                    }
+                    //If count available, display
+                    if (count > -1) {
+                        std::string text = std::to_string(std::clamp(count, -9999, 9999));
+
+                        ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
+                        float mult = RenderManager::get_scaled_text_size_multiplier();
+                        //float text_offset_x = table_icon_size * 0.05f;
+                        float text_offset_y = table_icon_size * 0.0125f;
+
+                        ImVec2 count_text_pos = ImVec2(count_pos.x + table_icon_size - textsize.x * mult, count_pos.y + table_icon_size - textsize.y * mult - text_offset_y);
+                        RenderManager::draw_scaled_text(count_text_pos, IM_COL32_WHITE, text.c_str());
                     }
 
                     ImGui::TableNextColumn();
@@ -728,6 +763,9 @@ namespace SpellHotbar::BindMenu {
             first = false;
         }
 
+        int icon_size = static_cast<int>(std::round(60.0f * scale_factor));
+
+        constexpr float key_icon_radio_button_scale = 0.75f;
         if (Input::mod_1.isValidBound()) {
             if (!first) {
                 ImGui::SameLine();
@@ -735,8 +773,14 @@ namespace SpellHotbar::BindMenu {
             else {
                 first = false;
             }
-            std::string ctrl_text = GameData::get_modifier_text_long(key_modifier::ctrl);
-            ImGui::RadioButton(ctrl_text.c_str(), &modifier_index, 1);
+            if (Bars::use_keybind_icons()) {
+                ImGui::RadioButton("##radio_mod_ctrl", &modifier_index, 1); ImGui::SameLine();
+                draw_inline_keybind_icon(static_cast<int>(icon_size * key_icon_radio_button_scale), key_modifier::ctrl);
+            }
+            else {
+                std::string ctrl_text = GameData::get_modifier_text_long(key_modifier::ctrl);
+                ImGui::RadioButton(ctrl_text.c_str(), &modifier_index, 1);
+            }
         }
         if (Input::mod_2.isValidBound()) {
             if (!first) {
@@ -745,8 +789,14 @@ namespace SpellHotbar::BindMenu {
             else {
                 first = false;
             }
-            std::string shift_text = GameData::get_modifier_text_long(key_modifier::shift);
-            ImGui::RadioButton(shift_text.c_str(), &modifier_index, 2);
+            if (Bars::use_keybind_icons()) {
+                ImGui::RadioButton("##radio_mod_shift", &modifier_index, 2); ImGui::SameLine();
+                draw_inline_keybind_icon(static_cast<int>(icon_size * key_icon_radio_button_scale), key_modifier::shift);
+            }
+            else {
+                std::string shift_text = GameData::get_modifier_text_long(key_modifier::shift);
+                ImGui::RadioButton(shift_text.c_str(), &modifier_index, 2);
+            }
         }
         if (Input::mod_3.isValidBound()) {
             if (!first) {
@@ -755,18 +805,37 @@ namespace SpellHotbar::BindMenu {
             else {
                 first = false;
             }
-            std::string alt_text = GameData::get_modifier_text_long(key_modifier::alt);
-            ImGui::RadioButton(alt_text.c_str(), &modifier_index, 3);
+            if (Bars::use_keybind_icons()) {
+                ImGui::RadioButton("##radio_mod_alt", &modifier_index, 3); ImGui::SameLine();
+                draw_inline_keybind_icon(static_cast<int>(icon_size * key_icon_radio_button_scale), key_modifier::alt);
+            }
+            else {
+                std::string alt_text = GameData::get_modifier_text_long(key_modifier::alt);
+                ImGui::RadioButton(alt_text.c_str(), &modifier_index, 3);
+            }
+        }
+        if (Bars::use_keybind_icons() && (Input::mod_1.isValidBound() || Input::mod_2.isValidBound() || Input::mod_3.isValidBound())) {
+            ImGui::NewLine();
         }
 
         //draw Hotbar slots
-
-        int icon_size = static_cast<int>(std::round(60.0f * scale_factor));
         float text_offset_x = icon_size * 0.05f;
         float text_offset_x_right = icon_size * 0.95f - ImGui::CalcTextSize("R").x;
         float text_offset_y = icon_size * 0.0125f;
 
         key_modifier mod = static_cast<key_modifier>(modifier_index);
+
+        float key_icon_length{ 0.0f };
+        if (Bars::use_keybind_icons()) {
+            //Check for longest button combo
+            for (int i = 0; i < bar.get_bar_size(); i++) {
+                auto [tex_id_key, _tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
+                float cur_len = RenderManager::get_button_icons_length(tex_id_key, -1);
+                if (cur_len > key_icon_length) {
+                    key_icon_length = cur_len;
+                }
+            }
+        }
 
         for (int i = 0; i < bar.get_bar_size(); i++) {
             auto [skill, inherited] = bar.get_skill_in_bar_with_inheritance(i, mod, false);
@@ -780,6 +849,16 @@ namespace SpellHotbar::BindMenu {
             size_t count{ 0 };
             if (skill.consumed != consumed_type::none) {
                 count = GameData::count_item_in_inv(skill.formID);
+            }
+
+            if (Bars::use_keybind_icons()) {
+                //Draw keybind buttons
+                ImVec2 icon_pos = ImGui::GetCursorScreenPos();
+                auto [tex_id_key, _tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
+                float key_icon_size = icon_size * 2.0f / 3.0f;
+                icon_pos.y += icon_size * 1.0f / 6.0f;
+                ImGui::Dummy(ImVec2(key_icon_size * key_icon_length - ImGui::GetStyle().ItemSpacing.x, static_cast<float>(icon_size))); ImGui::SameLine();
+                RenderManager::draw_button_icon_menu(icon_pos, tex_id_key, -1, static_cast<int>(key_icon_size));
             }
 
             ImVec2 bpos = ImGui::GetCursorScreenPos();
@@ -837,7 +916,7 @@ namespace SpellHotbar::BindMenu {
             }
 
             if (!inherited) {
-                SlottedSkill* source_skill{nullptr};
+                SlottedSkill* source_skill{ nullptr };
                 if (!skill.isEmpty()) {
                     source_skill = bar.get_skill_in_bar_ptr(i, mod);
                 }
@@ -911,9 +990,11 @@ namespace SpellHotbar::BindMenu {
             }
             ImGui::SameLine();
 
-            std::string key_text = GameData::get_keybind_text(i, mod);
-            ImVec2 tex_pos(bpos.x + text_offset_x, bpos.y + text_offset_y);
-            ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
+            if (!Bars::use_keybind_icons()) {
+                std::string key_text = GameData::get_keybind_text(i, mod);
+                ImVec2 tex_pos(bpos.x + text_offset_x, bpos.y + text_offset_y);
+                ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
+            }
 
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
                 std::string hand_text;
@@ -949,6 +1030,11 @@ namespace SpellHotbar::BindMenu {
             }*/
 
             ImGui::TextColored(color, text.c_str());
+        }
+
+        if (Bars::use_keybind_icons()) {
+            float key_icon_size = icon_size * 2.0f / 3.0f;
+            ImGui::Dummy(ImVec2(key_icon_size * key_icon_length - ImGui::GetStyle().ItemSpacing.x, static_cast<float>(icon_size))); ImGui::SameLine();
         }
 
         //Draw Unbind target

@@ -48,7 +48,7 @@ namespace SpellHotbar::Bars {
     float bar_circle_radius = 2.2f;
     float bar_cross_distance = 0.0f;
 
-    bool use_keybind_icons{ true };
+    bool _use_keybind_icons{ true };
 
     //non-persistent
     uint32_t menu_bar_id;
@@ -106,6 +106,32 @@ namespace SpellHotbar::Bars {
             }
         }
         return ret;
+    }
+
+    bool use_keybind_icons()
+    {
+        return _use_keybind_icons && GameData::key_icons_available;
+    }
+
+    bool toggle_use_keyind_icons()
+    {
+        if (GameData::key_icons_available) {
+            return _use_keybind_icons = !_use_keybind_icons;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool get_use_keybind_icons()
+    {
+        return _use_keybind_icons;
+    }
+
+    void set_use_keybind_icons(bool value)
+    {
+        _use_keybind_icons = value;
     }
 
     uint32_t get_enabled_hotbar(uint32_t barID)

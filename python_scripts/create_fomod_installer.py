@@ -9,6 +9,8 @@ from build_release_package import test_build_release_zip, build_release_zip
 dev_mod_root = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2")
 dev_mod_root_nordic_ui = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar NordicUI")
 dev_mod_root_battlemage = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage")
+dev_mod_root_battlemage_csf2 = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage CSF2")
+dev_mod_root_battlemage_csf3 = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage CSF3")
 
 project_root = Path(__file__).parent.parent
 
@@ -18,6 +20,7 @@ used_presets = [
     "simple.json",
     "controller_simple.json"
 ]
+
 
 def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], main_folder: str = "data"):
     print(f"Copying to folder: {outfile}...")
@@ -44,6 +47,7 @@ def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], ma
             elif target_path.is_dir():
                 target_path.mkdir(parents=True)
 
+
 def _get_info_xml(version: str) -> str:
     return f"""<fomod>
     <Name>Spell Hotbar 2</Name>
@@ -57,9 +61,12 @@ def _get_info_xml(version: str) -> str:
 
 required_folder = "0000 Required - Main Mod"
 battlemage_mod_folder = "2000 Optional - Battle Mage Perks"
+battlemage_mod_folder_csf3 = "2001 Optional - Battle Mage Perks CSF3"
+battlemage_mod_folder_csf2 = "2002 Optional - Battle Mage Perks CSF2"
 
 
-def _get_spell_pack_config(name: str, folder: str, pluginfile: str | None = None) -> str:
+def _get_spell_pack_config(name: str, folder: str, pluginfile: str | None = None,
+                           credits_name: str | None = None) -> str:
     if pluginfile is None:
         pluginfile = f"{name}.esp"
     if "-" in pluginfile:
@@ -67,9 +74,11 @@ def _get_spell_pack_config(name: str, folder: str, pluginfile: str | None = None
     else:
         formatted_name = name.replace("_", " ").title()
         formatted_name = formatted_name.replace("c2", "c 2")  # fix storm_calling_magic2
+
+    extra_text = "" if credits_name is None else f"\n\nIcon Credits: {credits_name}"
     return f"""
                         <plugin name="{formatted_name}">
-                            <description>Install Icons ans Spell config for {formatted_name}</description>
+                            <description>Install Icons ans Spell config for {formatted_name}{extra_text}</description>
                             <files>
                                 <folder source="{folder}" destination="" priority="0"/>
                             </files>
@@ -131,15 +140,29 @@ def _get_perk_overhaul_config(formatted_name: str, pluginfile: str, folders: lis
                         </plugin>"""
 
 
-def _get_battle_mage_perk_config(folder: str) -> str:
+def _get_battle_mage_perk_config(folder: str, folder2: str) -> str:
     return f"""
-                        <plugin name="Battle Mage Perk Tree">
+                        <plugin name="Battle Mage Perk Tree (CSF 3+)">
                             <description>Install Battle Mage Perk Tree, requires Custom Skill Framework (https://www.nexusmods.com/skyrimspecialedition/mods/41780)</description>
                             <files>
                                 <folder source="{folder}" destination="" priority="0"/>
+                                <folder source="{folder2}" destination="" priority="0"/>
                             </files>
                             <typeDescriptor>
                                 <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>"""
+
+def _get_battle_mage_perk_config_csf2(folder: str, folder2: str) -> str:
+    return f"""
+                        <plugin name="Battle Mage Perk Tree (CSF 2, 1.5.97 compatible)">
+                            <description>Install Battle Mage Perk Tree, requires Custom Skill Framework (https://www.nexusmods.com/skyrimspecialedition/mods/41780)</description>
+                            <files>
+                                <folder source="{folder}" destination="" priority="0"/>
+                                <folder source="{folder2}" destination="" priority="0"/>
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
                             </typeDescriptor>
                         </plugin>"""
 
@@ -149,8 +172,8 @@ def _get_profile_config(name: str, json_name: str, desc: str, image: str | None 
                          <plugin name="{name}">
                             <description>{desc}</description>
                             {
-                                f'<image path = "installer_images\\{image}"/>' if image is not None else ""
-                            }
+    f'<image path = "installer_images\\{image}"/>' if image is not None else ""
+    }
                             <files>
                                 <file source="9000 ConditionalFiles/auto_profiles/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
                             </files>
@@ -159,7 +182,8 @@ def _get_profile_config(name: str, json_name: str, desc: str, image: str | None 
                             </typeDescriptor>
                         </plugin>"""
 
-def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]) -> str:
+
+def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, str]]) -> str:
     return f"""<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>Spell Hotbar 2 - {version} Installer</moduleName>
     <moduleImage path="installer_images\\spell_hotbar_logo.jpg" />
@@ -171,7 +195,8 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
             <optionalFileGroups order="Explicit">
                 <group name="Battle Mage Perks" type="SelectAny">
                     <plugins order="Explicit">
-                        {_get_battle_mage_perk_config(battlemage_mod_folder)}
+                        {_get_battle_mage_perk_config(battlemage_mod_folder, battlemage_mod_folder_csf3)}
+                        {_get_battle_mage_perk_config_csf2(battlemage_mod_folder, battlemage_mod_folder_csf2)}
                     </plugins>
                 </group>
                 <group name="Perk Overhaul" type="SelectExactlyOne">
@@ -181,7 +206,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                 </group>
                 <group name="Spell Packs" type="SelectAny">
                     <plugins order="Explicit">
-                        {"".join([_get_spell_pack_config(s[0], s[1], s[2]) for s in spell_packs])}
+                        {"".join([_get_spell_pack_config(s[0], s[1], s[2], s[3]) for s in spell_packs])}
                     </plugins>
                 </group>
             </optionalFileGroups>
@@ -286,9 +311,9 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
                                              "Only 1 Bar, no modifiers, Keybinds: 1-10.=", "simple.jpg")}
                         {_get_profile_config("All Bars", "all_bars",
                                              "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu", "simple.jpg")}
-                        {_get_profile_config("Oblivion Mode", "oblivion_mode", 
+                        {_get_profile_config("Oblivion Mode", "oblivion_mode",
                                              "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion", "oblivion_mode.jpg")}
-                        {_get_profile_config("Controller Simple", "controller_simple", 
+                        {_get_profile_config("Controller Simple", "controller_simple",
                                              "Starting point for controller config, binds DPad + ABXY with RS/LS as modifiers, non-modifier bar is disabled. Might need config adjustments to not conflict with your setup/MCM menus", "controller_simple.jpg")}
                     </plugins>
                 </group>
@@ -327,28 +352,33 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str]]
 """
 
 
-spell_packs: list[str, str] = list()
+spell_packs: list[str, str, str] = list()
 
 perk_overhauls: list[str, str, str, DualCastPerkConfig] = list()
 
-def _add_spell_pack(name: str, plugin: str | None = None):
+
+def _add_spell_pack(name: str, plugin: str | None = None, credits_name: str | None = None):
     if plugin is None:
         plugin = f"{name}.esp"
-    spell_packs.append((name, plugin))
+    spell_packs.append((name, plugin, credits_name))
 
 
-def _add_perk_overhaul(name: str, plugin: str, folders : list[str] | str, dual_casting_perk_config: DualCastPerkConfig):
+def _add_perk_overhaul(name: str, plugin: str, folders: list[str] | str, dual_casting_perk_config: DualCastPerkConfig):
     if isinstance(folders, str):
         folders = [folders]
     perk_overhauls.append((name, plugin, folders, dual_casting_perk_config))
 
+
 def _get_spell_pack_folder_name(num: int, modname: str) -> str:
     return f"{1000 + num} Spell Pack - {modname}"
+
 
 def _get_perk_overhaul_folder_name(num: int, modname: str) -> str:
     return f"{3000 + num} Perk Overhaul - {modname}"
 
-def _get_spell_list(modname: str, num: int, folder_name_getter: Callable[[int, str], str], esp_name: str | None = None) -> list[tuple[Path, tuple[Path, str]]]:
+
+def _get_spell_list(modname: str, num: int, folder_name_getter: Callable[[int, str], str],
+                    esp_name: str | None = None) -> list[tuple[Path, tuple[Path, str]]]:
     if esp_name is None:
         esp_name = modname.capitalize()
     esp_name = Path(esp_name).stem  # removes suffix if preset
@@ -361,8 +391,10 @@ def _get_spell_list(modname: str, num: int, folder_name_getter: Callable[[int, s
         (dev_mod_root / f"SKSE/Plugins/InventoryInjector/{esp_name}.json", (dev_mod_root, folder_name)),
     ]
 
+
 def get_perk_overhaul_list(name: str, num: int, esp_name: str | None) -> list[tuple[Path, tuple[Path, str]]]:
     return _get_spell_list(name, num, _get_perk_overhaul_folder_name, esp_name)
+
 
 def get_spell_pack_list(modname: str, num: int, esp_name: str | None = None) -> list[tuple[Path, tuple[Path, str]]]:
     return _get_spell_list(modname, num, _get_spell_pack_folder_name, esp_name)
@@ -402,6 +434,8 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_powers.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_spellproc_overlay.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_spellproc_overlay.dds", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/cursor.dds", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/inv_bg.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/keynames/keynames.csv", (dev_mod_root, main_mod_folder)),
@@ -413,21 +447,27 @@ released_files_main_plugin_v2 = [
 ]
 
 released_files_main_plugin_v2 += [
-    (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", (dev_mod_root, main_mod_folder)) for preset in used_presets
+    (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", (dev_mod_root, main_mod_folder)) for preset in
+    used_presets
 ]
-
 
 battlemage_perk_files = [
     (dev_mod_root_battlemage / "SpellHotbar_BattleMage.esp", (dev_mod_root_battlemage, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "meshes/interface/intbattlemageperkskydome.nif", (dev_mod_root_battlemage, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "textures/interface/battlemage_bluemoon.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "textures/interface/battlemage_constellation.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "meshes/interface/intbattlemageperkskydome.nif",
+     (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "textures/interface/battlemage_bluemoon.dds",
+     (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "textures/interface/battlemage_constellation.dds",
+     (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (dev_mod_root_battlemage / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds",
+     (dev_mod_root_battlemage, battlemage_mod_folder)),
     # yes the scripts are located in the main mods folder in the dev setup
     (dev_mod_root / "Scripts/SpellHotbarBattleMageInitQuestScript.pex", (dev_mod_root, battlemage_mod_folder)),
     (dev_mod_root / "Scripts/SpellHotbarOpenBattleMagePerkTree.pex", (dev_mod_root, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "SKSE/Plugins/CustomSkills/SpellHotbar_Battlemage.json",
-     (dev_mod_root_battlemage, battlemage_mod_folder))
+    (dev_mod_root_battlemage_csf3 / "SKSE/Plugins/CustomSkills/SpellHotbar_Battlemage.json",
+     (dev_mod_root_battlemage_csf3, battlemage_mod_folder_csf3)),
+    (dev_mod_root_battlemage_csf2 / "NetScriptFramework/Plugins/CustomSkill.SpellHotbar_Battlemage.config.txt",
+     (dev_mod_root_battlemage_csf2, battlemage_mod_folder_csf2))
 ]
 
 if __name__ == "__main__":
@@ -476,11 +516,15 @@ if __name__ == "__main__":
     _add_spell_pack("mysticism", "MysticismMagic.esp")
     _add_spell_pack("witcher_signs", "W3S.esl")
 
+    _add_spell_pack("shadow_spell_package", "ShadowSpellPackage.esp", credits_name="ArchAngelAries")
+    _add_spell_pack("star_wars_spell_pack", "starwarsspellpack.esp", credits_name="ArchAngelAries")
+    _add_spell_pack("star_wars_spell_pack_esl", "starwarsspellpack_ESLversion.esl", credits_name="ArchAngelAries")
+    _add_spell_pack("undead_horse", "Undead Horse.esl", credits_name="ArchAngelAries")
 
     # perk overhauls
-    ordinator_folder = _get_perk_overhaul_folder_name(1,"ordinator")
-    sperg_folder = _get_perk_overhaul_folder_name(2,"sperg")
-    pos_folder = _get_perk_overhaul_folder_name(3,"path_of_sorcery")
+    ordinator_folder = _get_perk_overhaul_folder_name(1, "ordinator")
+    sperg_folder = _get_perk_overhaul_folder_name(2, "sperg")
+    pos_folder = _get_perk_overhaul_folder_name(3, "path_of_sorcery")
 
     _add_perk_overhaul("Vanilla/Vokrii", None, [], DualCastPerkConfig.VANILLA)
     _add_perk_overhaul("Ordinator", "Ordinator - Perks of Skyrim.esp", ordinator_folder, DualCastPerkConfig.VANILLA)
@@ -488,8 +532,8 @@ if __name__ == "__main__":
     _add_perk_overhaul("Path of Sorcery", "PathOfSorcery.esp", pos_folder, DualCastPerkConfig.VANILLA)
     _add_perk_overhaul("Adamant", "Adamant.esp", [], DualCastPerkConfig.ADAMANT)
     _add_perk_overhaul("Vokriinator", "Vokriinator.esp", ordinator_folder, DualCastPerkConfig.VANILLA)
-    _add_perk_overhaul("Vokriinator Black", "Vokriinator Black.esp", [ordinator_folder, sperg_folder, pos_folder], DualCastPerkConfig.VANILLA)
-
+    _add_perk_overhaul("Vokriinator Black", "Vokriinator Black.esp", [ordinator_folder, sperg_folder, pos_folder],
+                       DualCastPerkConfig.VANILLA)
 
     tmp_folder = output_zip_path.parent / f"tmp_build_{version}"
     if tmp_folder.exists():
@@ -513,7 +557,7 @@ if __name__ == "__main__":
         info_xml.write(_get_info_xml(version))
 
     spell_packs.sort()
-    spell_packs_out = [(s[0], _get_spell_pack_folder_name(i, s[0]), s[1]) for i, s in enumerate(spell_packs)]
+    spell_packs_out = [(s[0], _get_spell_pack_folder_name(i, s[0]), s[1], s[2]) for i, s in enumerate(spell_packs)]
 
     with open(module_config_path, "w") as module_xml:
         module_xml.write(_get_module_config_xml(version, spell_packs_out))
@@ -531,24 +575,36 @@ if __name__ == "__main__":
 
         release_files += battlemage_perk_files
 
-        release_files += get_perk_overhaul_list("ordinator",1, "Ordinator - Perks of Skyrim")
-        release_files += get_perk_overhaul_list("sperg",2, "SPERG-SSE")
-        release_files += get_perk_overhaul_list("path_of_sorcery",3, "PathOfSorcery")
+        release_files += get_perk_overhaul_list("ordinator", 1, "Ordinator - Perks of Skyrim")
+        release_files += get_perk_overhaul_list("sperg", 2, "SPERG-SSE")
+        release_files += get_perk_overhaul_list("path_of_sorcery", 3, "PathOfSorcery")
 
         # ui files
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font.ttf", "4000 Interface Files/fonts"))
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_sovngarde.ttf", "4000 Interface Files/fonts"))
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_cn.ttf", "4000 Interface Files/fonts"))
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_jp.ttf", "4000 Interface Files/fonts"))
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_ru.ttf", "4000 Interface Files/fonts"))
+        release_files.append(
+            (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font.ttf", "4000 Interface Files/fonts"))
+        release_files.append(
+            (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_sovngarde.ttf", "4000 Interface Files/fonts"))
+        release_files.append(
+            (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_cn.ttf", "4000 Interface Files/fonts"))
+        release_files.append(
+            (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_jp.ttf", "4000 Interface Files/fonts"))
+        release_files.append(
+            (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/text_font_ru.ttf", "4000 Interface Files/fonts"))
         ## nordic UI texture
-        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv", "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
-        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds", "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
+        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.csv",
+                              "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
+        release_files.append((dev_mod_root_nordic_ui / "SKSE/Plugins/SpellHotbar/images/default_icons_nordic.dds",
+                              "4000 Interface Files/SKSE/Plugins/SpellHotbar/images"))
 
         # conditionalFiles
-        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_vanilla"))
-        release_files.append((dev_mod_root / "../Spell Hotbar 2 Adamant/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_adamant"))
-        release_files.append((dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv", "9000 ConditionalFiles/perkdata_sperg"))
+        release_files.append((dev_mod_root / "SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv",
+                              "9000 ConditionalFiles/perkdata_vanilla"))
+        release_files.append((
+                             dev_mod_root / "../Spell Hotbar 2 Adamant/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv",
+                             "9000 ConditionalFiles/perkdata_adamant"))
+        release_files.append((
+                             dev_mod_root / "../Spell Hotbar 2 SPERG/SKSE/Plugins/SpellHotbar/perkdata/dual_cast_perks.csv",
+                             "9000 ConditionalFiles/perkdata_sperg"))
 
         # installer images
         release_files.append((Path(__file__).parent / "installer_images/spell_hotbar_logo.jpg", "installer_images"))
@@ -556,13 +612,14 @@ if __name__ == "__main__":
         release_files.append((Path(__file__).parent / "installer_images/oblivion_mode.jpg", "installer_images"))
         release_files.append((Path(__file__).parent / "installer_images/controller_simple.jpg", "installer_images"))
 
-        #auto profiles, this is duplicated because vortex did not handle copying an existing file a second time correctly
+        # auto profiles, this is duplicated because vortex did not handle copying an existing file a second time correctly
         for preset in used_presets:
-            release_files.append((dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", f"9000 ConditionalFiles/auto_profiles"))
+            release_files.append(
+                (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", f"9000 ConditionalFiles/auto_profiles"))
 
         if ONLY_PRINT_FILES:
             for p1, p2 in release_files:
                 print(f"'{p1}' -> '{p2}'")
         else:
             build_release_zip(output_zip_path, release_files, main_folder="Spell Hotbar 2")
-            #copy_files_outfolder(debug_output_folder, release_files, main_folder="Spell Hotbar 2")
+            # copy_files_outfolder(debug_output_folder, release_files, main_folder="Spell Hotbar 2")

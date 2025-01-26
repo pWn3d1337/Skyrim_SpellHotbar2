@@ -301,7 +301,7 @@ namespace SpellHotbar
         //float text_height = ImGui::CalcTextSize("M").y;
 
         float key_icon_length{ 0.0f };
-        if (Bars::use_keybind_icons) {
+        if (Bars::use_keybind_icons()) {
             //Check for longest button combo
             for (int i = 0; i < m_barsize; i++) {
                 auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
@@ -328,7 +328,7 @@ namespace SpellHotbar
                 count = GameData::count_item_in_inv(skill.formID);
             }
 
-            if (Bars::use_keybind_icons) {
+            if (Bars::use_keybind_icons()) {
                 //Draw the Keybind icons
                 auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
                 float key_icon_size = icon_size * 2.0/3.0f;
@@ -337,6 +337,7 @@ namespace SpellHotbar
                     spacing_offset = ImGui::GetStyle().ItemSpacing.x;
                 }
                 ImGui::Dummy(ImVec2(key_icon_size * key_icon_length + spacing_offset, static_cast<float>(icon_size))); ImGui::SameLine();
+                p.y += icon_size * 1.0f / 6.0f;
                 RenderManager::draw_button_icon_menu(p, tex_id_key, tex_id_mod, static_cast<int>(key_icon_size));
 
                 //update p to after dummy
@@ -363,7 +364,7 @@ namespace SpellHotbar
             }
             ImGui::SameLine();
 
-            if (!Bars::use_keybind_icons) {
+            if (!Bars::use_keybind_icons()) {
                 std::string key_text = GameData::get_keybind_text(i, mod);
                 //ImVec2 tex_pos(p.x + text_offset,
                   //             p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
@@ -611,7 +612,7 @@ namespace SpellHotbar
             }
         }
         else {
-            if (Bars::use_keybind_icons) {
+            if (Bars::use_keybind_icons()) {
                 ImVec2 itm_spacing = ImGui::GetStyle().ItemSpacing;
                 itm_spacing.y += icon_size * 0.35f * keybind_icon_pos_factor;
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itm_spacing);
@@ -628,7 +629,7 @@ namespace SpellHotbar
                 draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i, p, new_line);
 
             }
-            if (Bars::use_keybind_icons) {
+            if (Bars::use_keybind_icons()) {
                 ImGui::PopStyleVar();
             }
         }
@@ -754,7 +755,7 @@ namespace SpellHotbar
 
         //ImGui::SameLine();
 
-        if (!Bars::use_keybind_icons) {
+        if (!Bars::use_keybind_icons()) {
             std::string key_text = GameData::get_keybind_text(slot_index, mod);
             //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
             ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
@@ -777,7 +778,7 @@ namespace SpellHotbar
             float mult = RenderManager::get_scaled_text_size_multiplier();
 
             ImVec2 count_text_pos(0,0);
-            if (Bars::use_keybind_icons) {
+            if (Bars::use_keybind_icons()) {
                 count_text_pos = ImVec2(p.x + text_offset_x, p.y + text_offset_y);
             }
             else {

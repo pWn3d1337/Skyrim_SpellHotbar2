@@ -95,6 +95,7 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<int, std::string> animation_names;
 
+    bool key_icons_available{ false };
     /*
     * Spells that have a magiceffect as cooldown
     */
@@ -102,7 +103,6 @@ namespace SpellHotbar::GameData {
 
     float potion_gcd { 1.0f };
     float block_timer { 0.0f };
-
     Bars::OblivionBar oblivion_bar;
 
     constexpr ImU32 col_OneHanded {IM_COL32(255,132,0,255)};

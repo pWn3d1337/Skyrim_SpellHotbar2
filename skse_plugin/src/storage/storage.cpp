@@ -89,7 +89,8 @@ namespace SpellHotbar::Storage {
 
             //V4: since SpellHotbar2 0.0.7
             a_intfc->WriteRecordData(&Bars::disable_menu_binding, sizeof(bool));
-
+            bool use_key_icons = Bars::get_use_keybind_icons();
+            a_intfc->WriteRecordData(&use_key_icons, sizeof(bool));
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -392,9 +393,14 @@ namespace SpellHotbar::Storage {
                         logger::error("Failed to read disable_menu_binding!");
                         break;
                     }
+                    if (!a_intfc->ReadRecordData(&Bars::use_keybind_icons, sizeof(bool))) {
+                        logger::error("Failed to read use_keybind_icons!");
+                        break;
+                    }
                 }
                 else {
                     Bars::disable_menu_binding = false;
+                    Bars::set_use_keybind_icons(false);
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

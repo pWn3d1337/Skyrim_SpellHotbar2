@@ -27,7 +27,7 @@ string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
 
 ; SCRIPT VERSION
 int function GetVersion()
-	return 2
+	return 3
 endFunction
 
 Event OnConfigInit()
@@ -151,7 +151,7 @@ Event OnPageReset(string page)
 		AddToggleOptionST("UseDefaultBarWhenSheathed", "Use Default bar when Sheated", SpellHotbar.isDefaultBarWhenSheathed())
         AddToggleOptionST("DisableMenuRendering", "Disable Menu Rendering", SpellHotbar.isDisableMenuRendering())
 		AddToggleOptionST("DisableMenuBinding", "Disable Menu Binding", SpellHotbar.isDisableMenuBinding())
-		AddEmptyOption()
+		AddToggleOptionST("UseKeyIcons", "Use Key Icons", SpellHotbar.isUsingKeyIcons())
 
         AddHeaderOption("Bar Positioning")
 		AddHeaderOption("")
@@ -1060,6 +1060,15 @@ State DisableMenuBinding
     EndEvent
     Event OnHighlightST()
         SetInfoText("Disable the slotting of skills in Magic Menu and Inventory");
+    EndEvent
+EndState
+
+State UseKeyIcons
+    Event OnSelectST()
+        SetToggleOptionValueST(SpellHotbar.toggleUsingKeyIcons())
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Toggle if ImGui icons should be used to display keybinds instead of text, will not function if ImGui icons are not installed");
     EndEvent
 EndState
 

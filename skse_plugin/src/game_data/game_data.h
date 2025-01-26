@@ -203,6 +203,10 @@ namespace SpellHotbar::GameData {
     extern float block_timer;
 
     extern Bars::OblivionBar oblivion_bar;
+    /*
+    * Have ImGui Icons be successfully loaded?
+    */
+    extern bool key_icons_available;
 
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);

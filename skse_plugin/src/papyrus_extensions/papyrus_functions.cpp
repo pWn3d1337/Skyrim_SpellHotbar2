@@ -478,6 +478,14 @@ bool toggle_disable_menu_binding(RE::StaticFunctionTag*) {
     return SpellHotbar::Bars::disable_menu_binding = !SpellHotbar::Bars::disable_menu_binding;
 }
 
+bool is_using_key_icons(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::use_keybind_icons();
+}
+
+bool toggle_using_key_icons(RE::StaticFunctionTag*) {
+    return SpellHotbar::Bars::toggle_use_keyind_icons();
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -559,5 +567,7 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("getBarCrossDistance", "SpellHotbar", get_bar_cross_distance);
     vm->RegisterFunction("isDisableMenuBinding", "SpellHotbar", is_disable_menu_binding);
     vm->RegisterFunction("toggleDisableMenuBinding", "SpellHotbar", toggle_disable_menu_binding);
+    vm->RegisterFunction("isUsingKeyIcons", "SpellHotbar", is_using_key_icons);
+    vm->RegisterFunction("toggleUsingKeyIcons", "SpellHotbar", toggle_using_key_icons);
     return true;
 }

@@ -27,6 +27,7 @@ void load_keynames(const std::string & keynames_csv)
         logger::error("Could not load '{}'!", keynames_csv);
     }
     else {
+        GameData::key_icons_available = false;
         for (size_t i = 0; i < doc.GetRowCount(); i++) {
             try {
 
@@ -38,6 +39,10 @@ void load_keynames(const std::string & keynames_csv)
 
                 int tex_idx = RenderManager::load_texture_return_index("./data/" + icon_path);
 
+                if (tex_idx >= 0 && !GameData::key_icons_available) {
+                    //If a valid icon got loaded, allow the rendering of key_icons
+                    GameData::key_icons_available = true;
+                }
                 GameData::key_names.emplace(code, GameData::Key_Data(text_short, text, tex_idx));
             }
             catch (const std::exception& e) {

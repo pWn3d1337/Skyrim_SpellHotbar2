@@ -71,7 +71,7 @@ namespace SpellHotbar::Bars {
     extern bar_layout layout;
     extern float bar_circle_radius;
     extern float bar_cross_distance;
-    extern bool use_keybind_icons;
+    //extern bool use_keybind_icons;
 
     constexpr uint32_t MAIN_BAR = 'MAIN';
     constexpr uint32_t MAIN_BAR_SNEAK = MAIN_BAR + 1;
@@ -149,4 +149,11 @@ namespace SpellHotbar::Bars {
 
     std::vector<std::pair<uint32_t, std::string>> get_list_of_bars();
 
+    /* check if icons should be used AND are available */
+    bool use_keybind_icons();
+    bool toggle_use_keyind_icons();
+
+    /* return actual value, do not check if icons available*/
+    bool get_use_keybind_icons();
+    void set_use_keybind_icons(bool value);
 }

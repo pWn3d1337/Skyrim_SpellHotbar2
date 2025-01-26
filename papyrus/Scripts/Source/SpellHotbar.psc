@@ -81,3 +81,5 @@ float function getBarCrossDistance() global native
 float function setBarCrossDistance(float value) global native
 bool function isDisableMenuBinding() global native
 bool function toggleDisableMenuBinding() global native
+bool function isUsingKeyIcons() global native
+bool function toggleUsingKeyIcons() global native

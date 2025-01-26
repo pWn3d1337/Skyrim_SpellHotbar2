@@ -178,7 +178,7 @@ namespace SpellHotbar {
         * pop the last font change
         */
         static void revert_font();
-#
+
         /*
         * Draw custom mouse cursor
         */
