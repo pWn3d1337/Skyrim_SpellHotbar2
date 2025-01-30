@@ -331,7 +331,7 @@ namespace SpellHotbar
             if (Bars::use_keybind_icons()) {
                 //Draw the Keybind icons
                 auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
-                float key_icon_size = icon_size * 2.0/3.0f;
+                float key_icon_size = icon_size * 2.0f/3.0f;
                 float spacing_offset{ 0.0f };
                 if (tex_id_mod >= 0) {
                     spacing_offset = ImGui::GetStyle().ItemSpacing.x;

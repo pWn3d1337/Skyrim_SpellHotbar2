@@ -1530,13 +1530,13 @@ inline std::tuple<float, float, float, float> calculate_hud_window_size(int bars
         window_width = (slot_h + spacing.x) * static_cast<float>(row_len - 1) + slot_h + inner_spacing.x * 2 + frame_padding.x * 2;
 
         //Add height for extra rows
-        if (Bars::use_keybind_icons) {
+        if (Bars::use_keybind_icons()) {
             window_height += slot_h * keybind_icon_pos_factor * (numrows - 1);
         }
     }
 
     //add extra height for keybind buttons
-    if (Bars::use_keybind_icons) {
+    if (Bars::use_keybind_icons()) {
         window_height += slot_h * keybind_icon_pos_factor;
     }
 

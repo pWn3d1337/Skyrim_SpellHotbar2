@@ -396,8 +396,5 @@ namespace SpellHotbar::GameData {
     std::string get_key_text_long(int code);
 
     std::string strip_tooltip(const std::string& input, float magnitude, uint32_t duration);
-
-    //TODO remove
-    void print_perks(RE::PlayerCharacter* pc);
 }
 

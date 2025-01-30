@@ -515,6 +515,7 @@ if __name__ == "__main__":
 
     _add_spell_pack("mysticism", "MysticismMagic.esp")
     _add_spell_pack("witcher_signs", "W3S.esl")
+    _add_spell_pack("elemental_mastery_magic", "KittySpellPack02.esl")
 
     _add_spell_pack("shadow_spell_package", "ShadowSpellPackage.esp", credits_name="ArchAngelAries")
     _add_spell_pack("star_wars_spell_pack", "starwarsspellpack.esp", credits_name="ArchAngelAries")

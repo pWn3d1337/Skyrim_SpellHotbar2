@@ -1013,6 +1013,11 @@ if __name__ == "__main__":
         stitch_mod("path_of_sorcery")
         i4_mod("path_of_sorcery", tmp_icons_dir, esp_name="PathOfSorcery")
 
+    if redo_all_img or False:
+        stitch_mod("elemental_mastery_magic")
+        i4_mod("elemental_mastery_magic", tmp_icons_dir, esp_name="KittySpellPack02")
+
+
     """contributed mods:"""
     if redo_all_img or False:
         #credits ArchAngelAries

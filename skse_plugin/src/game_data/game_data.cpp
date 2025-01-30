@@ -333,42 +333,6 @@ namespace SpellHotbar::GameData {
         }
     }
 
-    void GameData::print_perks(RE::PlayerCharacter* pc) {
-        //TODO remove this
-        auto av_list = RE::ActorValueList::GetSingleton();
-        for (uint32_t i = 0; i < static_cast<uint32_t>(std::to_underlying(RE::ActorValue::kTotal)); i++) {
-            auto ptree = av_list->actorValues[i]->perkTree;
-            if (ptree != nullptr) {
-
-                logger::info("Child Perks: {}", ptree->children.size());
-
-                for (uint32_t j = 0; j < ptree->children.size(); j++) {
-                    auto subnode = ptree->children[j];
-                    if (subnode != nullptr) {
-                        //logger::info("Has Child");
-                        if (subnode->perk != nullptr) {
-                            //logger::info("Has Perk");
-                            //RE::BSString buf = "";
-                            //subnode->perk->GetDescription(buf, nullptr);
-                            //if (subnode->perk->data.playable && !subnode->perk->data.hidden) {
-                            //    logger::info("{}", subnode->perk->GetName());
-                            //}
-                            if (pc != nullptr) {
-                                logger::info("Player Has {}: {}", subnode->perk->GetName(), subnode->perk->perkConditions.IsTrue(pc, pc));
-                            }
-                        }
-                    }
-
-                }
-
-                RE::BGSPerk* perk = ptree->perk;
-                if (perk != nullptr) {
-                    logger::info("Perk not null");
-                }
-            }
-        }
-    }
-
     void onDataLoad() 
     { 
         load_form_from_game(0x00283A, "Dawnguard.esm", &vampire_lord_race, "Vampire Lord Race", RE::FormType::Race);

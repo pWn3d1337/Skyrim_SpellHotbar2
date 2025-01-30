@@ -444,7 +444,14 @@ namespace SpellHotbar::BindMenu {
                 // the filename and a small preview of the image, etc.)
                 //ImGui::Text("%08x", item->formID);
                 if (current_dragged_skill.has_dragged_from()) {
-                    RenderManager::draw_skill(current_dragged_skill.get_form_id(), static_cast<int>(std::round(60.0f * scale_factor)), RenderManager::get_skill_color(current_dragged_skill.form));
+                    auto skill_dat = GameData::get_spell_data(item, true, true);
+                    int icon_size = static_cast<int>(std::round(60.0f * scale_factor));
+                    ImVec2 p = ImGui::GetCursorScreenPos();
+                    RenderManager::draw_skill(current_dragged_skill.get_form_id(), icon_size, RenderManager::get_skill_color(current_dragged_skill.form));
+                    if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
+                        RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
+                    }
+                    
                     ImGui::SameLine();
                     ImGui::Text(current_dragged_skill.form->GetName());
                 }
@@ -646,7 +653,7 @@ namespace SpellHotbar::BindMenu {
                     ImGui::TableNextRow();
                    
                     ImGui::TableNextColumn();
-                    ImVec2 count_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 icon_pos = ImGui::GetCursorScreenPos();
                     RenderManager::draw_skill(item->GetFormID(), table_icon_size, RenderManager::get_skill_color(item));
                     if (ImGui::IsItemHovered())
                     {
@@ -655,6 +662,11 @@ namespace SpellHotbar::BindMenu {
                     if (!is_shout || rank > 0) {
                         set_drag_source(item, scale_factor);
                     }
+                    auto skill_dat = GameData::get_spell_data(item, true, true);
+                    if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
+                        RenderManager::draw_icon_overlay(icon_pos, table_icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
+                    }
+
                     //If count available, display
                     if (count > -1) {
                         std::string text = std::to_string(std::clamp(count, -9999, 9999));
@@ -664,7 +676,7 @@ namespace SpellHotbar::BindMenu {
                         //float text_offset_x = table_icon_size * 0.05f;
                         float text_offset_y = table_icon_size * 0.0125f;
 
-                        ImVec2 count_text_pos = ImVec2(count_pos.x + table_icon_size - textsize.x * mult, count_pos.y + table_icon_size - textsize.y * mult - text_offset_y);
+                        ImVec2 count_text_pos = ImVec2(icon_pos.x + table_icon_size - textsize.x * mult, icon_pos.y + table_icon_size - textsize.y * mult - text_offset_y);
                         RenderManager::draw_scaled_text(count_text_pos, IM_COL32_WHITE, text.c_str());
                     }
 

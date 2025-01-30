@@ -1,0 +1,5 @@
+Name	FormID	ScrollID	Plugin	Casteffect	GCD	Cooldown	Casttime	Animation	Animation2
+Diamond Splash	0x825	0x831	KittySpellpack02.esl	DestructionFrost	-1	-1	-1	-1	10003
+Flare Storm	0x829	0x832	KittySpellpack02.esl	DestructionFire	-1	-1	-1	-1	10013
+Supercharged Sprites	0x816	0x833	KittySpellpack02.esl	DestructionShock	-1	-1	-1	-1	10012
+Chaos Furnace	0x82F	0x830	KittySpellpack02.esl	IllusionRed	-1	-1	-1	-1	10005

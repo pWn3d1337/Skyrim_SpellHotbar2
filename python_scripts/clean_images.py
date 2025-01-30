@@ -101,3 +101,5 @@ if __name__ == "__main__":
 
     #copy_and_clean_image(Path(r"F:\Skyrim Dev\WORK\icon_work\toggle_dual_cast_icon_blend.png"), Path(output_dir_root) / "icons/toggle_cast.png")
 
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/elemental_mastery_magic",
+    #               f"{output_dir_root}/modded_spell_icons/elemental_mastery_magic", subdirs=False)
