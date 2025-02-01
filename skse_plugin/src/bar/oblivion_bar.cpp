@@ -184,6 +184,7 @@ namespace SpellHotbar::Bars {
 			}
 
 		}
+		ImGui::PopFont();
 	}
 
 	void OblivionBar::clear()
