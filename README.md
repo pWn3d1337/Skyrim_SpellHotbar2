@@ -2,7 +2,7 @@
 A total rework to SpellHotbar (https://github.com/pWn3d1337/Skyrim_SpellHotbar)
 
 # Beta State
-The mod is currently in a beta state and just being released to the public for testing. If you want to report Bugs create an Issue here, please also provide information about your skyrim binary version and include the log file in case of crashes or loading issues. ("C:/Users/USERNAME/Documents/My Games/Skyrim Special Edition/SKSE/SpellHotbar2.log"). Crash logs can also be helpful in case of a crash.
+The mod is currently still in a beta state, but there are no more missing major features before a release. If you want to report Bugs create an Issue here, please also provide information about your skyrim binary version and include the log file in case of crashes or loading issues. ("C:/Users/USERNAME/Documents/My Games/Skyrim Special Edition/SKSE/SpellHotbar2.log"). Crash logs can also be helpful in case of a crash.
 
 ## Contribute
 ### Presets
@@ -20,8 +20,9 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu  
-[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree  
+[Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree, a v2 compatible config is also provided for 1.5.97 users    
 [Sprint Sneak Movement Speed Fix](https://www.nexusmods.com/skyrimspecialedition/mods/86631) - fixes sneak hotbar casting related movement speed  
+[ImGui Icons](https://www.nexusmods.com/skyrimspecialedition/mods/114790) - OPTIONAL, allows keybind icons to be used instead of text, different styles also work.
 
 Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
 All papyrus lib requirements have been dropped.
@@ -109,6 +110,10 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 
 ![#Ingame_Editor](docs/images/spell_editor1.jpg) ![#Ingame_Editor2](docs/images/spell_editor2.jpg)  
 
+## Advanced Bind Menu
+Allows the user to have a dedicated menu to slot skills with drag and drop, all inputs are NOT forwarded to the game while in this menu. This avoids all key conflicts. Can be enabled in MCM by defining a keybind to "Open Binding Menu". This keybind must be pressed while in the Magic Menu or an inventory tab that is supported by spell hotbar (potions, food, scrolls).  
+![#Binding Menu](docs/images/binding_menu.jpg)
+
 ## Currently supported Spell/Perk mods with icons
 [Abyss](https://www.nexusmods.com/skyrimspecialedition/mods/83329)  
 [Abyssal Tides Magic](https://www.nexusmods.com/skyrimspecialedition/mods/97892)  
@@ -121,7 +126,8 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 [Constellation Magic](https://www.nexusmods.com/skyrimspecialedition/mods/92104)  
 [Dark Hierophant Magic](https://www.nexusmods.com/skyrimspecialedition/mods/108499)  
 [Desecration](https://www.nexusmods.com/skyrimspecialedition/mods/90832)  
-[Elemental Destruction Magic Redux](https://www.nexusmods.com/skyrimspecialedition/mods/37211)  
+[Elemental Destruction Magic Redux](https://www.nexusmods.com/skyrimspecialedition/mods/37211)
+[Elemental Mastery Magic](https://www.nexusmods.com/skyrimspecialedition/mods/139953)  
 [Holy Templar Magic](https://www.nexusmods.com/skyrimspecialedition/mods/113360)  
 [Miracles of Skyrim](https://www.nexusmods.com/skyrimspecialedition/mods/71708)  
 [Mysticism - A Magic Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/27839)  
@@ -140,11 +146,11 @@ In the MCM an editor for Spells and Potions can be opened to edit the spell data
 [Winter Wonderland Magic](https://www.nexusmods.com/skyrimspecialedition/mods/93871)  
 [The Witcher Signs](https://www.nexusmods.com/skyrimspecialedition/mods/90645)  
 
-# Known Issues
-* Some Perk mods change the costs of spells to health, this is currently not working when casting through the hotbar
-* Casting while moving in sneak mode has animation issues (walking in regular speed while counting as sneaking)
-* I have know Idea if fonts for other languages work, feedback/suggestions welcome
-* It seems be possible to cast spells with hotbar while channeling a staff
+### Icons Provided by Community:
+#### credits ArchAngelAries
+[Skull Commander Armor - Undead Horse](https://www.nexusmods.com/skyrimspecialedition/mods/116221)  
+[Shadow Spell Package](https://www.nexusmods.com/skyrimspecialedition/mods/13299)  
+[Star Wars Spell Pack](https://www.nexusmods.com/skyrimspecialedition/mods/82637)  
 
 # Credits
 [Mrowpurr](https://github.com/mrowrpurr) for Tutorials & Templates  
