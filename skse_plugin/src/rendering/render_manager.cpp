@@ -617,7 +617,7 @@ void load_font_resources(float window_height) {
                     std::string glyph_range_text = text_font_name.substr(ind, text_font_name.length() - ind - 4);
                     logger::info("loading glyph ranges for '{}'", glyph_range_text);
                     if (glyph_range_text == "chinese") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon();
                     }
                     else if (glyph_range_text == "cyrillic") {
                         glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();

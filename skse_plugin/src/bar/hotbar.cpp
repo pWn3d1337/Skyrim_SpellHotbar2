@@ -35,6 +35,9 @@ namespace SpellHotbar
 
         // write number off filled slots
         uint8_t filled_slots = static_cast<uint8_t>(std::count_if(bar.m_slotted_skills.begin(), bar.m_slotted_skills.end(), [](const auto& elem) { return elem.formID != 0; }));
+#ifdef DEBUG_LOG_SERIALIZATION
+        //logger::info("-{}: {} slots", name, filled_slots);
+#endif
         if (!serializer->WriteRecordData(&filled_slots, sizeof(uint8_t))) {
             logger::error("Failed to write bar size for {}", name);
             return;
@@ -43,15 +46,21 @@ namespace SpellHotbar
         // write index + formID + hand_mode
         for (int i = 0U; i < bar.m_slotted_skills.size(); i++) {
             if (bar.m_slotted_skills.at(i).formID != 0) {
-
+#ifdef DEBUG_LOG_SERIALIZATION
+//                logger::info("Saving: {}-{:08x}", i, bar.m_slotted_skills.at(i).formID);
+#endif
                 bar.m_slotted_skills.at(i).serialize_skill(static_cast<uint8_t>(i), serializer, name);
             }
         }
 
     }
 
-    void deserialize_bar(SubBar& bar, SKSE::SerializationInterface* serializer, const std::string& name, uint32_t /*version*/, uint32_t /*length*/)
+    void deserialize_bar(SubBar& bar, SKSE::SerializationInterface* serializer, const std::string& name, uint32_t version, uint32_t length)
     {       
+#ifdef DEBUG_LOG_SERIALIZATION
+        logger::info("Deseralizing {} with version {} and length {}", name, version, length);
+#endif // DEBUG_LOG_SERIALIZATION
+
         //read number of filled slots
         uint8_t slots{0Ui8};
         if (!serializer->ReadRecordData(&slots, sizeof(uint8_t))) {
@@ -106,7 +115,11 @@ namespace SpellHotbar
                 logger::error("No barname known for {}!", key);
             }
         } else {
-            //if (Bars::bar_names.contains(key)) logger::trace("Storing bar {}", Bars::bar_names.at(key));
+
+#ifdef DEBUG_LOG_SERIALIZATION
+            if (Bars::bar_names.contains(key)) logger::trace("Storing bar {}, {}", Bars::bar_names.at(key), key);
+#endif // DEBUG_LOG_SERIALIZATION
+
             if (!serializer->WriteRecordData(&m_enabled, sizeof(bool))) {
                 logger::error("Failed to write enabled state for {}", m_name);
             } else {

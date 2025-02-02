@@ -1,5 +1,8 @@
 #pragma once
 
+
+//#define DEBUG_LOG_SERIALIZATION
+
 namespace SpellHotbar::Storage {
     /*
     * 2 - SpellHotbar2, alpha until 0.0.4

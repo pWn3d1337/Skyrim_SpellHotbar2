@@ -16,6 +16,11 @@ namespace SpellHotbar::Storage {
         {
             logger::error("Could not store main hotbar settings!");
         } else {
+
+#ifdef DEBUG_LOG_SERIALIZATION
+            logger::info("Saving 'HOTB' ({}) record, format {}", 'HOTB', Storage::save_format);
+#endif
+
             a_intfc->WriteRecordData(&Bars::barsize, sizeof(uint8_t));
             a_intfc->WriteRecordData(&Bars::disable_non_modifier_bar, sizeof(bool));
 
@@ -96,12 +101,17 @@ namespace SpellHotbar::Storage {
             //write keybinds, make saves compatible when new binds are added
             uint8_t num_keybinds = static_cast<uint8_t>(Input::keybind_id::num_keys);
             a_intfc->WriteRecordData(&num_keybinds, sizeof(uint8_t));
+#ifdef DEBUG_LOG_SERIALIZATION
+            logger::info("Writing {} keybinds", num_keybinds);
+#endif
 
             for (uint8_t i = 0U; i < num_keybinds; i++) {
                 int16_t key = static_cast<int16_t>(Input::get_keybind(i)); //key can be -1 and >255, we need 2bytes
+#ifdef DEBUG_LOG_SERIALIZATION
+                logger::info(" key {}: {}", i, key);
+#endif
                 a_intfc->WriteRecordData(&key, sizeof(int16_t));
             }
-
         }
 
         for (const auto& [k, v]: SpellHotbar::Bars::hotbars)
@@ -165,10 +175,14 @@ namespace SpellHotbar::Storage {
         uint32_t version{0};
         uint32_t length{0};
         while (a_intfc->GetNextRecordInfo(type, version, length)) {
+#ifdef  DEBUG_LOG_SERIALIZATION
+            logger::info("Loading {}, version {} with length {}", type, version, length);
+#endif //  DEBUG_LOG_SERIALIZATION
+
             if (type == 'HOTB')
             {
                 //HOTB is now variable length
-                logger::trace("Reading 'HOTB' data from save...");
+                //logger::trace("Reading 'HOTB' data from save...");
                 //if (length != ((sizeof(bool) * 3) + (sizeof(uint8_t) * 6) + (sizeof(float)* 3) )) {
                 //    logger::error("Invalid Record data length for 'HOTB'");
                 //}
@@ -381,6 +395,9 @@ namespace SpellHotbar::Storage {
                     }
                     else {
                         Bars::bar_cross_distance = std::clamp(read_bar_cross_distance, 0.0f, 1.0f);
+#ifdef DEBUG_LOG_SERIALIZATION
+                        logger::info("Loaded Bar Cross Distance: {}", read_bar_cross_distance);
+#endif
                     }
                 }
                 else
@@ -393,9 +410,21 @@ namespace SpellHotbar::Storage {
                         logger::error("Failed to read disable_menu_binding!");
                         break;
                     }
-                    if (!a_intfc->ReadRecordData(&Bars::use_keybind_icons, sizeof(bool))) {
+                    else {
+#ifdef DEBUG_LOG_SERIALIZATION
+                        logger::info("Loaded Bars::disable_menu_binding: {}", Bars::disable_menu_binding);
+#endif
+                    }
+                    bool read_use_keybind_icons{ false };
+                    if (!a_intfc->ReadRecordData(&read_use_keybind_icons, sizeof(bool))) {
                         logger::error("Failed to read use_keybind_icons!");
                         break;
+                    }
+                    else {
+                        Bars::set_use_keybind_icons(read_use_keybind_icons);
+#ifdef DEBUG_LOG_SERIALIZATION
+                        logger::info("Loaded Bars::use_keybind_icons: {}", read_use_keybind_icons);
+#endif
                     }
                 }
                 else {
@@ -407,14 +436,24 @@ namespace SpellHotbar::Storage {
                 uint8_t num_keybinds{ 0U };
                 a_intfc->ReadRecordData(&num_keybinds, sizeof(uint8_t));
 
+#ifdef DEBUG_LOG_SERIALIZATION
+                logger::info("Loading {} keybinds", num_keybinds);
+#endif
+
                 for (uint8_t i = 0U; i < num_keybinds; i++) {
                     int16_t key{ -1 };
                     a_intfc->ReadRecordData(&key, sizeof(int16_t));
                     Input::rebind_key(i, key, false);
+#ifdef DEBUG_LOG_SERIALIZATION
+                    logger::info(" Key {}: {}", i, key);
+#endif
                 }
                 //assign keys with -1 that might have not been saved due older version
                 while (num_keybinds < static_cast<uint8_t>(Input::keybind_id::num_keys)) {
                     Input::rebind_key(num_keybinds, -1, false);
+#ifdef DEBUG_LOG_SERIALIZATION
+                    logger::info(" Key {}: -1 (Default)", num_keybinds);
+#endif
                     num_keybinds++;
                 }
                 //}
@@ -438,11 +477,15 @@ namespace SpellHotbar::Storage {
             }
             else if (SpellHotbar::Bars::hotbars.contains(type))
             {
+#ifdef DEBUG_LOG_SERIALIZATION
+            logger::info("Loaded bar: {}", type);
+#endif // DEBUG_LOG_SERIALIZATION
+
                 SpellHotbar::Bars::hotbars.at(type).deserialize(a_intfc, type, version, length);
             }
             else
             {
-                logger::warn("Unknown Record Type: {}", type);
+                logger::warn("Unknown Record Type: {}, with length: {}", type, length);
             }
 
         }
