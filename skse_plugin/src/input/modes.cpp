@@ -60,7 +60,7 @@ namespace SpellHotbar::Input {
                 {
                     bool can_start{ true };
                     if (skill.type == slot_type::shout) {
-                        if (!allowed_to_cast(skill.formID)) can_start = false;
+                        if (!allowed_to_cast(skill.formID, true)) can_start = false;
                     }
 
                     if (can_start) {
@@ -236,7 +236,7 @@ namespace SpellHotbar::Input {
                 } else if(skill.type == slot_type::lesser_power || skill.type == slot_type::power || skill.type == slot_type::shout) {
                     bool can_start{ true };
                     if (skill.type == slot_type::shout) {
-                        if (!allowed_to_cast(skill.formID)) can_start = false;
+                        if (!allowed_to_cast(skill.formID, true)) can_start = false;
                     }
 
                     if (can_start) {

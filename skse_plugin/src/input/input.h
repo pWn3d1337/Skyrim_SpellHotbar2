@@ -30,7 +30,7 @@ namespace SpellHotbar::Input {
 	/**
 	* Assumes to be called after in_ingame_state, checks for additional player based restrictions (mounted, swimming, ...)
 	*/
-	bool allowed_to_cast(RE::FormID skill);
+	bool allowed_to_cast(RE::FormID skill, bool allow_sprint = false);
 
 	RE::TESForm* get_current_selected_spell_in_menu();
 

@@ -1929,9 +1929,25 @@ namespace SpellHotbar::GameData {
              filter_list = formlist_vampire_lord_powers;
          }
 
+         auto race_list = pc->GetRace()->actorEffects;
+         uint32_t num_race_spells{ 0U };
+         if (race_list != nullptr) {
+             num_race_spells += race_list->numSpells;
+             num_race_spells += race_list->numShouts;
+         }
+
          auto& added_spells = pc->GetActorRuntimeData().addedSpells;
 
-         list_of_skills.reserve(list->numSpells + list->numShouts + added_spells.size());
+         list_of_skills.reserve(list->numSpells + list->numShouts + added_spells.size() + num_race_spells);
+
+         if (race_list != nullptr) {
+             for (uint32_t i = 0U; i < race_list->numSpells; ++i) {
+                 auto spell = race_list->spells[i];
+                 if (is_spell_ingame_visible(spell) && (add_unbind_skill || !GameData::is_clear_spell(spell->GetFormID())) && form_list_check(filter_list, spell)) {
+                     list_of_skills.push_back(spell);
+                 }
+             }
+         }
 
          for (uint32_t i = 0U; i < list->numSpells; ++i) {
              auto spell = list->spells[i];
@@ -1947,12 +1963,22 @@ namespace SpellHotbar::GameData {
              }
          }
 
+         if (race_list != nullptr) {
+             for (uint32_t i = 0U; i < race_list->numShouts; ++i) {
+                 auto shout = race_list->shouts[i];
+                 if (form_list_check(filter_list, shout)) {
+                     list_of_skills.push_back(shout);
+                 }
+             }
+         }
+
          for (uint32_t i = 0U; i < list->numShouts; ++i) {
              auto shout = list->shouts[i];
              if (form_list_check(filter_list, shout)) {
                  list_of_skills.push_back(shout);
              }
          }
+
      }
      void add_player_owned_bindable_items(RE::PlayerCharacter* pc, std::vector<RE::TESForm*>& list_of_skills)
      {

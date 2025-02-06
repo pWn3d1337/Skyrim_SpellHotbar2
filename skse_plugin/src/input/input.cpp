@@ -615,7 +615,7 @@ namespace SpellHotbar::Input {
         return !pc->IsOnMount();
     }
 
-    bool allowed_to_cast(RE::FormID skill)
+    bool allowed_to_cast(RE::FormID skill, bool allow_sprint)
     {
         auto pc = RE::PlayerCharacter::GetSingleton();
         if (allowed_to_instantcast(skill) && pc) {
@@ -629,7 +629,7 @@ namespace SpellHotbar::Input {
             //Check if player currently is casting, also check staffs
             bool isCasting = pc->IsCasting(nullptr);
 
-            return !(isCasting || as->IsSprinting() || as->IsSwimming() || inJumpState); //|| bowDrawn);
+            return !(isCasting || (!allow_sprint && as->IsSprinting()) || as->IsSwimming() || inJumpState); //|| bowDrawn);
         }
         else return false;
     }
