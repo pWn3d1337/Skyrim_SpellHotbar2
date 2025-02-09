@@ -239,8 +239,11 @@ void RenderManager::draw_custom_mouse_cursor(float cursor_size) {
         io.MouseDrawCursor = false;
         auto res = loaded_textures[cursor_texture_index].get_res();
         float scale_factor = io.DisplaySize.y / 1080.0f;
-        ImVec2 p1 = ImGui::GetMousePos();
-        ImVec2 p2 = ImVec2(p1.x + cursor_size * scale_factor, p1.y + cursor_size * scale_factor);
+        // draw texture centered, default cursor is only in bottom right quarter.
+        float half_draw_size = cursor_size * scale_factor;
+        ImVec2 mouse_pos = ImGui::GetMousePos();
+        ImVec2 p1 = ImVec2(mouse_pos.x - half_draw_size, mouse_pos.y - half_draw_size);
+        ImVec2 p2 = ImVec2(p1.x + half_draw_size*2.0f, p1.y + half_draw_size*2.0f);
         ImGui::GetForegroundDrawList()->AddImage(res, p1, p2);
     }
 }
@@ -248,19 +251,15 @@ void RenderManager::draw_custom_mouse_cursor(float cursor_size) {
 bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
 {
     auto ui = RE::UI::GetSingleton();
-    if (ui){
+    if (ui != nullptr){
         auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
-        if (invMenu) {
+        if (invMenu != nullptr && invMenu->uiMovie != nullptr && invMenu->uiMovie->IsAvailable("_root.Menu_mc.inventoryLists.categoryList.selectedIndex")) {
             //get current tab
             RE::GFxValue selection;
             //invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedEntry.text");
             invMenu->uiMovie->GetVariable(&selection, "_root.Menu_mc.inventoryLists.categoryList.selectedIndex");
 
-            //if (selection.GetType() == RE::GFxValue::ValueType::kString) {
-            //    std::string tabtype = selection.GetString();
-            //    return tabtype == tab_scrolls || tabtype == tab_potions || tabtype == tab_food;
-            //}
-            if (selection.GetType() == RE::GFxValue::ValueType::kNumber) {
+            if (!selection.IsNull() && selection.IsNumber()) {
                 int index = static_cast<int>(selection.GetNumber());
                 return index >= 4 && index <= 6; //indices for scrolls, options and food
             }
