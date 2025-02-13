@@ -41,6 +41,7 @@ namespace SpellHotbar::GameData {
     RE::SpellItem* spellhotbar_toggle_dualcast = nullptr;
     RE::EffectSetting* spellhotbar_spellproc_cd = nullptr;
     RE::SpellItem* spellhotbar_apply_spellproc_cd = nullptr;
+    RE::SpellItem* spellhotbar_battlemage_open_perks_power = nullptr;
 
     RE::TESGlobal* global_spellhotbar_use_dual_casting = nullptr;
 
@@ -420,6 +421,15 @@ namespace SpellHotbar::GameData {
         }
         else {
             logger::error("Could not get Vampire Powers Formlist");
+        }
+
+        // battlemage perktree
+        constexpr std::string_view battlemage_esp_name = "SpellHotbar_BattleMage.esp";
+        if (RE::TESDataHandler::GetSingleton()->GetModIndex(battlemage_esp_name).has_value()) {
+            load_form_from_game(0x801, battlemage_esp_name, &spellhotbar_battlemage_open_perks_power, "Battlemage Perk Tree", RE::FormType::Spell);
+        }
+        else {
+            spellhotbar_battlemage_open_perks_power = nullptr;
         }
 
 

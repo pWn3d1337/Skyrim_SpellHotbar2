@@ -83,3 +83,6 @@ bool function isDisableMenuBinding() global native
 bool function toggleDisableMenuBinding() global native
 bool function isUsingKeyIcons() global native
 bool function toggleUsingKeyIcons() global native
+bool function isBattlemageAvailable() global native
+bool function playerKnowsPower(int type) global native
+bool function togglePlayerPowerKnowledge(int type) global native

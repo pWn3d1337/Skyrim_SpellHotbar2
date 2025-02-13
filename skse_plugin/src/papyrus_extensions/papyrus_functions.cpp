@@ -486,6 +486,59 @@ bool toggle_using_key_icons(RE::StaticFunctionTag*) {
     return SpellHotbar::Bars::toggle_use_keyind_icons();
 }
 
+bool is_battlemage_avaiable(RE::StaticFunctionTag*) {
+    return SpellHotbar::GameData::spellhotbar_perk_master != nullptr;
+}
+
+
+inline
+RE::SpellItem* _get_power_for_type(int type) {
+    RE::SpellItem* power = nullptr;
+    switch (type) {
+    case 0:
+        power = SpellHotbar::GameData::spellhotbar_unbind_slot;
+        break;
+    case 1:
+        power = SpellHotbar::GameData::spellhotbar_toggle_dualcast;
+        break;
+    case 2:
+        power = SpellHotbar::GameData::spellhotbar_battlemage_open_perks_power;
+        break;
+    default:
+        break;
+    }
+    return power;
+}
+
+bool player_knows_power(RE::StaticFunctionTag*, int type) {
+    auto pc = RE::PlayerCharacter::GetSingleton();
+    if (pc != nullptr) {
+        RE::SpellItem* power = _get_power_for_type(type);
+        
+        return power != nullptr && pc->HasSpell(power);
+    }
+    return false;
+}
+
+bool toggle_player_knows_power(RE::StaticFunctionTag*, int type) {
+    auto pc = RE::PlayerCharacter::GetSingleton();
+    if (pc != nullptr) {
+        RE::SpellItem* power = _get_power_for_type(type);
+
+        if (power != nullptr) 
+        {
+            if (pc->HasSpell(power)) {
+                pc->RemoveSpell(power);
+            }
+            else {
+                pc->AddSpell(power);
+            }
+            return pc->HasSpell(power);
+        }
+    }
+    return false;
+}
+
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
     vm->RegisterFunction("getNumberOfSlots", "SpellHotbar", get_number_of_slots);
     vm->RegisterFunction("setNumberOfSlots", "SpellHotbar", set_number_of_slots);
@@ -569,5 +622,8 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("toggleDisableMenuBinding", "SpellHotbar", toggle_disable_menu_binding);
     vm->RegisterFunction("isUsingKeyIcons", "SpellHotbar", is_using_key_icons);
     vm->RegisterFunction("toggleUsingKeyIcons", "SpellHotbar", toggle_using_key_icons);
+    vm->RegisterFunction("isBattlemageAvailable", "SpellHotbar", is_battlemage_avaiable);
+    vm->RegisterFunction("playerKnowsPower", "SpellHotbar", player_knows_power);
+    vm->RegisterFunction("togglePlayerPowerKnowledge", "SpellHotbar", toggle_player_knows_power);
     return true;
 }

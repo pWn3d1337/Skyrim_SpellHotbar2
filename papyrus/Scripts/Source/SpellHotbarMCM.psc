@@ -27,7 +27,7 @@ string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
 
 ; SCRIPT VERSION
 int function GetVersion()
-	return 3
+	return 4
 endFunction
 
 Event OnConfigInit()
@@ -102,8 +102,8 @@ Event OnPageReset(string page)
         While (i < 6)
             int key_val = SpellHotbar.getKeyBind(i)
 			int key_val2 = SpellHotbar.getKeyBind(i+6)
-            oid_spellkeybinds[i]=AddKeyMapOption("Hotbar Skill "+(i+1), key_val) 
-            oid_spellkeybinds[i+6]=AddKeyMapOption("Hotbar Skill "+(i+7), key_val2)
+            oid_spellkeybinds[i]=AddKeyMapOption("Hotbar Skill "+(i+1), key_val, OPTION_FLAG_WITH_UNMAP) 
+            oid_spellkeybinds[i+6]=AddKeyMapOption("Hotbar Skill "+(i+7), key_val2, OPTION_FLAG_WITH_UNMAP)
             i += 1
         EndWhile
         
@@ -111,25 +111,25 @@ Event OnPageReset(string page)
         AddHeaderOption("")
 
 		; the 13 and 12 are intentionally swapped, internally next is saved before, but in the gui it will be swapped
-		oid_spellkeybinds[13] = AddKeyMapOption("Previous Bar", SpellHotbar.getKeyBind(13))
-		oid_spellkeybinds[12] = AddKeyMapOption("Next Bar", SpellHotbar.getKeyBind(12))
-		oid_spellkeybinds[22] = AddKeyMapOption("Open Binding Menu", SpellHotbar.getKeyBind(22))
+		oid_spellkeybinds[13] = AddKeyMapOption("Previous Bar", SpellHotbar.getKeyBind(13), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[12] = AddKeyMapOption("Next Bar", SpellHotbar.getKeyBind(12), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[22] = AddKeyMapOption("Open Binding Menu", SpellHotbar.getKeyBind(22), OPTION_FLAG_WITH_UNMAP)
 		AddEmptyOption()
 
 		AddHeaderOption("Modifier Bindings")
         AddHeaderOption("")
-		oid_spellkeybinds[14] = AddKeyMapOption("Bar Modifier 1", SpellHotbar.getKeyBind(14))
-		oid_spellkeybinds[15] = AddKeyMapOption("Bar Modifier 2", SpellHotbar.getKeyBind(15))
-		oid_spellkeybinds[16] = AddKeyMapOption("Bar Modifier 3", SpellHotbar.getKeyBind(16))
-		oid_spellkeybinds[17] = AddKeyMapOption("Dual Casting Modifier", SpellHotbar.getKeyBind(17))
-		oid_spellkeybinds[18] = AddKeyMapOption("Show Bar Modifier", SpellHotbar.getKeyBind(18))
+		oid_spellkeybinds[14] = AddKeyMapOption("Bar Modifier 1", SpellHotbar.getKeyBind(14), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[15] = AddKeyMapOption("Bar Modifier 2", SpellHotbar.getKeyBind(15), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[16] = AddKeyMapOption("Bar Modifier 3", SpellHotbar.getKeyBind(16), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[17] = AddKeyMapOption("Dual Casting Modifier", SpellHotbar.getKeyBind(17), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[18] = AddKeyMapOption("Show Bar Modifier", SpellHotbar.getKeyBind(18), OPTION_FLAG_WITH_UNMAP)
 		AddEmptyOption()
 
 		AddHeaderOption("Oblivion Mode Bindings")
 		AddHeaderOption("")
-		oid_spellkeybinds[19] = AddKeyMapOption("Cast Spell", SpellHotbar.getKeyBind(19))
-		oid_spellkeybinds[20] = AddKeyMapOption("Use Potion", SpellHotbar.getKeyBind(20))
-		oid_spellkeybinds[21] = AddKeyMapOption("Show Oblivion Bar Modifier", SpellHotbar.getKeyBind(21))
+		oid_spellkeybinds[19] = AddKeyMapOption("Cast Spell", SpellHotbar.getKeyBind(19), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[20] = AddKeyMapOption("Use Potion", SpellHotbar.getKeyBind(20), OPTION_FLAG_WITH_UNMAP)
+		oid_spellkeybinds[21] = AddKeyMapOption("Show Oblivion Bar Modifier", SpellHotbar.getKeyBind(21), OPTION_FLAG_WITH_UNMAP)
 
     ElseIf page == "Settings"
         AddHeaderOption("Bar Configuration")
@@ -287,14 +287,30 @@ Event OnPageReset(string page)
 		AddEmptyOption()
 
 	ElseIf (page == "Util")
+		AddHeaderOption("Data")
+		AddEmptyOption()
 		AddToggleOptionST("ReloadResourcesState", "Reload Resources ...", false);
 		AddEmptyOption()
 		AddToggleOptionST("ReloadSpellDataState", "Reload Spell Data ...", false);
 		AddEmptyOption()
 		AddToggleOptionST("ClearBarsState", "Clear all Bars", false);
 		AddEmptyOption()
+		AddHeaderOption("Bar Positioning")
+		AddEmptyOption()
 		AddToggleOptionST("ShowDragBar", "Drag Main Bar", false)
 		AddToggleOptionST("ShowOblivionModeDragBar", "Drag Oblivion Mode Bar", false)
+
+		AddHeaderOption("Add/Remove Powers")
+		AddEmptyOption()
+		AddToggleOptionST("AddPowerUnbind", "Unbind Slot", SpellHotbar.playerKnowsPower(0));
+		AddToggleOptionST("AddPowerDualCast", "Hotbar Dual Casting", SpellHotbar.playerKnowsPower(1));
+		int flags
+		if (SpellHotbar.isBattlemageAvailable())
+			flags = OPTION_FLAG_NONE
+		else
+			flags = OPTION_FLAG_DISABLED
+		endIf
+		AddToggleOptionST("AddPowerBattlemagePerk", "Battlemage Perk Tree", SpellHotbar.playerKnowsPower(2), flags)
 	EndIf
 EndEvent
 
@@ -491,6 +507,33 @@ State ShowOblivionModeDragBar
     EndEvent
     Event OnHighlightST()
         SetInfoText("Show a dragable Bar for oblivion mode bar positioning")
+    EndEvent
+EndState
+
+State AddPowerUnbind
+	Event OnSelectST()
+		SetToggleOptionValueST(SpellHotbar.togglePlayerPowerKnowledge(0))
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Remove or add the <Unbind Slot> power.")
+    EndEvent
+EndState
+
+State AddPowerDualCast
+	Event OnSelectST()
+		SetToggleOptionValueST(SpellHotbar.togglePlayerPowerKnowledge(1))
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Remove or add the 'Hotbar Dual Casting' power.")
+    EndEvent
+EndState
+
+State AddPowerBattlemagePerk
+	Event OnSelectST()
+		SetToggleOptionValueST(SpellHotbar.togglePlayerPowerKnowledge(2))
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("Remove or add the 'Battlemage Perk Tree' power.")
     EndEvent
 EndState
 

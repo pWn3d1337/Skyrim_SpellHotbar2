@@ -152,8 +152,10 @@ namespace SpellHotbar::GameData {
 
     extern RE::SpellItem* spellhotbar_castfx_spell;
     extern RE::SpellItem* spellhotbar_unbind_slot;
+    extern RE::SpellItem* spellhotbar_toggle_dualcast;
     extern RE::EffectSetting* spellhotbar_spellproc_cd;
     extern RE::SpellItem* spellhotbar_apply_spellproc_cd;
+    extern RE::SpellItem* spellhotbar_battlemage_open_perks_power;
 
     extern RE::TESGlobal* global_spellhotbar_perks_override;
     extern RE::TESGlobal* global_spellhotbar_perks_timed_block_window;

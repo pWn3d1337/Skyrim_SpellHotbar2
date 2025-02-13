@@ -18,7 +18,8 @@ used_presets = [
     "all_bars.json",
     "oblivion_mode.json",
     "simple.json",
-    "controller_simple.json"
+    "controller.json",
+    "controller_bindmenu.json"
 ]
 
 
@@ -313,8 +314,10 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                                              "All weapon bars, ctrl, shift and alt modifiers enabled, Keybinds: 1-10.=, Numpad 4 and Numpad 6 to cycle in menu", "simple.jpg")}
                         {_get_profile_config("Oblivion Mode", "oblivion_mode",
                                              "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion", "oblivion_mode.jpg")}
-                        {_get_profile_config("Controller Simple", "controller_simple",
+                        {_get_profile_config("Controller", "controller",
                                              "Starting point for controller config, binds DPad + ABXY with RS/LS as modifiers, non-modifier bar is disabled. Might need config adjustments to not conflict with your setup/MCM menus", "controller_simple.jpg")}
+                        {_get_profile_config("Controller with Bindmenu", "controller_bindmenu",
+                                             "Same as 'Controller' but uses the dedicated Mouse operated 'Bind Menu' to avoid menu conflicts with controller keys.", "controller_simple.jpg")}
                     </plugins>
                 </group>
             </optionalFileGroups>
@@ -459,15 +462,17 @@ battlemage_perk_files = [
      (dev_mod_root_battlemage, battlemage_mod_folder)),
     (dev_mod_root_battlemage / "textures/interface/battlemage_constellation.dds",
      (dev_mod_root_battlemage, battlemage_mod_folder)),
-    (dev_mod_root_battlemage / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds",
-     (dev_mod_root_battlemage, battlemage_mod_folder)),
     # yes the scripts are located in the main mods folder in the dev setup
     (dev_mod_root / "Scripts/SpellHotbarBattleMageInitQuestScript.pex", (dev_mod_root, battlemage_mod_folder)),
     (dev_mod_root / "Scripts/SpellHotbarOpenBattleMagePerkTree.pex", (dev_mod_root, battlemage_mod_folder)),
     (dev_mod_root_battlemage_csf3 / "SKSE/Plugins/CustomSkills/SpellHotbar_Battlemage.json",
      (dev_mod_root_battlemage_csf3, battlemage_mod_folder_csf3)),
+    (dev_mod_root_battlemage_csf3 / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds",
+     (dev_mod_root_battlemage_csf3, battlemage_mod_folder_csf3)),
     (dev_mod_root_battlemage_csf2 / "NetScriptFramework/Plugins/CustomSkill.SpellHotbar_Battlemage.config.txt",
-     (dev_mod_root_battlemage_csf2, battlemage_mod_folder_csf2))
+     (dev_mod_root_battlemage_csf2, battlemage_mod_folder_csf2)),
+    (dev_mod_root_battlemage_csf2 / "Interface/MetaSkillsMenu/Battlemage SpellHotbar.dds",
+     (dev_mod_root_battlemage_csf2, battlemage_mod_folder_csf2)),
 ]
 
 if __name__ == "__main__":
@@ -478,7 +483,7 @@ if __name__ == "__main__":
 
     debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
-    version = "0.0.9"
+    version = "0.0.10"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
 
     _add_spell_pack("vulcano")

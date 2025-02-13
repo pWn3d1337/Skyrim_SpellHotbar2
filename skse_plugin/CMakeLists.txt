@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(SpellHotbar2 VERSION 2.0.1 LANGUAGES CXX)
+project(SpellHotbar2 VERSION 2.0.10 LANGUAGES CXX)
 
 #output folder to copy dll after building
 set(OUTPUT_FOLDER "F:/Skyrim Dev/ADT/mods/Spell Hotbar 2")
 #set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_5_97/mods/Spell Hotbar 2")
 #set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_6_1170/mods/Spell Hotbar 2")
-
 
 find_package(imgui CONFIG REQUIRED)
 find_package(CommonLibSSE CONFIG REQUIRED)
