@@ -251,7 +251,7 @@ void RenderManager::draw_custom_mouse_cursor(float cursor_size) {
 bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
 {
     auto ui = RE::UI::GetSingleton();
-    if (ui != nullptr){
+    /*if (ui != nullptr) {
         auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
         if (invMenu != nullptr && invMenu->uiMovie != nullptr && invMenu->uiMovie->IsAvailable("_root.Menu_mc.inventoryLists.categoryList.selectedIndex")) {
             //get current tab
@@ -264,6 +264,32 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
                 return index >= 4 && index <= 6; //indices for scrolls, options and food
             }
 
+        }
+    }*/
+    if (ui != nullptr) {
+        auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+        if (invMenu != nullptr) {
+            RE::GFxValue& root = invMenu->GetRuntimeData().root;
+
+            if (root.GetType() == RE::GFxValue::ValueType::kDisplayObject && root.HasMember("inventoryLists")) {
+                RE::GFxValue inventoryLists;
+                root.GetMember("inventoryLists", &inventoryLists);
+
+                if (inventoryLists.GetType() == RE::GFxValue::ValueType::kDisplayObject && inventoryLists.HasMember("categoryList")) {
+                    RE::GFxValue categoryList;
+                    inventoryLists.GetMember("categoryList", &categoryList);
+
+                    if (categoryList.GetType() == RE::GFxValue::ValueType::kDisplayObject && categoryList.HasMember("selectedIndex")) {
+                        RE::GFxValue selectedIndex;
+                        categoryList.GetMember("selectedIndex", &selectedIndex);
+
+                        if (selectedIndex.GetType() == RE::GFxValue::ValueType::kNumber) {
+                            int index = static_cast<int>(selectedIndex.GetNumber());
+                            return index >= 4 && index <= 6; //indices for scrolls, options and food
+                        }
+                    }
+                }
+            }
         }
     }
     return false;
