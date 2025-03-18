@@ -110,6 +110,8 @@ namespace SpellHotbar::Storage::IO {
 
         Bars::bar_anchor_point = Bars::anchor_point(std::clamp(get_int_or_default(d, "settings.bar_anchor_point", 0), 0, static_cast<int>(Bars::anchor_point::CENTER)));
 
+        Bars::text_show_setting = Bars::text_show_mode(std::clamp(get_int_or_default(d, "settings.text_show_setting", 1), 0, static_cast<int>(Bars::text_show_mode::always)));
+
         Bars::bar_show_setting = Bars::bar_show_mode(std::clamp(get_int_or_default(d, "settings.hud_show_mode", static_cast<int>(Bars::bar_show_mode::combat_or_drawn)), 0, 5));
         Bars::bar_show_setting_vampire_lord = Bars::bar_show_mode(std::clamp(get_int_or_default(d, "settings.hud_show_mode_vampire_lord", static_cast<int>(Bars::bar_show_mode::combat)), 0, 2));
         Bars::bar_show_setting_werewolf = Bars::bar_show_mode(std::clamp(get_int_or_default(d, "settings.hud_show_mode_werewolf", static_cast<int>(Bars::bar_show_mode::never)), 0, 2));
@@ -284,6 +286,7 @@ namespace SpellHotbar::Storage::IO {
         add_float(d, "settings.offset_y", RenderManager::scale_from_resolution(Bars::offset_y));
         add_float(d, "settings.slot_spacing", Bars::slot_spacing);
         add_int(d, "settings.bar_anchor_point", static_cast<int>(Bars::bar_anchor_point));
+        add_int(d, "settings.text_show_setting", static_cast<int>(Bars::text_show_setting));
 
         add_int(d, "settings.hud_show_mode", static_cast<int>(Bars::bar_show_setting));
         add_int(d, "settings.hud_show_mode_vampire_lord", static_cast<int>(Bars::bar_show_setting_vampire_lord));

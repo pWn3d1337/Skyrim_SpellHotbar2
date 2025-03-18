@@ -235,6 +235,11 @@ namespace SpellHotbar::Input {
                                 //Close Frames when ESC is pressed
                                 RenderManager::close_key_blocking_frames();
                             }
+                            else if (RenderManager::is_bind_menu_opened() && Input::key_open_advanced_bind_menu.isValidBound()
+                                && bEvent->IsDown() && Input::key_open_advanced_bind_menu.matches(key_code, key_device)) {
+                                //Close Bind Menu when key is pressed
+                                RenderManager::close_key_blocking_frames();
+                            }
                             else {
                                 int dx_code = input_to_dx_scancode(key_device, static_cast<uint8_t>(key_code));
                                 if (dx_code >= 0 && dx_code < dx_to_imgui.size()) {
@@ -642,12 +647,12 @@ namespace SpellHotbar::Input {
             // code taken from Wheeler
             auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
             auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
-            bool valid_tab = false;
+            //bool valid_tab = false;
             
-            if (invMenu) {
+            /*if (invMenu) {
                 valid_tab = RenderManager::current_inv_menu_tab_valid_for_hotbar();
-            };
-            if (!magMenu && !valid_tab) return nullptr;
+            };*/
+            if (!magMenu || !invMenu) return nullptr; //&& !valid_tab
 
             if (magMenu) {
                 RE::GFxValue selection;

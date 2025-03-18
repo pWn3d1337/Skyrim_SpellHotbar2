@@ -154,6 +154,7 @@ namespace SpellHotbar {
         static float scale_from_resolution(float scaled_value);
         
         static bool current_inv_menu_tab_valid_for_hotbar();
+        static bool current_selected_item_bindable();
 
         static bool should_overlay_be_rendered(GameData::DefaultIconType overlay);
 
@@ -161,6 +162,7 @@ namespace SpellHotbar {
         static void close_potion_editor();
 
         static void open_advanced_binding_menu();
+        static bool is_bind_menu_opened();
 
         static void ImGui_push_title_style();
         static void ImGui_pop_title_style();

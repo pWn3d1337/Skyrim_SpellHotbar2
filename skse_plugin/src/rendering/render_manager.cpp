@@ -266,7 +266,7 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
 
         }
     }*/
-    if (ui != nullptr) {
+    /*if (ui != nullptr) {
         auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
         if (invMenu != nullptr) {
             RE::GFxValue& root = invMenu->GetRuntimeData().root;
@@ -288,6 +288,40 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
                             return index >= 4 && index <= 6; //indices for scrolls, options and food
                         }
                     }
+                }
+            }
+        }
+    }
+    return false;*/
+
+    return ui != nullptr && ui->GetMenu(RE::InventoryMenu::MENU_NAME).get() != nullptr;
+}
+
+bool RenderManager::current_selected_item_bindable()
+{
+    auto ui = RE::UI::GetSingleton();
+    if (ui == nullptr) return false;
+
+    auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+
+    if (!invMenu) return false; 
+
+    RE::ItemList* item_list = invMenu->GetRuntimeData().itemList;
+    if (item_list != nullptr) {
+        RE::ItemList::Item* item = item_list->GetSelectedItem();
+        if (item != nullptr && item->data.objDesc != nullptr) {
+#undef GetObject // undefine stupid windows definition so GetObject() can be called
+            RE::TESBoundObject* obj = item->data.objDesc->GetObject();
+#ifdef UNICODE //redefine it
+#define GetObject  GetObjectW
+#else
+#define GetObject  GetObjectA
+#endif // !UNICODE
+            if (obj != nullptr) {
+                RE::FormID formID = obj->GetFormID();
+                auto form = RE::TESForm::LookupByID(formID);
+                if (form != nullptr) {
+                    return Hotbar::is_valid_formtype_for_hotbar(form);
                 }
             }
         }
@@ -476,6 +510,11 @@ void RenderManager::open_advanced_binding_menu()
     }
 }
 
+bool RenderManager::is_bind_menu_opened()
+{
+    return BindMenu::is_opened();
+}
+
 void RenderManager::ImGui_push_title_style()
 {
     constexpr ImVec4 col_transparent(0.0f, 0.0f, 0.0f, 0.0f);
@@ -642,7 +681,7 @@ void load_font_resources(float window_height) {
                     std::string glyph_range_text = text_font_name.substr(ind, text_font_name.length() - ind - 4);
                     logger::info("loading glyph ranges for '{}'", glyph_range_text);
                     if (glyph_range_text == "chinese") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon();
+                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
                     }
                     else if (glyph_range_text == "cyrillic") {
                         glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
@@ -674,11 +713,19 @@ void load_font_resources(float window_height) {
     font_text = io.Fonts->AddFontFromFileTTF(
         font_path.string().c_str(), font_text_size, NULL, glyph_range);
 
-    font_text_title = io.Fonts->AddFontFromFileTTF(
-        font_path.string().c_str(), font_text_title_size, NULL, glyph_range);
 
-    font_text_big = io.Fonts->AddFontFromFileTTF(
-        font_path.string().c_str(), font_text_big_size, NULL, glyph_range);
+    if (glyph_range == ImGui::GetIO().Fonts->GetGlyphRangesChineseFull()) {
+        // cannot load cn font 3 times, there will be a crash (https://github.com/pWn3d1337/Skyrim_SpellHotbar2/issues/38)
+        font_text_title = font_text;
+        font_text_big = font_text;
+    }
+    else {
+        font_text_title = io.Fonts->AddFontFromFileTTF(
+            font_path.string().c_str(), font_text_title_size, NULL, glyph_range);
+
+        font_text_big = io.Fonts->AddFontFromFileTTF(
+            font_path.string().c_str(), font_text_big_size, NULL, glyph_range);
+    }
 
     font_symbols = io.Fonts->AddFontFromFileTTF(
         ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\skyrim_symbols_font.ttf",
@@ -1863,7 +1910,7 @@ void RenderManager::draw() {
     auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
     auto* favMenu = static_cast<RE::FavoritesMenu*>(ui->GetMenu(RE::FavoritesMenu::MENU_NAME).get());
 
-    bool validTabActive = current_inv_menu_tab_valid_for_hotbar();
+    bool validTabActive = current_selected_item_bindable(); //current_inv_menu_tab_valid_for_hotbar();
 
     apply_imgui_style();
 
