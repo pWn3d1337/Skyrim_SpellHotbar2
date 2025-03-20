@@ -4,6 +4,7 @@
 #include "../input/keybinds.h"
 #include "gui_tab_button.h"
 #include "../bar/hotbars.h"
+#include "../game_data/localization.h"
 
 namespace SpellHotbar::BindMenu {
 
@@ -16,26 +17,26 @@ namespace SpellHotbar::BindMenu {
     std::vector<RE::TESForm*> list_of_skills;
     std::vector<RE::TESForm*> list_of_skills_filtered;
 
-    std::array<std::string, 6> rank_texts = { "-", "Novice", "Apprentice", "Adept", "Expert", "Master"};
-    std::array<std::string, 4> rank_texts_shout = { "0 Words", "1 Word", "2 Words", "3 Words" };
-    std::array<std::string, 6> school_texts = { "-", "Alteration", "Conjuration", "Destruction", "Illusion", "Restoration" };
+    std::array<std::string, 6> rank_texts = { "$DASH", "$RANK_NOVICE", "$RANK_APPRENTICE", "$RANK_ADEPT", "$RANK_EXPERT", "$RANK_MASTER"};
+    std::array<std::string, 4> rank_texts_shout = { "$WORDS_0", "$WORDS_1", "$WORDS_2", "$WORDS_3" };
+    std::array<std::string, 6> school_texts = { "$DASH", "$TAB_TEXT_ALTERATION", "$TAB_TEXT_CONJURATION", "$TAB_TEXT_DESTRUCTION", "$TAB_TEXT_ILLUSION", "$TAB_TEXT_RESTORATION"};
 
-    std::array<std::string, 9> type_texts = { "Potion", "Spell", "Lesser Power", "Greater Power", "Shout", "Scroll", "Poison", "Food", "-" };
+    std::array<std::string, 9> type_texts = { "$TYPE_POTION", "$TYPE_SPELL", "$TYPE_LESSER_POWER", "$TYPE_GREATER_POWER", "$TYPE_SHOUT", "$TYPE_SCROLL", "$TYPE_POISON", "$TYPE_FOOD", "$DASH" };
 
     std::array<std::string, 13> tab_texts = {
-        "All",
-        "Spells",
-        "Alteration",
-        "Illusion",
-        "Destruction",
-        "Conjuration",
-        "Restoration",
-        "Shouts",
-        "Powers",
-        "Scrolls",
-        "Potions",
-        "Poisons",
-        "Food"
+        "$TAB_TEXT_ALL",
+        "$TAB_TEXT_SPELLS",
+        "$TAB_TEXT_ALTERATION",
+        "$TAB_TEXT_ILLUSION",
+        "$TAB_TEXT_DESTRUCTION",
+        "$TAB_TEXT_CONJURATION",
+        "$TAB_TEXT_RESTORATION",
+        "$TAB_TEXT_SHOUTS",
+        "$TAB_TEXT_POWERS",
+        "$TAB_TEXT_SCROLLS",
+        "$TAB_TEXT_POTIONS",
+        "$TAB_TEXT_POISONS",
+        "$TAB_TEXT_FOOD",
     };
 
     enum tab_index : uint8_t {
@@ -135,19 +136,19 @@ namespace SpellHotbar::BindMenu {
     const char* get_rank_text(int rank, bool is_shout=false) {
         if (is_shout) {
             if (rank >= 0 && rank < 4) {
-                return rank_texts_shout.at(rank).c_str();
+                return translate_c(rank_texts_shout.at(rank));
             }
             else {
-                return rank_texts_shout.at(0).c_str();
+                return translate_c(rank_texts_shout.at(0));
             }
         }
         else {
             if (rank >= 0 && rank < 6) {
-                return rank_texts.at(rank).c_str();
+                return translate_c(rank_texts.at(rank));
             }
             else
             {
-                return rank_texts.at(0).c_str();
+                return translate_c(rank_texts.at(0));
             }
         }
     }
@@ -178,7 +179,7 @@ namespace SpellHotbar::BindMenu {
     }
 
     const char* get_school_text(RE::ActorValue av) {
-        return school_texts.at(get_school_order(av)).c_str();
+        return translate_c(school_texts.at(get_school_order(av)));
     }
 
     const char* get_type_text(const RE::TESForm* item) {
@@ -423,7 +424,7 @@ namespace SpellHotbar::BindMenu {
                 is_less = time_l < time_r;
             }
             else if (sort_spec->ColumnUserID == bind_menu_column_id::column_id_Type) {
-                is_less = std::string(get_type_text(lhs)) < std::string(get_type_text(rhs));
+                is_less = translate(get_type_text(lhs)) < translate(get_type_text(rhs));
             }
             else {
                 is_less = lhs->formID < rhs->formID;
@@ -519,7 +520,7 @@ namespace SpellHotbar::BindMenu {
         float scale_factor = screen_size_y / 1080.0f;
 
         RenderManager::ImGui_push_title_style();
-        ImGui::Begin("Binding Menu", &show_frame, window_flag);
+        ImGui::Begin(translate_id("$BIND_MENU").c_str(), &show_frame, window_flag);
         RenderManager::ImGui_pop_title_style();
 
         float child_window_height = ImGui::GetContentRegionAvail().y;
@@ -528,24 +529,24 @@ namespace SpellHotbar::BindMenu {
         bool filter_dirty = false;
 
         ImGui::PushFont(font_text_big);
-        ImGui::TextUnformatted(tab_texts[tab_index].c_str());
+        ImGui::TextUnformatted(translate_c(tab_texts[tab_index]));
         ImGui::PopFont();
 
         int tab_icon_size = static_cast<int>(60.0f * scale_factor);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
-        Rendering::GuiTabButton::draw("##TabAll", TabIndex_All, GameData::DefaultIconType::TAB_ALL, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_All].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabSpells", TabIndex_Spells, GameData::DefaultIconType::TAB_SPELLS, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Spells].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabAlteration", TabIndex_Alteration, GameData::DefaultIconType::ALTERATION_ADEPT, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Alteration].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabIllusion", TabIndex_Illusion, GameData::DefaultIconType::ILLUSION_FRIENDLY_ADEPT, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Illusion].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabDestruction", TabIndex_Destruction, GameData::DefaultIconType::DESTRUCTION_FIRE_EXPERT, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Destruction].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabConjuration", TabIndex_Conjuration, GameData::DefaultIconType::CONJURATION_SUMMON_ADEPT, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Conjuration].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabRestoration", TabIndex_Restoration, GameData::DefaultIconType::RESTORATION_FRIENDLY_EXPERT, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Restoration].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabShouts", TabIndex_Shouts, GameData::DefaultIconType::SHOUT_GENERIC, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Shouts].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabPowers", TabIndex_Powers, GameData::DefaultIconType::GREATER_POWER, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Powers].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabScrolls", TabIndex_Scrolls, GameData::DefaultIconType::TAB_SCROLLS, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Scrolls].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabPotions", TabIndex_Potions, GameData::DefaultIconType::TAB_POTIONS, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Potions].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabPoisons", TabIndex_Poisons, GameData::DefaultIconType::TAB_POISONS, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Poisons].c_str()); ImGui::SameLine();
-        Rendering::GuiTabButton::draw("##TabFood", TabIndex_Food, GameData::DefaultIconType::TAB_FOOD, tab_icon_size, tab_index, filter_dirty, tab_texts[TabIndex_Food].c_str());
+        Rendering::GuiTabButton::draw("##TabAll", TabIndex_All, GameData::DefaultIconType::TAB_ALL, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_All])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabSpells", TabIndex_Spells, GameData::DefaultIconType::TAB_SPELLS, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Spells])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabAlteration", TabIndex_Alteration, GameData::DefaultIconType::ALTERATION_ADEPT, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Alteration])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabIllusion", TabIndex_Illusion, GameData::DefaultIconType::ILLUSION_FRIENDLY_ADEPT, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Illusion])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabDestruction", TabIndex_Destruction, GameData::DefaultIconType::DESTRUCTION_FIRE_EXPERT, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Destruction])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabConjuration", TabIndex_Conjuration, GameData::DefaultIconType::CONJURATION_SUMMON_ADEPT, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Conjuration])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabRestoration", TabIndex_Restoration, GameData::DefaultIconType::RESTORATION_FRIENDLY_EXPERT, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Restoration])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabShouts", TabIndex_Shouts, GameData::DefaultIconType::SHOUT_GENERIC, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Shouts])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPowers", TabIndex_Powers, GameData::DefaultIconType::GREATER_POWER, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Powers])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabScrolls", TabIndex_Scrolls, GameData::DefaultIconType::TAB_SCROLLS, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Scrolls])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPotions", TabIndex_Potions, GameData::DefaultIconType::TAB_POTIONS, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Potions])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabPoisons", TabIndex_Poisons, GameData::DefaultIconType::TAB_POISONS, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Poisons])); ImGui::SameLine();
+        Rendering::GuiTabButton::draw("##TabFood", TabIndex_Food, GameData::DefaultIconType::TAB_FOOD, tab_icon_size, tab_index, filter_dirty, translate_c(tab_texts[TabIndex_Food]));
         ImGui::PopStyleVar();
 
         int bsize = static_cast<int>(30.0f * scale_factor);
@@ -579,7 +580,7 @@ namespace SpellHotbar::BindMenu {
         last_filter = filter_buf;
 
         ImGui::PushItemWidth(-FLT_MIN);
-        ImGui::InputTextWithHint("##Filter", "Filter text", filter_buf, filter_buf_size, filter_input_flags);
+        ImGui::InputTextWithHint("##Filter", translate_c("$FILTER_TEXT"), filter_buf, filter_buf_size, filter_input_flags);
         ImGui::PopItemWidth();
 
         ImGui::EndChild();
@@ -591,7 +592,7 @@ namespace SpellHotbar::BindMenu {
         int table_icon_size_max_value = static_cast<int>(std::round(80.0f * scale_factor));
        
         ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x*0.75f);
-        ImGui::SliderInt("Icon Size", &table_icon_size, table_icon_size_min_value, table_icon_size_max_value, "%d");
+        ImGui::SliderInt(translate_id("$ICON_SIZE").c_str(), &table_icon_size, table_icon_size_min_value, table_icon_size_max_value, "%d");
         ImGui::PopItemWidth();
         ImGui::EndChild();
 
@@ -609,13 +610,13 @@ namespace SpellHotbar::BindMenu {
             // - ImGuiTableColumnFlags_DefaultSort
             // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
             // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-            ImGui::TableSetupColumn("Drag Icon", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 65.0f, bind_menu_column_id::column_id_Icon);
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Name);
-            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Type);
-            ImGui::TableSetupColumn("School", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_School);
-            ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Rank);
-            ImGui::TableSetupColumn("Mag", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Magnitude);
-            ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Time);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_DRAG").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 65.0f, bind_menu_column_id::column_id_Icon);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_NAME").c_str(), ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Name);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_TYPE").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Type);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_SCHOOL").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_School);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_RANK").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Rank);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_MAG").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Magnitude);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_TIME").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_PreferSortAscending, 0.0f, bind_menu_column_id::column_id_Time);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -689,7 +690,7 @@ namespace SpellHotbar::BindMenu {
                     }
 
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(get_type_text(item));
+                    ImGui::TextUnformatted(translate_c(get_type_text(item)));
 
                     ImGui::TableNextColumn();
                     ImGui::TextUnformatted(get_school_text(school));
@@ -1011,13 +1012,13 @@ namespace SpellHotbar::BindMenu {
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
                 std::string hand_text;
                 if (skill.hand == hand_mode::left_hand) {
-                    hand_text = "L";
+                    hand_text = translate("$HAND_TEXT_LEFT");
                 }
                 else if (skill.hand == hand_mode::right_hand) {
-                    hand_text = "R";
+                    hand_text = translate("$HAND_TEXT_RIGHT");
                 }
                 else if (skill.hand == hand_mode::dual_hand) {
-                    hand_text = "D";
+                    hand_text = translate("$HAND_TEXT_DUAL");
                 }
                 ImVec2 tex_pos_hand(bpos.x + text_offset_x_right, bpos.y + text_offset_y);
                 ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
@@ -1069,7 +1070,7 @@ namespace SpellHotbar::BindMenu {
             ImGui::EndDragDropTarget();
         }
         ImGui::SameLine();
-        ImGui::Text("Unbind");
+        ImGui::Text(translate_c("$UNBIND"));
 
         ImGui::PopFont();
 

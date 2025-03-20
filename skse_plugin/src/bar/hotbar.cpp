@@ -7,6 +7,7 @@
 #include "../casts/casting_controller.h"
 #include "../input/modes.h"
 #include "../casts/spell_proc.h"
+#include "../game_data/localization.h"
 
 #include <numbers>
 
@@ -388,13 +389,13 @@ namespace SpellHotbar
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
                 std::string hand_text;
                 if (skill.hand == hand_mode::left_hand) {
-                    hand_text = "L";
+                    hand_text = translate("$HAND_TEXT_LEFT");
                 }
                 else if (skill.hand == hand_mode::right_hand) {
-                    hand_text = "R";
+                    hand_text = translate("$HAND_TEXT_RIGHT");
                 }
                 else if (skill.hand == hand_mode::dual_hand) {
-                    hand_text = "D";
+                    hand_text = translate("$HAND_TEXT_DUAL");
                 }
                 ImVec2 tex_pos_hand(p.x + text_offset_x_right, p.y + text_offset_y);
                 ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());

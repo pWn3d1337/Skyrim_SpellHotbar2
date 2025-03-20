@@ -652,7 +652,7 @@ namespace SpellHotbar::Input {
             /*if (invMenu) {
                 valid_tab = RenderManager::current_inv_menu_tab_valid_for_hotbar();
             };*/
-            if (!magMenu || !invMenu) return nullptr; //&& !valid_tab
+            if (!magMenu && !invMenu) return nullptr; //&& !valid_tab
 
             if (magMenu) {
                 RE::GFxValue selection;

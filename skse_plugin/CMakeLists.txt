@@ -83,6 +83,8 @@ set(source_files src/plugin.cpp
                  src/rendering/advanced_bind_menu.cpp
                  src/rendering/gui_tab_button.h
                  src/rendering/gui_tab_button.cpp
+                 src/game_data/localization.h
+                 src/game_data/localization.cpp
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${source_files})

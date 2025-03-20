@@ -293,8 +293,12 @@ bool RenderManager::current_inv_menu_tab_valid_for_hotbar()
         }
     }
     return false;*/
+    if (ui != nullptr) {
+        auto* invMenu = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+        return invMenu != nullptr;
+    }
 
-    return ui != nullptr && ui->GetMenu(RE::InventoryMenu::MENU_NAME).get() != nullptr;
+    return false;
 }
 
 bool RenderManager::current_selected_item_bindable()
