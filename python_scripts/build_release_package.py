@@ -89,9 +89,13 @@ def build_release_zip(outfile: Path, files: list[tuple[Path, str | Path]], main_
                         arc_folders = Path(entry[1][1])
                         arcname = str(main_path / arc_folders / Path(file_name).relative_to(rel_path))
                     else:
-                        fname = Path(file_name).name
-                        zip_path = Path(entry[1]) / fname
-                        arcname = str(main_path / zip_path)
+                        p = Path(entry[1])
+                        if p.suffix == "":
+                            fname = Path(file_name).name
+                            zip_path = Path(entry[1]) / fname
+                            arcname = str(main_path / zip_path)
+                        else:
+                            arcname = str(main_path / p)
                     print(f"Adding: {arcname}")
                     zfile.write(str(file_name), arcname=arcname)
             else:

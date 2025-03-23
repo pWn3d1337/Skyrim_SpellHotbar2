@@ -3,6 +3,7 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include <rapidjson/document.h>
+#include "../game_data/localization.h"
 
 namespace SpellHotbar
 {
@@ -125,7 +126,7 @@ public:
 
     inline bool is_enabled() const;
 
-    inline const std::string& get_name() const;
+    inline const std::string get_name() const;
 
     void slot_spell(size_t index, RE::FormID spell, key_modifier modifier);
 
@@ -173,7 +174,7 @@ private:
 
 inline void SpellHotbar::Hotbar::set_enabled(bool enabled) { m_enabled = enabled; }
 inline bool SpellHotbar::Hotbar::is_enabled() const { return m_enabled; }
-inline const std::string& SpellHotbar::Hotbar::get_name() const { return m_name; }
+inline const std::string SpellHotbar::Hotbar::get_name() const { return translate(m_name); }
 inline int SpellHotbar::Hotbar::get_inherit_mode() const { return static_cast<int>(m_inherit_mode); }
 inline uint32_t SpellHotbar::Hotbar::get_parent() const { return m_parent_bar; };
 inline uint8_t& SpellHotbar::Hotbar::get_bar_size() const { return m_barsize; };

@@ -490,6 +490,10 @@ bool is_battlemage_avaiable(RE::StaticFunctionTag*) {
     return SpellHotbar::GameData::spellhotbar_perk_master != nullptr;
 }
 
+std::string translate_str(RE::StaticFunctionTag*, std::string key)
+{
+    return SpellHotbar::translate(key);
+}
 
 inline
 RE::SpellItem* _get_power_for_type(int type) {
@@ -625,5 +629,6 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("isBattlemageAvailable", "SpellHotbar", is_battlemage_avaiable);
     vm->RegisterFunction("playerKnowsPower", "SpellHotbar", player_knows_power);
     vm->RegisterFunction("togglePlayerPowerKnowledge", "SpellHotbar", toggle_player_knows_power);
+    vm->RegisterFunction("translate", "SpellHotbar", translate_str);
     return true;
 }

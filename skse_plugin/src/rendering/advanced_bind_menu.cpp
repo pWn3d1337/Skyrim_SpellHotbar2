@@ -879,15 +879,25 @@ namespace SpellHotbar::BindMenu {
             if (ImGui::InvisibleButton(button_label.c_str(), ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)))) {
                 if (!inherited) {
                     if (form != nullptr && form->GetFormType() == RE::FormType::Spell) {
-                        RE::SpellItem* spell = form->As<RE::SpellItem>();
 
-                        if (spell != nullptr && spell->GetEquipSlot() == GameData::equip_slot_either_hand)
-                        {
-                            //skill for rendering is a copy, we need to get the ref here, no inheritence is needed
+                        if (GameData::is_clear_spell(form->formID)) {
                             auto& skill_ref = bar.get_skill_in_bar_by_ref(i, mod);
-                            if (!skill_ref.isEmpty() && skill_ref.formID == form->GetFormID()) {
-                                Hotbar::rotate_skill_hand_assingment(spell, skill_ref);
-                                RE::PlaySound(Input::sound_UISkillsFocus);
+                            if (!skill_ref.isEmpty()) {
+                                //unblock
+                                skill_ref.clear();
+                            }
+                        }
+                        else {
+                            RE::SpellItem* spell = form->As<RE::SpellItem>();
+
+                            if (spell != nullptr && spell->GetEquipSlot() == GameData::equip_slot_either_hand)
+                            {
+                                //skill for rendering is a copy, we need to get the ref here, no inheritence is needed
+                                auto& skill_ref = bar.get_skill_in_bar_by_ref(i, mod);
+                                if (!skill_ref.isEmpty() && skill_ref.formID == form->GetFormID()) {
+                                    Hotbar::rotate_skill_hand_assingment(spell, skill_ref);
+                                    RE::PlaySound(Input::sound_UISkillsFocus);
+                                }
                             }
                         }
                     }
@@ -928,7 +938,7 @@ namespace SpellHotbar::BindMenu {
                 }
             }
 
-            if (!inherited) {
+            if (!inherited && !GameData::is_clear_spell(skill.formID)) {
                 SlottedSkill* source_skill{ nullptr };
                 if (!skill.isEmpty()) {
                     source_skill = bar.get_skill_in_bar_ptr(i, mod);
@@ -947,7 +957,7 @@ namespace SpellHotbar::BindMenu {
                         std::optional<hand_mode> source_hand(std::nullopt);
                         if (payload_n.source_slot != nullptr) {
                             source_hand = payload_n.source_slot->hand;
-                            if (!target.isEmpty()) {
+                            if (!target.isEmpty() && !GameData::is_clear_spell(target.formID)) {
                                 payload_n.source_slot->update_skill_assignment(target.formID);
                                 payload_n.source_slot->hand = target.hand;
                             }
@@ -999,7 +1009,12 @@ namespace SpellHotbar::BindMenu {
                 RenderManager::draw_highlight_overlay(bpos, icon_size, ImColor(127, 127, 255));
             }
             if (button_hovered && form != nullptr) {
-                RenderManager::show_skill_tooltip(form);
+                if (GameData::is_clear_spell(form->formID)) {
+                    RenderManager::show_tooltip(translate("$SLOT_BLOCKED_TITLE"), translate("$SLOT_BLOCKED_INFO"));
+                }
+                else {
+                    RenderManager::show_skill_tooltip(form);
+                }
             }
             ImGui::SameLine();
 

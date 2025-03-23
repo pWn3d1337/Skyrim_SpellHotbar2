@@ -1771,7 +1771,7 @@ void draw_drag_menu() {
             highlight_isred, alpha, 0.0f, 0);
     }
     else {
-        const std::string text = "Bar Text";
+        const std::string text = translate("$BAR_TEXT");
         SpellHotbar::Hotbar dummy(text, barsize);
         drawCenteredText(text.c_str());
         dummy.draw_in_hud(font_text, screen_size_x, screen_size_y, highlight_slot, get_highlight_factor(), key_modifier::none,
@@ -1861,6 +1861,19 @@ void RenderManager::show_skill_tooltip(const RE::TESForm* item, float offset_x) 
     static RE::FormID last_tooltip = 0;
     static std::string desc = "";
 
+    if (item != nullptr) {
+        std::string title = item->GetName();
+
+        if (last_tooltip != item->GetFormID()) {
+            desc = RenderManager::get_skill_tooltip(item);
+        }
+        last_tooltip = item->GetFormID();
+
+        show_tooltip(title, desc, offset_x);
+    }
+}
+
+void RenderManager::show_tooltip(const std::string & title, const std::string & desc, float offset_x) {
     if (ImGui::BeginItemTooltip())
     {
         float scalef = ImGui::GetIO().DisplaySize.y / 1080.0f;
@@ -1868,13 +1881,8 @@ void RenderManager::show_skill_tooltip(const RE::TESForm* item, float offset_x) 
 
         ImGui::Dummy(left_offset); ImGui::SameLine();
         RenderManager::set_large_font();
-        ImGui::Text(item->GetName());
+        ImGui::Text(title.c_str());
         RenderManager::revert_font();
-
-        if (last_tooltip != item->GetFormID()) {
-            desc = RenderManager::get_skill_tooltip(item);
-        }
-        last_tooltip = item->GetFormID();
 
         if (!desc.empty()) {
             ImGui::Dummy(left_offset); ImGui::SameLine();
@@ -1886,6 +1894,7 @@ void RenderManager::show_skill_tooltip(const RE::TESForm* item, float offset_x) 
         ImGui::EndTooltip();
     }
 }
+
 
 //Draw Custom stuff 
 void RenderManager::draw() {

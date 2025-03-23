@@ -22,6 +22,7 @@ namespace SpellHotbar::GameData {
     constexpr std::string_view animation_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\animationdata\\";
 
     inline const std::string keynames_csv_path = ".\\data\\SKSE\\Plugins\\SpellHotbar\\keynames\\keynames.csv";
+    inline const std::string translation_path = ".\\data\\SKSE\\Plugins\\SpellHotbar\\localization\\translation.txt";
 
     std::random_device _random_device;
     std::mt19937 random_engine(_random_device());
@@ -397,6 +398,8 @@ namespace SpellHotbar::GameData {
 
         load_keynames_file();
 
+        load_translations(std::filesystem::path(translation_path));
+
         //need to wait for game data beeing available
         RenderManager::load_gamedata_dependant_resources();
 
@@ -494,6 +497,8 @@ namespace SpellHotbar::GameData {
         spell_casteffect_art.clear();
         animation_names.clear();
 
+        load_translations(std::filesystem::path(translation_path));
+
         spell_effects_key_indices = std::make_unique<std::unordered_map<std::string, size_t>>();
         SpellCastEffectCSVLoader::load_spell_casteffects(std::filesystem::path(spell_casteffects_root));
         SpellDataCSVLoader::load_spell_data(std::filesystem::path(spell_data_root));
@@ -528,16 +533,16 @@ namespace SpellHotbar::GameData {
         std::string key_text;
         switch (mod) {
         case SpellHotbar::key_modifier::ctrl:
-            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).short_text + "]";
+            key_text = translate("$KEY_MOD") + " [" + key_names.at(Input::mod_1.get_dx_scancode()).short_text + "]";
             break;
         case SpellHotbar::key_modifier::shift:
-            key_text = "Mod [" +key_names.at(Input::mod_2.get_dx_scancode()).short_text + "]";
+            key_text = translate("$KEY_MOD") + " [" +key_names.at(Input::mod_2.get_dx_scancode()).short_text + "]";
             break;
         case SpellHotbar::key_modifier::alt:
-            key_text = "Mod [" +key_names.at(Input::mod_3.get_dx_scancode()).short_text + "]";
+            key_text = translate("$KEY_MOD") + " [" +key_names.at(Input::mod_3.get_dx_scancode()).short_text + "]";
             break;
         default:
-            key_text= "No Mod";
+            key_text= translate("$KEY_NO_MOD");
             break;
         }
         return key_text;
@@ -547,16 +552,16 @@ namespace SpellHotbar::GameData {
         std::string key_text;
         switch (mod) {
         case SpellHotbar::key_modifier::ctrl:
-            key_text = "Mod [" + key_names.at(Input::mod_1.get_dx_scancode()).long_text + "]";
+            key_text = translate("$KEY_MOD") + " [" + key_names.at(Input::mod_1.get_dx_scancode()).long_text + "]";
             break;
         case SpellHotbar::key_modifier::shift:
-            key_text = "Mod [" + key_names.at(Input::mod_2.get_dx_scancode()).long_text + "]";
+            key_text = translate("$KEY_MOD") + " [" + key_names.at(Input::mod_2.get_dx_scancode()).long_text + "]";
             break;
         case SpellHotbar::key_modifier::alt:
-            key_text = "Mod [" + key_names.at(Input::mod_3.get_dx_scancode()).long_text + "]";
+            key_text = translate("$KEY_MOD") + " [" + key_names.at(Input::mod_3.get_dx_scancode()).long_text + "]";
             break;
         default:
-            key_text = "No Mod";
+            key_text = translate("$KEY_NO_MOD");
             break;
         }
         return key_text;
@@ -790,8 +795,8 @@ namespace SpellHotbar::GameData {
     }
 
     std::string resolve_spellname(RE::FormID formID) {
-        if (formID == 0) return "EMPTY";
-        if (GameData::is_clear_spell(formID)) return "BLOCKED";
+        if (formID == 0) return translate("$BAR_EMPTY");
+        if (GameData::is_clear_spell(formID)) return translate("$BAR_BLOCKED");
 
         auto form = RE::TESForm::LookupByID(formID);
         if (form == nullptr) {

@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "../rendering/render_manager.h"
 #include "../rendering/texture_csv_loader.h"
+#include "../game_data/localization.h"
 
 namespace SpellHotbar::SpellEditor {
 
@@ -77,7 +78,7 @@ namespace SpellHotbar::SpellEditor {
         last_tooltip = form->GetFormID();
 
         RenderManager::ImGui_push_title_style();
-        ImGui::Begin("Edit Spell Data", nullptr, window_flag);
+        ImGui::Begin(translate_id("$EDIT_SPELL_DATA").c_str(), nullptr, window_flag);
         RenderManager::ImGui_pop_title_style();
         ImGui::BeginChild("##spell_data_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
 
@@ -112,7 +113,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Name");
+            ImGui::TextUnformatted(translate_c("$COLUMN_NAME"));
             ImGui::TableNextColumn();
             ImGui::TextUnformatted(form->GetName());
             ImGui::PopID();
@@ -120,7 +121,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Icon");
+            ImGui::TextUnformatted(translate_c("$COLUMN_ICON"));
             ImGui::TableNextColumn();
 
             ImVec2 iconpos = ImGui::GetCursorScreenPos();
@@ -149,7 +150,7 @@ namespace SpellHotbar::SpellEditor {
 
             if (show_reset_button) {
                 ImGui::SameLine();
-                if (ImGui::Button("Reset##icon")) {
+                if (ImGui::Button((translate("$RESET")+"##reset_icon").c_str())) {
                     data.m_icon_form = 0;
                     data.m_icon_str = "";
                 }
@@ -159,7 +160,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Description");
+            ImGui::TextUnformatted(translate_c("$DESCRIPTION"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::TextUnformatted(description.c_str());
@@ -169,7 +170,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("File");
+            ImGui::TextUnformatted(translate_c("$FILE"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             auto file = form->GetFile(0);
@@ -177,7 +178,7 @@ namespace SpellHotbar::SpellEditor {
                 ImGui::TextUnformatted(file->fileName);
             }
             else {
-                ImGui::TextUnformatted("<Dynamic Form>");
+                ImGui::TextUnformatted(translate_c("$DYNAMIC_FORM"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -185,7 +186,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("FormID");
+            ImGui::TextUnformatted(translate_c("$FORM_ID"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::Text("%08x", form->GetFormID());
@@ -195,7 +196,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Type");
+            ImGui::TextUnformatted(translate_c("$COLUMN_TYPE"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             bool is_greater_power{ false };
@@ -203,31 +204,31 @@ namespace SpellHotbar::SpellEditor {
             if (spell) {
                 switch (spell->GetSpellType()) {
                 case RE::MagicSystem::SpellType::kSpell:
-                    ImGui::TextUnformatted("Spell");
+                    ImGui::TextUnformatted(translate_c("$TYPE_SPELL"));
                     break;
                 case RE::MagicSystem::SpellType::kPower:
-                    ImGui::TextUnformatted("Greater Power");
+                    ImGui::TextUnformatted(translate_c("$TYPE_GREATER_POWER"));
                     is_greater_power = true;
                     break;
                 case RE::MagicSystem::SpellType::kLesserPower:
-                    ImGui::TextUnformatted("Lesser Power");
+                    ImGui::TextUnformatted(translate_c("$TYPE_LESSER_POWER"));
                     break;
                 default:
-                    ImGui::TextUnformatted("???");
+                    ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
                 }
             }
             else if (shout) {
                 is_shout = true;
                 if (shout->formFlags & RE::TESShout::RecordFlags::kTreatSpellsAsPowers) {
-                    ImGui::TextUnformatted("Shout (Power)");
+                    ImGui::TextUnformatted(translate_c("$SHOUT_POWER"));
                     is_greater_power = true;
                 }
                 else {
-                    ImGui::TextUnformatted("Shout");
+                    ImGui::TextUnformatted(translate_c("$TYPE_SHOUT"));
                 }
             }
             else {
-                ImGui::TextUnformatted("???");
+                ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -235,32 +236,32 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Delivery");
+            ImGui::TextUnformatted(translate_c("$DELIVERY"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             if (spell) {
                 switch (spell->GetDelivery()) {
                 case RE::MagicSystem::Delivery::kSelf:
-                    ImGui::TextUnformatted("Self");
+                    ImGui::TextUnformatted(translate_c("$DELIVERY_SELF"));
                     break;
                 case RE::MagicSystem::Delivery::kTouch:
-                    ImGui::TextUnformatted("Touch");
+                    ImGui::TextUnformatted(translate_c("$DELIVERY_TOUCH"));
                     break;
                 case RE::MagicSystem::Delivery::kAimed:
-                    ImGui::TextUnformatted("Aimed");
+                    ImGui::TextUnformatted(translate_c("$DELIVERY_AIMED"));
                     break;
                 case RE::MagicSystem::Delivery::kTargetActor:
-                    ImGui::TextUnformatted("Target Actor");
+                    ImGui::TextUnformatted(translate_c("$DELIVERY_TARGET_ACTOR"));
                     break;
                 case RE::MagicSystem::Delivery::kTargetLocation:
-                    ImGui::TextUnformatted("Target Location");
+                    ImGui::TextUnformatted(translate_c("$DELIVERY_TARGET_LOCATION"));
                     break;
                 default:
-                    ImGui::TextUnformatted("???");
+                    ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
                 }
             }
             else {
-                ImGui::TextUnformatted("???");
+                ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -268,29 +269,29 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Casting Type");
+            ImGui::TextUnformatted(translate_c("$CASTING_TYPE"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             if (spell) {
                 switch (spell->GetCastingType()) {
                 case RE::MagicSystem::CastingType::kConstantEffect:
-                    ImGui::TextUnformatted("Constant Effect");
+                    ImGui::TextUnformatted(translate_c("$CASTING_TYPE_CONSTANT_EFFECT"));
                     break;
                 case RE::MagicSystem::CastingType::kFireAndForget:
-                    ImGui::TextUnformatted("Fire And Forget");
+                    ImGui::TextUnformatted(translate_c("$CASTING_TYPE_FIRE_AND_FORGET"));
                     break;
                 case RE::MagicSystem::CastingType::kConcentration:
-                    ImGui::TextUnformatted("Concentration");
+                    ImGui::TextUnformatted(translate_c("$CASTING_TYPE_CONCENTRATION"));
                     break;
                 case RE::MagicSystem::CastingType::kScroll:
-                    ImGui::TextUnformatted("Scroll");
+                    ImGui::TextUnformatted(translate_c("$CASTING_TYPE_SCROLL"));
                     break;
                 default:
-                    ImGui::TextUnformatted("???");
+                    ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
                 }
             }
             else {
-                ImGui::TextUnformatted("???");
+                ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -298,7 +299,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Cast Effect");
+            ImGui::TextUnformatted(translate_c("$CAST_EFFECT"));
             ImGui::TableNextColumn();
 
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
@@ -339,7 +340,7 @@ namespace SpellHotbar::SpellEditor {
             }
             else {
                 ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
-                ImGui::TextUnformatted("No Effect");
+                ImGui::TextUnformatted(translate_c("$NO_EFFECT"));
                 ImGui::PopStyleColor();
             }
             ImGui::PopID();
@@ -347,7 +348,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Globald Cooldown");
+            ImGui::TextUnformatted(translate_c("$GLOBAL_COOLDOWN"));
             ImGui::TableNextColumn();
 
             //disabled for now
@@ -377,7 +378,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Cooldown");
+            ImGui::TextUnformatted(translate_c("$COOLDOWN"));
             ImGui::TableNextColumn();
 
             bool no_cd = true;
@@ -410,7 +411,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Cast Time");
+            ImGui::TextUnformatted(translate_c("$CAST_TIME"));
             ImGui::TableNextColumn();
 
             bool no_ct = true;
@@ -441,7 +442,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Animation");
+            ImGui::TextUnformatted(translate_c("$ANIMATION"));
             ImGui::TableNextColumn();
             
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
@@ -496,7 +497,7 @@ namespace SpellHotbar::SpellEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Animation2");
+            ImGui::TextUnformatted(translate_c("$ANIMATION2"));
             ImGui::TableNextColumn();
 
             if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
@@ -636,7 +637,7 @@ namespace SpellHotbar::SpellEditor {
         RenderManager::set_large_font();
 
         if (!save_enabled) ImGui::BeginDisabled();
-        if (ImGui::Button("Save")) {
+        if (ImGui::Button(translate_id("$SAVE").c_str())) {
             //save changes
 
             if (data.has_different_data(dat_unfilled) || data.has_icon_data()) {
@@ -652,7 +653,7 @@ namespace SpellHotbar::SpellEditor {
         if (!save_enabled) ImGui::EndDisabled();
 
         ImGui::SameLine();
-        if (ImGui::Button("Cancel")) {
+        if (ImGui::Button(translate_id("$CANCEL").c_str())) {
             close();
         }
         RenderManager::revert_font();

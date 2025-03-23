@@ -6,4 +6,6 @@ namespace SpellHotbar {
 	const char* translate_c(const std::string& key);
 
 	std::string translate_id(const std::string& key);
+
+	void load_translations(const std::filesystem::path & translation_file_path);
 }

@@ -102,24 +102,25 @@ namespace SpellHotbar::Bars {
     constexpr uint32_t WEREWOLF_BAR = 'WWOL';
 
     inline std::unordered_map<uint32_t, std::string> bar_names = {
-        {MAIN_BAR, "Default"},
-        {MAIN_BAR_SNEAK, "Sneak"},
-        {MELEE_BAR, "Melee"},
-        {MELEE_BAR_SNEAK, "Sneak Melee"},
-        {ONE_HAND_SHIELD_BAR, "1H + Shield"},
-        {ONE_HAND_SHIELD_BAR_SNEAK, "Sneak 1H + Shield"},
-        {ONE_HAND_SPELL_BAR, "1H + Spell"},
-        {ONE_HAND_SPELL_BAR_SNEAK, "Sneak 1H + Spell"},
-        {DUAL_WIELD_BAR, "Dual Wield"},
-        {DUAL_WIELD_BAR_SNEAK, "Sneak Dual Wield"},
-        {TWO_HANDED_BAR, "Two-Handed"},
-        {TWO_HANDED_BAR_SNEAK, "Sneak Two-Handed"},
-        {RANGED_BAR, "Ranged"},
-        {RANGED_BAR_SNEAK, "Sneak Ranged"},
-        {MAGIC_BAR, "Magic"},
-        {MAGIC_BAR_SNEAK, "Sneak Magic"},
-        {VAMPIRE_LORD_BAR, "Vampire Lord"},
-        {WEREWOLF_BAR, "Werewolf"}};
+        {MAIN_BAR, "$MAIN_BAR"},
+        {MAIN_BAR_SNEAK, "$MAIN_BAR_SNEAK"},
+        {MELEE_BAR, "$MELEE_BAR"},
+        {MELEE_BAR_SNEAK, "$MELEE_BAR_SNEAK"},
+        {ONE_HAND_SHIELD_BAR, "$ONE_HAND_SHIELD_BAR"},
+        {ONE_HAND_SHIELD_BAR_SNEAK, "$ONE_HAND_SHIELD_BAR_SNEAK"},
+        {ONE_HAND_SPELL_BAR, "$ONE_HAND_SPELL_BAR"},
+        {ONE_HAND_SPELL_BAR_SNEAK, "$ONE_HAND_SPELL_BAR_SNEAK"},
+        {DUAL_WIELD_BAR, "$DUAL_WIELD_BAR"},
+        {DUAL_WIELD_BAR_SNEAK, "$DUAL_WIELD_BAR_SNEAK"},
+        {TWO_HANDED_BAR, "$TWO_HANDED_BAR"},
+        {TWO_HANDED_BAR_SNEAK, "$TWO_HANDED_BAR_SNEAK"},
+        {RANGED_BAR, "$RANGED_BAR"},
+        {RANGED_BAR_SNEAK, "$RANGED_BAR_SNEAK"},
+        {MAGIC_BAR, "$MAGIC_BAR"},
+        {MAGIC_BAR_SNEAK, "$MAGIC_BAR_SNEAK"},
+        {VAMPIRE_LORD_BAR, "$VAMPIRE_LORD_BAR"},
+        {WEREWOLF_BAR, "$WEREWOLF_BAR"}
+    };
 
     // non save-persistent vars:
     extern uint32_t menu_bar_id;

@@ -37,7 +37,7 @@ namespace SpellHotbar::PotionEditor {
         last_tooltip = form->GetFormID();
 
         RenderManager::ImGui_push_title_style();
-        ImGui::Begin("Edit Icon", nullptr, window_flag);
+        ImGui::Begin(translate_c("$EDIT_ICON"), nullptr, window_flag);
         RenderManager::ImGui_pop_title_style();
         ImGui::BeginChild("##icon_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
 
@@ -72,7 +72,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Name");
+            ImGui::TextUnformatted(translate_c("$COLUMN_NAME"));
             ImGui::TableNextColumn();
             ImGui::TextUnformatted(form->GetName());
             ImGui::PopID();
@@ -80,7 +80,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Icon");
+            ImGui::TextUnformatted(translate_c("$COLUMN_ICON"));
             ImGui::TableNextColumn();
 
             ImVec2 iconpos = ImGui::GetCursorScreenPos();
@@ -109,7 +109,7 @@ namespace SpellHotbar::PotionEditor {
 
             if (show_reset_button) {
                 ImGui::SameLine();
-                if (ImGui::Button("Reset##icon")) {
+                if (ImGui::Button((translate("$RESET") + "##reset_icon").c_str())) {
                     data.m_icon_form = 0;
                     data.m_icon_str = "";
                 }
@@ -119,7 +119,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Description");
+            ImGui::TextUnformatted(translate_c("$DESCRIPTION"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::TextUnformatted(description.c_str());
@@ -129,7 +129,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("File");
+            ImGui::TextUnformatted(translate_c("$FILE"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             auto file = form->GetFile(0);
@@ -137,7 +137,7 @@ namespace SpellHotbar::PotionEditor {
                 ImGui::TextUnformatted(file->fileName);
             }
             else {
-                ImGui::TextUnformatted("<Dynamic Form>");
+                ImGui::TextUnformatted(translate_c("$DYNAMIC_FORM"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -145,7 +145,7 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("FormID");
+            ImGui::TextUnformatted(translate_c("$FORM_ID"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
             ImGui::Text("%08x", form->GetFormID());
@@ -155,23 +155,23 @@ namespace SpellHotbar::PotionEditor {
             ImGui::PushID(id++);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Type");
+            ImGui::TextUnformatted(translate_c("$COLUMN_TYPE"));
             ImGui::TableNextColumn();
             ImGui::PushStyleColor(ImGuiCol_Text, col_gray);
 
             if (alchitem != nullptr) {
                 if (alchitem->IsPoison()) {
-                    ImGui::TextUnformatted("Poison");
+                    ImGui::TextUnformatted(translate_c("$TYPE_POISON"));
                 }
                 else if (alchitem->IsFood()) {
-                    ImGui::TextUnformatted("Food");
+                    ImGui::TextUnformatted(translate_c("$TYPE_FOOD"));
                 }
                 else {
-                    ImGui::TextUnformatted("Potion");
+                    ImGui::TextUnformatted(translate_c("$TYPE_POISON"));
                 }
             }
             else {
-                ImGui::TextUnformatted("???");
+                ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
             }
             ImGui::PopStyleColor();
             ImGui::PopID();
@@ -264,7 +264,7 @@ namespace SpellHotbar::PotionEditor {
         RenderManager::set_large_font();
 
         if (!save_enabled) ImGui::BeginDisabled();
-        if (ImGui::Button("Save")) {
+        if (ImGui::Button(translate_id("$SAVE").c_str())) {
             //save changes
 
             if (data.has_icon_data()) {
@@ -280,7 +280,7 @@ namespace SpellHotbar::PotionEditor {
         if (!save_enabled) ImGui::EndDisabled();
 
         ImGui::SameLine();
-        if (ImGui::Button("Cancel")) {
+        if (ImGui::Button(translate_id("$CANCEL").c_str())) {
             close();
         }
         RenderManager::revert_font();

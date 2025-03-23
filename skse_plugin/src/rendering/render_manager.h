@@ -188,6 +188,7 @@ namespace SpellHotbar {
 
         static std::string get_skill_tooltip(const RE::TESForm* item);
         static void show_skill_tooltip(const RE::TESForm* item, float offset_x = 32.0f);
+        static void show_tooltip(const std::string & title, const std::string & desc, float offset_x = 32.0f);
 
         /*returns a color depending on most expensive effect for self brewed potions, white otherwise */
         static ImU32 get_skill_color(const RE::TESForm* form);

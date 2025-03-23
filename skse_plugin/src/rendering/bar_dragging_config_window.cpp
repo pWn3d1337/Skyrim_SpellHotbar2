@@ -34,7 +34,7 @@ inline std::tuple<float, float, float> calculate_info_frame_size()
     float frame_width = frame_height * 16.0f / 9.0f;
 
     ImGui::SetNextWindowSize(ImVec2(frame_width, frame_height));
-    ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.5f, (screen_size_y - frame_height) * 0.6f));
+    ImGui::SetNextWindowPos(ImVec2((screen_size_x - frame_width) * 0.75f, (screen_size_y - frame_height) * 0.3f));
 
     return std::make_tuple(screen_size_x, screen_size_y, frame_width);
 }
@@ -196,10 +196,10 @@ void draw_info()
     //float scale_factor = screen_size_y / 1080.0f;
 
     ImGui::Begin("##drag_info", nullptr, window_flag);
-    ImGui::TextUnformatted("ESC: finish dragging");
-    ImGui::TextUnformatted("TAB: leave menus while still dragging");
-    ImGui::TextUnformatted("Mouse Wheel: Icon Size");
-    ImGui::TextUnformatted("ALT + Mouse Wheel: Spacing");
+    ImGui::TextUnformatted(translate_c("$BAR_DRAG_INFO_ESC"));
+    ImGui::TextUnformatted(translate_c("$BAR_DRAG_INFO_TAB"));
+    ImGui::TextUnformatted(translate_c("$BAR_DRAG_INFO_WHEEL"));
+    ImGui::TextUnformatted(translate_c("$BAR_DRAG_INFO_ALT"));
     ImGui::End();
 }
 

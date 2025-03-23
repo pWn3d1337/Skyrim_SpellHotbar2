@@ -607,7 +607,7 @@ State SavePresetState
 	EndEvent
 	Event OnInputAcceptST(string name)
 		if name != ""
-			if ShowMessage("Save current settings as '" + name +"'?", true, "$Yes", "$No")
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_SETTINGS_SAVE")+" '" + name +"'?", true, "$Yes", "$No")
 				if saveSettingsAsPreset(name)
 					SetInputOptionValueST(name)
 				EndIf
@@ -632,7 +632,7 @@ State LoadPresetState
 	Event OnMenuAcceptST(int index)
 		if index > 0
 			string preset = known_presets[index]
-			if ShowMessage("Load settings from preset '" + preset +"'?", true, "$Yes", "$No")
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_SETTINGS_LOAD")+" '" + preset +"'?", true, "$Yes", "$No")
 				if (loadSettingsFromPreset(preset, True, True))
 					SetMenuOptionValueST(preset)
 				EndIf
@@ -650,10 +650,10 @@ State SaveBarsState
 	EndEvent
 	Event OnInputAcceptST(string name)
 		if name != ""
-			if ShowMessage("Save current bars as '" + name +".json'?", true, "$Yes", "$No")
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_BAR_SAVE")+ " '" + name +".json'?", true, "$Yes", "$No")
 				string out_file = SpellHotbar.get_user_dir_bars_path() + "/" + name + ".json"
 				bool exists = SpellHotbar.fileExists(out_file)
-				if !exists || ShowMessage("'" + name +".json' exists, overwrite?", true, "$Yes", "$No")
+				if !exists || ShowMessage("'" + name +".json' "+ SpellHotbar.translate("$MCM_PROMPT_OVERWRITE"), true, "$Yes", "$No")
 					if SpellHotbar.saveBarsToFile(out_file)
 						SetInputOptionValueST(name)
 					else
@@ -683,7 +683,7 @@ State LoadBarsState
 			string preset = known_bar_presets[index]
 			string file_path_user = SpellHotbar.get_user_dir_bars_path() + "/" + preset
 			string file_path_mod = bars_root + preset
-			if ShowMessage("Load bars from '" + preset +"'?", true, "$Yes", "$No")
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_BAR_LOAD")+" '" + preset +"'?", true, "$Yes", "$No")
 				if (SpellHotbar.loadBarsFromFile(file_path_mod, file_path_user))
 					SetMenuOptionValueST(preset)
 				Else

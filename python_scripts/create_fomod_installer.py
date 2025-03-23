@@ -22,6 +22,18 @@ used_presets = [
     "controller_bindmenu.json"
 ]
 
+languages = [
+    "ENGLISH",
+    "CZECH",
+    "FRENCH",
+    "GERMAN",
+    "ITALIAN",
+    "JAPANESE",
+    "POLISH",
+    "RUSSIAN",
+    "SPANISH",
+]
+
 
 def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], main_folder: str = "data"):
     print(f"Copying to folder: {outfile}...")
@@ -447,11 +459,17 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_powers.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/transformdata/", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/localization/translation.txt", (dev_mod_root, main_mod_folder)),
 ]
 
 released_files_main_plugin_v2 += [
     (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", (dev_mod_root, main_mod_folder)) for preset in
     used_presets
+]
+
+released_files_main_plugin_v2 += [
+    (dev_mod_root / f"Interface/Translations/SpellHotbar_ENGLISH.txt",
+     f"{main_mod_folder}Interface/Translations/SpellHotbar_{lang}.txt") for lang in languages
 ]
 
 battlemage_perk_files = [
@@ -483,7 +501,7 @@ if __name__ == "__main__":
 
     debug_output_folder = Path(r"F:\Skyrim Dev\WORK\ZIP_OUT")
 
-    version = "0.0.11"
+    version = "0.0.12"
     output_zip_path = project_root / f"build/Spell Hotbar 2 - {version}.zip"
 
     _add_spell_pack("vulcano")

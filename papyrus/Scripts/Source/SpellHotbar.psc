@@ -86,3 +86,4 @@ bool function toggleUsingKeyIcons() global native
 bool function isBattlemageAvailable() global native
 bool function playerKnowsPower(int type) global native
 bool function togglePlayerPowerKnowledge(int type) global native
+string function translate(string key) global native

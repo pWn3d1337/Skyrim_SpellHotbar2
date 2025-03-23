@@ -271,7 +271,7 @@ namespace SpellHotbar::SpellEditor {
         float scale_factor = screen_size_y / 1080.0f;
 
         RenderManager::ImGui_push_title_style();
-        ImGui::Begin("Spell Editor", &show_frame, window_flag);
+        ImGui::Begin(translate_c("$SPELL_EDITOR"), &show_frame, window_flag);
         RenderManager::ImGui_pop_title_style();
 
         ImGui::BeginChild("##spell_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
@@ -296,15 +296,15 @@ namespace SpellHotbar::SpellEditor {
         }
         last_filter = filter_buf;
 
-        ImGui::InputTextWithHint("Filter", "Filter spell names containing text", filter_buf, filter_buf_size, filter_input_flags);
+        ImGui::InputTextWithHint(translate_id("$FILTER").c_str(), translate_c("$FILTER_INFO"), filter_buf, filter_buf_size, filter_input_flags);
 
         ImGui::SameLine();
-        if (ImGui::Checkbox("Edited Only", &filter_user_data)) {
+        if (ImGui::Checkbox(translate_id("$CHECK_EDITED").c_str(), &filter_user_data)) {
             filter_dirty = true;
         };
 
         ImGui::SameLine();
-        if (ImGui::Checkbox("No Predefined data", &filter_predefined_data)) {
+        if (ImGui::Checkbox(translate_id("$CHECK_NO_PREDEFINED").c_str(), &filter_predefined_data)) {
             filter_dirty = true;
         }
 
@@ -322,19 +322,19 @@ namespace SpellHotbar::SpellEditor {
             // - ImGuiTableColumnFlags_DefaultSort
             // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
             // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending | ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_ID);
-            ImGui::TableSetupColumn("Plugin", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Plugin);
-            ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Icon);
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch, 0.0f, spell_editor_column_id::column_id_Name);
-            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Type);
-            ImGui::TableSetupColumn("Casteffect", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Effect);
-            ImGui::TableSetupColumn("GCD", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_GCD);
-            ImGui::TableSetupColumn("CD", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_CD);
-            ImGui::TableSetupColumn("Casttime", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Casttime);
-            ImGui::TableSetupColumn("Anim", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim);
-            ImGui::TableSetupColumn("Anim2", ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim2);
-            ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Edit);
-            ImGui::TableSetupColumn("Reset", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Reset);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ID").c_str(), ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending | ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_ID);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_PLUGIN").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Plugin);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ICON").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Icon);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_NAME").c_str(), ImGuiTableColumnFlags_WidthStretch, 0.0f, spell_editor_column_id::column_id_Name);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_TYPE").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Type);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_CASTEFFECT").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Effect);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_GCD").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_GCD);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_CD").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_CD);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_CASTTIME").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Casttime);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ANIM").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ANIM2").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, spell_editor_column_id::column_id_Anim2);
+            ImGui::TableSetupColumn(translate_id("$EDIT").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Edit);
+            ImGui::TableSetupColumn(translate_id("$RESET").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, spell_editor_column_id::column_id_Reset);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -378,7 +378,7 @@ namespace SpellHotbar::SpellEditor {
                         ImGui::TextUnformatted(file->fileName);
                     }
                     else {
-                        ImGui::TextUnformatted("<Dynamic Form>");
+                        ImGui::TextUnformatted(translate_c("$DYNAMIC_FORM"));
                     }
 
                     ImGui::TableNextColumn();
@@ -392,15 +392,15 @@ namespace SpellHotbar::SpellEditor {
 
                     if (item->GetFormType() == RE::FormType::Spell) {
                         ImGui::TableNextColumn();
-                        ImGui::TextUnformatted("Spell");
+                        ImGui::TextUnformatted(translate_c("$TYPE_SPELL"));
                     }
                     else if (item->GetFormType() == RE::FormType::Shout) {
                         ImGui::TableNextColumn();
-                        ImGui::TextUnformatted("Shout");
+                        ImGui::TextUnformatted(translate_c("$TYPE_SHOUT"));
                     }
                     else {
                         ImGui::TableNextColumn();
-                        ImGui::TextUnformatted("???");
+                        ImGui::TextUnformatted(translate_c("$QUESTION_MARKS"));
                     }
 
                     auto data = SpellHotbar::GameData::get_spell_data(item);
@@ -425,26 +425,26 @@ namespace SpellHotbar::SpellEditor {
                     ImGui::Text("%d", data.animation2);
 
                     ImGui::TableNextColumn();
-                    if (ImGui::SmallButton("Edit")) {
+                    if (ImGui::SmallButton(translate_id("$EDIT").c_str())) {
                         button_edit_clicked = row_n;
                     }
 
                     ImGui::TableNextColumn();
 
                     if (GameData::user_spell_cast_info.contains(item->GetFormID())) {
-                        if (ImGui::SmallButton("Reset")) {
-                            ImGui::OpenPopup("Reset?");
+                        if (ImGui::SmallButton(translate_id("$RESET").c_str())) {
+                            ImGui::OpenPopup((translate("$RESET") + "?").c_str());
                         }
 
                         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
                         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-                        if (ImGui::BeginPopupModal("Reset?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+                        if (ImGui::BeginPopupModal((translate("$RESET") + "?").c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
                         {
-                            ImGui::Text("Reset all edits to '%s'.", item->GetName());
+                            ImGui::Text((translate("$RESET_PROMT") + " '%s'.").c_str(), item->GetName());
                             ImGui::Separator();
 
-                            if (ImGui::Button("Ok", ImVec2(120, 0))) {
+                            if (ImGui::Button(translate_id("$OK").c_str(), ImVec2(120, 0))) {
                                 if (GameData::user_spell_cast_info.contains(item->GetFormID())) {
                                     GameData::user_spell_cast_info.erase(item->GetFormID());
                                 }
@@ -452,7 +452,7 @@ namespace SpellHotbar::SpellEditor {
                             }
                             ImGui::SetItemDefaultFocus();
                             ImGui::SameLine();
-                            if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+                            if (ImGui::Button(translate_id("$CANCEL").c_str(), ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
                             ImGui::EndPopup();
                         }
                     }

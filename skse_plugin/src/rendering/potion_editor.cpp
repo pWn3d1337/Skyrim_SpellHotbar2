@@ -195,7 +195,7 @@ namespace SpellHotbar::PotionEditor {
 
         float scale_factor = screen_size_y / 1080.0f;
         RenderManager::ImGui_push_title_style();
-        ImGui::Begin("Potion Editor", &show_frame, window_flag);
+        ImGui::Begin(translate_c("$POTION_EDITOR"), &show_frame, window_flag);
         RenderManager::ImGui_pop_title_style();
 
         ImGui::BeginChild("##potion_editor", ImVec2(0.0f, 0.0f), false, ImGuiWindowFlags_None);
@@ -220,15 +220,15 @@ namespace SpellHotbar::PotionEditor {
         }
         last_filter = filter_buf;
 
-        ImGui::InputTextWithHint("Filter", "Filter names containing text", filter_buf, filter_buf_size, filter_input_flags);
+        ImGui::InputTextWithHint(translate_id("$FILTER").c_str(), translate_c("$FILTER_INFO"), filter_buf, filter_buf_size, filter_input_flags);
 
         ImGui::SameLine();
-        if (ImGui::Checkbox("Edited Only", &filter_user_data)) {
+        if (ImGui::Checkbox(translate_id("$CHECK_EDITED").c_str(), &filter_user_data)) {
             filter_dirty = true;
         };
 
         ImGui::SameLine();
-        if (ImGui::Checkbox("No Predefined data", &filter_predefined_data)) {
+        if (ImGui::Checkbox(translate_id("$CHECK_NO_PREDEFINED").c_str(), &filter_predefined_data)) {
             filter_dirty = true;
         }
 
@@ -246,13 +246,13 @@ namespace SpellHotbar::PotionEditor {
             // - ImGuiTableColumnFlags_DefaultSort
             // - ImGuiTableColumnFlags_NoSort / ImGuiTableColumnFlags_NoSortAscending / ImGuiTableColumnFlags_NoSortDescending
             // - ImGuiTableColumnFlags_PreferSortAscending / ImGuiTableColumnFlags_PreferSortDescending
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending | ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_ID);
-            ImGui::TableSetupColumn("Plugin", ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_Plugin);
-            ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Icon);
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch, 0.0f, potion_editor_column_id::column_id_Name);
-            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_Type);
-            ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Edit);
-            ImGui::TableSetupColumn("Reset", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Reset);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ID").c_str(), ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_PreferSortAscending | ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_ID);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_PLUGIN").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_Plugin);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_ICON").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Icon);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_NAME").c_str(), ImGuiTableColumnFlags_WidthStretch, 0.0f, potion_editor_column_id::column_id_Name);
+            ImGui::TableSetupColumn(translate_id("$COLUMN_TYPE").c_str(), ImGuiTableColumnFlags_WidthFixed, 0.0f, potion_editor_column_id::column_id_Type);
+            ImGui::TableSetupColumn(translate_id("$EDIT").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Edit);
+            ImGui::TableSetupColumn(translate_id("$RESET").c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoSort, 0.0f, potion_editor_column_id::column_id_Reset);
             ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
             ImGui::TableHeadersRow();
 
@@ -296,7 +296,7 @@ namespace SpellHotbar::PotionEditor {
                         ImGui::TextUnformatted(file->fileName);
                     }
                     else {
-                        ImGui::TextUnformatted("<Dynamic Form>");
+                        ImGui::TextUnformatted(translate_c("$DYNAMIC_FORM"));
                     }
 
                     ImGui::TableNextColumn();
@@ -309,15 +309,15 @@ namespace SpellHotbar::PotionEditor {
                     //ImGui::SmallButton("None");
 
                     ImGui::TableNextColumn();
-                    std::string type_text = "Potion";
+                    std::string type_text = translate_c("$TYPE_POTION");
                     if (item->GetFormType() == RE::FormType::AlchemyItem) {
                         auto alch = item->As<RE::AlchemyItem>();
                         if (alch) {
                             if (alch->IsPoison()) {
-                                type_text = "Poison";
+                                type_text = translate_c("$TYPE_POISON");
                             }
                             else if (alch->IsFood()) {
-                                type_text = "Food";
+                                type_text = translate_c("$TYPE_FOOD");
                             }
                         }
                     }
@@ -325,26 +325,26 @@ namespace SpellHotbar::PotionEditor {
 
 
                     ImGui::TableNextColumn();
-                    if (ImGui::SmallButton("Edit")) {
+                    if (ImGui::SmallButton(translate_id("$EDIT").c_str())) {
                         button_edit_clicked = row_n;
                     }
 
                     ImGui::TableNextColumn();
 
                     if (GameData::user_custom_entry_info.contains(item->GetFormID())) {
-                        if (ImGui::SmallButton("Reset")) {
-                            ImGui::OpenPopup("Reset?");
+                        if (ImGui::SmallButton(translate_id("$RESET").c_str())) {
+                            ImGui::OpenPopup((translate("$RESET") + "?").c_str());
                         }
 
                         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
                         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-                        if (ImGui::BeginPopupModal("Reset?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+                        if (ImGui::BeginPopupModal((translate("$RESET") + "?").c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
                         {
-                            ImGui::Text("Reset all edits to '%s'.", item->GetName());
+                            ImGui::Text((translate("$RESET_PROMT") + " '%s'.").c_str(), item->GetName());
                             ImGui::Separator();
 
-                            if (ImGui::Button("Ok", ImVec2(120, 0))) {
+                            if (ImGui::Button(translate_id("$OK").c_str(), ImVec2(120, 0))) {
                                 if (GameData::user_custom_entry_info.contains(item->GetFormID())) {
                                     GameData::user_custom_entry_info.erase(item->GetFormID());
                                 }
@@ -352,7 +352,7 @@ namespace SpellHotbar::PotionEditor {
                             }
                             ImGui::SetItemDefaultFocus();
                             ImGui::SameLine();
-                            if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+                            if (ImGui::Button(translate_id("$CANCEL").c_str(), ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
                             ImGui::EndPopup();
                         }
                     }
