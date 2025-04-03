@@ -210,6 +210,8 @@ namespace SpellHotbar::GameData {
     */
     extern bool key_icons_available;
 
+    extern bool individual_shout_cooldowns;
+
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
 
@@ -398,5 +400,9 @@ namespace SpellHotbar::GameData {
     std::string get_key_text_long(int code);
 
     std::string strip_tooltip(const std::string& input, float magnitude, uint32_t duration);
+
+    void reset_shout_cd();
+    void apply_cd_for_shout(RE::FormID formID);
+    void set_shout_cd(float seconds, float prog, float dur);
 }
 

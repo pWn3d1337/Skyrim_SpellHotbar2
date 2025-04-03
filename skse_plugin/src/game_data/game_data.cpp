@@ -98,6 +98,8 @@ namespace SpellHotbar::GameData {
     std::unordered_map<int, std::string> animation_names;
 
     bool key_icons_available{ false };
+
+    bool individual_shout_cooldowns{ true }; //todo false & settings
     /*
     * Spells that have a magiceffect as cooldown
     */
@@ -628,6 +630,59 @@ namespace SpellHotbar::GameData {
         }
 
         return ss.str();
+    }
+
+    void reset_shout_cd()
+    {
+        auto pc = RE::PlayerCharacter::GetSingleton();
+        if (pc != nullptr) {
+            auto &dat = pc->GetActorRuntimeData();
+            auto high_data = dat.currentProcess->high;
+            if (high_data != nullptr) {
+                high_data->voiceRecoveryTime =0.0f;
+            }
+        }
+    }
+
+    void apply_cd_for_shout(RE::FormID formID)
+    {
+        auto cal = RE::Calendar::GetSingleton();
+        if (cal != nullptr) {
+            auto [gt_prog, gt_dur] = GameData::get_gametime_cooldown(cal->GetCurrentGameTime(), formID);
+
+            if (gt_dur > 0.0f) {
+                //apply cd of shout
+                float constexpr gametime_to_seconds = 24.0f * 60.0f * 60.0f;
+
+                float dur = gt_dur * gametime_to_seconds / cal->GetTimescale();
+                float gt_cd = dur * (1.0f - gt_prog);
+
+                GameData::set_shout_cd(gt_cd, gt_prog, dur);
+            }
+        }
+    }
+
+    void set_shout_cd(float seconds, float prog, float dur)
+    {
+        auto pc = RE::PlayerCharacter::GetSingleton();
+        if (pc != nullptr) {
+            auto& dat = pc->GetActorRuntimeData();
+            auto high_data = dat.currentProcess->high;
+            if (high_data != nullptr) {
+                high_data->voiceRecoveryTime = seconds;
+
+                //also update hudmeter
+                auto ui = RE::UI::GetSingleton();
+                if (ui != nullptr) {
+                    auto* hudMenu = static_cast<RE::HUDMenu*>(ui->GetMenu(RE::HUDMenu::MENU_NAME).get());
+                    if (hudMenu != nullptr) {
+                        hudMenu->GetRuntimeData().shout->cooldown = dur;
+                        hudMenu->GetRuntimeData().shout->fillPct = (1.0f -prog) *100.0f;
+                        //hudMenu->GetRuntimeData().shout->SetFillPct(true);
+                    }
+                }
+            }
+        }
     }
 
     std::string get_keybind_text(int slot_index, key_modifier mod)

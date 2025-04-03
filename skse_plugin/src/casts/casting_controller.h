@@ -171,7 +171,7 @@ namespace SpellHotbar::casts::CastingController {
 
 		virtual void on_reset() override;
 
-		void reequip_old_power();
+		virtual bool reequip_old_power();
 
 		virtual bool update(RE::PlayerCharacter* pc, float delta) override;
 	protected:
@@ -183,6 +183,7 @@ namespace SpellHotbar::casts::CastingController {
 	public:
 		CastingInstanceShout(RE::TESForm* form);
 		virtual ~CastingInstanceShout() = default;
+		virtual bool reequip_old_power() override;
 	protected:
 	};
 

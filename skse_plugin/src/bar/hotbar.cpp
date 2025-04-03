@@ -451,7 +451,7 @@ namespace SpellHotbar
 
             }
             else {
-                if (skill_type == slot_type::shout && shout_cd_dur > 0.0f) {
+                if (!GameData::individual_shout_cooldowns && skill_type == slot_type::shout && shout_cd_dur > 0.0f) {
                     // get longer cd
                     float gcd = gcd_dur * (1.0f - gcd_prog);
                     float scd = shout_cd_dur * (1.0f - shout_cd);

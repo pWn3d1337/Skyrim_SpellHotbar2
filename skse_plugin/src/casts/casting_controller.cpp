@@ -762,7 +762,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				if (!is_shouting && form->GetFormType() == RE::FormType::Shout) {
 
-					if (pc->GetVoiceRecoveryTime() <= 0.0f) {
+					if (GameData::individual_shout_cooldowns || pc->GetVoiceRecoveryTime() <= 0.0f) {
 
 						current_cast = std::make_unique<CastingInstanceShout>(form);
 						return true;
@@ -978,7 +978,7 @@ namespace SpellHotbar::casts::CastingController {
 		reequip_old_power();
 	}
 
-	void CastingInstancePower::reequip_old_power()
+	bool CastingInstancePower::reequip_old_power()
 	{
 		if (!m_reequiped) {
 			auto pc = RE::PlayerCharacter::GetSingleton();
@@ -989,8 +989,10 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				m_reequiped = true;
 				consume_items();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	bool CastingInstancePower::update(RE::PlayerCharacter* pc, float delta)
@@ -1005,6 +1007,28 @@ namespace SpellHotbar::casts::CastingController {
 	CastingInstanceShout::CastingInstanceShout(RE::TESForm* form) : CastingInstancePower(form)
 	{
 		m_gcd = 1.5f;
+		if (GameData::individual_shout_cooldowns) {
+			//If cast is allowed to start, individual shout CD must be 0
+			if (m_old_form == nullptr || m_form->GetFormID() != m_old_form->GetFormID()) {
+				GameData::reset_shout_cd();
+			}
+		}
+	}
+
+	bool CastingInstanceShout::reequip_old_power()
+	{
+		if(CastingInstancePower::reequip_old_power() && GameData::individual_shout_cooldowns) {
+			if (m_form != m_old_form) {
+				GameData::reset_shout_cd();
+
+				//apply new shout CD if shout
+				if (m_old_form != nullptr && m_old_form->GetFormType() == RE::FormType::Shout) {
+					GameData::apply_cd_for_shout(m_old_form->GetFormID());
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	CastingInstanceSpellData::CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animation, int animation2, uint16_t casteffect, bool is_spell_proc) :
