@@ -96,6 +96,9 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&Bars::disable_menu_binding, sizeof(bool));
             bool use_key_icons = Bars::get_use_keybind_icons();
             a_intfc->WriteRecordData(&use_key_icons, sizeof(bool));
+
+            //V5: since SpellHotbar2 0.0.13
+            a_intfc->WriteRecordData(&GameData::individual_shout_cooldowns, sizeof(bool));
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -430,6 +433,22 @@ namespace SpellHotbar::Storage {
                 else {
                     Bars::disable_menu_binding = false;
                     Bars::set_use_keybind_icons(false);
+                }
+
+                if (version >= 5U) { //since 0.0.13
+                    bool read_individual_shout_cooldowns{ false };
+                    if (!a_intfc->ReadRecordData(&read_individual_shout_cooldowns, sizeof(bool))) {
+                        logger::error("Failed to read individual_shout_cooldowns!");
+                        break;
+                    }
+                    else {
+#ifdef DEBUG_LOG_SERIALIZATION
+                        logger::info("Loaded GameData::individual_shout_cooldowns: {}", read_individual_shout_cooldowns);
+#endif
+                        if (read_individual_shout_cooldowns != GameData::individual_shout_cooldowns) {
+                            GameData::toggle_individual_shout_cooldowns();
+                        }
+                    }
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

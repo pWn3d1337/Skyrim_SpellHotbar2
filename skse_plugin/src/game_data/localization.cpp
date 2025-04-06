@@ -135,6 +135,8 @@ namespace SpellHotbar {
 			{"$MCM_PROMPT_SETTINGS_SAVE", "Save current settings as"},
 			{"$SLOT_BLOCKED_TITLE", "Blocked from Inheritance"},
 			{"$SLOT_BLOCKED_INFO", "<Click to unblock>"},
+			{"$MCM_PROMPT_ICON_EDITS_SAVE", "Save Spell and Item edits as"},
+			{"$MCM_PROMPT_ICON_EDITS_LOAD", "Load Spell and Item edits from"},
 		};
 		return t;
 	}

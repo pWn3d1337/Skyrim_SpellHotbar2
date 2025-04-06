@@ -18,9 +18,11 @@ namespace SpellHotbar::Storage::IO {
 
     constexpr std::string_view user_dir_presets{ "My Games/Skyrim Special Edition/SpellHotbar/presets" };
     constexpr std::string_view user_dir_bars{ "My Games/Skyrim Special Edition/SpellHotbar/bars" };
+    constexpr std::string_view user_dir_icon_edits{ "My Games/Skyrim Special Edition/SpellHotbar/icon_edits" };
     
     constexpr std::string_view preset_dir{ "Data/SKSE/Plugins/SpellHotbar/presets/" };
     constexpr std::string_view bars_dir{ "Data/SKSE/Plugins/SpellHotbar/bars/" };
+    constexpr std::string_view icon_edits_dir{ "Data/SKSE/Plugins/SpellHotbar/icon_edits/" };
 
 	std::filesystem::path IO::get_doc_dir()
 	{
@@ -45,6 +47,10 @@ namespace SpellHotbar::Storage::IO {
 
     std::filesystem::path get_bars_user_dir() {
         return get_doc_dir() / user_dir_bars;
+    }
+
+    std::filesystem::path get_icon_edits_user_dir() {
+        return get_doc_dir() / user_dir_icon_edits;
     }
 
     inline static int get_int_or_default(rj::Document& d, std::string key, int def) {
@@ -123,6 +129,10 @@ namespace SpellHotbar::Storage::IO {
         Bars::set_use_keybind_icons(get_int_or_default(d, "settings.use_key_icons", 0) != 0);
 
         GameData::potion_gcd = get_float_or_default(d, "settings.potion_gcd", 1.0f);
+        bool individual_shout_cds = get_int_or_default(d, "settings.individual_shout_cooldowns", 0) != 0;
+        if (individual_shout_cds != GameData::individual_shout_cooldowns) {
+            GameData::toggle_individual_shout_cooldowns;
+        }
 
         //oblivion mode
         Bars::oblivion_slot_scale = get_float_or_default(d, "settings.oblivion_bar.slot_scale", 1.0f);
@@ -299,6 +309,7 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.use_key_icons", Bars::get_use_keybind_icons() ? 1 : 0);
 
         add_float(d, "settings.potion_gcd", GameData::potion_gcd);
+        add_int(d, "settings.individual_shout_cooldowns", GameData::individual_shout_cooldowns ? 1 : 0);
 
         add_float(d, "settings.oblivion_bar.slot_scale", Bars::oblivion_slot_scale);
         add_float(d, "settings.oblivion_bar.offset_x", RenderManager::scale_from_resolution(Bars::oblivion_offset_x));
@@ -424,6 +435,20 @@ namespace SpellHotbar::Storage::IO {
 
         std::filesystem::path user_dir = get_bars_user_dir();
         std::filesystem::path mod_dir{ bars_dir };
+
+        add_json_files(ret, user_dir);
+        add_json_files(ret, mod_dir);
+
+        return ret;
+    }
+
+    std::vector<std::string> get_icon_edits_presets()
+    {
+        std::vector<std::string> ret;
+        ret.emplace_back("<cancel>");
+
+        std::filesystem::path user_dir = get_icon_edits_user_dir();
+        std::filesystem::path mod_dir{ icon_edits_dir };
 
         add_json_files(ret, user_dir);
         add_json_files(ret, mod_dir);

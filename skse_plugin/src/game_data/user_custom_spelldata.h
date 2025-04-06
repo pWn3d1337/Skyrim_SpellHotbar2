@@ -26,6 +26,11 @@ namespace SpellHotbar::GameData {
 		virtual void serialize(SKSE::SerializationInterface* serializer) const override;
 		static User_custom_spelldata deserialize(SKSE::SerializationInterface* serializer, uint32_t version);
 
+		//virtual bool to_json(rapidjson::Document& doc, uint32_t key, rapidjson::Value& parent_node) override;
+		virtual bool to_json_additional_data(rapidjson::Document& doc, uint32_t key, rapidjson::Value& parent_node) override;
+
+		virtual bool extradata_from_json(rapidjson::Value& node) override;
+
 		/*
 		* has changes that require saving
 		*/

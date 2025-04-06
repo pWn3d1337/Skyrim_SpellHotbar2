@@ -8,8 +8,9 @@ namespace SpellHotbar::Storage {
     * 2 - SpellHotbar2, alpha until 0.0.4
     * 3 - SpellHotbar2, alpha 0.0.5
     * 4 - SpellHotbar2, alpha 0.0.7
+    * 5 - SpellHotbar2, alpha 0.0.13
     */
-    constexpr uint32_t save_format = 4U;
+    constexpr uint32_t save_format = 5U;
 
     extern std::array<RE::FormID, 12> hotbar_main;
 

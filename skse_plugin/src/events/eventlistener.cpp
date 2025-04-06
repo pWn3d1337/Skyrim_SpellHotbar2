@@ -49,7 +49,8 @@ namespace SpellHotbar::events {
 
                                         //Check if the current casted spell is part of the shout
                                         RE::TESShout* shout = dat.selectedPower->As<RE::TESShout>();
-                                        if (shout != nullptr) {
+                                        //do not do this for shout powers, they already get their cd set to 1d on cast
+                                        if (shout != nullptr && !(shout->formFlags & RE::TESShout::RecordFlags::kTreatSpellsAsPowers)) {
                                             float recovery_time = -1.0f;
                                             if (shout->variations[RE::TESShout::VariationID::kOne].spell == spell) {
                                                 recovery_time = shout->variations[RE::TESShout::VariationID::kOne].recoveryTime;
@@ -100,7 +101,7 @@ namespace SpellHotbar::events {
                 RE::TESShout* shout = event->sourceForm->As<RE::TESShout>();
                 if (shout && (shout->formFlags & RE::TESShout::RecordFlags::kTreatSpellsAsPowers))
                 {
-                    GameData::add_gametime_cooldown(shout->GetFormID(), 24.0, false);
+                    GameData::add_gametime_cooldown(shout->GetFormID(), 24.0, true);
                 }
                 casts::CastingController::try_finish_shout_cast(event->sourceForm->GetFormID());
             }

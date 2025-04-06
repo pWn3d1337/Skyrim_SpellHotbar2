@@ -254,6 +254,7 @@ namespace SpellHotbar::GameData {
     void add_gametime_cooldown_with_timescale(RE::FormID skill, float days, bool update_existing);
 
     void purge_expired_gametime_cooldowns();
+    void purge_shout_gametime_cooldowns();
 
     bool is_skill_on_cd(RE::FormID skill);
 
@@ -404,5 +405,10 @@ namespace SpellHotbar::GameData {
     void reset_shout_cd();
     void apply_cd_for_shout(RE::FormID formID);
     void set_shout_cd(float seconds, float prog, float dur);
+
+    bool save_icon_edits_to_json(std::string path);
+    bool load_icon_edits_from_json(std::string path);
+
+    bool toggle_individual_shout_cooldowns();
 }
 

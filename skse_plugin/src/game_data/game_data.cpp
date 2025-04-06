@@ -13,6 +13,13 @@
 #include "../input/modes.h"
 
 #include <random>
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/error/en.h>
+
+namespace rj = rapidjson;
 
 namespace SpellHotbar::GameData {
 
@@ -99,7 +106,7 @@ namespace SpellHotbar::GameData {
 
     bool key_icons_available{ false };
 
-    bool individual_shout_cooldowns{ true }; //todo false & settings
+    bool individual_shout_cooldowns{ false };
     /*
     * Spells that have a magiceffect as cooldown
     */
@@ -1282,6 +1289,22 @@ namespace SpellHotbar::GameData {
         }
     }
 
+    void purge_shout_gametime_cooldowns()
+    {
+        std::erase_if(gametime_cooldowns, [](const auto& elem)
+            {
+                auto form = RE::TESForm::LookupByID(elem.first);
+                if (form != nullptr && form->GetFormType() == RE::FormType::Shout) {
+                    RE::TESShout* shout = form->As<RE::TESShout>();
+                    if (shout != nullptr && !(shout->formFlags & RE::TESShout::RecordFlags::kTreatSpellsAsPowers))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+    }
+
     bool is_skill_on_cd(RE::FormID skill)
     {
         bool ret{ false };
@@ -2065,5 +2088,141 @@ namespace SpellHotbar::GameData {
      Key_Data::Key_Data(const std::string& p_short_text, const std::string& p_long_text, int p_texture_index) :
          short_text(p_short_text), long_text(p_long_text), texture_index(p_texture_index)
      {
+     }
+
+     bool save_icon_edits_to_json(const std::string path)
+     {
+         constexpr int save_format{ 1 };
+         logger::info("Saving Icon Edits to {}", path);
+         std::filesystem::path file_path(path);
+         std::filesystem::create_directories(file_path.parent_path());
+
+         rj::Document d;
+         d.SetObject();
+         d.AddMember("version", save_format, d.GetAllocator());
+
+         std::ofstream ofs(path, std::ofstream::out);
+         if (ofs.is_open()) {
+             rj::OStreamWrapper osw(ofs);
+
+             rj::Value spell_node(rj::kArrayType);
+
+             for (auto& [key, spell_data] : user_spell_cast_info) {
+                 spell_data.to_json(d, key, spell_node);
+             }
+
+             d.AddMember("spells", spell_node, d.GetAllocator());
+
+             rj::Value items_node(rj::kArrayType);
+
+             for (auto& [key, entry_data] : user_custom_entry_info) {
+                 entry_data.to_json(d, key, items_node);
+             }
+
+             d.AddMember("items", items_node, d.GetAllocator());
+
+             rj::PrettyWriter<rj::OStreamWrapper> writer(osw);
+             writer.SetIndent(' ', 4);
+             d.Accept(writer);
+             return true;
+         }
+         else {
+             logger::error("Could not open '{}' for writing", path);
+             return false;
+         }
+     }
+
+     bool load_icon_edits_from_json_v1(rj::Document& d) {
+         bool errors{ false };
+
+         if (d.HasMember("spells")) {
+            if (d["spells"].IsArray()) {
+                for (auto& spell_object : d["spells"].GetArray()) {
+                    User_custom_spelldata entry(0);
+                    if (entry.from_json(spell_object, false)) {
+                        GameData::user_spell_cast_info.insert_or_assign(entry.m_form_id, entry);
+                    }
+                    else {
+                        errors = true;
+                    }
+                }
+            }
+            else {
+                errors = true;
+                logger::error("spells is not array type!");
+            }
+         }
+
+         if (d.HasMember("items")) {
+             if (d["items"].IsArray()) {
+                 for (auto& item_object : d["items"].GetArray()) {
+                     User_custom_entry entry(0);
+                     if (entry.from_json(item_object, true)) {
+                         GameData::user_custom_entry_info.insert_or_assign(entry.m_form_id, entry); 
+                     }
+                     else {
+                         errors = true;
+                     }
+                 }
+             }
+             else {
+                 errors = true;
+                 logger::error("items is not array type!");
+             }
+         }
+
+         return !errors;
+     }
+
+     bool load_icon_edits_from_json(std::string path)
+     {
+         logger::info("Loading Icon edits from {}", path);
+         std::ifstream ifs(path);
+
+         if (!ifs.is_open()) {
+             logger::error("Could not open '{}' for reading.", path);
+             return false;
+         }
+         try {
+             rj::IStreamWrapper isw(ifs);
+             rj::Document d;
+             d.ParseStream(isw);
+
+             if (d.HasParseError()) {
+                 logger::error("JSON parse error (offset {}): {}", d.GetErrorOffset(), rj::GetParseError_En(d.GetParseError()));
+                 return false;
+             }
+
+             if (!d.HasMember("version")) {
+                 logger::error("Could not read version from {}", path);
+                 return false;
+             }
+             int version = d["version"].GetInt();
+             if (version == 1) {
+                 return load_icon_edits_from_json_v1(d);
+             }
+             else {
+                 logger::error("Unknown icon edits json version: {}", version);
+                 return false;
+             }
+
+         }
+         catch (const std::exception& e) {
+             std::string msg(e.what());
+             logger::error("Error during parsing: {}", msg);
+             return false;
+         }
+
+         return false;
+     }
+     bool toggle_individual_shout_cooldowns()
+     {
+         individual_shout_cooldowns = !individual_shout_cooldowns;
+
+         //Clear Cooldowns when toggling, reset shout cd.
+         reset_shout_cd();
+         purge_shout_gametime_cooldowns();
+
+         return individual_shout_cooldowns;
      }
 }

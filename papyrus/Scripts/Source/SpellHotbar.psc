@@ -87,3 +87,9 @@ bool function isBattlemageAvailable() global native
 bool function playerKnowsPower(int type) global native
 bool function togglePlayerPowerKnowledge(int type) global native
 string function translate(string key) global native
+string function getUserDirIconEditsPath() global native
+bool function saveIconEditsToFile(string path) global native
+string[] function getIconEditPresets() global native
+bool function loadIconEditsFromFile(String filename_mod_dir, String filename_user_dir, bool show_errors) native global
+bool function isIndividualShoutCooldowns() global native
+bool function toggleIndividualShoutCooldowns() global native

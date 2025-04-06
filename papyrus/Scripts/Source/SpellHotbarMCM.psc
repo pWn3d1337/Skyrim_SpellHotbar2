@@ -25,6 +25,9 @@ string[] bar_layouts
 
 string bars_root = "Data/SKSE/Plugins/SpellHotbar/bars/"
 
+string[] known_icon_edit_presets
+string icon_edits_root = "Data/SKSE/Plugins/SpellHotbar/icon_edits/"
+
 ; SCRIPT VERSION
 int function GetVersion()
 	return 5
@@ -171,7 +174,7 @@ Event OnPageReset(string page)
 		AddHeaderOption("$Gameplay")
 		AddHeaderOption("")
 		AddSliderOptionST("PotionGCD", "$Potion GCD", SpellHotbar.getPotionGCD(), "{2}")
-		AddEmptyOption()
+		AddToggleOptionST("IndividualShoutCooldowns", "$Individual Shout Cooldowns", SpellHotbar.isIndividualShoutCooldowns())
 
 		AddHeaderOption("$Oblivion Mode Bar")
 		AddHeaderOption("")
@@ -280,6 +283,8 @@ Event OnPageReset(string page)
 		AddMenuOptionST("LoadPresetState", "$Load Config", "")
 		AddInputOptionST("SaveBarsState", "$Save Bars as...", "")
 		AddMenuOptionST("LoadBarsState", "$Load Bars", "")
+		AddInputOptionST("SaveIconEditsState", "$Save Icon Edits as...", "")
+		AddMenuOptionST("LoadIconEditsState", "$Load Icon Edits", "")
 
 	ElseIf (page == "$Spells")
 		AddToggleOptionST("OpenSpellEditor", "$Open Spell Editor ...", false);
@@ -601,6 +606,10 @@ Function checkBarPresets()
 	known_bar_presets = SpellHotbar.getBarsPresets()
 EndFunction
 
+Function checkIconEditPresets()
+	known_icon_edit_presets = SpellHotbar.getIconEditPresets()
+EndFunction
+
 State SavePresetState
 	Event OnInputOpenST()
 		SetInputOptionValueST("")
@@ -696,6 +705,65 @@ State LoadBarsState
 		SetInfoText("$LoadBarsState_INFO")
 	EndEvent
 EndState
+
+State SaveIconEditsState
+	Event OnInputOpenST()
+		SetInputOptionValueST("")
+	EndEvent
+	Event OnInputAcceptST(string name)
+		if name != ""
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_ICON_EDITS_SAVE")+ " '" + name +".json'?", true, "$Yes", "$No")
+				string out_file = SpellHotbar.getUserDirIconEditsPath() + "/" + name + ".json"
+				bool exists = SpellHotbar.fileExists(out_file)
+				if !exists || ShowMessage("'" + name +".json' "+ SpellHotbar.translate("$MCM_PROMPT_OVERWRITE"), true, "$Yes", "$No")
+					if SpellHotbar.saveIconEditsToFile(out_file)
+						SetInputOptionValueST(name)
+					else
+						ShowMessage("$SaveIconEditsState_MSG", false)
+					EndIf
+				EndIf
+			Endif
+		EndIf
+	EndEvent
+	Event OnDefaultST()
+        SetInputOptionValueST("")
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("$SaveIconEditsState_INFO")
+    EndEvent
+EndState
+
+State LoadIconEditsState
+	Event OnMenuOpenST()
+		checkIconEditPresets()
+		SetMenuDialogOptions(known_icon_edit_presets)
+		SetMenuDialogStartIndex(0)
+		SetMenuDialogDefaultIndex(0)
+	EndEvent
+	Event OnMenuAcceptST(int index)
+		if index > 0
+			string preset = known_icon_edit_presets[index]
+			string file_path_user = SpellHotbar.getUserDirIconEditsPath() + "/" + preset
+			string file_path_mod = icon_edits_root + preset
+			if ShowMessage(SpellHotbar.translate("$MCM_PROMPT_ICON_EDITS_LOAD")+" '" + preset +"'?", true, "$Yes", "$No")
+				if (SpellHotbar.loadIconEditsFromFile(file_path_mod, file_path_user, true))
+					SetMenuOptionValueST(preset)
+				Else
+					ShowMessage("$LoadIconEditsState_MSG", false)
+				EndIf
+			EndIf
+		EndIf
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("$LoadIconEditsState_INFO")
+	EndEvent
+EndState
+
+; Used for auto-loading at init
+bool Function loadIconEditPreset(string preset_name)
+	string file_path_mod = icon_edits_root + preset_name
+	SpellHotbar.loadIconEditsFromFile(file_path_mod, "", false)
+EndFunction
 
 bool Function loadSettingsFromPreset(string preset_name, bool show_errors, bool include_user_dir)
 	bool success = SpellHotbar.loadConfig(preset_name, include_user_dir)
@@ -1180,6 +1248,15 @@ State BarAnchorPoint
 	Event OnDefaultST()
 		SetMenuOptionValueST(anchor_points[SpellHotbar.setBarAnchorPoint(0)])
 	EndEvent
+EndState
+
+State IndividualShoutCooldowns
+    Event OnSelectST()
+        SetToggleOptionValueST(SpellHotbar.toggleIndividualShoutCooldowns())
+    EndEvent
+    Event OnHighlightST()
+        SetInfoText("$IndividualShoutCooldowns_INFO");
+    EndEvent
 EndState
 
 ; Bar toggle states

@@ -490,9 +490,44 @@ bool is_battlemage_avaiable(RE::StaticFunctionTag*) {
     return SpellHotbar::GameData::spellhotbar_perk_master != nullptr;
 }
 
+bool save_icon_edits_to_file(RE::StaticFunctionTag*, std::string filename)
+{
+    bool ret = SpellHotbar::GameData::save_icon_edits_to_json(filename);
+    return ret;
+}
+
+bool load_icon_edits_from_file(RE::StaticFunctionTag*, std::string filename_mod_dir, std::string filename_user_dir, bool show_errors)
+{
+    bool ret{ false };
+    if (!filename_user_dir.empty() && std::filesystem::exists(filename_user_dir)) {
+        ret = SpellHotbar::GameData::load_icon_edits_from_json(filename_user_dir);
+
+    }
+    else if (std::filesystem::exists(filename_mod_dir)) {
+        ret = SpellHotbar::GameData::load_icon_edits_from_json(filename_mod_dir);
+
+    }
+    else {
+        if (show_errors) {
+            logger::error("Could not load icon edits, both '{}' and '{}' do not exist!", filename_user_dir, filename_mod_dir);
+            ret = false;
+        }
+    }
+    return ret;
+}
+
+std::string get_user_dir_icon_edits_path(RE::StaticFunctionTag*) {
+    auto folder = SpellHotbar::Storage::IO::get_icon_edits_user_dir();
+    return folder.string();
+}
+
 std::string translate_str(RE::StaticFunctionTag*, std::string key)
 {
     return SpellHotbar::translate(key);
+}
+
+std::vector<std::string> get_icon_edit_presets(RE::StaticFunctionTag*) {
+    return SpellHotbar::Storage::IO::get_icon_edits_presets();
 }
 
 inline
@@ -541,6 +576,14 @@ bool toggle_player_knows_power(RE::StaticFunctionTag*, int type) {
         }
     }
     return false;
+}
+
+bool is_individual_shout_cooldowns(RE::StaticFunctionTag*) {
+    return SpellHotbar::GameData::individual_shout_cooldowns;
+}
+
+bool toggle_individual_shout_cooldowns(RE::StaticFunctionTag*) {
+    return SpellHotbar::GameData::toggle_individual_shout_cooldowns();
 }
 
 bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) {
@@ -630,5 +673,11 @@ bool SpellHotbar::register_papyrus_functions(RE::BSScript::IVirtualMachine* vm) 
     vm->RegisterFunction("playerKnowsPower", "SpellHotbar", player_knows_power);
     vm->RegisterFunction("togglePlayerPowerKnowledge", "SpellHotbar", toggle_player_knows_power);
     vm->RegisterFunction("translate", "SpellHotbar", translate_str);
+    vm->RegisterFunction("saveIconEditsToFile", "SpellHotbar", save_icon_edits_to_file);
+    vm->RegisterFunction("getUserDirIconEditsPath", "SpellHotbar", get_user_dir_icon_edits_path);
+    vm->RegisterFunction("getIconEditPresets", "SpellHotbar", get_icon_edit_presets);
+    vm->RegisterFunction("loadIconEditsFromFile", "SpellHotbar", load_icon_edits_from_file);
+    vm->RegisterFunction("isIndividualShoutCooldowns", "SpellHotbar", is_individual_shout_cooldowns);
+    vm->RegisterFunction("toggleIndividualShoutCooldowns", "SpellHotbar", toggle_individual_shout_cooldowns);
     return true;
 }

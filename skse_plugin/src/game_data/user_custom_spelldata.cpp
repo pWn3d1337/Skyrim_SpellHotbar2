@@ -92,6 +92,55 @@ namespace SpellHotbar::GameData {
 		}
 	}
 
+	bool User_custom_spelldata::to_json_additional_data(rapidjson::Document& doc, uint32_t key, rapidjson::Value& parent_node)
+	{
+		save_flags flags = calc_save_flags();
+
+		if (flags & save_flags::gcd) {
+			parent_node.AddMember("spell_gcd", m_spell_data.gcd, doc.GetAllocator());
+		}
+		if (flags & save_flags::cooldown) {
+			parent_node.AddMember("spell_cooldown", m_spell_data.cooldown, doc.GetAllocator());
+		}
+		if (flags & save_flags::casttime) {
+			parent_node.AddMember("spell_casttime", m_spell_data.casttime, doc.GetAllocator());
+		}
+		if (flags & save_flags::animation) {
+			parent_node.AddMember("spell_animation", m_spell_data.animation, doc.GetAllocator());
+		}
+		if (flags & save_flags::animation2) {
+			parent_node.AddMember("spell_animation2", m_spell_data.animation2, doc.GetAllocator());
+		}
+		if (flags & save_flags::casteffectid) {
+			parent_node.AddMember("spell_casteffectid", m_spell_data.casteffectid, doc.GetAllocator());
+		}		
+		return true;
+	}
+
+	bool User_custom_spelldata::extradata_from_json(rapidjson::Value& node)
+	{
+		if (node.HasMember("spell_gcd")) {
+			m_spell_data.gcd = node["spell_gcd"].GetFloat();
+		}
+		if (node.HasMember("spell_cooldown")) {
+			m_spell_data.cooldown = node["spell_cooldown"].GetFloat();
+		}
+		if (node.HasMember("spell_casttime")) {
+			m_spell_data.casttime = node["spell_casttime"].GetFloat();
+		}
+		if (node.HasMember("spell_animation")) {
+			m_spell_data.animation = node["spell_animation"].GetInt();
+		}
+		if (node.HasMember("spell_animation2")) {
+			m_spell_data.animation2 = node["spell_animation2"].GetInt();
+		}
+		if (node.HasMember("spell_casteffectid")) {
+			m_spell_data.casteffectid = static_cast<uint16_t>(node["spell_casteffectid"].GetInt());
+		}
+		return true;
+	}
+
+
 	bool User_custom_spelldata::is_non_default()
 	{
 		return !m_spell_data.is_empty() || User_custom_entry::is_non_default();

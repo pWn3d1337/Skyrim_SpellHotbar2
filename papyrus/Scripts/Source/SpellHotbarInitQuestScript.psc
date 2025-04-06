@@ -91,4 +91,5 @@ Event OnInit()
 	;TODO disable this for release
 	;DEBUG_Lean_Spells()
 	SpellHotbar_MCM.loadSettingsFromPreset("auto_profile.json", false, false)
+	SpellHotbar_MCM.loadIconEditPreset("auto_edits.json")
 EndEvent
