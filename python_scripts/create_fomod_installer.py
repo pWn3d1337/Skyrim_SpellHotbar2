@@ -454,6 +454,7 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/extra_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/keynames/keynames.csv", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/icon_edits", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/spelldata/spells_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),

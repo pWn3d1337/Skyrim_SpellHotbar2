@@ -232,6 +232,28 @@ namespace SpellHotbar::PotionEditor {
             filter_dirty = true;
         }
 
+        ImGui::SameLine();
+        std::string reset_popup = translate("$RESET") + "##reset_popup";
+        if (ImGui::Button(translate_id("$RESET_ALL").c_str())) {
+
+            ImGui::OpenPopup(reset_popup.c_str());
+        }
+
+        if (ImGui::BeginPopupModal(reset_popup.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+        {
+            ImGui::Text(translate("$RESET_ALL_PROMPT").c_str());
+            ImGui::Separator();
+
+            if (ImGui::Button((translate("$OK") + "##_reset_ok").c_str(), ImVec2(120, 0))) {
+                GameData::user_custom_entry_info.clear();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button((translate("$CANCEL") + "##_reset_cancel").c_str(), ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+            ImGui::EndPopup();
+        }
+
         static ImGuiTableFlags flags =
             ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortMulti
             | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody

@@ -30,7 +30,7 @@ string icon_edits_root = "Data/SKSE/Plugins/SpellHotbar/icon_edits/"
 
 ; SCRIPT VERSION
 int function GetVersion()
-	return 5
+	return 6
 endFunction
 
 Event OnConfigInit()
