@@ -2001,11 +2001,14 @@ namespace SpellHotbar::GameData {
      }
 
      bool is_spell_ingame_visible(RE::SpellItem* spell) {
-         return spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
+         return spell != nullptr && spell->GetCastingType() != RE::MagicSystem::CastingType::kConstantEffect;
      }
 
      inline
      bool form_list_check(RE::BGSListForm* formlist, RE::TESForm* form) {
+         if (form == nullptr) {
+             return false;
+         }
          if (formlist != nullptr) {
              return formlist->HasForm(form);
          }

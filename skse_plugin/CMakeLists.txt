@@ -7,6 +7,7 @@ set(OUTPUT_FOLDER "F:/Skyrim Dev/ADT/mods/Spell Hotbar 2")
 #set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_5_97/mods/Spell Hotbar 2")
 #set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_6_1170/mods/Spell Hotbar 2")
 
+
 find_package(imgui CONFIG REQUIRED)
 find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
