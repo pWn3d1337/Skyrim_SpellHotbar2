@@ -54,4 +54,5 @@ namespace SpellHotbar::Input {
 
 	int rebind_key(int slot, int code, bool check_conflicts = true);
 	int get_keybind(int slot);
+	void reset_keybinds();
 }

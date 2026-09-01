@@ -207,9 +207,11 @@ namespace SpellHotbar::Bars {
         }
     }
 
-    void SpellHotbar::Bars::init()
+    void reset_to_defaults()
     {
-        //will be loaeded from skse save in storage.cpp
+        hotbars.clear();
+        bar_cycle.clear();
+
         barsize = max_bar_size;
         disable_non_modifier_bar = false;
 
@@ -219,6 +221,16 @@ namespace SpellHotbar::Bars {
         slot_spacing = 8.0f;
         text_show_setting = text_show_mode::fade;
 
+        oblivion_slot_scale = 1.0f;
+        oblivion_slot_spacing = 8.0f;
+        oblivion_offset_x = 0.0f;
+        oblivion_offset_y = 0.0f;
+        oblivion_bar_anchor_point = anchor_point::LEFT;
+        oblivion_bar_show_power = true;
+        oblivion_bar_show_setting = bar_show_mode::combat_or_drawn;
+        oblivion_bar_held_show_time_threshold = 0.25f;
+        oblivion_bar_vertical = false;
+
         bar_show_setting = bar_show_mode::combat_or_drawn;
         bar_show_setting_vampire_lord = bar_show_mode::combat;
         bar_show_setting_werewolf = bar_show_mode::never;
@@ -226,6 +238,13 @@ namespace SpellHotbar::Bars {
         use_default_bar_when_sheathed = false;
         disable_menu_rendering = false;
         disable_menu_binding = false;
+        bar_anchor_point = anchor_point::BOTTOM;
+        bar_row_len = max_bar_size;
+        layout = bar_layout::BARS;
+        bar_circle_radius = 2.2f;
+        bar_cross_distance = 0.0f;
+        _use_keybind_icons = true;
+        oblivion_bar_press_show_timer = 0.0f;
 
         add_bars(MAIN_BAR);
         add_bars(MELEE_BAR, MAIN_BAR);
@@ -240,6 +259,12 @@ namespace SpellHotbar::Bars {
         add_special_bar(WEREWOLF_BAR);
 
         menu_bar_id = MAIN_BAR;
+    }
+
+    void SpellHotbar::Bars::init()
+    {
+        // Save data overlays these defaults in Storage::LoadCallback.
+        reset_to_defaults();
         for (size_t i = 0U; i < bar_cycle.size(); i++) {
             std::string name = hotbars.at(bar_cycle.at(i)).get_name();
             //logger::trace("BarCycle({}, {}): {}", i, name, bar_cycle.at(i));

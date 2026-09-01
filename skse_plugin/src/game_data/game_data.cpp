@@ -578,14 +578,13 @@ namespace SpellHotbar::GameData {
 
     std::string get_key_text_long(int code)
     {
-        std::string key_name;
+        if (code < 0) {
+            return translate("$KEY_UNBOUND");
+        }
         if (key_names.contains(code)) {
             return key_names.at(code).long_text;
         }
-        else {
-            key_name= "Unknown Key";
-        }
-        return key_name;
+        return "Unknown Key";
     }
 
     std::string strip_tooltip(const std::string& input, float magnitude, uint32_t duration)
@@ -1141,6 +1140,17 @@ namespace SpellHotbar::GameData {
     void set_spell_cooldown_effect(RE::FormID spell, RE::FormID cd_effect)
     {
         spell_cd_magiceffect_tracking.insert_or_assign(spell, cd_effect);
+    }
+
+    void reset_persistent_state()
+    {
+        gametime_cooldowns.clear();
+        user_spell_cast_info.clear();
+        user_custom_entry_info.clear();
+        oblivion_bar.clear();
+        potion_gcd = 1.0f;
+        individual_shout_cooldowns = false;
+        block_timer = 0.0f;
     }
 
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc)

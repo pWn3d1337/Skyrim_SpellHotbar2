@@ -1,0 +1,24 @@
+FormKey: 00084B:SpellHotbar.esp
+EditorID: SpellHotbar_BattleMage_PerkMaster
+Name:
+  TargetLanguage: English
+  Value: Master Battlemage
+Description:
+  TargetLanguage: English
+  Value: Spell Procs can trigger Master spells. Reduces Cooldown by 40%. Requires 'Alteration' 75.
+Conditions:
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: Alteration
+  ComparisonValue: 75
+- MutagenObjectType: ConditionFloat
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: HasPerkConditionData
+    Perk: 00084A:SpellHotbar.esp
+  ComparisonValue: 1
+NumRanks: 1
+Playable: True

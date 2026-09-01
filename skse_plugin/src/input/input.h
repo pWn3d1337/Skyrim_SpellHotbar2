@@ -8,9 +8,11 @@ namespace SpellHotbar::Input {
 	static inline const char* sound_UISkillsFocus = "UISkillsFocus";
 	static inline const char* sound_UIMenuCancel = "UIMenuCancel";
 
-	void install_hook();
-
-	void processAndFilter(RE::InputEvent** a_event);
+	/**
+	 * SKSE Menu Framework input callback. Returns true when the framework should
+	 * remove this event from Skyrim's input queue.
+	 */
+	bool __stdcall process_event(RE::InputEvent* event);
 
 	bool in_binding_menu();
 

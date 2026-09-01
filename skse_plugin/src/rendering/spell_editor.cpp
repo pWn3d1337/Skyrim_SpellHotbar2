@@ -382,7 +382,7 @@ namespace SpellHotbar::SpellEditor {
             int button_edit_clicked = -1;
 
             // Demonstrate using clipper for large vertical lists
-            ImGuiListClipper clipper;
+            SpellHotbarImGuiListClipper clipper;
             clipper.Begin(static_cast<int>(list_of_skills_filtered.size()));
             while (clipper.Step()) 
             {
@@ -458,7 +458,7 @@ namespace SpellHotbar::SpellEditor {
                             ImGui::OpenPopup((translate("$RESET") + "?").c_str());
                         }
 
-                        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+                        ImVec2 center = ImGuiMCP::ImGuiViewportManager::GetCenter(ImGui::GetMainViewport());
                         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
                         if (ImGui::BeginPopupModal((translate("$RESET") + "?").c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))

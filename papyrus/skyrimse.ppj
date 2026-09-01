@@ -1,9 +1,11 @@
 <?xml version='1.0'?>
+<!-- SpellHotbar.pex is a vendored upstream release artifact. This project emits
+     developer recompilations under build/papyrus and never overwrites it. -->
 <PapyrusProject xmlns="PapyrusProject.xsd" 
     Flags="TESV_Papyrus_Flags.flg" 
     Game="sse"
     Anonymize="true" 
-    Output="F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\Scripts" 
+    Output="..\build\papyrus" 
     Optimize="false" 
     Release="false" 
     Zip="false"
@@ -12,23 +14,7 @@
     <Variables>
         <!-- Set the name of your mod: -->
         <Variable Name="ModName" Value="Spell Hotbar 2" />
-        <!-- The folder where you store all of your mods -->
-        <Variable Name="ModsFolder" Value="F:\Skyrim Dev\ADT\mods" />
     </Variables>
-    <Imports>
-        <!--<Import>F:\Skyrim Dev\Papyrus_Include\UIExtensions_1.2\scripts\source</Import>
-        <Import>@ModsFolder\IWant Widgets NG\Scripts\Source</Import>
-        <Import>@ModsFolder\iWant Widgets\Source\Scripts</Import>-->
-        <!--Import>@ModsFolder\powerofthrees Papyrus Extender\Source\scripts</Import-->
-        <!--Import>@ModsFolder\PapyrusUtil SE - Modders Scripting Utility Functions\Scripts\Source</Import-->
-        <!--Import>@ModsFolder\JContainers SE\scripts\source</Import-->
-        <!-- <Import>@ModsFolder\SkyUI SDK\Source\Scripts</Import> -->
-        <!--Import>@ModsFolder\MCM SDK\Source\Scripts</Import-->
-        <Import>F:\Skyrim Dev\Papyrus_Include\SkyUI_5.1_SDK\Scripts\Source</Import>
-        <!-- <Import>@ModsFolder\SKSE64\Scripts\Source</Import> -->
-        <Import>@ModsFolder\Skyrim Script Extender (SKSE64)\Scripts\Source</Import>
-        <Import>@ModsFolder\Custom Skills Framework\Source\Scripts</Import>
-    </Imports>
     <Folders>
         <!-- Relative path to folder containing .psc Papyrus source code files for this project -->
         <Folder>./Scripts/Source</Folder>

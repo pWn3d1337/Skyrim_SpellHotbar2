@@ -3,18 +3,13 @@
 #include "../bar/hotbars.h"
 #include "../game_data/game_data.h"
 
-#include <d3d11.h>
-#include <dxgi.h>
-
-#include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
-
 namespace SpellHotbar {
 
     struct TextureImage {
-        REX::W32::ID3D11ShaderResourceView* res;
+        ImTextureID res;
         int width;
         int height;
+        std::string source_path;
 
         TextureImage();
         virtual ~TextureImage() = default;
@@ -52,45 +47,20 @@ namespace SpellHotbar {
 
     inline constexpr float keybind_icon_pos_factor = 0.8f;
 
-    // Hook render stuff for imgui, mostly copied from wheeler
     class RenderManager {
-
-         struct WndProcHook {
-            static LRESULT thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-            static inline WNDPROC func;
-        };
-
-        struct D3DInitHook {
-            static void thunk();
-            static inline REL::Relocation<decltype(thunk)> func;
-
-            static constexpr auto id = REL::RelocationID(75595, 77226);
-            static constexpr auto offset = REL::VariantOffset(0x9, 0x275, 0x00);  // VR unknown
-
-            static inline std::atomic<bool> initialized = false;
-        };
-
-        struct DXGIPresentHook {
-            static void thunk(std::uint32_t a_p1);
-            static inline REL::Relocation<decltype(thunk)> func;
-
-            static constexpr auto id = REL::RelocationID(75461, 77246);
-            static constexpr auto offset = REL::Offset(0x9);
-        };
-
     private:
         // not instantiable
         RenderManager() = delete;
 
-        static void draw();
-        static void MessageCallback(SKSE::MessagingInterface::Message* msg);
-
         static SubTextureImage* get_tex_for_skill_internal(RE::FormID formID);
 
     public:
-        static bool install();
-        static inline REX::W32::ID3D11Device* device = nullptr;
-        static inline REX::W32::ID3D11DeviceContext* context = nullptr;
+        static void render_hud();
+        static void render_spell_editor_window();
+        static void render_potion_editor_window();
+        static void render_bar_drag_window();
+        static void render_bind_menu_window();
+
         static void spell_slotted_draw_anim(int index);
 
         static void load_gamedata_dependant_resources();

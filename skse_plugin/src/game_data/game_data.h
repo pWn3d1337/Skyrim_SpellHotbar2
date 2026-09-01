@@ -149,6 +149,7 @@ namespace SpellHotbar::GameData {
     extern RE::TESGlobal* global_casting_source;
     extern RE::TESGlobal* global_vampire_lord_equip_mode;
     extern RE::TESGlobal* global_casting_conc_spell;
+    extern RE::TESGlobal* global_spellhotbar_use_dual_casting;
 
     extern RE::SpellItem* spellhotbar_castfx_spell;
     extern RE::SpellItem* spellhotbar_unbind_slot;
@@ -211,6 +212,9 @@ namespace SpellHotbar::GameData {
     extern bool key_icons_available;
 
     extern bool individual_shout_cooldowns;
+
+    /** Clear all co-save-owned runtime state before a new game or save load. */
+    void reset_persistent_state();
 
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);

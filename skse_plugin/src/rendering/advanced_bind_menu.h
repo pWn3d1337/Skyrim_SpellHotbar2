@@ -1,5 +1,4 @@
 #pragma once
-#include <imgui.h>
 namespace SpellHotbar::BindMenu {
 
 	bool is_opened();

@@ -1,0 +1,19 @@
+FormKey: 000816:SpellHotbar.esp
+EditorID: SpellHotbar_CastFX_Spell
+Name:
+  TargetLanguage: English
+  Value: SpellHotbar_CastFX_Spell
+MenuDisplayObject: 0435A5:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''
+Flags:
+- NoDualCastModification
+Type: Ability
+Effects:
+- BaseEffect: 000817:SpellHotbar.esp
+  Data:
+    Magnitude: 1
+- BaseEffect: 00081E:SpellHotbar.esp
+  Data:
+    Magnitude: 1

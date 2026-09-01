@@ -1,6 +1,5 @@
 #include "spell_edit_dialog.h"
 #include "spell_editor.h"
-#include "imgui.h"
 #include "../rendering/render_manager.h"
 #include "../rendering/texture_csv_loader.h"
 #include "../game_data/localization.h"

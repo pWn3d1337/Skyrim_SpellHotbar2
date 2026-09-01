@@ -383,7 +383,7 @@ namespace SpellHotbar
                 //ImVec2 tex_pos(p.x + text_offset,
                   //             p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
                 ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-                ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
+                ImGui::GetWindowDrawList()->AddText(tex_pos, SpellHotbarImColor(255, 255, 255), key_text.c_str());
             }
 
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
@@ -398,7 +398,7 @@ namespace SpellHotbar
                     hand_text = translate("$HAND_TEXT_DUAL");
                 }
                 ImVec2 tex_pos_hand(p.x + text_offset_x_right, p.y + text_offset_y);
-                ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
+                ImGui::GetWindowDrawList()->AddText(tex_pos_hand, SpellHotbarImColor(255, 255, 255), hand_text.c_str());
             }
 
             if (skill.consumed != consumed_type::none) {
@@ -406,17 +406,17 @@ namespace SpellHotbar
                 std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
                 ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
                 ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
-                ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255), text.c_str());
+                ImGui::GetWindowDrawList()->AddText(count_text_pos, SpellHotbarImColor(255, 255, 255), text.c_str());
             }
 
             std::string text = GameData::resolve_spellname(skill.formID);
 
             //draw text in grey if it was inherited from parent bar
             int grey_val = inherited ? 127 : 255;
-            auto color = ImColor(grey_val, grey_val, grey_val);
+            auto color = SpellHotbarImColor(grey_val, grey_val, grey_val);
 
             if (highlight_slot == i) {
-                color = ImColor(255, 255, 127 + static_cast<int>(128.0 * (1.0f - highlight_factor)));
+                color = SpellHotbarImColor(255, 255, 127 + static_cast<int>(128.0 * (1.0f - highlight_factor)));
             }
 
             ImGui::TextColored(color, text.c_str());
@@ -702,9 +702,9 @@ namespace SpellHotbar
         }
 
         int alpha_i = static_cast<int>(255 * alpha);
-        ImVec4 color = ImColor(skill.color);
+        ImVec4 color = SpellHotbarImColor(skill.color);
         color.w = alpha;
-        if (!RenderManager::draw_skill(skill.formID, icon_size, ImColor(color))) {
+        if (!RenderManager::draw_skill(skill.formID, icon_size, SpellHotbarImColor(color))) {
             RenderManager::draw_bg(icon_size, alpha);
         }
         else {
@@ -773,7 +773,7 @@ namespace SpellHotbar
             std::string key_text = GameData::get_keybind_text(slot_index, mod);
             //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
             ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-            RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+            RenderManager::draw_scaled_text(tex_pos, SpellHotbarImColor(255, 255, 255, alpha_i), key_text.c_str());
         }
         else {
             auto [icon_main, icon_mode] = GameData::get_keybind_icon_index(slot_index, mod);
@@ -781,10 +781,10 @@ namespace SpellHotbar
         }
 
         if (has_charges) {
-            ImU32 count_text_color = ImColor(255, 255, 255, alpha_i);
+            ImU32 count_text_color = SpellHotbarImColor(255, 255, 255, alpha_i);
             if (count <= 0 && spell_item != nullptr && GameData::player_has_ordinator_bloodmagic()) {
                 count = static_cast<int>(GameData::get_health_cost_mod_ordinator(spell_item));
-                count_text_color = ImColor(255, 50, 50, alpha_i);
+                count_text_color = SpellHotbarImColor(255, 50, 50, alpha_i);
             }
             std::string text = std::to_string(std::clamp(count, -9999, 9999));
 

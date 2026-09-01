@@ -131,7 +131,7 @@ namespace SpellHotbar::Storage::IO {
         GameData::potion_gcd = get_float_or_default(d, "settings.potion_gcd", 1.0f);
         bool individual_shout_cds = get_int_or_default(d, "settings.individual_shout_cooldowns", 0) != 0;
         if (individual_shout_cds != GameData::individual_shout_cooldowns) {
-            GameData::toggle_individual_shout_cooldowns;
+            GameData::toggle_individual_shout_cooldowns();
         }
 
         //oblivion mode

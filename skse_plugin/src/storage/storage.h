@@ -31,6 +31,14 @@ namespace SpellHotbar::Storage {
      */
     void LoadCallback(SKSE::SerializationInterface* a_intfc);
 
+    void RevertCallback(SKSE::SerializationInterface* a_intfc);
+
+    /** True when the currently loaded save contained the existing HOTB settings record. */
+    bool loaded_existing_settings();
+
+    /** Restore first-install defaults before a new game or save overlays its records. */
+    void reset_all_runtime_state();
+
     bool slotSpell(RE::FormID form, size_t index, menu_slot_type slot_type);
 
 }

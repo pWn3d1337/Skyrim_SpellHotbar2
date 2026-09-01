@@ -1,0 +1,53 @@
+{
+  "upstream_version": "0.0.14",
+  "upstream_commit": "f203cd26747e875336caed91f7d1453ca9a8a808",
+  "spriggit": {
+    "package": "Spriggit.Yaml.Skyrim",
+    "version": "0.40.1"
+  },
+  "note": "YAML trees were imported from the official upstream 0.0.14 ESPs. Git does not carry those binaries; this manifest is the lock that only the listed VMAD/StartGameEnabled fields changed.",
+  "plugins": [
+    {
+      "filename": "SpellHotbar.esp",
+      "source": "plugin-src/SpellHotbar",
+      "record_count": 53
+    },
+    {
+      "filename": "SpellHotbar_BattleMage.esp",
+      "source": "plugin-src/SpellHotbar_BattleMage",
+      "record_count": 4
+    }
+  ],
+  "allowed_record_changes": [
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000800",
+      "editor_id": "SpellHotbarMCMQuest",
+      "changes": ["vmad_removed_or_empty", "start_game_enabled_removed"]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000D62",
+      "editor_id": "SpellHotbarInitQuest",
+      "changes": ["vmad_removed_or_empty", "start_game_enabled_removed"]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00083A",
+      "editor_id": "SpellHotbar_ToggleDualCastEffect",
+      "changes": ["vmad_removed_or_empty"]
+    },
+    {
+      "plugin": "SpellHotbar_BattleMage.esp",
+      "form": "000800",
+      "editor_id": "SpellHotbarBattleMageInitQuest",
+      "changes": ["vmad_removed_or_empty", "start_game_enabled_removed"]
+    },
+    {
+      "plugin": "SpellHotbar_BattleMage.esp",
+      "form": "000802",
+      "editor_id": "SpellHotbar_BattleMerge_OpenPerkTreeEffect",
+      "changes": ["vmad_removed_or_empty"]
+    }
+  ]
+}

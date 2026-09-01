@@ -4,6 +4,7 @@
 #include "../casts/spell_proc.h"
 #include "../game_data/game_data.h"
 #include "../bar/hotbars.h"
+#include "../lifecycle/lifecycle.h"
 
 namespace SpellHotbar::events {
 
@@ -12,6 +13,7 @@ namespace SpellHotbar::events {
 	void GameLoopHook::Timinghook()
 	{
         _Timinghook();
+        SpellHotbar::Lifecycle::try_pending_first_initialization();
         auto ui = RE::UI::GetSingleton();
         if (ui && !ui->GameIsPaused()) {
             casts::CastingController::update_cast(deltaTime);

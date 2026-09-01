@@ -1,0 +1,7 @@
+FormKey: 000828:SpellHotbar.esp
+EditorID: SpellHotbar_RestorationGoldHandEffects_R
+FormVersion: 39
+Model:
+  File: SpellHotbar\healritualhandeffects_r.nif
+  Data: 0x3079E1846464730038973CEABF35C41064647300582C5533714EFD616464730038973CEACF238B7F6464730038973CEA
+Type: []

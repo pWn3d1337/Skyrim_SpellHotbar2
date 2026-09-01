@@ -1,6 +1,5 @@
 #include "icon_edit_dialog.h"
 #include "potion_editor.h"
-#include "imgui.h"
 #include "texture_csv_loader.h"
 
 namespace SpellHotbar::PotionEditor {

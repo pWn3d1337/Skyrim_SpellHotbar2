@@ -1,0 +1,8 @@
+FormKey: 000800:SpellHotbar_BattleMage.esp
+EditorID: SpellHotbarBattleMageInitQuest
+VirtualMachineAdapter:
+  FileName: ''
+Flags:
+- 0x10
+- RunOnce
+NextAliasID: 0

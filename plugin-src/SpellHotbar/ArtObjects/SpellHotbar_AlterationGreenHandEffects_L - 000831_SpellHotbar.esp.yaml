@@ -1,0 +1,10 @@
+FormKey: 000831:SpellHotbar.esp
+EditorID: SpellHotbar_AlterationGreenHandEffects_L
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\paralyzemasshandeffects_l.nif
+  Data: 0xCF238B7F6464730038973CEA5DDA555164647300582C5533714EFD616464730038973CEA
+Type: []

@@ -3,6 +3,7 @@
 #include "../game_data/game_data.h"
 #include "../casts/casting_controller.h"
 #include "../casts/spell_proc.h"
+#include "../lifecycle/lifecycle.h"
 
 namespace SpellHotbar::events {
 
@@ -25,6 +26,7 @@ namespace SpellHotbar::events {
                     if (form->GetFormType() == RE::FormType::Spell) {
                         RE::SpellItem* spell = form->As<RE::SpellItem>();
                         if (spell) {
+                            Lifecycle::process_spell_cast(event->spell);
                             if (spell->GetSpellType() == RE::MagicSystem::SpellType::kPower)
                             {
                                 GameData::add_gametime_cooldown(event->spell, 24.0, false);

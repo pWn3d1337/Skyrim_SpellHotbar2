@@ -1,0 +1,26 @@
+FormKey: 00083A:SpellHotbar.esp
+EditorID: SpellHotbar_ToggleDualCastEffect
+VirtualMachineAdapter: {}
+Name:
+  TargetLanguage: English
+  Value: Toggle SpellHotbar Dual Casting Effect
+MenuDisplayObject: 0435A5:Skyrim.esm
+Flags:
+- NoRecast
+SpellmakingCastingTime: 0.5
+Archetype:
+  MutagenObjectType: MagicEffectArchetype
+  Type: Script
+CastType: FireAndForget
+DualCastScale: 1
+Sounds:
+- Sound: 07BBAB:Skyrim.esm
+- Type: Charge
+  Sound: 07C71F:Skyrim.esm
+- Type: Ready
+  Sound: 07C720:Skyrim.esm
+- Type: Release
+  Sound: 07BBAE:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''

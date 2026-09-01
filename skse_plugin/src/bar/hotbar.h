@@ -1,7 +1,5 @@
 #pragma once
 #include <memory>
-#include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
 #include <rapidjson/document.h>
 #include "../game_data/localization.h"
 

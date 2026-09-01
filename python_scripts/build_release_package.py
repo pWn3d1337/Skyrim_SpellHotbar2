@@ -1,27 +1,30 @@
 from pathlib import Path
 from zipfile import ZipFile, ZIP_STORED, ZIP_LZMA
 from glob import glob
+import os
+import subprocess
+import sys
 
 # this scripts builds a releasable zip file
 
 
-dev_mod_root = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2")
-dev_mod_root_nordic_ui = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar NordicUI")
+ASSET_ROOT = Path(os.environ.get("SPELLHOTBAR_ASSET_ROOT", r"F:\Skyrim Dev\ADT\mods"))
+dev_mod_root = ASSET_ROOT / "Spell Hotbar 2"
+dev_mod_root_nordic_ui = ASSET_ROOT / "Spell Hotbar NordicUI"
 
 project_root = Path(__file__).parent.parent
 
 released_files_main_plugin = [
     (project_root / "skse_plugin/build/release/SpellHotbar2.dll", "SKSE/Plugins"),
-    (dev_mod_root / "SpellHotbar.esp", ""),
-    (dev_mod_root / "Scripts/*.pex", dev_mod_root),  # if Path, add relative path to root in zip
-    (dev_mod_root / "Scripts/Source/*.psc", dev_mod_root),
+    (project_root / "build/plugins/SpellHotbar.esp", ""),
+    (project_root / "papyrus/Scripts/SpellHotbar.pex", "Scripts"),
     (dev_mod_root / "Interface/SpellHotbar/spell_icons.swf", dev_mod_root),
     (dev_mod_root / "meshes/SpellHotbar/*.nif", dev_mod_root),
     (dev_mod_root / "meshes/**/*.txt", dev_mod_root),
     (dev_mod_root / "meshes/**/*.hkx", dev_mod_root),
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", dev_mod_root),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/effectdata/vanilla_cast_effects.csv", dev_mod_root),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/*.ttf", dev_mod_root),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/*.ttf", "SKSE/Plugins/Fonts"),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.csv", dev_mod_root),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.png", dev_mod_root),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.csv", dev_mod_root),
@@ -123,6 +126,12 @@ def test_build_release_zip(outfile: Path, files: list[tuple[Path, str | Path | t
 
 
 if __name__ == "__main__":
+    subprocess.run(
+        [sys.executable, str(project_root / "python_scripts/build_plugins.py")],
+        cwd=project_root,
+        check=True,
+    )
+
     version = "0.2.0"
 
     release_zip_path = project_root / f"build/Spell Hotbar {version}.zip"

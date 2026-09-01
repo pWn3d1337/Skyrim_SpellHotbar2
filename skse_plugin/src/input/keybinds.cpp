@@ -1,4 +1,5 @@
 #include "keybinds.h"
+#include "modes.h"
 #include "../logger/logger.h"
 
 namespace SpellHotbar::Input {
@@ -116,6 +117,14 @@ namespace SpellHotbar::Input {
 		}
 
 		return 0;
+	}
+
+	void reset_keybinds()
+	{
+		for (int slot = 0; slot < keybind_id::num_keys; ++slot) {
+			rebind_key(slot, -1, false);
+		}
+		set_input_mode(0);
 	}
 
 	int get_keybind(int slot)

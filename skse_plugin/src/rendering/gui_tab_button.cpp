@@ -1,5 +1,4 @@
 #include "gui_tab_button.h"
-#include "imgui.h"
 #include "render_manager.h"
 #include "../input/input.h"
 
@@ -28,7 +27,7 @@ void GuiTabButton::draw(const char* id, int index, GameData::DefaultIconType ico
         RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32_WHITE);
     }
     if (button_hovered) {
-        RenderManager::draw_highlight_overlay(p, icon_size, ImColor(127, 127, 255));
+        RenderManager::draw_highlight_overlay(p, icon_size, SpellHotbarImColor(127, 127, 255));
 
         float scalef = ImGui::GetIO().DisplaySize.y / 1080.0f;
         ImVec2 left_offset = ImVec2(32 * scalef, 0);

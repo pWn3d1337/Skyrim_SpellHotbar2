@@ -1,0 +1,10 @@
+FormKey: 00081B:SpellHotbar.esp
+EditorID: SpellHotbar_DestructionFireHandEffect_L
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\firestormhandeffects_l.nif
+  Data: 0x3079E1846464730038973CEA671520AE64647300582C5533A4BB0FE86464730038973CEAC689C33364647300582C5533CF238B7F6464730038973CEA
+Type: []

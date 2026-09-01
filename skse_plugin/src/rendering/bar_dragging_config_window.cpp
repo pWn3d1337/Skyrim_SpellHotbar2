@@ -1,5 +1,4 @@
 #include "bar_dragging_config_window.h"
-#include "imgui.h"
 #include "../bar/hotbars.h"
 
 namespace SpellHotbar::BarDraggingConfigWindow {

@@ -1,16 +1,10 @@
 #include "render_manager.h"
-#include "texture_loader.h"
 #include "../bar/hotbars.h"
 #include "../bar/hotbar.h"
 #include "../bar/oblivion_bar.h"
 
 #include "../logger/logger.h"
 #include "../storage/storage.h"
-
-#include <d3d11.h>
-#include <d3d11_3.h>
-
-#include <dxgi.h>
 #include "../game_data/game_data.h"
 #include "texture_csv_loader.h"
 #include "../game_data/keynames_csv_loader.h"
@@ -22,20 +16,13 @@
 #include "potion_editor.h"
 #include "bar_dragging_config_window.h"
 #include "advanced_bind_menu.h"
+#include "../smf/smf_guest.h"
 
-#include <imgui_internal.h>
+#include <array>
+#include <fstream>
 
-// Hook render stuff for imgui, mostly copied from wheeler
-namespace stl {
-    using namespace SKSE::stl;
-
-    template <class T>
-    void write_thunk_call() {
-        auto& trampoline = SKSE::GetTrampoline();
-        const REL::Relocation<std::uintptr_t> hook{T::id, T::offset};
-        T::func = trampoline.write_call<5>(hook.address(), T::thunk);
-    }
-}
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace SpellHotbar {
 
@@ -43,59 +30,33 @@ namespace SpellHotbar {
     constexpr std::string_view texture_frame_bg_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\inv_bg.dds" };
     constexpr std::string_view texture_cursor_path{ ".\\data\\SKSE\\Plugins\\SpellHotbar\\images\\cursor.dds" };
 
-    void apply_imgui_style() {
-        //set imgui style
+    namespace {
+        std::uint32_t read_u32_le(const unsigned char* bytes)
+        {
+            return static_cast<std::uint32_t>(bytes[0]) |
+                   (static_cast<std::uint32_t>(bytes[1]) << 8U) |
+                   (static_cast<std::uint32_t>(bytes[2]) << 16U) |
+                   (static_cast<std::uint32_t>(bytes[3]) << 24U);
+        }
 
-        ImGui::StyleColorsDark();
-        ImGuiStyle& style = ImGui::GetStyle();
-        ImVec4* colors = style.Colors;
+        bool read_texture_dimensions(const std::string& path, int& width, int& height)
+        {
+            if (std::filesystem::path(path).extension() == ".dds") {
+                std::array<unsigned char, 20> header{};
+                std::ifstream stream(path, std::ios::binary);
+                if (stream.read(reinterpret_cast<char*>(header.data()), header.size()) &&
+                    header[0] == 'D' && header[1] == 'D' && header[2] == 'S' && header[3] == ' ') {
+                    height = static_cast<int>(read_u32_le(header.data() + 12));
+                    width = static_cast<int>(read_u32_le(header.data() + 16));
+                    return width > 0 && height > 0;
+                }
+                return false;
+            }
 
-        //Set all roundings to 0
-        style.WindowRounding = 0.0f;
-        style.FrameRounding = 0.0f;
-        style.GrabRounding = 0.0f;
-        style.ScrollbarRounding = 0.0f;
-        style.ChildRounding = 0.0f;
-        style.PopupRounding = 0.0f;
-        style.TabRounding = 0.0f;
-        
-        constexpr ImVec4 color_black = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-        constexpr ImVec4 color_dark_gray = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
-        constexpr ImVec4 color_very_dark_gray = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
-        constexpr ImVec4 color_light_gray = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
-        constexpr ImVec4 color_medium_gray = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-        constexpr ImVec4 color_highlight = ImVec4(0.6f, 0.6f, 0.6f, 1.00f);
-
-        colors[ImGuiCol_TitleBg] = color_black;
-        colors[ImGuiCol_TitleBgActive] = color_dark_gray;
-        colors[ImGuiCol_TitleBgCollapsed] = color_light_gray;
-
-        colors[ImGuiCol_Button] = color_dark_gray;
-        colors[ImGuiCol_ButtonHovered] = color_light_gray;
-        colors[ImGuiCol_ButtonActive] = color_medium_gray;
-
-        colors[ImGuiCol_FrameBg] = color_dark_gray;
-        colors[ImGuiCol_FrameBgActive] = color_medium_gray;
-        colors[ImGuiCol_FrameBgHovered] = color_highlight;
-
-        colors[ImGuiCol_CheckMark] = color_light_gray;
-
-        colors[ImGuiCol_Header] = color_medium_gray;
-        colors[ImGuiCol_HeaderHovered] = color_highlight;
-        colors[ImGuiCol_HeaderActive] = color_light_gray;
-
-        colors[ImGuiCol_DragDropTarget] = color_highlight;
-
-        colors[ImGuiCol_Separator] = color_medium_gray;
-        colors[ImGuiCol_SeparatorHovered] = color_light_gray;
-        colors[ImGuiCol_SeparatorActive] = color_highlight;
-
-        colors[ImGuiCol_TableRowBg] = color_black;
-        colors[ImGuiCol_TableRowBgAlt] = color_very_dark_gray;
-
-        colors[ImGuiCol_SliderGrab] = color_light_gray;
-        colors[ImGuiCol_SliderGrabActive] = color_highlight;
-    } 
+            int channels = 0;
+            return stbi_info(path.c_str(), &width, &height, &channels) != 0;
+        }
+    }
 
 
     TextureImage::TextureImage() : res(nullptr), width(0), height(0)
@@ -103,18 +64,25 @@ namespace SpellHotbar {
     }
 
     bool TextureImage::load(const std::string& path)
-{
-    if (path.ends_with("dds")) {
-        return TextureLoader::fromDDSFile(path, &res, &width, &height);
+    {
+        source_path = path;
+        res = SKSEMenuFramework::LoadTexture(path);
+        if (!res) {
+            logger::error("SMF could not load texture '{}'", path);
+            return false;
+        }
+
+        if (!read_texture_dimensions(path, width, height)) {
+            logger::warn("Could not read dimensions for texture '{}'", path);
+            width = 1;
+            height = 1;
+        }
+        return true;
     }
-    else {
-        return TextureLoader::fromFile(path.c_str(), &res, &width, &height);
-    }
-}
 
 bool TextureImage::load_dds(const std::string& path)
 {
-    return TextureLoader::fromDDSFile(path, &res, &width, &height);
+    return load(path);
 }
 
 void TextureImage::draw(float w, float h)
@@ -138,7 +106,7 @@ void TextureImage::draw()
 
 ImTextureID TextureImage::get_res()
 {
-    return (ImTextureID)res;
+    return res;
 }
 
 SubTextureImage::SubTextureImage(const TextureImage& other, ImVec2 uv0, ImVec2 uv1)
@@ -150,6 +118,7 @@ SubTextureImage::SubTextureImage(const TextureImage& other, ImVec2 uv0, ImVec2 u
     this->res = other.res;
     this->width = other.width;
     this->height = other.height;
+    this->source_path.clear();
 }
 
 void SubTextureImage::draw(float w, float h)
@@ -189,8 +158,6 @@ ImFont* font_text = nullptr;
 ImFont* font_text_title = nullptr;
 ImFont* font_text_big = nullptr;
 ImFont* font_symbols = nullptr;
-
-float font_text_size{0};
 
 std::vector<TextureImage> loaded_textures;
 std::unordered_map<RE::FormID, SubTextureImage> spell_icons;
@@ -461,8 +428,45 @@ bar_fade oblivion_bar_fade;
 
 key_modifier last_mod{ key_modifier::none };
 
+namespace {
+    void close_window_models()
+    {
+        show_drag_frame = false;
+        SpellEditor::hide();
+        PotionEditor::hide();
+        BindMenu::hide();
+        SmfGuest::close_all_windows();
+    }
+
+    void synchronize_window_models_with_host()
+    {
+        if (SpellEditor::is_opened() &&
+            !SmfGuest::is_window_open(SmfGuest::Window::spell_editor)) {
+            SpellEditor::hide();
+        }
+        if (PotionEditor::is_opened() &&
+            !SmfGuest::is_window_open(SmfGuest::Window::potion_editor)) {
+            PotionEditor::hide();
+        }
+        if (BindMenu::is_opened() &&
+            !SmfGuest::is_window_open(SmfGuest::Window::bind_menu)) {
+            BindMenu::hide();
+        }
+        if (show_drag_frame &&
+            !SmfGuest::is_window_open(SmfGuest::Window::bar_dragging)) {
+            show_drag_frame = false;
+        }
+    }
+}
+
 void RenderManager::start_bar_dragging(int type)
-{ 
+{
+    if (!SmfGuest::is_ready()) {
+        logger::error("Cannot open the bar-position editor because SKSE Menu Framework is unavailable");
+        return;
+    }
+
+    close_window_models();
     show_drag_frame = true;
     drag_frame_initialized = false;
 
@@ -473,13 +477,15 @@ void RenderManager::start_bar_dragging(int type)
     drag_window_start_width = 0;
     drag_window_start_height = 0;
     dragged_window = type;
+    SmfGuest::open_window(SmfGuest::Window::bar_dragging);
 }
 
-bool RenderManager::should_block_game_cursor_inputs() { return show_drag_frame || SpellEditor::is_opened() || PotionEditor::is_opened() || BindMenu::is_opened(); }
+bool RenderManager::should_block_game_cursor_inputs() { return SmfGuest::is_any_window_open(); }
 
 void RenderManager::stop_bar_dragging()
 { 
     show_drag_frame = false;
+    SmfGuest::close_window(SmfGuest::Window::bar_dragging);
 }
 
 bool RenderManager::is_dragging_bar()
@@ -489,34 +495,52 @@ bool RenderManager::is_dragging_bar()
 
 void RenderManager::open_spell_editor()
 {
+    if (!SmfGuest::is_ready()) {
+        logger::error("Cannot open the spell editor because SKSE Menu Framework is unavailable");
+        return;
+    }
+    close_window_models();
     SpellEditor::show();
+    SmfGuest::open_window(SmfGuest::Window::spell_editor);
 }
 
 void RenderManager::close_spell_editor()
 {
     SpellEditor::hide();
+    SmfGuest::close_window(SmfGuest::Window::spell_editor);
 }
 
 void RenderManager::open_potion_editor()
 {
+    if (!SmfGuest::is_ready()) {
+        logger::error("Cannot open the potion editor because SKSE Menu Framework is unavailable");
+        return;
+    }
+    close_window_models();
     PotionEditor::show();
+    SmfGuest::open_window(SmfGuest::Window::potion_editor);
 }
 
 void RenderManager::close_potion_editor()
 {
     PotionEditor::hide();
+    SmfGuest::close_window(SmfGuest::Window::potion_editor);
 }
 
 void RenderManager::open_advanced_binding_menu()
 {
-    if (!BindMenu::is_opened()) {
-        BindMenu::show();
+    if (!SmfGuest::is_ready()) {
+        logger::error("Cannot open the binding menu because SKSE Menu Framework is unavailable");
+        return;
     }
+    close_window_models();
+    BindMenu::show();
+    SmfGuest::open_window(SmfGuest::Window::bind_menu);
 }
 
 bool RenderManager::is_bind_menu_opened()
 {
-    return BindMenu::is_opened();
+    return BindMenu::is_opened() && SmfGuest::is_window_open(SmfGuest::Window::bind_menu);
 }
 
 void RenderManager::ImGui_push_title_style()
@@ -561,20 +585,12 @@ void RenderManager::revert_font()
 
 bool RenderManager::should_block_game_key_inputs()
 {
-    return SpellEditor::is_opened() || PotionEditor::is_opened() || BindMenu::is_opened();
+    return SmfGuest::is_any_window_open();
 }
 
 void RenderManager::close_key_blocking_frames()
 {
-    if (SpellEditor::is_opened()) {
-        close_spell_editor();
-    }
-    if (PotionEditor::is_opened()) {
-        close_potion_editor();
-    }
-    if (BindMenu::is_opened()) {
-        BindMenu::hide();
-    }
+    close_window_models();
 }
 
 bool RenderManager::has_custom_icon(RE::FormID form_id)
@@ -648,99 +664,6 @@ float get_text_fade_alpha() {
 }
 
 
-template <typename T>
-void _check_ptr(T* ptr, std::string name) {
-    if (ptr == nullptr) {
-        logger::error("Error loading {}", name);
-    }
-}
-#define CHECK_PTR(a) _check_ptr(a, #a) //this passes both as var and string(name of var)
-
-void load_font_resources(float window_height) {
-    //calculate required font size, defaults are for 1080p
-    float scale_factor = window_height / 1080.0f;
-
-    font_text_size = std::roundf(24.0f * scale_factor);
-    float font_text_title_size = std::round(font_text_size * 1.5f);
-    float font_text_big_size = std::round(font_text_size * 1.25f);
-    float size_symbols = std::roundf(36.0f * scale_factor); 
-
-    logger::info("Loading Fonts with sizes {}, {}", font_text_size, size_symbols);
-
-    ImGuiIO& io = ImGui::GetIO();
-
-    std::string_view text_font_folder(".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts");
-    //look for files named text_font-codepage.ttf, if no "-" found in the filename, use default.
-    //first file starting with 'text_font' and ending in .ttf will be used
-    std::string text_font_name = "text_font.ttf";
-    const ImWchar* glyph_range = 0;
-    for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(text_font_folder))) {
-        if (entry.is_regular_file()) {
-            std::string str_filename = entry.path().filename().string();
-            if (str_filename.ends_with(".ttf") && str_filename.starts_with("text_font")) {
-                size_t ind = str_filename.find_last_of('-');
-                text_font_name = entry.path().filename().string();
-                if (ind != std::string::npos) {
-                    ind += 1; //text starts after -
-                    std::string glyph_range_text = text_font_name.substr(ind, text_font_name.length() - ind - 4);
-                    logger::info("loading glyph ranges for '{}'", glyph_range_text);
-                    if (glyph_range_text == "chinese") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
-                    }
-                    else if (glyph_range_text == "cyrillic") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
-                    }
-                    else if (glyph_range_text == "greek") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesGreek();
-                    }
-                    else if (glyph_range_text == "japanese") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesJapanese();
-                    }
-                    else if (glyph_range_text == "korean") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesKorean();
-                    }
-                    else if (glyph_range_text == "thai") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesThai();
-                    }
-                    else if (glyph_range_text == "vietnamese") {
-                        glyph_range = ImGui::GetIO().Fonts->GetGlyphRangesVietnamese();
-                    }
-                    else {
-                        logger::error("Unkown glyph range in text_font filename: '{}'", glyph_range_text);
-                    }
-                }
-                break;
-            }
-        }
-    }
-    auto font_path = std::filesystem::path(text_font_folder) / text_font_name;
-    font_text = io.Fonts->AddFontFromFileTTF(
-        font_path.string().c_str(), font_text_size, NULL, glyph_range);
-
-
-    if (glyph_range == ImGui::GetIO().Fonts->GetGlyphRangesChineseFull()) {
-        // cannot load cn font 3 times, there will be a crash (https://github.com/pWn3d1337/Skyrim_SpellHotbar2/issues/38)
-        font_text_title = font_text;
-        font_text_big = font_text;
-    }
-    else {
-        font_text_title = io.Fonts->AddFontFromFileTTF(
-            font_path.string().c_str(), font_text_title_size, NULL, glyph_range);
-
-        font_text_big = io.Fonts->AddFontFromFileTTF(
-            font_path.string().c_str(), font_text_big_size, NULL, glyph_range);
-    }
-
-    font_symbols = io.Fonts->AddFontFromFileTTF(
-        ".\\data\\SKSE\\Plugins\\SpellHotbar\\fonts\\skyrim_symbols_font.ttf",
-       size_symbols);
-
-    CHECK_PTR(font_text);
-    CHECK_PTR(font_text_title);
-    CHECK_PTR(font_text_big);
-    CHECK_PTR(font_symbols);
-}
-
 void RenderManager::load_gamedata_dependant_resources() {
     TextureCSVLoader::load_icons(std::filesystem::path(images_root_path));
 }
@@ -780,7 +703,9 @@ void RenderManager::reload_resouces() {
     cursor_texture_index = -1;
     frame_bg_texture_index = -1;
     for (const auto& teximg : loaded_textures) {
-        teximg.res->Release();
+        if (teximg.res && !teximg.source_path.empty()) {
+            SKSEMenuFramework::DisposeTexture(teximg.source_path);
+        }
     }
     loaded_textures.clear();
 
@@ -795,11 +720,8 @@ void RenderManager::on_game_load()
 }
 
 TextureImage & RenderManager::load_texture(const std::string path) {
-    TextureImage tex_img;
-
-    if (tex_img.load(path)) {
-        loaded_textures.push_back(std::move(tex_img));
-    }
+    loaded_textures.emplace_back();
+    loaded_textures.back().load(path);
     return loaded_textures.back();
 }
 
@@ -897,120 +819,6 @@ void RenderManager::add_spellproc_overlay_icon(TextureImage& main_texture, ImVec
 void RenderManager::init_spellproc_overlay_icons(size_t amount) {
     spellproc_overlay_icons.clear();
     spellproc_overlay_icons.reserve(amount);
-}
-
-LRESULT RenderManager::WndProcHook::thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    auto& io = ImGui::GetIO();
-    if (uMsg == WM_KILLFOCUS) {
-        io.ClearInputCharacters();
-        io.ClearInputKeys();
-    }
-
-    return func(hWnd, uMsg, wParam, lParam);
-}
-
-void RenderManager::D3DInitHook::thunk() {
-    func();
-
-    logger::info("RenderManager: Initializing...");
-    auto renderer = RE::BSGraphics::Renderer::GetSingleton();
-    if (!renderer){
-        logger::error("Cannot find renderer. Initialization failed!");
-        return;
-    }
-    auto render_data = renderer->GetRendererData();
-    if (!render_data) {
-        logger::error("Cannot get renderer data. Initialization failed!");
-        return;
-    }
-
-    logger::info("Getting swapchain...");
-    auto render_window = renderer->GetCurrentRenderWindow();
-    if (!render_window) {
-        logger::error("Cannot get render_window. Initialization failed!");
-        return;
-    }
-    auto swapchain = render_window->swapChain;
-    if (!swapchain) {
-        logger::error("Cannot get swapChain. Initialization failed!");
-        return;
-    }
-
-    logger::info("Getting swapchain desc...");
-    REX::W32::DXGI_SWAP_CHAIN_DESC sd{};
-    if (swapchain->GetDesc(std::addressof(sd)) < 0) {
-        logger::error("IDXGISwapChain::GetDesc failed.");
-        return;
-    }
-
-    device = render_data->forwarder;
-    context = render_data->context;
-
-    logger::info("Initializing ImGui...");
-    ImGui::CreateContext();
-
-    //auto& io = ImGui::GetIO();
-    //io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-
-    if (!ImGui_ImplWin32_Init(sd.outputWindow)) {
-        logger::error("ImGui initialization failed (Win32)");
-        return;
-    } else {
-        //ImGui_ImplWin32_EnableAlphaCompositing(sd.outputWindow);
-    }
-    if (!ImGui_ImplDX11_Init((ID3D11Device*)device, (ID3D11DeviceContext*)context)) {
-        logger::error("ImGui initialization failed (DX11)");
-        return;
-    }
-
-    logger::info("...ImGui Initialized");
-
-    initialized.store(true);
-
-    WndProcHook::func = reinterpret_cast<WNDPROC>(
-        SetWindowLongPtrA(sd.outputWindow, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProcHook::thunk)));
-    if (!WndProcHook::func) logger::error("SetWindowLongPtrA failed!");
-
-    logger::trace("Loading fonts...");
-    //get window size for font from HWND since imgui does not know size yet
-    REX::W32::RECT rect;
-    if (REX::W32::GetWindowRect(sd.outputWindow, &rect)) {
-        int height = rect.y2 - rect.y1;
-        load_font_resources(static_cast<float>(height));
-    } else {
-        logger::error("Could not get window size for font loading");
-    }
-    load_fixed_textures();
-
-    logger::info("RenderManager: Initialized");
-}
-
-void RenderManager::DXGIPresentHook::thunk(std::uint32_t a_p1) {
-    func(a_p1);
-
-    if (!D3DInitHook::initialized.load()) return;
-
-    // start imgui
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    // My stuff
-    RenderManager::draw();
-
-    // end imgui
-    ImGui::EndFrame();
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
-
-void RenderManager::MessageCallback(SKSE::MessagingInterface::Message* msg)
-{
-    if (msg->type == SKSE::MessagingInterface::kDataLoaded && D3DInitHook::initialized) {
-        auto& io = ImGui::GetIO();
-        io.MouseDrawCursor = false;
-        io.WantSetMousePos = false;
-    }
 }
 
 inline SubTextureImage* lookup_default_icon(RE::FormID formID) {
@@ -1128,23 +936,6 @@ SubTextureImage* RenderManager::get_tex_for_skill_internal(RE::FormID formID)
     return ret;
 }
 
-bool RenderManager::install() {
-    auto g_message = SKSE::GetMessagingInterface();
-    if (!g_message) {
-        logger::error("Messaging Interface Not Found!");
-        return false;
-    }
-
-    g_message->RegisterListener(MessageCallback);
-
-    SKSE::AllocTrampoline(14 * 2);
-
-    stl::write_thunk_call<D3DInitHook>();
-    stl::write_thunk_call<DXGIPresentHook>();
-
-    return true;
-}
-
 void RenderManager::spell_slotted_draw_anim(int index)
 { 
     highlight_time = highlight_dur_total;
@@ -1189,7 +980,7 @@ void RenderManager::draw_frame_bg_texture(float size_x, float size_y, float alph
         int num_segments_x = static_cast<int>(size_x / segment_size);
         int num_segments_y = static_cast<int>(size_y / segment_size);
 
-        auto col = ImColor(1.0f, 1.0f, 1.0f, alpha);
+        auto col = SpellHotbarImColor(1.0f, 1.0f, 1.0f, alpha);
         for (int y = 0; y < num_segments_y; y++) for (int x=0; x < num_segments_x; x++)
         {
             ImVec2 p = ImVec2(pos.x + x * segment_size, pos.y + y * segment_size);
@@ -1477,8 +1268,13 @@ float RenderManager::get_button_icons_length(int tex_index_key, int tex_index_mo
 
 void RenderManager::draw_scaled_text(ImVec2 pos, ImU32 col, const char* text)
 {
-    float size = get_scaled_text_size_multiplier() * font_text_size;
-    ImGui::GetWindowDrawList()->AddText(font_text, size, pos, col, text);
+    const float size = get_scaled_text_size_multiplier() * ImGui::GetFontSize();
+    const auto* font = font_text ? font_text : ImGui::GetIO().FontDefault;
+    if (font) {
+        ImGui::GetWindowDrawList()->AddText(font, size, pos, col, text);
+    } else {
+        ImGui::GetWindowDrawList()->AddText(pos, col, text);
+    }
 }
 
 float RenderManager::get_scaled_text_size_multiplier()
@@ -1505,7 +1301,7 @@ void drawCenteredText(std::string text, float alpha = 1.0F) {
     auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
 
     ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-    ImGui::TextColored(ImColor(1.0f, 1.0f, 1.0f, alpha), text.c_str());
+    ImGui::TextColored(SpellHotbarImColor(1.0f, 1.0f, 1.0f, alpha), text.c_str());
 }
 
 inline bool is_ultrawide(const float & screen_size_x, const float & screen_size_y) {
@@ -1780,6 +1576,47 @@ void draw_drag_menu() {
     BarDraggingConfigWindow::draw_info();
 }
 
+void RenderManager::render_spell_editor_window()
+{
+    if (SpellEditor::is_opened()) {
+        SpellEditor::renderEditor();
+    }
+    if (!SpellEditor::is_opened()) {
+        SmfGuest::close_window(SmfGuest::Window::spell_editor);
+    }
+}
+
+void RenderManager::render_potion_editor_window()
+{
+    if (PotionEditor::is_opened()) {
+        PotionEditor::renderEditor();
+    }
+    if (!PotionEditor::is_opened()) {
+        SmfGuest::close_window(SmfGuest::Window::potion_editor);
+    }
+}
+
+void RenderManager::render_bar_drag_window()
+{
+    if (show_drag_frame) {
+        draw_drag_menu();
+        ImGui::End();
+    }
+    if (!show_drag_frame) {
+        SmfGuest::close_window(SmfGuest::Window::bar_dragging);
+    }
+}
+
+void RenderManager::render_bind_menu_window()
+{
+    if (BindMenu::is_opened()) {
+        BindMenu::drawFrame(font_text, font_text_big, font_text_title);
+    }
+    if (!BindMenu::is_opened()) {
+        SmfGuest::close_window(SmfGuest::Window::bind_menu);
+    }
+}
+
 std::string RenderManager::get_skill_tooltip(const RE::TESForm* item) {
     std::string desc{ "" };
     if (item->GetFormType() == RE::FormType::Spell || item->GetFormType() == RE::FormType::Scroll)
@@ -1897,7 +1734,11 @@ void RenderManager::show_tooltip(const std::string & title, const std::string & 
 
 
 //Draw Custom stuff 
-void RenderManager::draw() {
+void RenderManager::render_hud() {
+    // SMF owns the actual window lifetime. Mirror host-driven closes (for
+    // example, Escape) into SH2's view models before doing any early return.
+    synchronize_window_models_with_host();
+
     float deltaTime = ImGui::GetIO().DeltaTime;
     update_highlight(deltaTime);
     main_bar_fade.update(deltaTime);
@@ -1925,25 +1766,7 @@ void RenderManager::draw() {
 
     bool validTabActive = current_selected_item_bindable(); //current_inv_menu_tab_valid_for_hotbar();
 
-    apply_imgui_style();
-
-    if (show_drag_frame) {
-        // show frame to drag the bar
-        draw_drag_menu();
-        ImGui::End();
-    }
-    else if (SpellEditor::is_opened()) {
-        SpellEditor::renderEditor();
-    }
-    else if (PotionEditor::is_opened()) {
-        PotionEditor::renderEditor();
-    }
-    else if (BindMenu::is_opened()) {
-        BindMenu::drawFrame(font_text, font_text_big, font_text_title);
-    }
-    else
-    {
-        if (drag_frame_initialized) {
+    if (drag_frame_initialized && !show_drag_frame) {
 
             //update bar position after drag has finished
             float width_diff = (drag_window_width - drag_window_start_width) * 0.5f;
@@ -1966,11 +1789,10 @@ void RenderManager::draw() {
 
             drag_frame_initialized = false;
             dragged_window = 0;
-        }
+    }
 
-        auto& io = ImGui::GetIO();
-        io.MouseDrawCursor = false;
-        //io.WantCaptureMouse = false;
+    auto& io = ImGui::GetIO();
+    io.MouseDrawCursor = false;
 
         if (magMenu || validTabActive) {
 
@@ -2008,13 +1830,13 @@ void RenderManager::draw() {
                             ImGui::TableNextColumn();
 
                             ImGui::PushFont(font_text);
-                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, ImColor(0, 0, 0, 0).Value);
-                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(192, 192, 192).Value);
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Button, SpellHotbarImColor(0, 0, 0, 0).Value);
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, SpellHotbarImColor(192, 192, 192).Value);
 
                             ImGui::Button(prev_bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
                             ImGui::TableNextColumn();
 
-                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, ImColor(255, 255, 255).Value);
+                            ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, SpellHotbarImColor(255, 255, 255).Value);
                             ImGui::Button(bar.get_name().c_str(), ImVec2(-FLT_MIN, 0.0f));
                             ImGui::PopStyleColor();
                             ImGui::TableNextColumn();
@@ -2166,7 +1988,6 @@ void RenderManager::draw() {
             }
 
         }
-    }
     last_mod = mod;
 }
 }

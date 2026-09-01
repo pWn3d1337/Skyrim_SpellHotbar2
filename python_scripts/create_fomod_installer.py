@@ -1,4 +1,7 @@
+import os
 import shutil
+import subprocess
+import sys
 from enum import Enum
 from glob import glob
 from pathlib import Path
@@ -6,11 +9,12 @@ from typing import Callable
 
 from build_release_package import test_build_release_zip, build_release_zip
 
-dev_mod_root = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2")
-dev_mod_root_nordic_ui = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar NordicUI")
-dev_mod_root_battlemage = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage")
-dev_mod_root_battlemage_csf2 = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage CSF2")
-dev_mod_root_battlemage_csf3 = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2 Battlemage CSF3")
+ASSET_ROOT = Path(os.environ.get("SPELLHOTBAR_ASSET_ROOT", r"F:\Skyrim Dev\ADT\mods"))
+dev_mod_root = ASSET_ROOT / "Spell Hotbar 2"
+dev_mod_root_nordic_ui = ASSET_ROOT / "Spell Hotbar NordicUI"
+dev_mod_root_battlemage = ASSET_ROOT / "Spell Hotbar 2 Battlemage"
+dev_mod_root_battlemage_csf2 = ASSET_ROOT / "Spell Hotbar 2 Battlemage CSF2"
+dev_mod_root_battlemage_csf3 = ASSET_ROOT / "Spell Hotbar 2 Battlemage CSF3"
 
 project_root = Path(__file__).parent.parent
 
@@ -181,12 +185,11 @@ def _get_battle_mage_perk_config_csf2(folder: str, folder2: str) -> str:
 
 
 def _get_profile_config(name: str, json_name: str, desc: str, image: str | None = None) -> str:
+    image_element = f'<image path="installer_images/{image}"/>' if image is not None else ""
     return f"""
                          <plugin name="{name}">
                             <description>{desc}</description>
-                            {
-    f'<image path = "installer_images\\{image}"/>' if image is not None else ""
-    }
+                            {image_element}
                             <files>
                                 <file source="9000 ConditionalFiles/auto_profiles/{json_name}.json" destination="SKSE/Plugins/SpellHotbar/presets/auto_profile.json" priority="0"/>
                             </files>
@@ -200,6 +203,9 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
     return f"""<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>Spell Hotbar 2 - {version} Installer</moduleName>
     <moduleImage path="installer_images\\spell_hotbar_logo.jpg" />
+    <moduleDependencies operator="And">
+        <fileDependency file="SKSEMenuFramework.dll" state="Active"/>
+    </moduleDependencies>
     <requiredInstallFiles>
         <folder source="{required_folder}" destination="" priority="0"/>
     </requiredInstallFiles>
@@ -251,9 +257,9 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                 <group name="Chose a Text Font" type="SelectExactlyOne">
                     <plugins order="Explicit">
                          <plugin name="Default">
-                            <description>Install Skyrims 'Futura Condensed' Font</description>
+                            <description>Install Skyrim's Futura Condensed face into SKSE Menu Framework's Fonts folder (Data/SKSE/Plugins/Fonts)</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Recommended"/>
@@ -262,7 +268,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         <plugin name="Sovngarde Font">
                             <description>Install the Sovngarde (https://www.nexusmods.com/skyrimspecialedition/mods/386) Font, use together with Nordic UI, does not support JP/CN, should work with RU and PL</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_sovngarde.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_sovngarde.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -271,7 +277,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         <plugin name="PL">
                             <description>Install Skyrims 'Futura Condensed' Font with PL support</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_pl.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_pl.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -280,7 +286,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         <plugin name="RU">
                             <description>Install Skyrims 'Futura Condensed' Font with RU support</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-cyrillic.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_ru.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -289,7 +295,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         <plugin name="JP">
                             <description>Install Skyrims 'Futura Condensed' Font with JP support</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-japanese.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_jp.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -298,7 +304,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         <plugin name="CN">
                             <description>Install a CN font from fonts_cn.swf</description>
                             <files>
-                                <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/SpellHotbar/fonts/text_font-chinese.ttf" priority="0" /> 
+                                <file source="4000 Interface Files/fonts/text_font_cn.ttf" destination="SKSE/Plugins/Fonts/text_font.ttf" priority="0" /> 
                             </files>
                             <typeDescriptor>
                                 <type name="Optional"/>
@@ -313,7 +319,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                 <group name="Chose a Profile that automatically gets loaded" type="SelectExactlyOne">
                     <plugins order="Explicit">
                          <plugin name="No Auto Profile">
-                            <description>All variables will be set to default and no keybinds will be set on initialisation. Will require manual configuration of the mod or manual loading of a profile through MCM.</description>
+                            <description>All variables will be set to default and no keybinds will be set on initialisation. Manual configuration or loading a profile through the Mod Control Panel is required.</description>
                             <files>
                             </files>
                             <typeDescriptor>
@@ -327,7 +333,7 @@ def _get_module_config_xml(version: str, spell_packs: list[tuple[str, str, str, 
                         {_get_profile_config("Oblivion Mode", "oblivion_mode",
                                              "Activates Oblivion mode, Keybinds: 1-10.= for selection, 'v' and 'b' to cast spell/potion", "oblivion_mode.jpg")}
                         {_get_profile_config("Controller", "controller",
-                                             "Starting point for controller config, binds DPad + ABXY with RS/LS as modifiers, non-modifier bar is disabled. Might need config adjustments to not conflict with your setup/MCM menus", "controller_simple.jpg")}
+                                             "Starting point for controller config, binds DPad + ABXY with RS/LS as modifiers, non-modifier bar is disabled. May need adjustments to avoid conflicts with other controls or menu bindings.", "controller_simple.jpg")}
                         {_get_profile_config("Controller with Bindmenu", "controller_bindmenu",
                                              "Same as 'Controller' but uses the dedicated Mouse operated 'Bind Menu' to avoid menu conflicts with controller keys.", "controller_simple.jpg")}
                     </plugins>
@@ -420,12 +426,8 @@ main_mod_folder = f"./{required_folder}/"
 released_files_main_plugin_v2 = [
     (project_root / "skse_plugin/build/release_with_debug_info/SpellHotbar2.dll", main_mod_folder + "SKSE/Plugins"),
     (project_root / "skse_plugin/build/release_with_debug_info/SpellHotbar2.pdb", main_mod_folder + "SKSE/Plugins"),
-    (dev_mod_root / "SpellHotbar.esp", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "Scripts/SpellHotbar.pex", (dev_mod_root, main_mod_folder)),
-    # if Path, add relative path to root in zip
-    (dev_mod_root / "Scripts/SpellHotbarInitQuestScript.pex", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "Scripts/SpellHotbarMCM.pex", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "Scripts/SpellHotbarToggleDualCastingEffect.pex", (dev_mod_root, main_mod_folder)),
+    (project_root / "build/plugins/SpellHotbar.esp", main_mod_folder),
+    (project_root / "papyrus/Scripts/SpellHotbar.pex", main_mod_folder + "Scripts"),
     # (dev_mod_root / "Scripts/Source/*.psc", dev_mod_root), script source is no longer in install
     (dev_mod_root / "Interface/SpellHotbar/spell_icons.swf", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "meshes/SpellHotbar/*.nif", (dev_mod_root, main_mod_folder)),
@@ -434,7 +436,7 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/animationdata/*.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/effectdata/vanilla_cast_effects.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/skyrim_symbols_font.ttf", (dev_mod_root, main_mod_folder)),
+    (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/skyrim_symbols_font.ttf", main_mod_folder + "SKSE/Plugins/Fonts"),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.csv", (dev_mod_root, main_mod_folder)),
@@ -474,16 +476,13 @@ released_files_main_plugin_v2 += [
 ]
 
 battlemage_perk_files = [
-    (dev_mod_root_battlemage / "SpellHotbar_BattleMage.esp", (dev_mod_root_battlemage, battlemage_mod_folder)),
+    (project_root / "build/plugins/SpellHotbar_BattleMage.esp", battlemage_mod_folder),
     (dev_mod_root_battlemage / "meshes/interface/intbattlemageperkskydome.nif",
      (dev_mod_root_battlemage, battlemage_mod_folder)),
     (dev_mod_root_battlemage / "textures/interface/battlemage_bluemoon.dds",
      (dev_mod_root_battlemage, battlemage_mod_folder)),
     (dev_mod_root_battlemage / "textures/interface/battlemage_constellation.dds",
      (dev_mod_root_battlemage, battlemage_mod_folder)),
-    # yes the scripts are located in the main mods folder in the dev setup
-    (dev_mod_root / "Scripts/SpellHotbarBattleMageInitQuestScript.pex", (dev_mod_root, battlemage_mod_folder)),
-    (dev_mod_root / "Scripts/SpellHotbarOpenBattleMagePerkTree.pex", (dev_mod_root, battlemage_mod_folder)),
     (dev_mod_root_battlemage_csf3 / "SKSE/Plugins/CustomSkills/SpellHotbar_Battlemage.json",
      (dev_mod_root_battlemage_csf3, battlemage_mod_folder_csf3)),
     (dev_mod_root_battlemage_csf3 / "Interface/MetaSkillsMenu/SpellHotbar_Battlemage SpellHotbar.dds",
@@ -588,6 +587,11 @@ if __name__ == "__main__":
         module_xml.write(_get_module_config_xml(version, spell_packs_out))
 
     if not ONLY_XML_FILES:
+        subprocess.run(
+            [sys.executable, str(project_root / "python_scripts/build_plugins.py")],
+            cwd=project_root,
+            check=True,
+        )
 
         release_files: list[tuple[Path, str | Path]] = list()
 

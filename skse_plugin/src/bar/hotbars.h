@@ -133,6 +133,9 @@ namespace SpellHotbar::Bars {
 
     void init();
 
+    /** Restore every save-persistent bar setting and bar slot to first-install defaults. */
+    void reset_to_defaults();
+
     uint32_t getPreviousMenuBar(uint32_t current_id);
     uint32_t getNextMenuBar(uint32_t current_id);
 

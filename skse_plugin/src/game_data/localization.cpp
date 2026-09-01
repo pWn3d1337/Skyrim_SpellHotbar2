@@ -57,6 +57,7 @@ namespace SpellHotbar {
 			{ "$BAR_BLOCKED", "BLOCKED" },
 			{ "$KEY_MOD", "Mod" },
 			{ "$KEY_NO_MOD", "No Mod" },
+			{ "$KEY_UNBOUND", "Unbound" },
 			{ "$MAIN_BAR", "Default" },
 			{ "$MAIN_BAR_SNEAK", "Sneak" },
 			{ "$MELEE_BAR", "Melee" },

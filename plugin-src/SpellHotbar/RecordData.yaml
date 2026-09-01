@@ -1,0 +1,17 @@
+SpriggitSource:
+  PackageName: Spriggit.Yaml.Skyrim
+  Version: 0.40.1
+ModKey: SpellHotbar.esp
+GameRelease: SkyrimSE
+ModHeader:
+  Flags:
+  - Small
+  Stats:
+    Version: 1.7
+  Author: pWn3d
+  MasterReferences:
+  - Master: Skyrim.esm
+    FileSize: 0
+  - Master: Dawnguard.esm
+    FileSize: 0
+  INTV: 1

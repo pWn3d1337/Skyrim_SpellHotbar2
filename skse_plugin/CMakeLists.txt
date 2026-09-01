@@ -2,28 +2,31 @@ cmake_minimum_required(VERSION 3.21)
 
 project(SpellHotbar2 VERSION 2.0.10 LANGUAGES CXX)
 
-#output folder to copy dll after building
-set(OUTPUT_FOLDER "F:/Skyrim Dev/ADT/mods/Spell Hotbar 2")
-#set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_5_97/mods/Spell Hotbar 2")
-#set(OUTPUT_FOLDER "F:/Skyrim Dev/DEV_1_6_1170/mods/Spell Hotbar 2")
+# Optional local deployment target. Leave empty for normal/CI builds.
+set(OUTPUT_FOLDER "" CACHE PATH "MO2 mod folder to receive built plugin artifacts")
 
 
-find_package(imgui CONFIG REQUIRED)
 find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
-find_package(directxtk CONFIG REQUIRED)
 
 set(source_files src/plugin.cpp
                  src/logger/logger.h
                  src/logger/logger.cpp
                  src/rendering/render_manager.h
                  src/rendering/render_manager.cpp
-                 src/rendering/texture_loader.h
-                 src/rendering/texture_loader.cpp
+                 src/smf/imgui_mcp_compat.h
+                 src/smf/smf_guest.h
+                 src/smf/smf_guest.cpp
+                 src/mcp/bind_capture.h
+                 src/mcp/bind_capture.cpp
+                 src/mcp/mcp_preset_name.h
+                 src/mcp/mcp_pages.h
+                 src/mcp/mcp_pages.cpp
                  src/papyrus_extensions/papyrus_functions.h
                  src/papyrus_extensions/papyrus_functions.cpp
                  src/storage/storage.h
                  src/storage/storage.cpp
+                 src/storage/runtime_state_reset.h
                  src/game_data/game_data.h
                  src/game_data/game_data.cpp
                  src/bar/hotbar.h
@@ -34,6 +37,7 @@ set(source_files src/plugin.cpp
                  src/bar/oblivion_bar.cpp
                  "src/input/input.h"
                  "src/input/input.cpp"
+                 "src/input/input_event_adapter.h"
                  "src/input/keybinds.h"
                  "src/input/keybinds.cpp"
                  "src/input/modes.h"
@@ -46,6 +50,9 @@ set(source_files src/plugin.cpp
                  src/events/animationeventhook.cpp
                  src/eventS/gameloop_hook.h
                  src/eventS/gameloop_hook.cpp
+                 src/lifecycle/first_run_policy.h
+                 src/lifecycle/lifecycle.h
+                 src/lifecycle/lifecycle.cpp
                  src/game_data/spell_data_csv_loader.h
                  src/game_data/spell_data_csv_loader.cpp
                  src/game_data/spell_casteffect_csv_loader.h
@@ -94,11 +101,13 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/PCH.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "src")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
-target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXTK)
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
 
 #automatically copy to output folder if set
-if(DEFINED OUTPUT_FOLDER)
+if(OUTPUT_FOLDER)
     set(DLL_FOLDER "${OUTPUT_FOLDER}/SKSE/Plugins")
 
     message(STATUS "SKSE plugin output folder: ${DLL_FOLDER}")

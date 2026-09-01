@@ -1,0 +1,21 @@
+FormKey: 00083F:SpellHotbar.esp
+EditorID: SpellHotbar_ApplySpellProcCD
+Name:
+  TargetLanguage: English
+  Value: Apply SpellProc CD
+MenuDisplayObject: 0435A5:Skyrim.esm
+EquipmentType: 025BEE:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''
+Flags:
+- ManualCostCalc
+- IgnoreResistance
+- NoAbsorbOrReflect
+- NoDualCastModification
+CastType: FireAndForget
+Effects:
+- BaseEffect: 00083E:SpellHotbar.esp
+  Data:
+    Magnitude: 1
+    Duration: 10

@@ -1,0 +1,26 @@
+FormKey: 00083E:SpellHotbar.esp
+EditorID: SpellHotbar_SpellProcCD
+VirtualMachineAdapter: {}
+Name:
+  TargetLanguage: English
+  Value: Cannot gain "Battlemage's Inspiration"
+Flags:
+- NoMagnitude
+- NoArea
+Archetype:
+  MutagenObjectType: MagicEffectArchetype
+  Type: Script
+CastType: FireAndForget
+DualCastScale: 1
+CastingSoundLevel: Normal
+Sounds:
+- Sound: 07BBAB:Skyrim.esm
+- Type: Charge
+  Sound: 07C71F:Skyrim.esm
+- Type: Ready
+  Sound: 07C720:Skyrim.esm
+- Type: Release
+  Sound: 07BBAE:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''
