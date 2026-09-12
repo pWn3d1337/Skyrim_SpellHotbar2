@@ -1,0 +1,19 @@
+FormKey: 000848:SpellHotbar.esp
+EditorID: SpellHotbar_BattleMage_PerkProcBlock
+Name:
+  TargetLanguage: English
+  Value: Cast On Block
+Description:
+  TargetLanguage: English
+  Value: Timed Blocking can trigger Novice or Apprentice spell procs. Requires 'Block' 25.
+Conditions:
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: Block
+  ComparisonValue: 25
+NumRanks: 1
+Playable: True

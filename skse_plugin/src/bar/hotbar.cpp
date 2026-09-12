@@ -9,6 +9,7 @@
 #include "../casts/spell_proc.h"
 #include "../game_data/localization.h"
 
+#include <array>
 #include <numbers>
 
 namespace SpellHotbar
@@ -303,28 +304,50 @@ namespace SpellHotbar
         return mode;
     }
 
-    void Hotbar::draw_in_menu(ImFont* font, float /* screensize_x*/, float screensize_y, int highlight_slot,
-                              float highlight_factor, key_modifier mod)
-    {
-        ImGui::PushFont(font);
-
-        int icon_size = static_cast<int>(get_slot_height(screensize_y));
-        float text_offset_x = icon_size * 0.05f;
-        float text_offset_x_right = icon_size * 0.95f - ImGui::CalcTextSize("R").x;
-        float text_offset_y = icon_size * 0.0125f;
-        //float text_height = ImGui::CalcTextSize("M").y;
-
-        float key_icon_length{ 0.0f };
-        if (Bars::use_keybind_icons()) {
-            //Check for longest button combo
-            for (int i = 0; i < m_barsize; i++) {
-                auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
-                float cur_len = RenderManager::get_button_icons_length(tex_id_key, tex_id_mod);
-                if (cur_len > key_icon_length) {
-                    key_icon_length = cur_len;
-                }
+    namespace {
+        void push_image(std::vector<Flick::DockImage>& images, const SubTextureImage* img, float x, float y, float w, float h, ImU32 col)
+        {
+            if (img == nullptr || img->source_path.empty()) {
+                return;
             }
+            images.push_back(Flick::DockImage{ img->source_path,
+                                               x, y, x + w, y + h, img->uv0.x, img->uv0.y, img->uv1.x, img->uv1.y,
+                                               static_cast<unsigned>(col) });
         }
+        void push_texture(std::vector<Flick::DockImage>& images, const TextureImage* tex, float x, float y, float w, float h, ImU32 col)
+        {
+            if (tex == nullptr || tex->source_path.empty()) {
+                return;
+            }
+            images.push_back(Flick::DockImage{ tex->source_path,
+                                               x, y, x + w, y + h, 0.0f, 0.0f, 1.0f, 1.0f, static_cast<unsigned>(col) });
+        }
+        // IM_COL32 with its alpha byte replaced.
+        ImU32 with_alpha(ImU32 col, int alpha)
+        {
+            return (col & ~IM_COL32_A_MASK) | (static_cast<ImU32>(std::clamp(alpha, 0, 255)) << IM_COL32_A_SHIFT);
+        }
+    }
+
+    Flick::DockFrame Hotbar::build_dock_frame(float screensize_x, float screensize_y, int highlight_slot,
+                                              float highlight_factor, key_modifier mod, int hovered)
+    {
+        Flick::DockFrame frame;
+
+        const float spacing = Bars::menu_slot_spacing;
+        const int icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::menu_slot_scale));
+        const float icon = static_cast<float>(icon_size);
+        // Deeper inset than the HUD bar's 0.05/0.0125: at dock size those touch the slot border.
+        const float text_offset_x = icon * 0.07f;
+        const float text_offset_y = icon * 0.06f;
+
+        //Same wrap trigger as draw_in_menu: 60% of the display, never an input to the size.
+        int row_len = static_cast<int>(std::floor((screensize_x * 0.60f + spacing) / (icon + spacing)));
+        row_len = std::clamp(row_len, 1, static_cast<int>(m_barsize));
+        const float key_strip_h = Bars::use_keybind_icons() ? icon * 0.5f : 0.0f;
+        const float row_h = icon + key_strip_h + spacing;
+
+        const ImU32 white = IM_COL32_WHITE;
 
         for (int i = 0; i < m_barsize; i++) {
             auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, false);
@@ -335,94 +358,113 @@ namespace SpellHotbar
                 skill_dat = GameData::get_spell_data(form, true, true);
             }
 
-            ImVec2 p = ImGui::GetCursorScreenPos();
+            const int col_i = i % row_len, row_i = i / row_len;
+            const float x = col_i * (icon + spacing);
+            const float y = row_i * row_h;
 
             size_t count{ 0 };
             if (skill.consumed != consumed_type::none) {
                 count = GameData::count_item_in_inv(skill.formID);
             }
 
-            if (Bars::use_keybind_icons()) {
-                //Draw the Keybind icons
-                auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
-                float key_icon_size = icon_size * 2.0f/3.0f;
-                float spacing_offset{ 0.0f };
-                if (tex_id_mod >= 0) {
-                    spacing_offset = ImGui::GetStyle().ItemSpacing.x;
-                }
-                ImGui::Dummy(ImVec2(key_icon_size * key_icon_length + spacing_offset, static_cast<float>(icon_size))); ImGui::SameLine();
-                p.y += icon_size * 1.0f / 6.0f;
-                RenderManager::draw_button_icon_menu(p, tex_id_key, tex_id_mod, static_cast<int>(key_icon_size));
+            const SubTextureImage* art = RenderManager::resolve_skill_tex(skill.formID);
 
-                //update p to after dummy
-                p = ImGui::GetCursorScreenPos();
+            if (art == nullptr) {
+                push_image(frame.images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_EMPTY), x, y, icon, icon, white);
             }
-
-            if (!RenderManager::draw_skill(skill.formID, icon_size, skill.color)) {
-                RenderManager::draw_bg(icon_size);
-            } else {
+            else {
+                push_image(frame.images, art, x, y, icon, icon, skill.color);
                 if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
-                    RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32_WHITE);
+                    push_image(frame.images, RenderManager::default_icon_tex(skill_dat.overlay_icon), x, y, icon, icon, white);
                 }
 
-                ImU32 col = IM_COL32_WHITE;
+                ImU32 col = white;
                 if (highlight_slot == i) {
                     col = IM_COL32(255, 255, static_cast<int>(127 + 128 * (1.0 - highlight_factor)), 255);
                 }
-
-                if (skill.consumed!=consumed_type::none && count == 0) {
-                    RenderManager::draw_cd_overlay(p, icon_size, 0.0f, col);
+                else if (hovered == i) {
+                    col = IM_COL32(255, 255, 160, 255);
                 }
-
-                RenderManager::draw_slot_overlay(p, icon_size, col);
+                if (skill.consumed != consumed_type::none && count == 0) {
+                    push_image(frame.images, RenderManager::cooldown_tex(0.0f), x, y, icon, icon, col);
+                }
+                push_image(frame.images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_OVERLAY), x, y, icon, icon, col);
             }
-            ImGui::SameLine();
 
-            if (!Bars::use_keybind_icons()) {
-                std::string key_text = GameData::get_keybind_text(i, mod);
-                //ImVec2 tex_pos(p.x + text_offset,
-                  //             p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
-                ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-                ImGui::GetWindowDrawList()->AddText(tex_pos, ImColor(255, 255, 255), key_text.c_str());
+            if (Bars::use_keybind_icons()) {
+                auto [tex_id_key, tex_id_mod] = GameData::get_keybind_icon_index(i, mod);
+                const TextureImage* key = RenderManager::button_tex(tex_id_key);
+                const TextureImage* modt = RenderManager::button_tex(tex_id_mod);
+                float kx = x;
+                if (modt != nullptr && key != nullptr) {
+                    const float w = key_strip_h * static_cast<float>(modt->width) / static_cast<float>(modt->height);
+                    push_texture(frame.images, modt, kx, y + icon, w, key_strip_h, white);
+                    kx += w;
+                }
+                if (key != nullptr) {
+                    const float w = key_strip_h * static_cast<float>(key->width) / static_cast<float>(key->height);
+                    push_texture(frame.images, key, kx, y + icon, w, key_strip_h, white);
+                }
+            }
+            else {
+                frame.texts.push_back(Flick::DockText{ x + text_offset_x, y + text_offset_y, 0,
+                                                       GameData::get_keybind_text(i, mod), static_cast<unsigned>(white) });
             }
 
             if (skill.hand == hand_mode::left_hand || skill.hand == hand_mode::right_hand || skill.hand == hand_mode::dual_hand) {
-                std::string hand_text;
-                if (skill.hand == hand_mode::left_hand) {
-                    hand_text = translate("$HAND_TEXT_LEFT");
-                }
-                else if (skill.hand == hand_mode::right_hand) {
-                    hand_text = translate("$HAND_TEXT_RIGHT");
-                }
-                else if (skill.hand == hand_mode::dual_hand) {
-                    hand_text = translate("$HAND_TEXT_DUAL");
-                }
-                ImVec2 tex_pos_hand(p.x + text_offset_x_right, p.y + text_offset_y);
-                ImGui::GetWindowDrawList()->AddText(tex_pos_hand, ImColor(255, 255, 255), hand_text.c_str());
+                const char* key = skill.hand == hand_mode::left_hand ? "$HAND_TEXT_LEFT"
+                                : skill.hand == hand_mode::right_hand ? "$HAND_TEXT_RIGHT" : "$HAND_TEXT_DUAL";
+                frame.texts.push_back(Flick::DockText{ x + icon * 0.95f, y + text_offset_y, 1, translate(key),
+                                                       static_cast<unsigned>(white) });
             }
 
             if (skill.consumed != consumed_type::none) {
-                //clamp text to 999
-                std::string text = std::to_string(std::clamp(count, 0Ui64, 999Ui64));
-                ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
-                ImVec2 count_text_pos(p.x + icon_size - textsize.x, p.y + icon_size - textsize.y);
-                ImGui::GetWindowDrawList()->AddText(count_text_pos, ImColor(255, 255, 255), text.c_str());
+                frame.texts.push_back(Flick::DockText{ x + icon, y + icon, 2,
+                                                       std::to_string(std::clamp(count, 0Ui64, 999Ui64)),
+                                                       static_cast<unsigned>(white) });
             }
 
-            std::string text = GameData::resolve_spellname(skill.formID);
-
-            //draw text in grey if it was inherited from parent bar
-            int grey_val = inherited ? 127 : 255;
-            auto color = ImColor(grey_val, grey_val, grey_val);
-
-            if (highlight_slot == i) {
-                color = ImColor(255, 255, 127 + static_cast<int>(128.0 * (1.0f - highlight_factor)));
-            }
-
-            ImGui::TextColored(color, text.c_str());
-
+            frame.slots.push_back(Flick::DockSlot{ x, y, icon, icon, describe_slot(i, mod) });
         }
-        ImGui::PopFont();
+
+        const int rows = (m_barsize + row_len - 1) / row_len;
+        frame.width = row_len * icon + (row_len - 1) * spacing;
+        frame.height = rows * (icon + key_strip_h) + (rows - 1) * spacing;
+        return frame;
+    }
+
+    std::string Hotbar::describe_slot(int index, key_modifier mod)
+    {
+        auto [skill, inherited] = get_skill_in_bar_with_inheritance(index, mod, false);
+
+        std::string name = GameData::resolve_spellname(skill.formID);
+        if (skill.isEmpty() || name.empty()) {
+            return "";
+        }
+
+        auto* form = RE::TESForm::LookupByID(skill.formID);
+        if (form == nullptr) {
+            return name;
+        }
+        GameData::Spell_cast_data dat = GameData::get_spell_data(form, true, true);
+
+        std::string out = name;
+
+        if (auto* spell = form->As<RE::SpellItem>(); spell != nullptr) {
+            auto* pc = RE::PlayerCharacter::GetSingleton();
+            float cost = spell->CalculateMagickaCost(pc);
+            if (cost > 0.0f) {
+                out += std::format("  |  {} {:.0f}", translate("$TOOLTIP_COST"), cost);
+            }
+        }
+        if (dat.casttime > 0.0f) {
+            out += std::format("  |  {} {:.1f}s", translate("$TOOLTIP_CAST"), dat.casttime);
+        }
+        const float cd = dat.cooldown > 0.0f ? dat.cooldown : dat.gcd;
+        if (cd > 0.0f) {
+            out += std::format("  |  {} {:.1f}s", translate("$TOOLTIP_COOLDOWN"), cd);
+        }
+        return out;
     }
 
     inline float determine_cd(RE::FormID skill, slot_type skill_type, float game_time, float time_scale, float gcd_prog,
@@ -521,158 +563,120 @@ namespace SpellHotbar
        return false;
     }
 
-    void Hotbar::draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot,
-                             float highlight_factor, key_modifier mod, bool highlight_isred, float alpha, float shout_cd, float shout_cd_dur) {
-        ImGui::PushFont(font);
-
-        ImVec2 spacing(Bars::slot_spacing, Bars::slot_spacing);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
-
-        int icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::slot_scale));
-        float text_offset_x = icon_size * 0.05f;
-        float text_offset_y = icon_size * 0.0125f;
-
-        float gcd_prog = 0.0f;
-        float gcd_dur = 0.0f;
+    // The HUD bar as a display list for the FLICK-hosted HUD window. Ported from draw_in_hud:
+    // the same three layouts and the same per-slot art, now as positions in pixels relative to
+    // the layer's origin.
+    void Hotbar::build_hud_layer(Flick::HudLayer& layer, float screensize_x, float screensize_y, int highlight_slot,
+                                 float highlight_factor, key_modifier mod, bool highlight_isred, float alpha,
+                                 float shout_cd, float shout_cd_dur, float text_alpha)
+    {
+        HudSlotContext ctx;
+        ctx.alpha = alpha;
+        ctx.icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::slot_scale));
+        ctx.text_offset_x = ctx.icon_size * 0.05f;
+        ctx.text_offset_y = ctx.icon_size * 0.0125f;
         if (!Input::is_oblivion_mode()) {
-            gcd_prog = casts::CastingController::get_current_gcd_progress();
-            gcd_dur = casts::CastingController::get_current_gcd_duration();
+            ctx.gcd_prog = casts::CastingController::get_current_gcd_progress();
+            ctx.gcd_dur = casts::CastingController::get_current_gcd_duration();
         }
+        ctx.shout_cd = shout_cd;
+        ctx.shout_cd_dur = shout_cd_dur;
+        if (RE::Calendar* cal = RE::Calendar::GetSingleton()) {
+            ctx.game_time = cal->GetCurrentGameTime();
+            ctx.time_scale = cal->GetTimescale();
+        }
+        ctx.highlight_slot = highlight_slot;
+        ctx.highlight_factor = highlight_factor;
+        ctx.highlight_isred = highlight_isred;
+        ctx.mod = mod;
+        ctx.bar_name = this->get_name();
+        ctx.pc = RE::PlayerCharacter::GetSingleton();
 
-        float game_time{0};
-        float time_scale{20.0f};
-        RE::Calendar* cal = RE::Calendar::GetSingleton();
-        if (cal) {
-            game_time = cal->GetCurrentGameTime();
-            time_scale = cal->GetTimescale();
-        }
-        auto pc = RE::PlayerCharacter::GetSingleton();
+        const float icon = static_cast<float>(ctx.icon_size);
+        const float spacing = Bars::slot_spacing;
+        // The text sizes are the ImGui bar's: the loaded font drew at 28 px on a 1440 px tall
+        // display, and the key text was that times (slot_scale + 0.25) -- what
+        // RenderManager::get_scaled_text_size_multiplier used to answer.
+        const float base_px = screensize_y * (28.0f / 1440.0f);
+        layer.text_px = base_px * (Bars::slot_scale + 0.25f);
+
+        // The bar's name, centred over the slots, on its own fade, at the host font's own size.
+        const float name_px = base_px;
+        const float name_h = name_px + icon * 0.05f;
+        const int name_alpha = static_cast<int>(255 * alpha * text_alpha);
+
+        float grid_w{ 0.0f }, grid_h{ 0.0f };
+        const float top = name_h;
 
         if (Bars::layout == Bars::bar_layout::CIRCLE && m_barsize >= 3) {
-            float w = ImGui::GetWindowWidth();
-
-            float p0_y = -(Bars::bar_circle_radius + 0.5f) * icon_size;
-            float p0_x = 0.0f;
-
-            double angle_rad = (2.0 * std::numbers::pi) / static_cast<double>(m_barsize);
-            float _sin = std::sinf(static_cast<float>(angle_rad));
-            float _cos = std::cosf(static_cast<float>(angle_rad));
-
-            float c = (w - icon_size) * 0.5f; // -spacing.x;
-            ImVec2 center = {c - ImGui::GetStyle().ItemInnerSpacing.x - ImGui::GetStyle().FramePadding.x, c};
-            ImVec2 p = ImGui::GetCursorScreenPos();
-
-            ImVec2 offset{ p0_x, p0_y };
+            grid_w = (Bars::bar_circle_radius + 1.125f) * icon * 2.0f;
+            grid_h = grid_w;
+            const float c = (grid_w - icon) * 0.5f;
+            const double angle_rad = (2.0 * std::numbers::pi) / static_cast<double>(m_barsize);
+            const float _sin = std::sinf(static_cast<float>(angle_rad));
+            const float _cos = std::cosf(static_cast<float>(angle_rad));
+            ImVec2 offset{ 0.0f, -(Bars::bar_circle_radius + 0.5f) * icon };
             for (int i = 0; i < m_barsize; i++) {
                 auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
-                
-                ImVec2 p2 = ImVec2(p.x + center.x + offset.x, p.y + center.y + offset.y);
-                ImGui::SetCursorScreenPos(p2);
-                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i, p2, false);
+                push_single_skill(layer, skill, i, c + offset.x, top + c + offset.y, ctx);
                 offset = rotate_around_origin(offset, _sin, _cos);
             }
         }
         else if (Bars::layout == Bars::bar_layout::CROSS && m_barsize >= 4) {
-            int numcrosses = static_cast<int>(std::ceil(static_cast<float>(m_barsize) / 4.0f));
-            float cross_spacing = (screensize_x * Bars::bar_cross_distance) * (numcrosses - 1);
+            const int numcrosses = static_cast<int>(std::ceil(static_cast<float>(m_barsize) / 4.0f));
+            const float cross_gap = screensize_x * Bars::bar_cross_distance;
+            const float pitch = icon + spacing;
             for (int cross = 0; cross < numcrosses; cross++) {
-                if (cross != 0) {
-                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
-                    ImGui::SameLine();
-                }
-                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
-                ImGui::SameLine();
-                int ind = cross * 4;
-                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
-                ImVec2 p = ImGui::GetCursorScreenPos();
-                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
-                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
-                if (cross < numcrosses - 1) {
-                    ImGui::SameLine();
+                const float base_x = cross * (3.0f * pitch + cross_gap);
+                const int ind = cross * 4;
+                const std::array<std::pair<float, float>, 4> at{ {
+                    { base_x + pitch, 0.0f },          // top
+                    { base_x, pitch },                 // left
+                    { base_x + 2.0f * pitch, pitch },  // right
+                    { base_x + pitch, 2.0f * pitch },  // bottom
+                } };
+                for (int k = 0; k < 4; ++k) {
+                    auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind + k, mod, true);
+                    push_single_skill(layer, skill, ind + k, at[k].first, top + at[k].second, ctx);
                 }
             }
-            for (int cross = 0; cross < numcrosses; cross++) {
-                if (cross != 0) {
-                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
-                    ImGui::SameLine();
-                }
-                int ind = 1 + cross * 4;
-                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
-                ImVec2 p = ImGui::GetCursorScreenPos();
-                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
-                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
-                ImGui::SameLine();
-                ind++;
-                bool new_line = !(cross < numcrosses - 1);
-                auto [skill2, inherited2] = get_skill_in_bar_with_inheritance(ind, mod, true);
-                p = ImGui::GetCursorScreenPos();
-                draw_single_skill(skill2, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, new_line);
-            }
-            for (int cross = 0; cross < numcrosses; cross++) {
-                if (cross != 0) {
-                    ImGui::Dummy(ImVec2(cross_spacing, static_cast<float>(icon_size)));
-                    ImGui::SameLine();
-                }
-                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
-                ImGui::SameLine();
-                int ind = 3 + cross * 4;
-                auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind, mod, true);
-                ImVec2 p = ImGui::GetCursorScreenPos();
-                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, ind, p, false);
-                ImGui::Dummy(ImVec2(static_cast<float>(icon_size), static_cast<float>(icon_size)));
-                if (cross < numcrosses - 1) {
-                    ImGui::SameLine();
-                }
-            }
+            grid_w = numcrosses * 3.0f * pitch - spacing + cross_gap * (numcrosses - 1);
+            grid_h = 3.0f * pitch - spacing;
         }
         else {
-            if (Bars::use_keybind_icons()) {
-                ImVec2 itm_spacing = ImGui::GetStyle().ItemSpacing;
-                itm_spacing.y += icon_size * 0.35f * keybind_icon_pos_factor;
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itm_spacing);
-            }
-            int c = 0;
+            const int row_len = std::max(1, static_cast<int>(Bars::bar_row_len));
+            const float key_strip = Bars::use_keybind_icons() ? icon * 0.35f * keybind_icon_pos_factor : 0.0f;
+            const float row_pitch = icon + spacing + key_strip;
+            int rows = 0;
             for (int i = 0; i < m_barsize; i++) {
                 auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
-                bool new_line = false;
-                if (++c >= Bars::bar_row_len) {
-                    new_line = true;
-                    c = 0;
-                }
-                ImVec2 p = ImGui::GetCursorScreenPos();
-                draw_single_skill(skill, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur, game_time, time_scale, highlight_slot, highlight_factor, highlight_isred, mod, this->get_name(), pc, i, p, new_line);
-
+                const int col_i = i % row_len, row_i = i / row_len;
+                rows = row_i + 1;
+                push_single_skill(layer, skill, i, col_i * (icon + spacing), top + row_i * row_pitch, ctx);
             }
+            grid_w = std::min(row_len, static_cast<int>(m_barsize)) * (icon + spacing) - spacing;
+            grid_h = rows * row_pitch - spacing;
             if (Bars::use_keybind_icons()) {
-                ImGui::PopStyleVar();
+                // The key glyph hangs below the slot (drawn at 0.8 of it, half a slot tall).
+                grid_h += icon * 0.3f;
             }
         }
-        ImGui::PopStyleVar();
-        ImGui::PopFont();
+
+        layer.texts.push_back(Flick::DockText{ grid_w * 0.5f, 0.0f, 3, this->get_name(),
+                                               static_cast<unsigned>(IM_COL32(255, 255, 255, name_alpha)), name_px });
+        layer.width = grid_w;
+        layer.height = top + grid_h;
+        layer.visible = true;
     }
 
-    void Hotbar::draw_single_skill(
-        SlottedSkill& skill,
-        float alpha,
-        int icon_size,
-        float text_offset_x,
-        float text_offset_y,
-        float gcd_prog,
-        float gcd_dur,
-        float shout_cd,
-        float shout_cd_dur,
-        float game_time,
-        float time_scale,
-        int highlight_slot,
-        float highlight_factor,
-        bool highlight_isred,
-        key_modifier mod,
-        const std::string_view & bar_name,
-        RE::PlayerCharacter* pc,
-        int slot_index,
-        ImVec2 p,
-        bool new_line)
+    void Hotbar::push_single_skill(Flick::HudLayer& layer, SlottedSkill& skill, int slot_index, float x, float y,
+                                   const HudSlotContext& ctx)
     {
+        const int icon_size = ctx.icon_size;
+        const float icon = static_cast<float>(icon_size);
+        const float alpha = ctx.alpha;
+        auto& images = layer.images;
+
         GameData::Spell_cast_data skill_dat;
         bool has_spell_proc{ false };
         auto form = RE::TESForm::LookupByID(skill.formID);
@@ -691,118 +695,141 @@ namespace SpellHotbar
             count = GameData::count_item_in_inv(skill.formID);
             has_charges = true;
         }
-        else {
-            if (spell_item != nullptr) {
-                auto c = GameData::get_spell_charges_mod_compat(spell_item);
-                if (c.has_value()) {
-                    has_charges = true;
-                    count = c.value();
-                }
+        else if (spell_item != nullptr) {
+            auto c = GameData::get_spell_charges_mod_compat(spell_item);
+            if (c.has_value()) {
+                has_charges = true;
+                count = c.value();
             }
         }
 
-        int alpha_i = static_cast<int>(255 * alpha);
-        ImVec4 color = ImColor(skill.color);
-        color.w = alpha;
-        if (!RenderManager::draw_skill(skill.formID, icon_size, ImColor(color))) {
-            RenderManager::draw_bg(icon_size, alpha);
+        const int alpha_i = static_cast<int>(255 * alpha);
+        const ImU32 white = IM_COL32(255, 255, 255, alpha_i);
+        const ImU32 tinted = with_alpha(skill.color, alpha_i);
+
+        const SubTextureImage* art = RenderManager::resolve_skill_tex(skill.formID);
+
+        if (art == nullptr) {
+            push_image(images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_EMPTY), x, y, icon, icon, white);
         }
         else {
+            push_image(images, art, x, y, icon, icon, tinted);
             if (RenderManager::should_overlay_be_rendered(skill_dat.overlay_icon)) {
-                RenderManager::draw_icon_overlay(p, icon_size, skill_dat.overlay_icon, IM_COL32(255, 255, 255, alpha_i));
+                push_image(images, RenderManager::default_icon_tex(skill_dat.overlay_icon), x, y, icon, icon, white);
             }
+
+            const auto highlight = [&](ImU32 col) {
+                push_image(images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_HIGHLIGHT), x, y, icon, icon, col);
+            };
+            const auto cooldown = [&](float cd) {
+                push_image(images, RenderManager::cooldown_tex(cd), x, y, icon, icon, white);
+            };
 
             //If vampire lord uses equipmode and this is the currently equipped spell -> highlight blue
-            if (bar_name == Bars::bar_names.at(Bars::VAMPIRE_LORD_BAR) &&
+            if (ctx.bar_name == Bars::bar_names.at(Bars::VAMPIRE_LORD_BAR) &&
                 GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f) {
-                if (pc) {
-                    auto equipped_mh = pc->GetEquippedObject(false);
+                if (ctx.pc) {
+                    auto equipped_mh = ctx.pc->GetEquippedObject(false);
                     //If mainhand not empty, we in cast mode
                     if (equipped_mh) {
-                        auto equipped_oh = pc->GetEquippedObject(true);
+                        auto equipped_oh = ctx.pc->GetEquippedObject(true);
                         if (equipped_oh && equipped_oh->GetFormID() == skill.formID) {
-                            RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
+                            highlight(IM_COL32(127, 127, 255, alpha_i));
                         }
                     }
-                    else {
+                    else if (skill.type == slot_type::spell) {
                         //empty mh -> melee mode
-                        if (skill.type == slot_type::spell) {
-                            RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
-                        }
+                        cooldown(0.0f);
                     }
                 }
-            } else if (spell_is_currently_equipped(skill, pc) && !(bar_name == Bars::OblivionBar::oblivion_bar_name)) {
-                RenderManager::draw_highlight_overlay(p, icon_size, IM_COL32(127, 127, 255, alpha_i));
+            } else if (spell_is_currently_equipped(skill, ctx.pc) && !(ctx.bar_name == Bars::OblivionBar::oblivion_bar_name)) {
+                highlight(IM_COL32(127, 127, 255, alpha_i));
             }
 
             if ((has_charges && count == 0) || GameData::is_on_binary_cd(skill.formID)) {
-                RenderManager::draw_cd_overlay(p, icon_size, 0.0f, IM_COL32(255, 255, 255, alpha_i));
+                cooldown(0.0f);
             }
             else {
-                float cd_prog =
-                    determine_cd(skill.formID, skill.type, game_time, time_scale, gcd_prog, gcd_dur, shout_cd, shout_cd_dur);
+                const float cd_prog = determine_cd(skill.formID, skill.type, ctx.game_time, ctx.time_scale, ctx.gcd_prog,
+                                                   ctx.gcd_dur, ctx.shout_cd, ctx.shout_cd_dur);
                 if (cd_prog > 0.0f) {
-                    RenderManager::draw_cd_overlay(p, icon_size, cd_prog, IM_COL32(255, 255, 255, alpha_i));
+                    cooldown(cd_prog);
                 }
-                else {
-                    //Draw spell proc overlay
-                    if (has_spell_proc) {
-                        RenderManager::draw_spellproc_overlay(p, icon_size, casts::SpellProc::get_spell_proc_timer(), casts::SpellProc::get_spell_proc_total(), alpha);
+                else if (has_spell_proc) {
+                    //Spell proc overlay: one animation cycle per second, fading over the last 1.5 s.
+                    const float timer = casts::SpellProc::get_spell_proc_timer();
+                    const float total = casts::SpellProc::get_spell_proc_total();
+                    float proc_alpha = alpha;
+                    constexpr float fade_out_time = 1.5f;
+                    if (timer > (total - fade_out_time)) {
+                        const float p = std::clamp(timer - (total - fade_out_time) / fade_out_time, 0.0f, 1.0f);
+                        proc_alpha *= p;
                     }
+                    push_image(images, RenderManager::spellproc_tex(timer), x, y, icon, icon,
+                               IM_COL32(255, 255, 255, static_cast<int>(proc_alpha * 255)));
                 }
             }
 
-            RenderManager::draw_slot_overlay(p, icon_size, IM_COL32(255, 255, 255, alpha_i));
+            push_image(images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_OVERLAY), x, y, icon, icon, white);
         }
-        if (highlight_slot == slot_index) {
+        if (ctx.highlight_slot == slot_index) {
             ImU32 col;
-            if (highlight_isred) {
-                int f = static_cast<int>(255 * (highlight_factor)*alpha);
+            if (ctx.highlight_isred) {
+                const int f = static_cast<int>(255 * ctx.highlight_factor * alpha);
                 col = IM_COL32(255, 0, 0, f);
             }
             else {
-                col = IM_COL32(255, 255, static_cast<int>(255 * (1.0f - highlight_factor)), alpha_i);
-                // static_cast<int>(255 * (1.0f - highlight_factor)));
+                col = IM_COL32(255, 255, static_cast<int>(255 * (1.0f - ctx.highlight_factor)), alpha_i);
             }
-            RenderManager::draw_highlight_overlay(p, icon_size, col);
+            push_image(images, RenderManager::default_icon_tex(GameData::DefaultIconType::BAR_HIGHLIGHT), x, y, icon, icon, col);
         }
-
-        //ImGui::SameLine();
 
         if (!Bars::use_keybind_icons()) {
-            std::string key_text = GameData::get_keybind_text(slot_index, mod);
-            //ImVec2 tex_pos(p.x + text_offset, p.y + (static_cast<float>(icon_size) * Bars::slot_scale) - text_height - text_offset);
-            ImVec2 tex_pos(p.x + text_offset_x, p.y + text_offset_y);
-            RenderManager::draw_scaled_text(tex_pos, ImColor(255, 255, 255, alpha_i), key_text.c_str());
+            layer.texts.push_back(Flick::DockText{ x + ctx.text_offset_x, y + ctx.text_offset_y, 0,
+                                                   GameData::get_keybind_text(slot_index, ctx.mod), static_cast<unsigned>(white) });
         }
         else {
-            auto [icon_main, icon_mode] = GameData::get_keybind_icon_index(slot_index, mod);
-            RenderManager::draw_button_icon(p, icon_main, icon_mode, icon_size, IM_COL32(255, 255, 255, alpha_i));
+            // The key glyph, half a slot tall, centred under the slot at 0.8 of its height; with a
+            // modifier glyph beside it the pair is squeezed to 0.95 of the slot width.
+            auto [icon_main, icon_mode] = GameData::get_keybind_icon_index(slot_index, ctx.mod);
+            const TextureImage* key = RenderManager::button_tex(icon_main);
+            const TextureImage* modt = icon_mode >= 0 ? RenderManager::button_tex(icon_mode) : nullptr;
+            if (key != nullptr && key->height > 0) {
+                float h = icon * 0.5f;
+                const float aspect_key = static_cast<float>(key->width) / static_cast<float>(key->height);
+                const float aspect_mod = (modt != nullptr && modt->height > 0)
+                                             ? static_cast<float>(modt->width) / static_cast<float>(modt->height) : 0.0f;
+                float total_w = h * aspect_key + h * aspect_mod;
+                const float max_w = icon * 0.95f;
+                if (modt != nullptr && total_w > max_w) {
+                    h *= max_w / total_w;
+                    total_w = h * aspect_key + h * aspect_mod;
+                }
+                float kx = x + icon * 0.5f - total_w * 0.5f;
+                const float ky = y + icon * keybind_icon_pos_factor;
+                if (modt != nullptr) {
+                    push_texture(images, modt, kx, ky, h * aspect_mod, h, white);
+                    kx += h * aspect_mod;
+                }
+                push_texture(images, key, kx, ky, h * aspect_key, h, white);
+            }
         }
 
         if (has_charges) {
-            ImU32 count_text_color = ImColor(255, 255, 255, alpha_i);
+            ImU32 count_text_color = white;
             if (count <= 0 && spell_item != nullptr && GameData::player_has_ordinator_bloodmagic()) {
                 count = static_cast<int>(GameData::get_health_cost_mod_ordinator(spell_item));
-                count_text_color = ImColor(255, 50, 50, alpha_i);
+                count_text_color = IM_COL32(255, 50, 50, alpha_i);
             }
-            std::string text = std::to_string(std::clamp(count, -9999, 9999));
-
-            ImVec2 textsize = ImGui::CalcTextSize(text.c_str());
-            float mult = RenderManager::get_scaled_text_size_multiplier();
-
-            ImVec2 count_text_pos(0,0);
+            const std::string text = std::to_string(std::clamp(count, -9999, 9999));
             if (Bars::use_keybind_icons()) {
-                count_text_pos = ImVec2(p.x + text_offset_x, p.y + text_offset_y);
+                layer.texts.push_back(Flick::DockText{ x + ctx.text_offset_x, y + ctx.text_offset_y, 0, text,
+                                                       static_cast<unsigned>(count_text_color) });
             }
             else {
-                count_text_pos = ImVec2(p.x + icon_size - textsize.x * mult, p.y + icon_size - textsize.y * mult - text_offset_y);
+                layer.texts.push_back(Flick::DockText{ x + icon, y + icon - ctx.text_offset_y, 2, text,
+                                                       static_cast<unsigned>(count_text_color) });
             }
-            RenderManager::draw_scaled_text(count_text_pos, count_text_color, text.c_str());
-        }
-
-        if (!new_line) {
-            ImGui::SameLine();
         }
     }
 

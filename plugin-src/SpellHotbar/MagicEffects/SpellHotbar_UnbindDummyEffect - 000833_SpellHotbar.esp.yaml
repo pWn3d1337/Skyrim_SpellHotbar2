@@ -1,0 +1,23 @@
+FormKey: 000833:SpellHotbar.esp
+EditorID: SpellHotbar_UnbindDummyEffect
+VirtualMachineAdapter: {}
+Name:
+  TargetLanguage: English
+  Value: Does Nothing, but 1.5.97 crashes when a spell has no magic effect
+Archetype:
+  MutagenObjectType: MagicEffectArchetype
+  Type: Script
+CastType: FireAndForget
+DualCastScale: 1
+CastingSoundLevel: Normal
+Sounds:
+- Sound: 07BBAB:Skyrim.esm
+- Type: Charge
+  Sound: 07C71F:Skyrim.esm
+- Type: Ready
+  Sound: 07C720:Skyrim.esm
+- Type: Release
+  Sound: 07BBAE:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: ''

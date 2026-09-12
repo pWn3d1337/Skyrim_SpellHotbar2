@@ -46,6 +46,17 @@ namespace SpellHotbar::Bars {
     extern float offset_y;
     extern float slot_spacing;
 
+    // The in-menu dock. It carries its own copy of the HUD bar's positioning vocabulary rather
+    // than a screen fraction, so it can be dragged, scaled and anchored independently of the
+    // gameplay bar.
+    extern float menu_slot_scale;
+    extern float menu_offset_x;
+    extern float menu_offset_y;
+    extern float menu_slot_spacing;
+    extern anchor_point menu_bar_anchor_point;
+    // Drag-in-place is off while locked. The dock's lock glyph toggles it.
+    extern bool menu_bar_locked;
+
     extern float oblivion_slot_scale;
     extern float oblivion_offset_x;
     extern float oblivion_offset_y;

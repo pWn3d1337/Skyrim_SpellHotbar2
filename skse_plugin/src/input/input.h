@@ -8,8 +8,10 @@ namespace SpellHotbar::Input {
 	static inline const char* sound_UISkillsFocus = "UISkillsFocus";
 	static inline const char* sound_UIMenuCancel = "UIMenuCancel";
 
-	void install_hook();
-
+	/**
+	 * Filter one frame's input list before the engine dispatches it. Events the hotbar
+	 * consumes are unlinked so no handler downstream sees them; see input_hook.h.
+	 */
 	void processAndFilter(RE::InputEvent** a_event);
 
 	bool in_binding_menu();

@@ -1,0 +1,7 @@
+FormKey: 00082F:SpellHotbar.esp
+EditorID: SpellHotbar_AlterationShieldHandEffect_L
+FormVersion: 39
+Model:
+  File: SpellHotbar\shieldritualhandeffects_l.nif
+  Data: 0x3079E1846464730038973CEAA6D15A2E64647300582C553318CD5A2C6464730038973CEACF238B7F6464730038973CEA
+Type: []

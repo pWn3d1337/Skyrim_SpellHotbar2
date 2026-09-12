@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "spriggit.cli": {
+      "version": "0.40.1",
+      "commands": [
+        "spriggit"
+      ],
+      "rollForward": false
+    }
+  }
+}

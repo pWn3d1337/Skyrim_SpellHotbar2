@@ -1,0 +1,10 @@
+FormKey: 000821:SpellHotbar.esp
+EditorID: SpellHotbar_DestructionFrostHandEffects_L
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\blizzardhandeffects_l.nif
+  Data: 0x3079E1846464730038973CEA09F3405B6464730038973CEACF238B7F6464730038973CEAE85FED0564647300582C5533
+Type: []

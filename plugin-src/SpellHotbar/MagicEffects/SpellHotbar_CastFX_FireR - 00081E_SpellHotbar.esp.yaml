@@ -1,0 +1,15 @@
+FormKey: 00081E:SpellHotbar.esp
+EditorID: SpellHotbar_CastFX_FireR
+MenuDisplayObject: 0435A5:Skyrim.esm
+Flags:
+- NoArea
+- FXPersist
+- HideInUI
+Archetype:
+  MutagenObjectType: MagicEffectCloakArchetype
+HitEffectArt: 00081D:SpellHotbar.esp
+DualCastScale: 1
+Sounds:
+- Sound: 03F2C1:Skyrim.esm
+- Type: Release
+  Sound: 03EDD4:Skyrim.esm

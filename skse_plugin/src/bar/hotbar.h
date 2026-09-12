@@ -1,9 +1,8 @@
 #pragma once
 #include <memory>
-#include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
 #include <rapidjson/document.h>
 #include "../game_data/localization.h"
+#include "../flick/flick_watch.h"
 
 namespace SpellHotbar
 {
@@ -98,31 +97,46 @@ public:
 
     inline void set_enabled(bool enabled);
 
-    void draw_in_menu(ImFont* font, float screensize_x, float screensize_y, int highlight_slot, float highlight_factor, key_modifier mod);
+    /** One line for the dock's slot tooltip: name, magicka cost, cast time, cooldown. Empty for an empty slot. */
+    std::string describe_slot(int index, key_modifier mod);
 
-    void draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot, float highlight_factor, key_modifier mod,
-        bool hightlight_isred, float alpha, float shout_cd, float shout_cd_dur);
+    /**
+    * The in-menu bar as a display list for the FLICK-hosted dock window: one wrapping row of
+    * slot art, overlays, key glyphs and counts, in pixels relative to the dock's content
+    * origin. `hovered` is the slot FLICK reported the mouse over last frame; it gets the hover
+    * tint and its tooltip is describe_slot().
+    */
+    Flick::DockFrame build_dock_frame(float screensize_x, float screensize_y, int highlight_slot, float highlight_factor,
+        key_modifier mod, int hovered);
 
-    static void draw_single_skill(SlottedSkill& skill,
-                                float alpha,
-                                int icon_size,
-                                float text_offset_x,
-                                float text_offset_y,
-                                float gcd_prog,
-                                float gcd_dur,
-                                float shout_cd,
-                                float shout_cd_dur,
-                                float game_time,
-                                float time_scale,
-                                int highlight_slot,
-                                float highlight_factor,
-                                bool highlight_isred,
-                                key_modifier mod,
-                                const std::string_view& bar_name,
-                                RE::PlayerCharacter* pc,
-                                int slot_index,
-                                ImVec2 p, //ImGui Cursor pos
-                                bool new_line = false);
+    /**
+    * The gameplay HUD bar as a display list for the FLICK-hosted HUD window: the bar's name,
+    * then the slots in the configured layout, in pixels relative to the layer's origin.
+    * `alpha` is the bar fade, `text_alpha` the name's own fade on top of it.
+    */
+    void build_hud_layer(Flick::HudLayer& layer, float screensize_x, float screensize_y, int highlight_slot,
+                         float highlight_factor, key_modifier mod, bool highlight_isred, float alpha,
+                         float shout_cd, float shout_cd_dur, float text_alpha);
+
+    /** Everything push_single_skill needs that is the same for every slot of one frame. */
+    struct HudSlotContext {
+        float alpha{ 1.0f };
+        int icon_size{ 0 };
+        float text_offset_x{ 0.0f }, text_offset_y{ 0.0f };
+        float gcd_prog{ 0.0f }, gcd_dur{ 0.0f };
+        float shout_cd{ 1.0f }, shout_cd_dur{ 0.0f };
+        float game_time{ 0.0f }, time_scale{ 20.0f };
+        int highlight_slot{ -1 };
+        float highlight_factor{ 0.0f };
+        bool highlight_isred{ false };
+        key_modifier mod{ key_modifier::none };
+        std::string_view bar_name;
+        RE::PlayerCharacter* pc{ nullptr };
+    };
+
+    /** One slot's art, overlays, key hint and count at (x, y) in the layer. */
+    static void push_single_skill(Flick::HudLayer& layer, SlottedSkill& skill, int slot_index, float x, float y,
+                                  const HudSlotContext& ctx);
 
     inline bool is_enabled() const;
 

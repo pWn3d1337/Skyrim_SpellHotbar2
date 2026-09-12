@@ -112,31 +112,37 @@ namespace SpellHotbar::Bars {
 		}
 	}
 
-	void OblivionBar::draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot, float highlight_factor, key_modifier mod, bool hightlight_isred, float alpha, float shout_cd, float shout_cd_dur)
+	void OblivionBar::build_hud_layer(Flick::HudLayer& layer, [[maybe_unused]] float screensize_x, float screensize_y, int highlight_slot,
+	                                  float highlight_factor, key_modifier mod, bool highlight_isred, float alpha,
+	                                  float shout_cd, float shout_cd_dur)
 	{
-		//TODO duplicate to bar draw_in_hud
-		ImGui::PushFont(font);
-
-		int icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::oblivion_slot_scale));
-		float text_offset_x = icon_size * 0.05f;
-		float text_offset_y = icon_size * 0.0125f;
-
-		float gcd_prog = casts::CastingController::get_current_gcd_progress();
-		float gcd_dur = casts::CastingController::get_current_gcd_duration();
-
-		float game_time{ 0 };
-		float time_scale{ 20.0f };
-		RE::Calendar* cal = RE::Calendar::GetSingleton();
-		if (cal) {
-			game_time = cal->GetCurrentGameTime();
-			time_scale = cal->GetTimescale();
+		Hotbar::HudSlotContext ctx;
+		ctx.alpha = alpha;
+		ctx.icon_size = static_cast<int>(get_hud_slot_height(screensize_y, Bars::oblivion_slot_scale));
+		ctx.text_offset_x = ctx.icon_size * 0.05f;
+		ctx.text_offset_y = ctx.icon_size * 0.0125f;
+		ctx.gcd_prog = casts::CastingController::get_current_gcd_progress();
+		ctx.gcd_dur = casts::CastingController::get_current_gcd_duration();
+		ctx.shout_cd = shout_cd;
+		ctx.shout_cd_dur = shout_cd_dur;
+		if (RE::Calendar* cal = RE::Calendar::GetSingleton()) {
+			ctx.game_time = cal->GetCurrentGameTime();
+			ctx.time_scale = cal->GetTimescale();
 		}
-		auto pc = RE::PlayerCharacter::GetSingleton();
-		//end dupe
+		ctx.highlight_slot = highlight_slot;
+		ctx.highlight_factor = highlight_factor;
+		ctx.highlight_isred = highlight_isred;
+		ctx.mod = mod;
+		ctx.bar_name = oblivion_bar_name;
+		ctx.pc = RE::PlayerCharacter::GetSingleton();
 
-		if (pc) {
+		const float icon = static_cast<float>(ctx.icon_size);
+		layer.text_px = icon * 0.24f;
+
+
+		if (ctx.pc) {
 			//assign power_slot
-			auto& dat = pc->GetActorRuntimeData();
+			auto& dat = ctx.pc->GetActorRuntimeData();
 			if (dat.selectedPower) {
 				if (dat.selectedPower->GetFormID() != m_power_slot.formID) {
 					m_power_slot.formID = dat.selectedPower->GetFormID();
@@ -164,27 +170,33 @@ namespace SpellHotbar::Bars {
 				if (!m_power_slot.isEmpty()) m_power_slot.clear();
 			}
 
-			ImVec2 p = ImGui::GetCursorScreenPos();
-			bool vertical = Bars::oblivion_bar_vertical;
-			bool draw_potion = Input::key_oblivion_potion.isValidBound();
-			bool show_power = Bars::oblivion_bar_show_power;
-
-			Hotbar::draw_single_skill(m_spell_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-				game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_cast), p, vertical && (draw_potion || show_power));
-
+			// The slots in a row, or a column when the bar is vertical.
+			const bool vertical = Bars::oblivion_bar_vertical;
+			const bool draw_potion = Input::key_oblivion_potion.isValidBound();
+			const bool show_power = Bars::oblivion_bar_show_power;
+			const float pitch = icon + Bars::oblivion_slot_spacing;
+			int n = 0;
+			const auto place = [&](SlottedSkill& slot, int slot_index) {
+				const float x = vertical ? 0.0f : n * pitch;
+				const float y = vertical ? n * pitch : 0.0f;
+				Hotbar::push_single_skill(layer, slot, slot_index, x, y, ctx);
+				++n;
+			};
+			place(m_spell_slot, static_cast<int>(Input::keybind_id::oblivion_cast));
 			if (draw_potion) {
-				p = ImGui::GetCursorScreenPos();
-				Hotbar::draw_single_skill(m_potion_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::oblivion_potion), p, vertical && show_power);
+				place(m_potion_slot, static_cast<int>(Input::keybind_id::oblivion_potion));
 			}
 			if (show_power) {
-				p = ImGui::GetCursorScreenPos();
-				Hotbar::draw_single_skill(m_power_slot, alpha, icon_size, text_offset_x, text_offset_y, gcd_prog, gcd_dur, shout_cd, shout_cd_dur,
-					game_time, time_scale, highlight_slot, highlight_factor, hightlight_isred, mod, oblivion_bar_name, pc, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout), p);
+				place(m_power_slot, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout));
 			}
-
+			const float extent = n * pitch - Bars::oblivion_slot_spacing;
+			layer.width = vertical ? icon : extent;
+			layer.height = vertical ? extent : icon;
+			if (Bars::use_keybind_icons()) {
+				layer.height += icon * 0.3f;
+			}
+			layer.visible = true;
 		}
-		ImGui::PopFont();
 	}
 
 	void OblivionBar::clear()

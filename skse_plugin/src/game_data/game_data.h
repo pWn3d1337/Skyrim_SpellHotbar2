@@ -155,9 +155,11 @@ namespace SpellHotbar::GameData {
     extern RE::SpellItem* spellhotbar_toggle_dualcast;
     extern RE::EffectSetting* spellhotbar_spellproc_cd;
     extern RE::SpellItem* spellhotbar_apply_spellproc_cd;
-    extern RE::SpellItem* spellhotbar_battlemage_open_perks_power;
+    //SpellHotbar_BattleMage.esp is in the load order (its global is what the Custom Skills config reads)
+    extern bool battlemage_plugin_loaded;
 
     extern RE::TESGlobal* global_spellhotbar_perks_override;
+    extern RE::TESGlobal* global_spellhotbar_use_dual_casting;
     extern RE::TESGlobal* global_spellhotbar_perks_timed_block_window;
     extern RE::TESGlobal* global_spellhotbar_perks_block_trigger_chance;
     extern RE::TESGlobal* global_spellhotbar_perks_power_attack_trigger_chance;

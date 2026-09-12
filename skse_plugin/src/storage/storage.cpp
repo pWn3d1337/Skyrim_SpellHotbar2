@@ -5,8 +5,24 @@
 #include "../bar/hotbar.h"
 #include "../input/keybinds.h"
 #include "../input/modes.h"
+#include "../lifecycle/lifecycle.h"
 
 namespace SpellHotbar::Storage {
+
+    namespace {
+        bool has_loaded_settings{ false };
+    }
+
+    bool loaded_existing_settings()
+    {
+        return has_loaded_settings;
+    }
+
+    void RevertCallback(SKSE::SerializationInterface*)
+    {
+        has_loaded_settings = false;
+        Lifecycle::reset();
+    }
 
     void SaveCallback(SKSE::SerializationInterface* a_intfc)
     {
@@ -99,6 +115,23 @@ namespace SpellHotbar::Storage {
 
             //V5: since SpellHotbar2 0.0.13
             a_intfc->WriteRecordData(&GameData::individual_shout_cooldowns, sizeof(bool));
+
+            //V6: the in-menu dock's own position, scale, spacing, anchor and lock
+            a_intfc->WriteRecordData(&Bars::menu_slot_scale, sizeof(float));
+
+            float menu_offset_x_out = RenderManager::scale_from_resolution(Bars::menu_offset_x);
+            a_intfc->WriteRecordData(&menu_offset_x_out, sizeof(float));
+
+            float menu_offset_y_out = RenderManager::scale_from_resolution(Bars::menu_offset_y);
+            a_intfc->WriteRecordData(&menu_offset_y_out, sizeof(float));
+
+            float menu_spacing_out = RenderManager::scale_from_resolution(Bars::menu_slot_spacing);
+            a_intfc->WriteRecordData(&menu_spacing_out, sizeof(float));
+
+            uint8_t menu_anchor = static_cast<uint8_t>(Bars::menu_bar_anchor_point);
+            a_intfc->WriteRecordData(&menu_anchor, sizeof(uint8_t));
+
+            a_intfc->WriteRecordData(&Bars::menu_bar_locked, sizeof(bool));
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -174,6 +207,9 @@ namespace SpellHotbar::Storage {
         SpellHotbar::Bars::clear_bars();
         GameData::oblivion_bar.clear();
 
+        has_loaded_settings = false;
+        Lifecycle::reset();
+
         uint32_t type{0};
         uint32_t version{0};
         uint32_t length{0};
@@ -184,6 +220,7 @@ namespace SpellHotbar::Storage {
 
             if (type == 'HOTB')
             {
+                has_loaded_settings = true;
                 //HOTB is now variable length
                 //logger::trace("Reading 'HOTB' data from save...");
                 //if (length != ((sizeof(bool) * 3) + (sizeof(uint8_t) * 6) + (sizeof(float)* 3) )) {
@@ -448,6 +485,53 @@ namespace SpellHotbar::Storage {
                         if (read_individual_shout_cooldowns != GameData::individual_shout_cooldowns) {
                             GameData::toggle_individual_shout_cooldowns();
                         }
+                    }
+                }
+
+                if (version >= 6U) { //the in-menu dock
+                    if (!a_intfc->ReadRecordData(&Bars::menu_slot_scale, sizeof(float))) {
+                        logger::error("Failed to read menu bar slot_scale!");
+                        break;
+                    }
+                    float read_menu_offset_x{ 0.0f };
+                    if (!a_intfc->ReadRecordData(&read_menu_offset_x, sizeof(float))) {
+                        logger::error("Failed to read menu bar offset_x!");
+                        break;
+                    }
+                    else {
+                        Bars::menu_offset_x = RenderManager::scale_to_resolution(read_menu_offset_x);
+                    }
+                    float read_menu_offset_y{ 0.0f };
+                    if (!a_intfc->ReadRecordData(&read_menu_offset_y, sizeof(float))) {
+                        logger::error("Failed to read menu bar offset_y!");
+                        break;
+                    }
+                    else {
+                        Bars::menu_offset_y = RenderManager::scale_to_resolution(read_menu_offset_y);
+                    }
+                    float read_menu_spacing{ 0.0f };
+                    if (!a_intfc->ReadRecordData(&read_menu_spacing, sizeof(float))) {
+                        logger::error("Failed to read menu bar slot_spacing!");
+                        break;
+                    }
+                    else {
+                        Bars::menu_slot_spacing = RenderManager::scale_to_resolution(std::max(0.0f, read_menu_spacing));
+                    }
+                    uint8_t menu_anchor{ 0 };
+                    if (!a_intfc->ReadRecordData(&menu_anchor, sizeof(uint8_t))) {
+                        logger::error("Failed to read menu bar anchor point!");
+                        break;
+                    }
+                    else {
+                        Bars::menu_bar_anchor_point = Bars::anchor_point(std::clamp(menu_anchor, 0Ui8, static_cast<uint8_t>(Bars::anchor_point::CENTER)));
+                    }
+                    bool read_menu_locked{ false };
+                    if (!a_intfc->ReadRecordData(&read_menu_locked, sizeof(bool))) {
+                        logger::error("Failed to read menu bar locked!");
+                        break;
+                    }
+                    else {
+                        Bars::menu_bar_locked = read_menu_locked;
                     }
                 }
 

@@ -13,7 +13,9 @@ namespace SpellHotbar::events {
 
 			auto& trampoline = SKSE::GetTrampoline();
 			const REL::Relocation<uintptr_t> mainHook{ REL::VariantID(35565, 36564, 0x5BAB10) };
-			SKSE::AllocTrampoline(14);
+			//No AllocTrampoline here: plugin.cpp allocates the one buffer before any hook installs.
+			//A second call REPLACES the buffer rather than extending it, so the input hook written
+			//later (input_hook.h) found no room and SKSE failed the plugin at kPostLoad.
 			_Timinghook = trampoline.write_call<5>(mainHook.address() + REL::VariantOffset(0x748, 0xC26, 0x7EE).offset(), Timinghook);
 
 			logger::info("...done");

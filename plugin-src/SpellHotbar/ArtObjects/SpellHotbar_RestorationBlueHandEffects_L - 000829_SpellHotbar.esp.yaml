@@ -1,0 +1,10 @@
+FormKey: 000829:SpellHotbar.esp
+EditorID: SpellHotbar_RestorationBlueHandEffects_L
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\baneundeadhandeffects_l.nif
+  Data: 0x3079E1846464730038973CEAA992753D64647300582C553318CD5A2C6464730038973CEA043F90F464647300582C5533CF238B7F6464730038973CEA
+Type: []

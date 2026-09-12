@@ -134,6 +134,14 @@ namespace SpellHotbar::Storage::IO {
             GameData::toggle_individual_shout_cooldowns;
         }
 
+        //in-menu dock
+        Bars::menu_slot_scale = get_float_or_default(d, "settings.menu_bar.slot_scale", 0.5f);
+        Bars::menu_offset_x = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.menu_bar.offset_x", 0.0f));
+        Bars::menu_offset_y = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.menu_bar.offset_y", 0.0f));
+        Bars::menu_slot_spacing = get_float_or_default(d, "settings.menu_bar.slot_spacing", 8.0f);
+        Bars::menu_bar_anchor_point = Bars::anchor_point(std::clamp(get_int_or_default(d, "settings.menu_bar.bar_anchor_point", static_cast<int>(Bars::anchor_point::BOTTOM)), 0, static_cast<int>(Bars::anchor_point::CENTER)));
+        Bars::menu_bar_locked = get_int_or_default(d, "settings.menu_bar.locked", 0) != 0;
+
         //oblivion mode
         Bars::oblivion_slot_scale = get_float_or_default(d, "settings.oblivion_bar.slot_scale", 1.0f);
         Bars::oblivion_offset_x = RenderManager::scale_to_resolution(get_float_or_default(d, "settings.oblivion_bar.offset_x", 0.0f));
@@ -310,6 +318,13 @@ namespace SpellHotbar::Storage::IO {
 
         add_float(d, "settings.potion_gcd", GameData::potion_gcd);
         add_int(d, "settings.individual_shout_cooldowns", GameData::individual_shout_cooldowns ? 1 : 0);
+
+        add_float(d, "settings.menu_bar.slot_scale", Bars::menu_slot_scale);
+        add_float(d, "settings.menu_bar.offset_x", RenderManager::scale_from_resolution(Bars::menu_offset_x));
+        add_float(d, "settings.menu_bar.offset_y", RenderManager::scale_from_resolution(Bars::menu_offset_y));
+        add_float(d, "settings.menu_bar.slot_spacing", Bars::menu_slot_spacing);
+        add_int(d, "settings.menu_bar.bar_anchor_point", static_cast<int>(Bars::menu_bar_anchor_point));
+        add_int(d, "settings.menu_bar.locked", Bars::menu_bar_locked ? 1 : 0);
 
         add_float(d, "settings.oblivion_bar.slot_scale", Bars::oblivion_slot_scale);
         add_float(d, "settings.oblivion_bar.offset_x", RenderManager::scale_from_resolution(Bars::oblivion_offset_x));

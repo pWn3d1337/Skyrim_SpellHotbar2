@@ -1,0 +1,19 @@
+FormKey: 000846:SpellHotbar.esp
+EditorID: SpellHotbar_BattleMage_PerkProcSneakAttack
+Name:
+  TargetLanguage: English
+  Value: Cast On Backstab
+Description:
+  TargetLanguage: English
+  Value: Sneak Attacks can trigger Novice or Apprentice spell procs. Requires 'Sneak' 25.
+Conditions:
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: Sneak
+  ComparisonValue: 25
+NumRanks: 1
+Playable: True

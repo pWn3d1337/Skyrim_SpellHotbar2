@@ -154,7 +154,11 @@ namespace SpellHotbar::TextureCSVLoader {
             RenderManager::init_spellproc_overlay_icons(num_frames);
         }
 
-        TextureImage& main_tex = RenderManager::load_texture(img_path);
+        TextureImage* main_tex = RenderManager::load_texture(img_path);
+        if (!main_tex) {
+            logger::warn("Could not load texture '{}', skipping '{}'.", img_path, path);
+            return;
+        }
         const std::string filename = std::filesystem::path(img_path).filename().string();
 
         std::unordered_set<std::string> warned_plugins;
@@ -178,7 +182,7 @@ namespace SpellHotbar::TextureCSVLoader {
                         auto* form = GameData::get_form_from_file(form_id, plugin);
 
                         if (form != nullptr) {
-                            RenderManager::add_spell_texture(main_tex, form->GetFormID(), ImVec2(u0, v0), ImVec2(u1, v1), filename);
+                            RenderManager::add_spell_texture(*main_tex, form->GetFormID(), ImVec2(u0, v0), ImVec2(u1, v1), filename);
 
                         }
                         else {
@@ -196,15 +200,15 @@ namespace SpellHotbar::TextureCSVLoader {
                     std::string str_name = doc.GetCell<std::string>("IconName", i);   
                     if (default_icon_names.contains(str_name)) {
                         auto type = default_icon_names.at(str_name);
-                        RenderManager::add_default_icon(main_tex, type, ImVec2(u0, v0), ImVec2(u1, v1), str_name);
+                        RenderManager::add_default_icon(*main_tex, type, ImVec2(u0, v0), ImVec2(u1, v1), str_name);
                     } else {
-                        RenderManager::add_extra_icon(main_tex, str_name, ImVec2(u0, v0), ImVec2(u1, v1), filename);
+                        RenderManager::add_extra_icon(*main_tex, str_name, ImVec2(u0, v0), ImVec2(u1, v1), filename);
                     }
                 } else if (cooldown_icons) {
-                    RenderManager::add_cooldown_icon(main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
+                    RenderManager::add_cooldown_icon(*main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
                 }
                 else if (spellproc_icons){
-                    RenderManager::add_spellproc_overlay_icon(main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
+                    RenderManager::add_spellproc_overlay_icon(*main_tex, ImVec2(u0, v0), ImVec2(u1, v1));
                 }
             } catch (const std::exception& e) {
                 std::string msg = e.what();

@@ -1,0 +1,35 @@
+FormKey: 000847:SpellHotbar.esp
+EditorID: SpellHotbar_BattleMage_PerkProcCrit
+Name:
+  TargetLanguage: English
+  Value: Cast On Crit
+Description:
+  TargetLanguage: English
+  Value: Critical hits can trigger Novice or Apprentice spell procs. Requires 'One-Handed' or 'Two-Handed' or 'Archery' 25.
+Conditions:
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: OneHanded
+  ComparisonValue: 25
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: TwoHanded
+  ComparisonValue: 25
+- MutagenObjectType: ConditionFloat
+  CompareOperator: GreaterThanOrEqualTo
+  Flags:
+  - OR
+  Data:
+    MutagenObjectType: GetBaseActorValueConditionData
+    ActorValue: Archery
+  ComparisonValue: 25
+NumRanks: 1
+Playable: True

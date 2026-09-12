@@ -18,8 +18,10 @@ namespace SpellHotbar::Bars {
         void serialize(SKSE::SerializationInterface* serializer, uint32_t key) const;
         void deserialize(SKSE::SerializationInterface* serializer, uint32_t type, uint32_t version, uint32_t length);
 
-        void draw_in_hud(ImFont* font, float screensize_x, float screensize_y, int highlight_slot, float highlight_factor, key_modifier mod,
-            bool hightlight_isred, float alpha, float shout_cd, float shout_cd_dur);
+        /** The Oblivion-mode bar as a display list for the FLICK HUD window; see Hotbar::build_hud_layer. */
+        void build_hud_layer(Flick::HudLayer& layer, float screensize_x, float screensize_y, int highlight_slot,
+                             float highlight_factor, key_modifier mod, bool highlight_isred, float alpha,
+                             float shout_cd, float shout_cd_dur);
 
         //called before loading a save
         void clear();

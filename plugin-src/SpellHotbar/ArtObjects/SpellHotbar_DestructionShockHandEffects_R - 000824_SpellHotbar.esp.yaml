@@ -1,0 +1,10 @@
+FormKey: 000824:SpellHotbar.esp
+EditorID: SpellHotbar_DestructionShockHandEffects_R
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\lightningstormhandeffects_r.nif
+  Data: 0x3079E1846464730038973CEACEB6910664647300582C553387DAB3FC6464730038973CEA043F90F464647300582C5533CF238B7F6464730038973CEA
+Type: []

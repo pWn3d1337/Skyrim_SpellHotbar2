@@ -1,44 +1,17 @@
 #include "input.h"
 #include "keybinds.h"
 #include "../logger/logger.h"
-#include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
+#include <optional>
+#include <utility>
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
 #include "../storage/storage.h"
 #include "keycode_helper.h"
 #include "modes.h"
-#include "../rendering/advanced_bind_menu.h"
+#include "../flick/flick_watch.h"
+#include "../mcp/bind_capture.h"
 
 namespace {
-
-    // from https://github.com/SlavicPotato/ied-dev / https://github.com/D7ry/wheeler/
-
-    /// Hooks the input event dispatching function, this function dispatches a linked list of input events
-    /// to other input event handlers, hence by modifying the linked list we can filter out unwanted input events.
-    class OnInputEventDispatch {
-    public:
-        static void Install() {
-            auto& trampoline = SKSE::GetTrampoline();
-            REL::Relocation<uintptr_t> caller{RELOCATION_ID(67315, 68617)};
-            _DispatchInputEvent = trampoline.write_call<5>(
-                caller.address() + REL::VariantOffset(0x7B, 0x7B, 0).offset(), DispatchInputEvent);
-        }
-
-    private:
-        static void DispatchInputEvent(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent** a_evns) {
-            if (!a_evns) {
-                _DispatchInputEvent(a_dispatcher, a_evns);
-                return;
-            }
-
-            SpellHotbar::Input::processAndFilter(a_evns);
-
-            _DispatchInputEvent(a_dispatcher, a_evns);
-        }
-        static inline REL::Relocation<decltype(DispatchInputEvent)> _DispatchInputEvent;
-    };
-
 
 }
 namespace SpellHotbar::Input {
@@ -116,8 +89,6 @@ namespace SpellHotbar::Input {
         return std::make_tuple(key, dev);
     }
 
-    void install_hook() { OnInputEventDispatch::Install(); }
-
     void processAndFilter(RE::InputEvent** a_event)
     {
         //based on wheeler
@@ -148,238 +119,229 @@ namespace SpellHotbar::Input {
 
         while (event != nullptr) {
             bool captureEvent = false; //Capure this event? (not forward to game)
-            auto eventType = event->eventType;
 
-            if (event->eventType == RE::INPUT_EVENT_TYPE::kMouseMove) {
-                if (RenderManager::should_block_game_cursor_inputs()) {
-                    //RE::MouseMoveEvent* mouseMove = static_cast<RE::MouseMoveEvent*>(event);
-                    captureEvent = true;
-                }
-            }
-            else if (event->eventType == RE::INPUT_EVENT_TYPE::kThumbstick) {
-                if (RenderManager::should_block_game_cursor_inputs()) {
-                    RE::ThumbstickEvent* thumbstick = static_cast<RE::ThumbstickEvent*>(event);
-                    if (thumbstick->IsRight()) {
-                        captureEvent = true;
-                    }
-                }
-            }
-            else if (event->eventType == RE::INPUT_EVENT_TYPE::kChar) {
-                if (!captureEvent && RenderManager::should_block_game_key_inputs()) {
-                    auto ch_event = event->AsCharEvent();
-                    
-                    auto& io = ImGui::GetIO();
-                    io.AddInputCharacter(ch_event->keycode);
-
-                }
-            } else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
+            // FLICK owns the cursor, the mouse and the text input while one of its windows is
+            // open; this hook runs ahead of FLICK's own (input_hook.h) and only reads the keys
+            // the hotbar itself binds. Bind capture consumes the next down edge.
+            if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
                 RE::ButtonEvent* bEvent = event->AsButtonEvent();
                 if (bEvent) {
-                    auto& io = ImGui::GetIO();
-
                     auto [key_code, key_device] = get_device_and_input(bEvent);
                     bool is_pressed = bEvent->IsPressed();
 
-                    if (key_device == RE::INPUT_DEVICE::kKeyboard) {
-                        //update imgui mods
-                        if (key_code == 29 || key_code == 157) {
-                            io.AddKeyEvent(ImGuiKey_ModCtrl, is_pressed);
+                    auto& capture = Mcp::bind_capture();
+                    if (capture.armed()) {
+                        //Rebind from the config tool: the next press is the new key, Escape cancels
+                        if (bEvent->IsDown()) {
+                            const bool is_escape = key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1;
+                            const bool rebindable = key_device == RE::INPUT_DEVICE::kKeyboard ||
+                                                    key_device == RE::INPUT_DEVICE::kMouse ||
+                                                    key_device == RE::INPUT_DEVICE::kGamepad;
+                            if (is_escape) {
+                                capture.apply_down_edge(true);
+                            }
+                            else if (rebindable) {
+                                const int pending_id = capture.pending_id();
+                                if (capture.apply_down_edge(false) == Mcp::CaptureApply::rebound) {
+                                    int dx_code = input_to_dx_scancode(key_device, static_cast<uint8_t>(key_code));
+                                    if (dx_code >= 0) {
+                                        rebind_key(pending_id, dx_code);
+                                    }
+                                }
+                            }
                         }
-                        if (key_code == 42 || key_code == 54) {
-                            io.AddKeyEvent(ImGuiKey_ModShift, is_pressed);
-                            //mod_shift.update(bEvent);
-                        }
-                        if (key_code == 56 || key_code == 184) {
-                            io.AddKeyEvent(ImGuiKey_ModAlt, is_pressed);
-                            mod_alt.update(key_code, key_device, is_pressed);
-                        }
-                    }
-                    mod_1.update(key_code, key_device, is_pressed);
-                    mod_2.update(key_code, key_device, is_pressed);
-                    mod_3.update(key_code, key_device, is_pressed);
-                    mod_dual_cast.update(key_code, key_device, is_pressed);
-                    mod_show_bar.update(key_code, key_device, is_pressed);
-
-                    //update all keybind states
-                    for (size_t i = 0; i < key_spells.size(); ++i) {
-                        key_spells[i].update(key_code, key_device, is_pressed);
-                    }
-                    key_oblivion_cast.update(key_code, key_device, is_pressed);
-                    key_oblivion_potion.update(key_code, key_device, is_pressed);
-
-                    if (key_device == RE::INPUT_DEVICE::kMouse) {
-                        // credits open animation replacer
-                        //forward the mouse inputs to ImGUI
-                        if (bEvent->GetIDCode() > 7) {
-                            io.AddMouseWheelEvent(0, bEvent->value * (bEvent->GetIDCode() == 8 ? 1 : -1));
-                        } else {
-                            if (bEvent->GetIDCode() > 5) bEvent->idCode = 5;
-                            io.AddMouseButtonEvent(bEvent->idCode, bEvent->IsPressed());
-                        }
-                        if (RenderManager::should_block_game_cursor_inputs()) {
-                            captureEvent = true;
-                        }
-                    }
-
-                    if (!captureEvent && RenderManager::is_dragging_bar() && key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1) {
-                        RenderManager::stop_bar_dragging();
                         captureEvent = true;
                     }
-
-                    //Block control inputs when a special frame is opened (SpellEditor)
-                    if (!captureEvent && RenderManager::should_block_game_key_inputs()) {
-                        if (key_device == RE::INPUT_DEVICE::kKeyboard || key_device == RE::INPUT_DEVICE::kGamepad) {
-                            captureEvent = true;
-
-                            if (key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1 && bEvent->IsDown()) {
-                                //Close Frames when ESC is pressed
-                                RenderManager::close_key_blocking_frames();
+                    else {
+                        if (key_device == RE::INPUT_DEVICE::kKeyboard) {
+                            if (key_code == 56 || key_code == 184) {
+                                mod_alt.update(key_code, key_device, is_pressed);
                             }
-                            else if (RenderManager::is_bind_menu_opened() && Input::key_open_advanced_bind_menu.isValidBound()
-                                && bEvent->IsDown() && Input::key_open_advanced_bind_menu.matches(key_code, key_device)) {
-                                //Close Bind Menu when key is pressed
+                        }
+                        mod_1.update(key_code, key_device, is_pressed);
+                        mod_2.update(key_code, key_device, is_pressed);
+                        mod_3.update(key_code, key_device, is_pressed);
+                        mod_dual_cast.update(key_code, key_device, is_pressed);
+                        mod_show_bar.update(key_code, key_device, is_pressed);
+
+                        //update all keybind states
+                        for (size_t i = 0; i < key_spells.size(); ++i) {
+                            key_spells[i].update(key_code, key_device, is_pressed);
+                        }
+                        key_oblivion_cast.update(key_code, key_device, is_pressed);
+                        key_oblivion_potion.update(key_code, key_device, is_pressed);
+
+                        const bool window_blocking = RenderManager::should_block_game_key_inputs();
+
+                        if (RenderManager::is_dragging_bar() && key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1 && bEvent->IsDown()) {
+                            RenderManager::stop_bar_dragging();
+                        }
+
+                        // The key that dismissed one of our windows, remembered until its release.
+                        // Both edges have to be swallowed: capturing only the down edge hands the
+                        // engine an up edge for a press it never saw, and it is free to act on either.
+                        static std::optional<std::pair<RE::INPUT_DEVICE, uint32_t>> dismiss_key;
+
+                        if (window_blocking && bEvent->IsDown()) {
+                            const bool is_escape = key_device == RE::INPUT_DEVICE::kKeyboard && key_code == 1;
+                            const bool is_bind_menu_key = RenderManager::is_bind_menu_opened() &&
+                                                          Input::key_open_advanced_bind_menu.isValidBound() &&
+                                                          Input::key_open_advanced_bind_menu.matches(key_code, key_device);
+
+                            if (is_escape || is_bind_menu_key) {
+                                //Close Frames when ESC or the bind menu key is pressed. Closing ends
+                                //the block on this very frame and the press would travel on to the
+                                //engine, which reads Escape as Journal, so take it off the queue.
                                 RenderManager::close_key_blocking_frames();
+                                dismiss_key = std::make_pair(key_device, key_code);
+                                captureEvent = true;
+                            }
+                        }
+                        else if (dismiss_key && dismiss_key->first == key_device && dismiss_key->second == key_code) {
+                            if (bEvent->IsDown()) {
+                                // A fresh press with no window of ours open: the release we were
+                                // waiting for never arrived (losing window focus mid-press is enough
+                                // to eat one). Drop the latch and let this press through.
+                                dismiss_key.reset();
                             }
                             else {
-                                int dx_code = input_to_dx_scancode(key_device, static_cast<uint8_t>(key_code));
-                                if (dx_code >= 0 && dx_code < dx_to_imgui.size()) {
-                                    ImGuiKey key = dx_to_imgui[dx_code];
-                                    if (key != ImGuiKey_None) {
-                                        io.AddKeyEvent(key, is_pressed);
+                                // The matching release, or a repeat on the way to it.
+                                if (bEvent->IsUp()) {
+                                    dismiss_key.reset();
+                                }
+                                captureEvent = true;
+                            }
+                        }
+
+                        if (!captureEvent && (key_device == RE::INPUT_DEVICE::kKeyboard || key_device == RE::INPUT_DEVICE::kGamepad || key_device == RE::INPUT_DEVICE::kMouse)) {
+
+                            if (casts::CastingController::is_movement_blocking_cast() && in_ingame_state()) {
+                                auto cm = RE::ControlMap::GetSingleton();
+                                if (cm) {
+                                    uint32_t key_forward = cm->GetMappedKey("Forward"sv, key_device);
+                                    uint32_t key_back= cm->GetMappedKey("Back"sv, key_device);
+                                    uint32_t key_left = cm->GetMappedKey("Strafe Left"sv, key_device);
+                                    uint32_t key_right = cm->GetMappedKey("Strafe Right"sv, key_device);
+
+                                    if (key_code == key_forward || key_code == key_back || key_code == key_left || key_code == key_right) {
+                                        if (!bEvent->IsUp()) {
+                                            captureEvent = true;
+                                        }
                                     }
+
                                 }
                             }
                         }
-                    }
 
-                    if (!captureEvent && (key_device == RE::INPUT_DEVICE::kKeyboard || key_device == RE::INPUT_DEVICE::kGamepad || key_device == RE::INPUT_DEVICE::kMouse)) {
+                        if (!captureEvent && !window_blocking) {
+                            bool handled{ false };
+                            if (!Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown()) {
 
-                        if (casts::CastingController::is_movement_blocking_cast() && in_ingame_state()) {
-                            auto cm = RE::ControlMap::GetSingleton();
-                            if (cm) {
-                                uint32_t key_forward = cm->GetMappedKey("Forward"sv, key_device);
-                                uint32_t key_back= cm->GetMappedKey("Back"sv, key_device);
-                                uint32_t key_left = cm->GetMappedKey("Strafe Left"sv, key_device);
-                                uint32_t key_right = cm->GetMappedKey("Strafe Right"sv, key_device);
+                                for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
+                                    const auto& bind = key_spells[i];
 
-                                if (key_code == key_forward || key_code == key_back || key_code == key_left || key_code == key_right) {
-                                    if (!bEvent->IsUp()) {
-                                        captureEvent = true;
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-
-                    if (!captureEvent) {
-                        bool handled{ false };
-                        if (!Bars::disable_non_modifier_bar || Input::mod_1.isDown() || Input::mod_2.isDown() || Input::mod_3.isDown()) {
-
-                            for (size_t i = 0; i < key_spells.size() && !handled; ++i) {
-                                const auto& bind = key_spells[i];
-
-                                if (bind.matches(key_code, key_device))
-                                {
-                                    if (in_binding_menu())
+                                    if (bind.matches(key_code, key_device))
                                     {
-                                        if (!Bars::disable_menu_binding && bEvent->IsDown()) {
-                                            handled = true;
-                                            RE::TESForm* form = get_current_selected_spell_in_menu();
-                                            if (form) {
-                                                slot_spell(form, i);
+                                        if (in_binding_menu())
+                                        {
+                                            if (!Bars::disable_menu_binding && bEvent->IsDown()) {
+                                                handled = true;
+                                                RE::TESForm* form = get_current_selected_spell_in_menu();
+                                                if (form) {
+                                                    slot_spell(form, i);
+                                                }
+                                                if (mod_1.isDown() || mod_2.isDown() || mod_3.isDown()) {
+                                                    //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
+                                                    captureEvent = true;
+                                                }
                                             }
-                                            if (mod_1.isDown() || mod_2.isDown() || mod_3.isDown()) {
+                                        }
+                                        else if (in_ingame_state())
+                                        {
+                                            if (bEvent->IsDown()) {
+                                                handled = true;
+                                                auto skill = GameData::get_current_spell_info_in_slot(i);
+                                                if (GameData::isVampireLord() &&
+                                                    GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f &&
+                                                    !Input::is_equip_mode())
+                                                {
+                                                    //If Vampire Lord and using Not Equipmode -> use special VL mode (equip spells & cast powers) instead
+                                                    //The global can turn of this behaviour
+                                                    InputModeVampireLord::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
+                                                }
+                                                else if (InputModeBase::current_mode) {
+                                                    InputModeBase::current_mode->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
+                                                }
+                                            }
+                                            else if (bEvent->IsUp()) {
+                                                handled = true;
+                                                //check for release of power/shout key release event
+                                                if (casts::CastingController::is_currently_using_power()) {
+
+                                                    float ct = casts::CastingController::get_current_casttime();
+                                                    if (!addEvent) {
+                                                        addEvent = RE::ButtonEvent::Create(shoutKeyDev, "Shout", shoutKey, 0.0f, ct); //default shout key
+                                                    }
+                                                }
+                                            }
+                                            else if (bEvent->IsRepeating()) {
+                                                //Check in Oblivion Mode for holding slot key down to show bar.
+                                                InputModeBase::current_mode->process_key_update(bind, i, bEvent->HeldDuration());
+                                            }
+                                            if (handled && (mod_1.isDown() || mod_2.isDown() || mod_3.isDown())) {
                                                 //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
                                                 captureEvent = true;
                                             }
                                         }
                                     }
-                                    else if (in_ingame_state())
-                                    {
-                                        if (bEvent->IsDown()) {
-                                            handled = true;
-                                            auto skill = GameData::get_current_spell_info_in_slot(i);
-                                            if (GameData::isVampireLord() &&
-                                                GameData::global_vampire_lord_equip_mode && GameData::global_vampire_lord_equip_mode->value > 0.0f &&
-                                                !Input::is_equip_mode())
-                                            {
-                                                //If Vampire Lord and using Not Equipmode -> use special VL mode (equip spells & cast powers) instead
-                                                //The global can turn of this behaviour
-                                                InputModeVampireLord::getSingleton()->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
-                                            }
-                                            else if (InputModeBase::current_mode) {
-                                                InputModeBase::current_mode->process_input(skill, addEvent, i, bind, shoutKeyDev, shoutKey);
-                                            }
-                                        }
-                                        else if (bEvent->IsUp()) {
-                                            handled = true;
-                                            //check for release of power/shout key release event
-                                            if (casts::CastingController::is_currently_using_power()) {
-
-                                                float ct = casts::CastingController::get_current_casttime();
-                                                if (!addEvent) {
-                                                    addEvent = RE::ButtonEvent::Create(shoutKeyDev, "Shout", shoutKey, 0.0f, ct); //default shout key
-                                                }
-                                            }
-                                        }
-                                        else if (bEvent->IsRepeating()) {
-                                            //Check in Oblivion Mode for holding slot key down to show bar.
-                                            InputModeBase::current_mode->process_key_update(bind, i, bEvent->HeldDuration());
-                                        }
-                                        if (handled && (mod_1.isDown() || mod_2.isDown() || mod_3.isDown())) {
-                                            //Do not forward keypress to game if modifier was used, this allows easy double binding with modifiers
-                                            captureEvent = true;
-                                        }
-                                    }
                                 }
                             }
-                        }
-                        if (!handled && Input::is_oblivion_mode() && in_ingame_state())
-                        {
-                            bool cast = key_oblivion_cast.matches(key_code, key_device);
-                            bool potion = key_oblivion_potion.matches(key_code, key_device);
-                            if (cast || potion)
+                            if (!handled && Input::is_oblivion_mode() && in_ingame_state())
                             {
-                                if (bEvent->IsDown()) {
-                                    size_t index = keybind_id::oblivion_potion;
-                                    if (cast) {
-                                        index = keybind_id::oblivion_cast;
-                                    }
-                                    handled = true;
-                                    auto skill = GameData::get_current_spell_info_in_slot(index);
-
-                                    if (InputModeBase::current_mode) {
+                                bool cast = key_oblivion_cast.matches(key_code, key_device);
+                                bool potion = key_oblivion_potion.matches(key_code, key_device);
+                                if (cast || potion)
+                                {
+                                    if (bEvent->IsDown()) {
+                                        size_t index = keybind_id::oblivion_potion;
                                         if (cast) {
-                                            InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_cast, shoutKeyDev, shoutKey);
+                                            index = keybind_id::oblivion_cast;
                                         }
-                                        else if (potion) {
-                                            InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_potion, shoutKeyDev, shoutKey);
+                                        handled = true;
+                                        auto skill = GameData::get_current_spell_info_in_slot(index);
+
+                                        if (InputModeBase::current_mode) {
+                                            if (cast) {
+                                                InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_cast, shoutKeyDev, shoutKey);
+                                            }
+                                            else if (potion) {
+                                                InputModeBase::current_mode->process_input(skill, addEvent, index, key_oblivion_potion, shoutKeyDev, shoutKey);
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        if (!handled && in_binding_menu())
-                        {
-                            if (key_open_advanced_bind_menu.matches(key_code, key_device) && bEvent->IsDown()) {
-                                handled = true;
-                                RenderManager::open_advanced_binding_menu();
-                                RE::PlaySound(sound_UISkillsForward);
+                            if (!handled && in_binding_menu())
+                            {
+                                if (key_open_advanced_bind_menu.matches(key_code, key_device) && bEvent->IsDown()) {
+                                    handled = true;
+                                    RenderManager::open_advanced_binding_menu();
+                                    RE::PlaySound(sound_UISkillsForward);
+                                }
+                                else if (key_next.matches(key_code, key_device) && bEvent->IsDown()) {
+                                    handled = true;
+                                    Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
+                                    RE::PlaySound(sound_UISkillsForward);
+                                }
+                                else if (key_prev.matches(key_code, key_device) && bEvent->IsDown()) {
+                                    handled = true;
+                                    Bars::menu_bar_id = Bars::getPreviousMenuBar(Bars::menu_bar_id);
+                                    RE::PlaySound(sound_UISkillsBackward);
+                                }
                             }
-                            else if (key_next.matches(key_code, key_device) && bEvent->IsDown()) {
-                                handled = true;
-                                Bars::menu_bar_id = Bars::getNextMenuBar(Bars::menu_bar_id);
-                                RE::PlaySound(sound_UISkillsForward);
-                            }
-                            else if (key_prev.matches(key_code, key_device) && bEvent->IsDown()) {
-                                handled = true;
-                                Bars::menu_bar_id = Bars::getPreviousMenuBar(Bars::menu_bar_id);
-                                RE::PlaySound(sound_UISkillsBackward);
-                            }
-                        }
 
+                        }
                     }
 
                 }
@@ -512,9 +474,13 @@ namespace SpellHotbar::Input {
         {
             return false;
         }
-        else {
-            return true;
+        // FLICK's own menu and another guest's window are invisible to RE::UI, and this hook
+        // runs ahead of FLICK's, so it sees the raw press before the host takes it. A hotbar
+        // key typed into the host's menu must not cast.
+        if (Flick::another_guest_owns_the_screen()) {
+            return false;
         }
+        return true;
     }
 
     std::tuple<RE::INPUT_DEVICE, uint8_t> dx_scan_code_to_input(int dx_scancode)
@@ -743,6 +709,14 @@ namespace SpellHotbar::Input {
         }
         const auto* control_map = RE::ControlMap::GetSingleton();
         if (control_map && (control_map->textEntryCount > 0))
+        {
+            return false;
+        }
+
+        // The same guard for the fields RE::ControlMap never hears about: a FLICK window can
+        // sit over an open InventoryMenu, and FLICK's text input never calls AllowTextInput,
+        // so textEntryCount stays 0 while the player is typing into it.
+        if (Flick::another_guest_owns_the_screen() || Flick::host_is_taking_keystrokes())
         {
             return false;
         }

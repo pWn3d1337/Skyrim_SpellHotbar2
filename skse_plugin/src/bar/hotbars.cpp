@@ -24,6 +24,13 @@ namespace SpellHotbar::Bars {
     float offset_x;
     float offset_y;
 
+    float menu_slot_scale;
+    float menu_offset_x;
+    float menu_offset_y;
+    float menu_slot_spacing;
+    anchor_point menu_bar_anchor_point = anchor_point::BOTTOM;
+    bool menu_bar_locked = false;
+
     float oblivion_slot_scale;
     float oblivion_slot_spacing;
     float oblivion_offset_x;
@@ -218,6 +225,15 @@ namespace SpellHotbar::Bars {
         offset_y = 0.0f;
         slot_spacing = 8.0f;
         text_show_setting = text_show_mode::fade;
+
+        //The dock defaults to the bottom of the screen, half the HUD bar's slot height: clear of
+        //the character, and a starting point the player can drag rather than a fixed position.
+        menu_slot_scale = 0.5f;
+        menu_offset_x = 0.0f;
+        menu_offset_y = 0.0f;
+        menu_slot_spacing = 8.0f;
+        menu_bar_anchor_point = anchor_point::BOTTOM;
+        menu_bar_locked = false;
 
         bar_show_setting = bar_show_mode::combat_or_drawn;
         bar_show_setting_vampire_lord = bar_show_mode::combat;

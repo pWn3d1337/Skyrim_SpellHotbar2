@@ -1,0 +1,10 @@
+FormKey: 00082C:SpellHotbar.esp
+EditorID: SpellHotbar_IllusionGreenHandEffects_R
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, 7
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\illusionmassgreenhandeffects_r.nif
+  Data: 0xCF238B7F6464730038973CEA6C63F37864647300582C553318CD5A2C6464730038973CEA504782E664647300582C5533
+Type: []

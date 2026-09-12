@@ -12,9 +12,7 @@ project_root = Path(__file__).parent.parent
 
 released_files_main_plugin = [
     (project_root / "skse_plugin/build/release/SpellHotbar2.dll", "SKSE/Plugins"),
-    (dev_mod_root / "SpellHotbar.esp", ""),
-    (dev_mod_root / "Scripts/*.pex", dev_mod_root),  # if Path, add relative path to root in zip
-    (dev_mod_root / "Scripts/Source/*.psc", dev_mod_root),
+    (project_root / "build/plugins/SpellHotbar.esp", ""),  # built from plugin-src/ by build_plugins.py
     (dev_mod_root / "Interface/SpellHotbar/spell_icons.swf", dev_mod_root),
     (dev_mod_root / "meshes/SpellHotbar/*.nif", dev_mod_root),
     (dev_mod_root / "meshes/**/*.txt", dev_mod_root),

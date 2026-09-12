@@ -17,7 +17,7 @@ If you have created cool Screenshots or video clips using the mods I could also 
 ## Requirements
 [SKSE](https://skse.silverlock.org/)  
 [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)  
-[SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
+[FLICK](https://www.nexusmods.com/skyrimspecialedition/mods/181603) - hosts every window, the in-menu dock, the HUD bars and the configuration tool (see below)  
 [OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu  
 [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree, a v2 compatible config is also provided for 1.5.97 users    
@@ -47,7 +47,7 @@ You can also chose an "Auto Profile" that will be applied on new game or first i
 ![#installer](docs/images/installer.jpg)  
 
 ## Auto Profiles
-If a file called "..Data\SKSE\Plugins\SpellHotbar\presets\auto_profile.json" is present in your install it will automatically load on new game or first init. This allows to redestribute the MCM config in mod packs. An auto profile can be chosen during the installer.
+If a file called "..Data\SKSE\Plugins\SpellHotbar\presets\auto_profile.json" is present in your install it will automatically load on new game or first init. This allows to redistribute the config in mod packs. An auto profile can be chosen during the installer.
 
 ## Input improvements
 Modifiers are no longer hardcoded to CTRL, SHIFT and ALT and up to 3 modifiers can now be freely configured. All controller buttons should also be supported.
@@ -59,7 +59,7 @@ First person and concentration spells are now handled
 ## Dual Casting
 Spells now can be bound to either Hand or both hands (Indicated by R, L and D in the bind menu). To toggle the hand, just press the Keybind in the binding menu again.
 No R,L or D text indicated 'Auto' mode, there a spell will chose the hand depending on equipped items and uses Dual Casting if enabled. Dual Casting can be toggled by a power that is automatically added to the player
-or by holding Keybind modifier that can be defined in the MCM. A spell can only be set to dual cast (D) in the menu if the spell supports dual casting and the player has the corresponding perk. (During the fomod installer select your correct perk overhaul so the dual cast perks are configured correctly). For balancing and animation reasons Dual casting blocks movement. (Technically by capturing your movement inputs, so no scripts are going to break from it)
+or by holding Keybind modifier that can be defined in the config tool. A spell can only be set to dual cast (D) in the menu if the spell supports dual casting and the player has the corresponding perk. (During the fomod installer select your correct perk overhaul so the dual cast perks are configured correctly). For balancing and animation reasons Dual casting blocks movement. (Technically by capturing your movement inputs, so no scripts are going to break from it)
 
 ### First Person, Concentration and Dual Casting in Youtube Preview:  
 [![spellhotbar2_yt_preview](https://img.youtube.com/vi/5aj7-3XC50I/0.jpg)](https://www.youtube.com/watch?v=5aj7-3XC50I)
@@ -85,14 +85,14 @@ It is now possible to chose the input mode.
 ![#Oblivion_mode](docs/images/oblivion_mode.jpg)  
 
 ## Battlemage Perktree [Optional]
-Requires [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) to access the perktree, alternatively there is an MCM option under 'Perks' to disable Perk requirements.
+Requires [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) to access the perktree, alternatively there is an option under 'Perks' in the config tool to disable Perk requirements.
 Uses regular perk points. Allows to get "Spell Procs" which turns the next casted spell into near-instant cast and 50% less mana cost. Spell Procs are visible as animated golden border around spells. And the spell learn sound is played on trigger.
-At start only novice and apprentice spell can consume procs and there is a 10s (configurable in mcm) cooldown in gaining a new proc after consuming one.
+At start only novice and apprentice spell can consume procs and there is a 10s (configurable in the config tool) cooldown in gaining a new proc after consuming one.
 
 ![#Spell_Procs](docs/images/spell_proc.jpg)
 
 ### Available Perks:
-Note: chances and timing is configurable in MCM
+Note: chances and timing is configurable in the config tool
 #### Triggers (starting perks, no perk requirement):
 * Cast On Concentration: Casting a concentration spell for 6 seconds can trigger Novice or Apprentice spell procs. Requires a Magic Skill of at least 25.
 * Cast On Block: Timed Blocking can trigger Novice or Apprentice spell procs. Requires 'Block' 25.
@@ -105,13 +105,22 @@ Note: chances and timing is configurable in MCM
  
 ![#BattleMage_Perks1](docs/images/battlemage_1.jpg) ![#BattleMage_Perks2](docs/images/battlemage_2.jpg)  
 
+## FLICK hosted UI
+The bind menu, the spell and potion editors, the bar position editor, the in-menu dock and the HUD bars are all windows of [FLICK](https://www.nexusmods.com/skyrimspecialedition/mods/181603) (`FUCK.dll`), which is a hard requirement. The configuration pages are the "Spell Hotbar 2" tool in FLICK's sidebar (F7 by default); there is no SkyUI MCM. The plugin draws nothing itself.
+
+There is no Papyrus either. The init quest, the dual-cast toggle effect and the BattleMage perk-tree opener are done by the SKSE plugin (`skse_plugin/src/lifecycle`), the two ESPs carry no scripts, and `SpellHotbar.psc` only declares the plugin's natives for external use. The ESPs are built from `plugin-src/` with `python python_scripts/build_plugins.py` (Spriggit 0.40.1 through `dotnet tool restore`); `plugin-src/provenance.json` locks the trees to the 0.0.14 release with only the listed records removed and the dual-cast effect's script detached.
+
+The dock over the Magic, Inventory and Favorites menus shows the current bar; its gear opens the bind menu, the arrows page through the bars, and it can be dragged into place (the lock glyph fixes it). Its position is saved in the SKSE co-save (format 6; older saves load with the defaults) and in exported presets under `settings.menu_bar`.
+
+FLICK loads images as PNG, so every DDS under `SKSE/Plugins/SpellHotbar/images` needs a PNG sibling of the same name. `skse_plugin/scripts/dds_to_png.py` writes them; run it over the images folder when packaging a release or after adding icons. The key glyphs `keynames.csv` points at (the ImGui Icons pack) already ship as PNG. The vendored guest header `skse_plugin/third_party/flick/FUCK_API.h` is pinned to FLICK commit `a123c11` and checked at configure time.
+
 ## Ingame Editor
-In the MCM an editor for Spells and Potions can be opened to edit the spell data, this allows to set custom Icons and some other values like animation for the spell and is savegame specific (stored in SKSE co-save).
+From the config tool (or the bind menu's Advanced tab) an editor for Spells and Potions can be opened to edit the spell data, this allows to set custom Icons and some other values like animation for the spell and is savegame specific (stored in SKSE co-save).
 
 ![#Ingame_Editor](docs/images/spell_editor1.jpg) ![#Ingame_Editor2](docs/images/spell_editor2.jpg)  
 
 ## Advanced Bind Menu
-Allows the user to have a dedicated menu to slot skills with drag and drop, all inputs are NOT forwarded to the game while in this menu. This avoids all key conflicts. Can be enabled in MCM by defining a keybind to "Open Binding Menu". This keybind must be pressed while in the Magic Menu or an inventory tab that is supported by spell hotbar (potions, food, scrolls).  
+Allows the user to have a dedicated menu to slot skills with drag and drop, all inputs are NOT forwarded to the game while in this menu. This avoids all key conflicts. Can be enabled in the config tool by defining a keybind to "Open Binding Menu", or opened from the dock's gear. This keybind must be pressed while in the Magic Menu or an inventory tab that is supported by spell hotbar (potions, food, scrolls).  
 ![#Binding Menu](docs/images/binding_menu.jpg)
 
 ## Currently supported Spell/Perk mods with icons
@@ -171,9 +180,8 @@ Allows the user to have a dedicated menu to slot skills with drag and drop, all 
 [LamasTinyHUD](https://github.com/mlthelama/LamasTinyHUD)  
 [Immersive Equipment Displays](https://github.com/SlavicPotato/ied-dev)  
 
-## Papyrus / esp
+## Animations / esp
 [Thu'um - Fully Animated Shouts](https://www.nexusmods.com/skyrimspecialedition/mods/50559), big thanks for open permission shout anims  
-[SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604)  
 
 ## Tools
 [SWF Tools](http://www.swftools.org/) - png2swf.exe

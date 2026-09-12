@@ -1,0 +1,10 @@
+FormKey: 000825:SpellHotbar.esp
+EditorID: SpellHotbar_ConjurationSummonHandEffects_L
+FormVersion: 39
+ObjectBounds:
+  First: -11, -11, -8
+  Second: 11, 11, 7
+Model:
+  File: SpellHotbar\summonritualhandeffects_l.nif
+  Data: 0xCF238B7F6464730038973CEA043F90F464647300582C5533714EFD616464730038973CEA81C5714F64647300582C5533
+Type: []

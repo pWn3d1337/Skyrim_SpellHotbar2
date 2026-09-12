@@ -1,0 +1,15 @@
+FormKey: 000810:SpellHotbar.esp
+EditorID: SpellHotbar_unbind
+Name:
+  TargetLanguage: English
+  Value: <Unbind Slot>
+MenuDisplayObject: 0435A5:Skyrim.esm
+EquipmentType: 025BEE:Skyrim.esm
+Description:
+  TargetLanguage: English
+  Value: Unbind a slot in the Hotbar. If bound to an empty slot set it to 'Blocked' from inheritance.
+Type: LesserPower
+CastType: FireAndForget
+Effects:
+- BaseEffect: 000833:SpellHotbar.esp
+  Data: {}
