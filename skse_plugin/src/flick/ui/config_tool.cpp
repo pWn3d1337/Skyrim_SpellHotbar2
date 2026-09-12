@@ -7,6 +7,7 @@
 #include "../../bar/hotbar.h"
 #include "../../bar/hotbars.h"
 #include "../../game_data/game_data.h"
+#include "../../game_data/localization.h"
 #include "../../input/keybinds.h"
 #include "../../input/modes.h"
 #include "../../mcp/bind_capture.h"
@@ -369,11 +370,14 @@ namespace SpellHotbar::FlickUi::ConfigTool {
             return mod;
         }
 
+        // `heading` is the translated "$MCM_PROMPT_*_LOAD" prompt the MCM used over this list.
         void draw_preset_list(
             const char* label,
+            const std::string& heading,
             const std::vector<std::string>& names,
             const std::function<bool(const std::string&)>& loader)
         {
+            FUCK::TextUnformatted(heading.c_str());
             bool any = false;
             for (const auto& name : names) {
                 if (!Mcp::is_listed_preset(name)) {
@@ -406,10 +410,16 @@ namespace SpellHotbar::FlickUi::ConfigTool {
             }
         }
 
+        // "<file> exists, overwrite ?" -- the MCM's wording, from the translation files.
+        std::string overwrite_prompt(const char* name)
+        {
+            return Mcp::with_json_extension(name) + " " + translate("$MCM_PROMPT_OVERWRITE");
+        }
+
         void draw_presets()
         {
             FUCK::SeparatorText("Configuration");
-            FUCK::InputText("Save Config as...", config_save_name, sizeof(config_save_name));
+            FUCK::InputText(translate("$MCM_PROMPT_SETTINGS_SAVE").c_str(), config_save_name, sizeof(config_save_name));
             if (FUCK::Button("Save Config")) {
                 if (!Mcp::valid_preset_name(config_save_name)) {
                     status_message = "Invalid configuration filename.";
@@ -425,19 +435,19 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     });
                 }
             }
-            confirm_modal("Overwrite config?", "Overwrite the existing configuration file?", []() {
+            confirm_modal("Overwrite config?", overwrite_prompt(config_save_name).c_str(), []() {
                 if (Storage::IO::save_preset(Mcp::with_json_extension(config_save_name))) {
                     status_message = "Saved configuration.";
                 } else {
                     status_message = "Failed to save configuration.";
                 }
             });
-            draw_preset_list("config", Storage::IO::get_config_presets(), [](const std::string& name) {
+            draw_preset_list("config", translate("$MCM_PROMPT_SETTINGS_LOAD"), Storage::IO::get_config_presets(), [](const std::string& name) {
                 return Storage::IO::load_preset(name, true);
             });
 
             FUCK::SeparatorText("Bars");
-            FUCK::InputText("Save Bars as...", bars_save_name, sizeof(bars_save_name));
+            FUCK::InputText(translate("$MCM_PROMPT_BAR_SAVE").c_str(), bars_save_name, sizeof(bars_save_name));
             if (FUCK::Button("Save Bars")) {
                 if (!Mcp::valid_preset_name(bars_save_name)) {
                     status_message = "Invalid bars filename.";
@@ -453,7 +463,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     });
                 }
             }
-            confirm_modal("Overwrite bars?", "Overwrite the existing bars file?", []() {
+            confirm_modal("Overwrite bars?", overwrite_prompt(bars_save_name).c_str(), []() {
                 const auto path = Storage::IO::get_bars_user_dir() / Mcp::with_json_extension(bars_save_name);
                 std::filesystem::create_directories(path.parent_path());
                 if (Bars::save_bars_to_json(path.string())) {
@@ -462,14 +472,14 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     status_message = "Failed to save bars.";
                 }
             });
-            draw_preset_list("bar", Storage::IO::get_bar_presets(), [](const std::string& name) {
+            draw_preset_list("bar", translate("$MCM_PROMPT_BAR_LOAD"), Storage::IO::get_bar_presets(), [](const std::string& name) {
                 const auto path = resolve_existing(
                     Storage::IO::get_bars_user_dir() / name, std::filesystem::path{k_bars_mod_dir} / name);
                 return Bars::load_bars_from_json(path.string());
             });
 
             FUCK::SeparatorText("Icon Edits");
-            FUCK::InputText("Save Icon Edits as...", icon_save_name, sizeof(icon_save_name));
+            FUCK::InputText(translate("$MCM_PROMPT_ICON_EDITS_SAVE").c_str(), icon_save_name, sizeof(icon_save_name));
             if (FUCK::Button("Save Icon Edits")) {
                 if (!Mcp::valid_preset_name(icon_save_name)) {
                     status_message = "Invalid icon-edit filename.";
@@ -485,7 +495,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     });
                 }
             }
-            confirm_modal("Overwrite icon edits?", "Overwrite the existing icon-edit file?", []() {
+            confirm_modal("Overwrite icon edits?", overwrite_prompt(icon_save_name).c_str(), []() {
                 const auto path = Storage::IO::get_icon_edits_user_dir() / Mcp::with_json_extension(icon_save_name);
                 std::filesystem::create_directories(path.parent_path());
                 if (GameData::save_icon_edits_to_json(path.string())) {
@@ -494,7 +504,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     status_message = "Failed to save icon edits.";
                 }
             });
-            draw_preset_list("icon-edit", Storage::IO::get_icon_edits_presets(), [](const std::string& name) {
+            draw_preset_list("icon-edit", translate("$MCM_PROMPT_ICON_EDITS_LOAD"), Storage::IO::get_icon_edits_presets(), [](const std::string& name) {
                 const auto path = resolve_existing(
                     Storage::IO::get_icon_edits_user_dir() / name,
                     std::filesystem::path{k_icon_edits_mod_dir} / name);
