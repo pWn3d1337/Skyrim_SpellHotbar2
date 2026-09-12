@@ -1,8 +1,0 @@
-FormKey: 000D62:SpellHotbar.esp
-EditorID: SpellHotbarInitQuest
-VirtualMachineAdapter:
-  FileName: ''
-Flags:
-- 0x10
-- RunOnce
-NextAliasID: 0

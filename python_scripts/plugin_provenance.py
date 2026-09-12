@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prove the Spriggit YAML trees match the sanctioned 0.0.14 VMAD cut."""
+"""Prove the Spriggit YAML trees match the sanctioned 0.0.14 cut: five records removed, one VMAD emptied."""
 
 from __future__ import annotations
 
@@ -78,8 +78,8 @@ def verify_provenance(root: Path = ROOT) -> None:
         (item["plugin"], item["form"].upper()): item
         for item in manifest["allowed_record_changes"]
     }
-    if len(allowed) != 5:
-        raise RuntimeError("provenance must list exactly five sanctioned VMAD removals")
+    if len(allowed) != 6:
+        raise RuntimeError("provenance must list exactly six sanctioned record changes")
 
     for plugin in manifest["plugins"]:
         source = root / plugin["source"]
@@ -90,6 +90,14 @@ def verify_provenance(root: Path = ROOT) -> None:
             )
 
         seen: set[str] = set()
+        removed = {
+            form
+            for (name, form), item in allowed.items()
+            if name == plugin["filename"] and "record_removed" in item["changes"]
+        }
+        present = {record["form"] for record in records}
+        if removed & present:
+            raise RuntimeError(f"{plugin['filename']} still carries removed records {sorted(removed & present)}")
         for record in records:
             if record["plugin"] != plugin["filename"]:
                 raise RuntimeError(f"{record['path']} FormKey plugin mismatch")

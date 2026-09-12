@@ -1,4 +1,5 @@
 #include "papyrus_functions.h"
+#include "../lifecycle/lifecycle.h"
 #include "../storage/storage.h"
 #include "../logger/logger.h"
 #include "../bar/hotbars.h"
@@ -530,52 +531,12 @@ std::vector<std::string> get_icon_edit_presets(RE::StaticFunctionTag*) {
     return SpellHotbar::Storage::IO::get_icon_edits_presets();
 }
 
-inline
-RE::SpellItem* _get_power_for_type(int type) {
-    RE::SpellItem* power = nullptr;
-    switch (type) {
-    case 0:
-        power = SpellHotbar::GameData::spellhotbar_unbind_slot;
-        break;
-    case 1:
-        power = SpellHotbar::GameData::spellhotbar_toggle_dualcast;
-        break;
-    case 2:
-        power = SpellHotbar::GameData::spellhotbar_battlemage_open_perks_power;
-        break;
-    default:
-        break;
-    }
-    return power;
-}
-
 bool player_knows_power(RE::StaticFunctionTag*, int type) {
-    auto pc = RE::PlayerCharacter::GetSingleton();
-    if (pc != nullptr) {
-        RE::SpellItem* power = _get_power_for_type(type);
-        
-        return power != nullptr && pc->HasSpell(power);
-    }
-    return false;
+    return SpellHotbar::Lifecycle::player_has_power(type);
 }
 
 bool toggle_player_knows_power(RE::StaticFunctionTag*, int type) {
-    auto pc = RE::PlayerCharacter::GetSingleton();
-    if (pc != nullptr) {
-        RE::SpellItem* power = _get_power_for_type(type);
-
-        if (power != nullptr) 
-        {
-            if (pc->HasSpell(power)) {
-                pc->RemoveSpell(power);
-            }
-            else {
-                pc->AddSpell(power);
-            }
-            return pc->HasSpell(power);
-        }
-    }
-    return false;
+    return SpellHotbar::Lifecycle::toggle_player_power(type);
 }
 
 bool is_individual_shout_cooldowns(RE::StaticFunctionTag*) {

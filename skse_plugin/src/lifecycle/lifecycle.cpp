@@ -54,19 +54,6 @@ namespace SpellHotbar::Lifecycle {
             return false;
         }
 
-        // SpellHotbarBattleMageInitQuestScript granted a power whose effect script opened the
-        // tree. The tree opens from the config tool now, so a save that still carries the
-        // power loses it.
-        void remove_legacy_battlemage_power()
-        {
-            auto* player = RE::PlayerCharacter::GetSingleton();
-            auto* legacy_power = GameData::spellhotbar_battlemage_open_perks_power;
-            if (player != nullptr && legacy_power != nullptr && player->HasSpell(legacy_power)) {
-                player->RemoveSpell(legacy_power);
-                logger::info("Removed legacy BattleMage opener power; the tree opens from the config tool");
-            }
-        }
-
         void grant_powers(RE::PlayerCharacter* player)
         {
             for (int type = 0; type < 2; ++type) {
@@ -79,7 +66,6 @@ namespace SpellHotbar::Lifecycle {
 
         void finish_first_initialization(RE::PlayerCharacter* player)
         {
-            remove_legacy_battlemage_power();
             grant_powers(player);
 
             const bool profile_loaded = Storage::IO::load_preset("auto_profile.json", false);
@@ -157,7 +143,6 @@ namespace SpellHotbar::Lifecycle {
 
     void on_new_game()
     {
-        remove_legacy_battlemage_power();
         if (should_run_first_initialization(true, Storage::loaded_existing_settings())) {
             begin_first_initialization(true);
         }
@@ -165,7 +150,6 @@ namespace SpellHotbar::Lifecycle {
 
     void on_post_load_game()
     {
-        remove_legacy_battlemage_power();
         if (should_run_first_initialization(false, Storage::loaded_existing_settings())) {
             begin_first_initialization(false);
         } else {
@@ -193,7 +177,6 @@ namespace SpellHotbar::Lifecycle {
             return;
         }
         if (should_run_first_initialization(false, Storage::loaded_existing_settings())) {
-            remove_legacy_battlemage_power();
             begin_first_initialization(false);
         }
     }
@@ -226,7 +209,7 @@ namespace SpellHotbar::Lifecycle {
     // Custom Skills Framework is missing.
     bool open_battlemage_tree()
     {
-        const bool plugin_loaded = GameData::spellhotbar_battlemage_open_perks_power != nullptr;
+        const bool plugin_loaded = GameData::battlemage_plugin_loaded;
         if (!plugin_loaded) {
             logger::warn("Cannot open BattleMage tree: SpellHotbar_BattleMage.esp is not loaded");
             return false;

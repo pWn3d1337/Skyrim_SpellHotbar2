@@ -6,8 +6,9 @@
 //  - SpellHotbarToggleDualCastingEffect: flip SpellHotbar_UseDualCasting when the toggle power
 //    is cast, with the cloak sounds.
 //  - SpellHotbarOpenBattleMagePerkTree / SpellHotbarBattleMageInitQuestScript: the perk tree
-//    opens from the config tool; the opener power is no longer granted.
-// The ESP quests and magic effects keep their records but carry no scripts (plugin-src/).
+//    opens from the config tool; the opener power and its quest no longer exist.
+// The quests and the opener power are gone from the ESPs (plugin-src/); the dual-cast toggle
+// effect stays as the toggle power's carrier and carries no script.
 namespace SpellHotbar::Lifecycle {
     void reset();
     void on_new_game();

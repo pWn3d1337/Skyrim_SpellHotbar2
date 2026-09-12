@@ -344,7 +344,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
             global_slider("Crit Proc Chance", GameData::global_spellhotbar_perks_crit_trigger_chance, 0.0F, 1.0F, "%.2f");
             global_slider("Proc Cooldown", GameData::global_spellhotbar_perks_proc_cooldown, 0.0F, 60.0F, "%.2f");
 
-            const bool plugin_present = GameData::spellhotbar_battlemage_open_perks_power != nullptr;
+            const bool plugin_present = GameData::battlemage_plugin_loaded;
             if (plugin_present) {
                 if (FUCK::Button("Open BattleMage tree")) {
                     if (!Lifecycle::open_battlemage_tree()) {
