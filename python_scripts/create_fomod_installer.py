@@ -22,18 +22,6 @@ used_presets = [
     "controller_bindmenu.json"
 ]
 
-languages = [
-    "ENGLISH",
-    "CZECH",
-    "FRENCH",
-    "GERMAN",
-    "ITALIAN",
-    "JAPANESE",
-    "POLISH",
-    "RUSSIAN",
-    "SPANISH",
-]
-
 
 def copy_files_outfolder(outfile: Path, files: list[tuple[Path, str | Path]], main_folder: str = "data"):
     print(f"Copying to folder: {outfile}...")
@@ -462,11 +450,6 @@ released_files_main_plugin_v2 = [
 released_files_main_plugin_v2 += [
     (dev_mod_root / f"SKSE/Plugins/SpellHotbar/presets/{preset}", (dev_mod_root, main_mod_folder)) for preset in
     used_presets
-]
-
-released_files_main_plugin_v2 += [
-    (dev_mod_root / f"Interface/Translations/SpellHotbar_ENGLISH.txt",
-     f"{main_mod_folder}Interface/Translations/SpellHotbar_{lang}.txt") for lang in languages
 ]
 
 battlemage_perk_files = [

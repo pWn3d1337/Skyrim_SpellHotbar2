@@ -155,7 +155,7 @@ namespace SpellHotbar::GameData {
     extern RE::SpellItem* spellhotbar_toggle_dualcast;
     extern RE::EffectSetting* spellhotbar_spellproc_cd;
     extern RE::SpellItem* spellhotbar_apply_spellproc_cd;
-    //SpellHotbar_BattleMage.esp is in the load order (its globals carry the Custom Skills tree)
+    //SpellHotbar_BattleMage.esp is in the load order (its global is what the Custom Skills config reads)
     extern bool battlemage_plugin_loaded;
 
     extern RE::TESGlobal* global_spellhotbar_perks_override;

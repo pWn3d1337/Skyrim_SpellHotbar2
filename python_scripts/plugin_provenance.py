@@ -78,8 +78,8 @@ def verify_provenance(root: Path = ROOT) -> None:
         (item["plugin"], item["form"].upper()): item
         for item in manifest["allowed_record_changes"]
     }
-    if len(allowed) != 6:
-        raise RuntimeError("provenance must list exactly six sanctioned record changes")
+    if len(allowed) != 7:
+        raise RuntimeError("provenance must list exactly seven sanctioned record changes")
 
     for plugin in manifest["plugins"]:
         source = root / plugin["source"]

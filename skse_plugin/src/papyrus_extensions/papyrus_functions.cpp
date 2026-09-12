@@ -488,7 +488,7 @@ bool toggle_using_key_icons(RE::StaticFunctionTag*) {
 }
 
 bool is_battlemage_avaiable(RE::StaticFunctionTag*) {
-    return SpellHotbar::GameData::spellhotbar_perk_master != nullptr;
+    return SpellHotbar::GameData::battlemage_plugin_loaded;
 }
 
 bool save_icon_edits_to_file(RE::StaticFunctionTag*, std::string filename)
