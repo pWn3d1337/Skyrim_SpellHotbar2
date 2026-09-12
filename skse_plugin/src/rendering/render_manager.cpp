@@ -1,5 +1,4 @@
 #include "render_manager.h"
-#include "texture_registry.h"
 #include "../flick/flick_watch.h"
 #include "../bar/hotbars.h"
 #include "../bar/hotbar.h"
@@ -520,13 +519,12 @@ void RenderManager::on_game_load()
 
 TextureImage* RenderManager::load_texture(const std::string& path)
 {
-    const auto index = TextureRegistry::load(loaded_textures, [&path](TextureImage& texture) {
-        return texture.load(path);
-    });
-    if (!index.has_value()) {
+    TextureImage texture;
+    if (!texture.load(path)) {
         return nullptr;
     }
-    return &loaded_textures[*index];
+    loaded_textures.push_back(std::move(texture));
+    return &loaded_textures.back();
 }
 
 int RenderManager::load_texture_return_index(const std::string& path)

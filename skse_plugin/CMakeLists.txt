@@ -34,7 +34,6 @@ set(source_files src/plugin.cpp
                  src/logger/logger.cpp
                  src/rendering/render_manager.h
                  src/rendering/render_manager.cpp
-                 src/rendering/texture_registry.h
                  src/rendering/bind_drop.h
                  src/rendering/ui_bridge.h
                  src/mcp/bind_capture.h
