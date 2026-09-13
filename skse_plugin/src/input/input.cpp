@@ -286,7 +286,7 @@ namespace SpellHotbar::Input {
                                         if (!Bars::disable_menu_binding && bEvent->IsDown()) {
                                             handled = true;
                                             RE::TESForm* form = get_current_selected_spell_in_menu();
-                                            if (form) {
+                                            if (form && Hotbar::is_valid_formtype_for_hotbar(form)) {
                                                 slot_spell(form, i);
                                             }
                                             if (mod_1.isDown() || mod_2.isDown() || mod_3.isDown()) {

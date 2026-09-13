@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import math
 import json
+import glob
 
 mod_folder_path = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2")
 mod_root_path = Path(r"F:\Skyrim Dev\ADT\mods\Spell Hotbar 2\SKSE\Plugins\SpellHotbar")
@@ -1017,6 +1018,10 @@ if __name__ == "__main__":
         stitch_mod("elemental_mastery_magic")
         i4_mod("elemental_mastery_magic", tmp_icons_dir, esp_name="KittySpellPack02")
 
+    if redo_all_img or False:
+        stitch_mod("nolvus_powers")
+        i4_mod("nolvus_powers", tmp_icons_dir, esp_name="Nolvus Awakening DLC Patch")
+
 
     """contributed mods:"""
     if redo_all_img or False:
@@ -1041,3 +1046,20 @@ if __name__ == "__main__":
     # stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", mod_root_path / "images/squeetsquib_icons", alpha_mask)
     # i4_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\squeetsquib\Icons", tmp_icons_dir,
     #               mod_folder_path / "Interface/SpellHotbar/squeetsquib_icons.swf")
+
+    #root_path = r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\Jade48Games"
+    #for entry in os.scandir(root_path):
+    #    if entry.is_dir():
+    #        #print(entry.path)
+    #        out_fld = entry.name.replace("-", "_").replace(" ", "").lower()
+    #        dir_name = entry.name
+    #        stitch_extra_icons(fr"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\Jade48Games\{dir_name}",
+    #                           mod_root_path / f"images/eso_icons_{out_fld}", alpha_mask)
+    #        #i4_extra_icons(fr"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\Jade48Games\{dir_name}", tmp_icons_dir,
+    #        #               mod_folder_path / f"Interface/SpellHotbar/eso_icons_{out_fld}.swf")
+    #
+    #stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\Jade48Games\Jade48Games-ESOSpellIcons2",
+    #                           mod_root_path / f"images/eso_icons_verse", alpha_mask)
+
+    #stitch_extra_icons(r"F:\Skyrim Dev\Skyrim_SpellHotbar2\python_scripts\user_icons\Jade48Games\Oblivion Remastered Spell Icons",
+    #                           mod_root_path / f"images/oblivion_icons", alpha_mask)
