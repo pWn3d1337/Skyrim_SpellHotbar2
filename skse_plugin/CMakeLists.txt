@@ -44,8 +44,8 @@ set(source_files src/plugin.cpp
                  src/events/eventlistener.cpp
                  src/events/animationeventhook.h
                  src/events/animationeventhook.cpp
-                 src/eventS/gameloop_hook.h
-                 src/eventS/gameloop_hook.cpp
+                 src/events/gameloop_hook.h
+                 src/events/gameloop_hook.cpp
                  src/game_data/spell_data_csv_loader.h
                  src/game_data/spell_data_csv_loader.cpp
                  src/game_data/spell_casteffect_csv_loader.h
