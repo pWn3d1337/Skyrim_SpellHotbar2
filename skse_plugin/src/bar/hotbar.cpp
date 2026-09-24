@@ -2,6 +2,7 @@
 #include "../logger/logger.h"
 #include "../storage/storage.h"
 #include "hotbars.h"
+#include "hud_geometry.h"
 #include "../game_data/game_data.h"
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
@@ -342,10 +343,10 @@ namespace SpellHotbar
         const float text_offset_y = icon * 0.06f;
 
         //Same wrap trigger as draw_in_menu: 60% of the display, never an input to the size.
-        int row_len = static_cast<int>(std::floor((screensize_x * 0.60f + spacing) / (icon + spacing)));
-        row_len = std::clamp(row_len, 1, static_cast<int>(m_barsize));
+        //HudGeometry holds the row layout, which the bar-position editor shares.
+        const HudGeometry::BarLayout geo = HudGeometry::dock_row(screensize_x, screensize_y, static_cast<int>(m_barsize),
+                                                                 Bars::menu_slot_scale, spacing, Bars::use_keybind_icons());
         const float key_strip_h = Bars::use_keybind_icons() ? icon * 0.5f : 0.0f;
-        const float row_h = icon + key_strip_h + spacing;
 
         const ImU32 white = IM_COL32_WHITE;
 
@@ -358,9 +359,8 @@ namespace SpellHotbar
                 skill_dat = GameData::get_spell_data(form, true, true);
             }
 
-            const int col_i = i % row_len, row_i = i / row_len;
-            const float x = col_i * (icon + spacing);
-            const float y = row_i * row_h;
+            const float x = geo.slots[i].x;
+            const float y = geo.slots[i].y;
 
             size_t count{ 0 };
             if (skill.consumed != consumed_type::none) {
@@ -427,9 +427,8 @@ namespace SpellHotbar
             frame.slots.push_back(Flick::DockSlot{ x, y, icon, icon, describe_slot(i, mod) });
         }
 
-        const int rows = (m_barsize + row_len - 1) / row_len;
-        frame.width = row_len * icon + (row_len - 1) * spacing;
-        frame.height = rows * (icon + key_strip_h) + (rows - 1) * spacing;
+        frame.width = geo.width;
+        frame.height = geo.height;
         return frame;
     }
 
@@ -509,12 +508,6 @@ namespace SpellHotbar
         return cd_prog;
     }
 
-    ImVec2 rotate_around_origin(ImVec2 p, float _sin, float _cos) {
-        float x_rot = p.x * _cos - p.y * _sin;
-        float y_rot = p.x * _sin + p.y * _cos;
-        return ImVec2(x_rot, y_rot);
-    }
-
     bool spell_is_currently_equipped(const SpellHotbar::SlottedSkill& skill, RE::PlayerCharacter* pc) {
         //If oblivion or equip mode and currently equipped, highlight the slot
         if ((Input::is_oblivion_mode() || Input::is_equip_mode()) && pc) {
@@ -592,80 +585,28 @@ namespace SpellHotbar
         ctx.bar_name = this->get_name();
         ctx.pc = RE::PlayerCharacter::GetSingleton();
 
-        const float icon = static_cast<float>(ctx.icon_size);
-        const float spacing = Bars::slot_spacing;
         // The text sizes are the ImGui bar's: the loaded font drew at 28 px on a 1440 px tall
         // display, and the key text was that times (slot_scale + 0.25) -- what
-        // RenderManager::get_scaled_text_size_multiplier used to answer.
-        const float base_px = screensize_y * (28.0f / 1440.0f);
-        layer.text_px = base_px * (Bars::slot_scale + 0.25f);
+        // RenderManager::get_scaled_text_size_multiplier used to answer. The slot positions and
+        // the name's size come from HudGeometry, which the bar-position editor shares.
+        const HudGeometry::BarLayout geo = HudGeometry::hud_bar(
+            screensize_x, screensize_y, static_cast<int>(m_barsize), static_cast<int>(Bars::bar_row_len),
+            static_cast<HudGeometry::Shape>(Bars::layout), Bars::slot_scale, Bars::slot_spacing,
+            Bars::bar_circle_radius, Bars::bar_cross_distance, Bars::use_keybind_icons());
+        layer.text_px = geo.name_px * (Bars::slot_scale + 0.25f);
+
+        for (size_t i = 0; i < geo.slots.size(); i++) {
+            const int slot = static_cast<int>(i);
+            auto [skill, inherited] = get_skill_in_bar_with_inheritance(slot, mod, true);
+            push_single_skill(layer, skill, slot, geo.slots[i].x, geo.slots[i].y, ctx);
+        }
 
         // The bar's name, centred over the slots, on its own fade, at the host font's own size.
-        const float name_px = base_px;
-        const float name_h = name_px + icon * 0.05f;
         const int name_alpha = static_cast<int>(255 * alpha * text_alpha);
-
-        float grid_w{ 0.0f }, grid_h{ 0.0f };
-        const float top = name_h;
-
-        if (Bars::layout == Bars::bar_layout::CIRCLE && m_barsize >= 3) {
-            grid_w = (Bars::bar_circle_radius + 1.125f) * icon * 2.0f;
-            grid_h = grid_w;
-            const float c = (grid_w - icon) * 0.5f;
-            const double angle_rad = (2.0 * std::numbers::pi) / static_cast<double>(m_barsize);
-            const float _sin = std::sinf(static_cast<float>(angle_rad));
-            const float _cos = std::cosf(static_cast<float>(angle_rad));
-            ImVec2 offset{ 0.0f, -(Bars::bar_circle_radius + 0.5f) * icon };
-            for (int i = 0; i < m_barsize; i++) {
-                auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
-                push_single_skill(layer, skill, i, c + offset.x, top + c + offset.y, ctx);
-                offset = rotate_around_origin(offset, _sin, _cos);
-            }
-        }
-        else if (Bars::layout == Bars::bar_layout::CROSS && m_barsize >= 4) {
-            const int numcrosses = static_cast<int>(std::ceil(static_cast<float>(m_barsize) / 4.0f));
-            const float cross_gap = screensize_x * Bars::bar_cross_distance;
-            const float pitch = icon + spacing;
-            for (int cross = 0; cross < numcrosses; cross++) {
-                const float base_x = cross * (3.0f * pitch + cross_gap);
-                const int ind = cross * 4;
-                const std::array<std::pair<float, float>, 4> at{ {
-                    { base_x + pitch, 0.0f },          // top
-                    { base_x, pitch },                 // left
-                    { base_x + 2.0f * pitch, pitch },  // right
-                    { base_x + pitch, 2.0f * pitch },  // bottom
-                } };
-                for (int k = 0; k < 4; ++k) {
-                    auto [skill, inherited] = get_skill_in_bar_with_inheritance(ind + k, mod, true);
-                    push_single_skill(layer, skill, ind + k, at[k].first, top + at[k].second, ctx);
-                }
-            }
-            grid_w = numcrosses * 3.0f * pitch - spacing + cross_gap * (numcrosses - 1);
-            grid_h = 3.0f * pitch - spacing;
-        }
-        else {
-            const int row_len = std::max(1, static_cast<int>(Bars::bar_row_len));
-            const float key_strip = Bars::use_keybind_icons() ? icon * 0.35f * keybind_icon_pos_factor : 0.0f;
-            const float row_pitch = icon + spacing + key_strip;
-            int rows = 0;
-            for (int i = 0; i < m_barsize; i++) {
-                auto [skill, inherited] = get_skill_in_bar_with_inheritance(i, mod, true);
-                const int col_i = i % row_len, row_i = i / row_len;
-                rows = row_i + 1;
-                push_single_skill(layer, skill, i, col_i * (icon + spacing), top + row_i * row_pitch, ctx);
-            }
-            grid_w = std::min(row_len, static_cast<int>(m_barsize)) * (icon + spacing) - spacing;
-            grid_h = rows * row_pitch - spacing;
-            if (Bars::use_keybind_icons()) {
-                // The key glyph hangs below the slot (drawn at 0.8 of it, half a slot tall).
-                grid_h += icon * 0.3f;
-            }
-        }
-
-        layer.texts.push_back(Flick::DockText{ grid_w * 0.5f, 0.0f, 3, this->get_name(),
-                                               static_cast<unsigned>(IM_COL32(255, 255, 255, name_alpha)), name_px });
-        layer.width = grid_w;
-        layer.height = top + grid_h;
+        layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, 0.0f, 3, this->get_name(),
+                                               static_cast<unsigned>(IM_COL32(255, 255, 255, name_alpha)), geo.name_px });
+        layer.width = geo.width;
+        layer.height = geo.height;
         layer.visible = true;
     }
 

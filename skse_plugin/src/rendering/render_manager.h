@@ -4,6 +4,7 @@
 #endif
 #include "../logger/logger.h"
 #include "../bar/hotbars.h"
+#include "../bar/hud_geometry.h"
 #include "../game_data/game_data.h"
 
 namespace SpellHotbar {
@@ -34,9 +35,9 @@ namespace SpellHotbar {
 
     inline float get_slot_height(float screensize_y) { return screensize_y / 26.0f; }
 
-    inline float get_hud_slot_height(float screensize_y, float bar_slot_scale) { return (screensize_y / 13.0f) * bar_slot_scale; }
+    inline float get_hud_slot_height(float screensize_y, float bar_slot_scale) { return HudGeometry::hud_slot_height(screensize_y, bar_slot_scale); }
 
-    inline constexpr float keybind_icon_pos_factor = 0.8f;
+    inline constexpr float keybind_icon_pos_factor = HudGeometry::keybind_icon_pos_factor;
 
     class RenderManager {
     private:

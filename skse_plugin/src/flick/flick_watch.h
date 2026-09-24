@@ -31,6 +31,17 @@ namespace SpellHotbar::Flick {
     // kPostLoadGame like register_windows(). Idempotent.
     void register_hud_windows();
 
+    // Where a bar's slots really land, relative to where HudGeometry says they go. Each bar
+    // window measures this on every frame it draws: the window's own padding, ImGui truncating
+    // the window position to whole pixels, anything the host adds. The bar-position editor draws
+    // its preview slots through it, so they sit on the bar's pixels and not just near them.
+    // `a_bar`: 0 the HUD bar, 1 the Oblivion bar, 2 the in-menu dock. Zero until that bar has drawn.
+    struct SlotShift {
+        float x{0.0f}, y{0.0f};
+    };
+    SlotShift measured_slot_shift(int a_bar);
+    void record_slot_shift(int a_bar, float a_x, float a_y);
+
     // True while any FLICK surface other than SH2's own owns the screen -- another guest's window
     // (Fitting Room, Menu Studio) or FLICK's own F7 config menu.
     //

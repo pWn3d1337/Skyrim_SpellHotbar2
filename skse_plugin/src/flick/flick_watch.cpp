@@ -2,6 +2,7 @@
 #include "flick_images.h"
 #include "flick_windows.h"
 #include "ui/config_tool.h"
+#include "../bar/hud_geometry.h"
 
 // This translation unit is built without the shared PCH (see CMakeLists, target sh2_flick), so it
 // pulls its own prerequisites. FUCK_API.h's inline Connect() calls GetModuleHandleW,
@@ -140,25 +141,25 @@ namespace SpellHotbar::Flick {
                 // scripts/dock_mock.py, which renders this layout offline so it can be LOOKED AT
                 // before it ships. Change them there first, look, then here.
                 ImFont* font = FUCK::GetFont(FUCK::Font::kRegular);
-                const float icon = std::max(frame.icon, 16.0f);
-                const float text_px = icon * 0.32f;
-                const float header_px = icon * 0.50f;
                 // The row sets the rhythm: the arrows are slot-sized cells in it, and every
-                // other gap is the slot spacing.
-                const float arrow_w = icon;
-                const float gap = std::max(frame.spacing, 2.0f);
-                // Name to row is one spacing; the sides and the bottom get one and a half, so
-                // the gear is not glued to the right edge.
-                const float header_gap = gap;
-                const float pad = gap;
-                const float pad_x = gap * 1.5f;
-                const float pad_bottom = gap * 1.5f;
+                // other gap is the slot spacing. Name to row is one spacing; the sides and the
+                // bottom get one and a half, so the gear is not glued to the right edge. The
+                // numbers live in HudGeometry::dock_plate, which the bar-position editor shares.
+                const HudGeometry::DockPlate geo = HudGeometry::dock_plate(frame.icon, frame.spacing, frame.width, frame.height);
+                const float text_px = geo.text_px;
+                const float header_px = geo.header_px;
+                const float arrow_w = geo.arrow_w;
+                const float gap = geo.gap;
+                const float header_gap = geo.header_gap;
+                const float pad = geo.pad;
+                const float pad_x = geo.pad_x;
+                const float pad_bottom = geo.pad_bottom;
 
                 DockActions clicked;
-                const float row_w = std::max(frame.width, 1.0f);
-                const float row_h = std::max(frame.height, 1.0f);
-                const float total_w = arrow_w + gap + row_w + gap + arrow_w;
-                const float total_h = header_px + header_gap + row_h;
+                const float row_w = geo.row_w;
+                const float row_h = geo.row_h;
+                const float total_w = geo.total_w;
+                const float total_h = geo.total_h;
                 // The plate is part of the layout, not an overhang: ImGui clips a window's draw
                 // list to the window rect, so a plate drawn outside the reserved extent lost its
                 // margin wherever FLICK's own padding was thinner than `pad`. Reserve it, then
@@ -218,6 +219,16 @@ namespace SpellHotbar::Flick {
                 }
 
                 const ImVec2 origin(top.x + arrow_w + gap, row_y);
+
+                // How far the slot row landed from where HudGeometry puts it for a plate of this
+                // size, past ImGui's truncation of the window position, for the bar-position editor.
+                {
+                    const ImVec2 d = FUCK::GetDisplaySize();
+                    const HudGeometry::Point aim = HudGeometry::anchored_corner(
+                        frame.anchor, d.x, d.y, frame.offset_x, frame.offset_y, geo.plate_w, geo.plate_h);
+                    record_slot_shift(2, origin.x - (std::trunc(aim.x) + geo.row_origin.x),
+                                      origin.y - (std::trunc(aim.y) + geo.row_origin.y));
+                }
 
                 for (const DockImage& img : frame.images) {
                     FUCK::Image* tex = image_for(img.path);
@@ -313,22 +324,9 @@ namespace SpellHotbar::Flick {
             void place(const DockFrame& a_frame) const
             {
                 const ImVec2 d = FUCK::GetDisplaySize();
-                const float ox = a_frame.offset_x, oy = a_frame.offset_y;
-                ImVec2 pos, pivot;
-                switch (a_frame.anchor) {
-                case 1:  pos = ImVec2(ox, d.y * 0.5f + oy);        pivot = ImVec2(0.0f, 0.5f); break;  // LEFT
-                case 2:  pos = ImVec2(d.x * 0.5f + ox, oy);        pivot = ImVec2(0.5f, 0.0f); break;  // TOP
-                case 3:  pos = ImVec2(d.x + ox, d.y * 0.5f + oy);  pivot = ImVec2(1.0f, 0.5f); break;  // RIGHT
-                case 4:  pos = ImVec2(ox, d.y + oy);               pivot = ImVec2(0.0f, 1.0f); break;  // BOTTOM_LEFT
-                case 5:  pos = ImVec2(ox, oy);                     pivot = ImVec2(0.0f, 0.0f); break;  // TOP_LEFT
-                case 6:  pos = ImVec2(d.x + ox, d.y + oy);         pivot = ImVec2(1.0f, 1.0f); break;  // BOTTOM_RIGHT
-                case 7:  pos = ImVec2(d.x + ox, oy);               pivot = ImVec2(1.0f, 0.0f); break;  // TOP_RIGHT
-                case 8:  pos = ImVec2(d.x * 0.5f + ox, d.y * 0.5f + oy); pivot = ImVec2(0.5f, 0.5f); break;  // CENTER
-                case 0:                                                                                  // BOTTOM
-                default: pos = ImVec2(d.x * 0.5f + ox, d.y + oy);  pivot = ImVec2(0.5f, 1.0f); break;
-                }
-                FUCK::SetWindowPos(ImVec2(pos.x - pivot.x * last_size_.x, pos.y - pivot.y * last_size_.y),
-                                   ImGuiCond_Always);
+                const HudGeometry::Point at = HudGeometry::anchored_corner(a_frame.anchor, d.x, d.y, a_frame.offset_x,
+                                                                           a_frame.offset_y, last_size_.x, last_size_.y);
+                FUCK::SetWindowPos(ImVec2(at.x, at.y), ImGuiCond_Always);
             }
 
             std::atomic_bool open_{false};

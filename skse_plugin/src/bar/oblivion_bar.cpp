@@ -1,4 +1,5 @@
 #include "oblivion_bar.h"
+#include "hud_geometry.h"
 #include "../rendering/render_manager.h"
 #include "../casts/casting_controller.h"
 #include "../input/keybinds.h"
@@ -174,12 +175,12 @@ namespace SpellHotbar::Bars {
 			const bool vertical = Bars::oblivion_bar_vertical;
 			const bool draw_potion = Input::key_oblivion_potion.isValidBound();
 			const bool show_power = Bars::oblivion_bar_show_power;
-			const float pitch = icon + Bars::oblivion_slot_spacing;
-			int n = 0;
+			const int count = 1 + (draw_potion ? 1 : 0) + (show_power ? 1 : 0);
+			const HudGeometry::BarLayout geo = HudGeometry::oblivion_bar(
+				screensize_y, count, vertical, Bars::oblivion_slot_scale, Bars::oblivion_slot_spacing, Bars::use_keybind_icons());
+			size_t n = 0;
 			const auto place = [&](SlottedSkill& slot, int slot_index) {
-				const float x = vertical ? 0.0f : n * pitch;
-				const float y = vertical ? n * pitch : 0.0f;
-				Hotbar::push_single_skill(layer, slot, slot_index, x, y, ctx);
+				Hotbar::push_single_skill(layer, slot, slot_index, geo.slots[n].x, geo.slots[n].y, ctx);
 				++n;
 			};
 			place(m_spell_slot, static_cast<int>(Input::keybind_id::oblivion_cast));
@@ -189,12 +190,8 @@ namespace SpellHotbar::Bars {
 			if (show_power) {
 				place(m_power_slot, static_cast<int>(Input::keybind_id::dummy_key_vanilla_shout));
 			}
-			const float extent = n * pitch - Bars::oblivion_slot_spacing;
-			layer.width = vertical ? icon : extent;
-			layer.height = vertical ? extent : icon;
-			if (Bars::use_keybind_icons()) {
-				layer.height += icon * 0.3f;
-			}
+			layer.width = geo.width;
+			layer.height = geo.height;
 			layer.visible = true;
 		}
 	}

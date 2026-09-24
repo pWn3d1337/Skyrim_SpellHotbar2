@@ -1,6 +1,7 @@
 #include "flick_watch.h"
 #include "flick_images.h"
 #include "../rendering/ui_bridge.h"
+#include "../bar/hud_geometry.h"
 
 
 // The gameplay HUD bars as FLICK guest windows. FLICK is the only ImGui in the plugin's life,
@@ -19,6 +20,9 @@ namespace SpellHotbar::Flick {
         // asks for it in its Draw(); SH2_OblivionHud, registered after it, draws the second
         // layer of the same frame. Both run on FLICK's render pass in registration order.
         UiBridge::HudFrame current_frame;
+
+        // measured_slot_shift(): the HUD bar, the Oblivion bar, the dock. Render thread only.
+        std::array<SlotShift, 3> slot_shifts{};
 
         class HudLayerWindow : public FUCK::IWindow
         {
@@ -74,6 +78,16 @@ namespace SpellHotbar::Flick {
                 const ImVec2 origin(corner.x + margin_, corner.y + margin_);
                 ImFont* font = FUCK::GetFont(FUCK::Font::kRegular);
 
+                // How far the content landed from where place() aimed it, past ImGui's
+                // truncation of the window position, for the bar-position editor.
+                {
+                    const ImVec2 d = FUCK::GetDisplaySize();
+                    const HudGeometry::Point aim = HudGeometry::anchored_corner(
+                        layer.anchor, d.x, d.y, layer.offset_x, layer.offset_y, layer.width, layer.height);
+                    record_slot_shift(builds_frame_ ? 0 : 1, origin.x - (std::trunc(aim.x - margin_) + margin_),
+                                      origin.y - (std::trunc(aim.y - margin_) + margin_));
+                }
+
                 for (const DockImage& img : layer.images) {
                     FUCK::Image* tex = image_for(img.path);
                     if (tex == nullptr) {
@@ -121,32 +135,21 @@ namespace SpellHotbar::Flick {
             }
 
         private:
-            // Bars::anchor_point, the same table as the dock's place(): the anchor names the
-            // screen point and the pivot of the window that sits on it.
+            // Bars::anchor_point through HudGeometry, the table the dock and the bar-position
+            // editor use too: the anchor names the screen point and the pivot of the window
+            // that sits on it.
             void place(const HudLayer& a_layer) const
             {
                 const ImVec2 d = FUCK::GetDisplaySize();
-                const float ox = a_layer.offset_x, oy = a_layer.offset_y;
-                ImVec2 pos, pivot;
-                switch (a_layer.anchor) {
-                case 1:  pos = ImVec2(ox, d.y * 0.5f + oy);        pivot = ImVec2(0.0f, 0.5f); break;  // LEFT
-                case 2:  pos = ImVec2(d.x * 0.5f + ox, oy);        pivot = ImVec2(0.5f, 0.0f); break;  // TOP
-                case 3:  pos = ImVec2(d.x + ox, d.y * 0.5f + oy);  pivot = ImVec2(1.0f, 0.5f); break;  // RIGHT
-                case 4:  pos = ImVec2(ox, d.y + oy);               pivot = ImVec2(0.0f, 1.0f); break;  // BOTTOM_LEFT
-                case 5:  pos = ImVec2(ox, oy);                     pivot = ImVec2(0.0f, 0.0f); break;  // TOP_LEFT
-                case 6:  pos = ImVec2(d.x + ox, d.y + oy);         pivot = ImVec2(1.0f, 1.0f); break;  // BOTTOM_RIGHT
-                case 7:  pos = ImVec2(d.x + ox, oy);               pivot = ImVec2(1.0f, 0.0f); break;  // TOP_RIGHT
-                case 8:  pos = ImVec2(d.x * 0.5f + ox, d.y * 0.5f + oy); pivot = ImVec2(0.5f, 0.5f); break;  // CENTER
-                case 0:                                                                                  // BOTTOM
-                default: pos = ImVec2(d.x * 0.5f + ox, d.y + oy);  pivot = ImVec2(0.5f, 1.0f); break;
-                }
                 // The plugin side reports the content extent it is about to draw, so the pivot
                 // can use it directly and the window lands on its anchor on the first frame.
                 // The window is the content plus the clip margin on each side; the CONTENT is
                 // what sits on the anchor, so the margin comes off the window position.
                 const ImVec2 size = a_layer.visible ? ImVec2(a_layer.width, a_layer.height) : last_size_;
                 const float m = a_layer.visible ? margin_ : 0.0f;  // last_size_ already holds the margin
-                FUCK::SetWindowPos(ImVec2(pos.x - pivot.x * size.x - m, pos.y - pivot.y * size.y - m), ImGuiCond_Always);
+                const HudGeometry::Point at = HudGeometry::anchored_corner(a_layer.anchor, d.x, d.y, a_layer.offset_x,
+                                                                           a_layer.offset_y, size.x, size.y);
+                FUCK::SetWindowPos(ImVec2(at.x - m, at.y - m), ImGuiCond_Always);
             }
 
             const char* id_;
@@ -158,6 +161,18 @@ namespace SpellHotbar::Flick {
 
         HudLayerWindow* hud_window{ nullptr };
         HudLayerWindow* oblivion_window{ nullptr };
+    }
+
+    SlotShift measured_slot_shift(int a_bar)
+    {
+        return a_bar >= 0 && a_bar < static_cast<int>(slot_shifts.size()) ? slot_shifts[a_bar] : SlotShift{};
+    }
+
+    void record_slot_shift(int a_bar, float a_x, float a_y)
+    {
+        if (a_bar >= 0 && a_bar < static_cast<int>(slot_shifts.size())) {
+            slot_shifts[a_bar] = SlotShift{ a_x, a_y };
+        }
     }
 
     void register_hud_windows()

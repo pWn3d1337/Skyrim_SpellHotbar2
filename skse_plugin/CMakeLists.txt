@@ -51,6 +51,7 @@ set(source_files src/plugin.cpp
                  src/bar/hotbar.h
                  src/bar/hotbar.cpp
                  src/bar/hotbars.h
+                 src/bar/hud_geometry.h
                  src/bar/hotbars.cpp
                  src/bar/oblivion_bar.h
                  src/bar/oblivion_bar.cpp
