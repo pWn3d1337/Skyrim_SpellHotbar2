@@ -224,7 +224,7 @@ namespace SpellHotbar
                 return false;
             }
         }
-        return false;;
+        return false;
     }
 
     void Hotbar::rotate_skill_hand_assingment(RE::SpellItem* spell, SlottedSkill & skill)
@@ -237,7 +237,7 @@ namespace SpellHotbar
             skill.hand = hand_mode::right_hand;
             break;
         case hand_mode::right_hand:
-            if (!spell->GetNoDualCastModifications() && GameData::player_can_dualcast_spell(spell)) {
+            if (Input::is_equip_mode() || (!spell->GetNoDualCastModifications() && GameData::player_can_dualcast_spell(spell))) {
                 skill.hand = hand_mode::dual_hand;
             }
             else {

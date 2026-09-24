@@ -103,3 +103,6 @@ if __name__ == "__main__":
 
     #cleanse_images(f"{input_dir_root}/modded_spell_icons/elemental_mastery_magic",
     #               f"{output_dir_root}/modded_spell_icons/elemental_mastery_magic", subdirs=False)
+
+    #cleanse_images(f"{input_dir_root}/modded_spell_icons/nolvus_powers",
+    #               f"{output_dir_root}/modded_spell_icons/nolvus_powers", subdirs=False)

@@ -123,8 +123,17 @@ namespace SpellHotbar::Input {
                         break;
                     }
 
-                    RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, form->As<RE::SpellItem>(), slot);
-                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25);
+                    RE::SpellItem* spell = form->As<RE::SpellItem>();
+                    if (spell != nullptr) {
+                        if (slot == GameData::equip_slot_both_hand && spell->GetEquipSlot() == GameData::equip_slot_either_hand) {
+                            RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, spell, GameData::equip_slot_right_hand);
+                            RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, spell, GameData::equip_slot_left_hand);
+                        }
+                        else {
+                            RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, spell, slot);
+                        }
+                        SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.25);
+                    }
                 }
                 else if (skill.type == slot_type::shout)
                 {
