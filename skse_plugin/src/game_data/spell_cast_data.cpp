@@ -142,19 +142,4 @@ namespace SpellHotbar::GameData {
         }
         return ret;
     }
-
-    float Spell_cast_data::get_ritual_conc_anim_prerelease_time(int anim) {
-        float pre_release_anim{ 0.0f };
-        if (anim == cast_anims_ritual_conc[0]) {
-            auto cam = RE::PlayerCamera::GetSingleton();
-            if (cam && cam->IsInFirstPerson()) {
-                pre_release_anim = 1.5f;
-            }
-            else
-            {
-                pre_release_anim = 1.0f;
-            }
-        }
-        return pre_release_anim;
-    }
 }

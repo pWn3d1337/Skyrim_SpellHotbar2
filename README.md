@@ -18,13 +18,13 @@ If you have created cool Screenshots or video clips using the mods I could also 
 [SKSE](https://skse.silverlock.org/)  
 [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)  
 [FLICK](https://www.nexusmods.com/skyrimspecialedition/mods/181603) - hosts every window, the in-menu dock, the HUD bars and the configuration tool (see below)  
-[OAR](https://www.nexusmods.com/skyrimspecialedition/mods/92109)  
+[Pandora Behaviour Engine+](https://www.nexusmods.com/skyrimspecialedition/mods/133232) or Nemesis Unlimited Behavior Engine - the cast animations are an own behavior, run the engine with the "Spell Hotbar 2 - Cast Behavior" patch enabled  
 [Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702) - if you want icons in the swf menu  
 [Custom Skill Framework v3](https://www.nexusmods.com/skyrimspecialedition/mods/41780) - when using custom perk tree, a v2 compatible config is also provided for 1.5.97 users    
 [Sprint Sneak Movement Speed Fix](https://www.nexusmods.com/skyrimspecialedition/mods/86631) - fixes sneak hotbar casting related movement speed  
 [ImGui Icons](https://www.nexusmods.com/skyrimspecialedition/mods/114790) - OPTIONAL, allows keybind icons to be used instead of text, different styles also work.
 
-Opposed to v1 DAR is no longer supported as OAR is a superior alternative in any way and has an easier file structure.  
+Casting no longer uses the shout animations, so neither DAR nor OAR is required. OAR can still be used to replace the cast animations.  
 All papyrus lib requirements have been dropped.
 
 ## Supported Skyrim Version
@@ -34,7 +34,7 @@ The mod is built with CommonLib-NG and was tested on 1.5.97, 1.6.640 and 1.6.107
 * Keep a backup of your save.  
 * Do a clean save (save game without mod). Make sure to remove all Files from v1. Use [Resaver](https://www.nexusmods.com/skyrimspecialedition/mods/5031/) to remove unattached script fragments.  
 * Make sure your Game still works.  
-* Install V2 (Also check changed requirements, OAR is now needed)
+* Install V2 (Also check changed requirements, a behavior engine run is now needed)
 
 # Changes to v1
 

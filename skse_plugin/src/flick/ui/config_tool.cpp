@@ -1,5 +1,6 @@
 #include "config_tool.h"
 #include "../../lifecycle/lifecycle.h"
+#include "../../casts/casting_controller.h"
 
 #include "widgets.h"
 #include "../flick_watch.h"
@@ -22,6 +23,9 @@
 // Every call here goes through FUCK::, never ImGui:: (flick_pch.h).
 namespace SpellHotbar::FlickUi::ConfigTool {
     namespace {
+        // Development helper tab with cheats (skills, perk points). Set to false for releases.
+        constexpr bool k_testing_tab_enabled{ true };
+
         constexpr const char* k_keybind_labels[] = {
             "Hotbar Skill 1",
             "Hotbar Skill 2",
@@ -593,6 +597,72 @@ namespace SpellHotbar::FlickUi::ConfigTool {
             }
         }
 
+        // Cheats that shorten test setups, the tab only exists while k_testing_tab_enabled is set.
+        void draw_testing()
+        {
+            auto* pc = RE::PlayerCharacter::GetSingleton();
+            if (!pc) {
+                return;
+            }
+
+            if (FUCK::Button("Set All Skills to 100")) {
+                constexpr auto first = static_cast<int>(RE::ActorValue::kOneHanded);
+                constexpr auto last = static_cast<int>(RE::ActorValue::kEnchanting);
+                for (int av = first; av <= last; ++av) {
+                    pc->AsActorValueOwner()->SetBaseActorValue(static_cast<RE::ActorValue>(av), 100.0f);
+                }
+                status_message = "Set all skills to 100.";
+            }
+
+            if (FUCK::Button("Add 10 Perk Points")) {
+                // The game stores the count in a signed byte.
+                auto& perk_count = pc->GetGameStatsData().perkCount;
+                perk_count = static_cast<std::int8_t>(std::min(static_cast<int>(perk_count) + 10, 127));
+                status_message = "Perk points: " + std::to_string(perk_count);
+            }
+
+            if (FUCK::Button("Add Spells")) {
+                // Skyrim.esm form ids (python_scripts/spell_lists2), one or two spells per cast type
+                constexpr RE::FormID spells[] = {
+                    0x0001C789, // Fireball: aimed
+                    0x0002B96C, // Ice Spike: aimed
+                    0x00012FCD, // Flames: aimed concentration
+                    0x0002DD2A, // Sparks: aimed concentration
+                    0x00035D7F, // Wall of Flames: aimed concentration, ground
+                    0x0007A82B, // Fire Storm: ritual, self
+                    0x0007E8E4, // Blizzard: ritual, self
+                    0x0007E8E5, // Lightning Storm: ritual, aimed concentration
+                    0x0002F3B8, // Fast Healing: self
+                    0x000B62EF, // Close Wounds: self
+                    0x00012FCC, // Healing: self concentration
+                    0x0005AD5C, // Oakflesh: self buff
+                    0x0004DEE8, // Courage: aimed buff
+                    0x00012FD2, // Heal Other: aimed
+                    0x0004D3F2, // Healing Hands: aimed concentration
+                    0x0007E8DD, // Call to Arms: ritual, buff
+                    0x00013018, // Lesser Ward: ward
+                    0x000204C3, // Conjure Flame Atronach: target location
+                };
+                int added{ 0 };
+                for (const RE::FormID id : spells) {
+                    auto* spell = RE::TESForm::LookupByID<RE::SpellItem>(id);
+                    if (spell && !pc->HasSpell(spell)) {
+                        pc->AddSpell(spell);
+                        ++added;
+                    }
+                }
+                status_message = "Added " + std::to_string(added) + " spell(s).";
+            }
+
+            // Not saved.
+            FUCK::SeparatorText("Cast Animation");
+            checkbox("Full Body Cast Pose When Standing", &casts::CastingController::cast_full_body_when_standing);
+
+            if (!status_message.empty()) {
+                FUCK::TextUnformatted(status_message.c_str());
+            }
+        }
+
         class Tool : public FUCK::ITool
         {
         public:
@@ -621,6 +691,10 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                         tab.draw();
                         FUCK::EndTabItem();
                     }
+                }
+                if (k_testing_tab_enabled && FUCK::BeginTabItem("Testing")) {
+                    draw_testing();
+                    FUCK::EndTabItem();
                 }
                 FUCK::EndTabBar();
             }

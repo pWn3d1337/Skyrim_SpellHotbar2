@@ -62,6 +62,7 @@ namespace SpellHotbar::casts::CastingController {
 		virtual ~CastingInstance() = default;
 
 		virtual bool is_anim_ok(RE::PlayerCharacter* pc) const;
+		virtual const std::string_view get_start_anim() const override;
 		virtual const std::string_view get_end_anim() const;
 		virtual const std::string_view get_cancel_anim() const;
 
@@ -107,8 +108,6 @@ namespace SpellHotbar::casts::CastingController {
 		RE::BSSoundHandle m_loop_sound_instance;
 		bool m_played_release;
 		float m_release_anim_time;
-		bool m_played_pre_release;
-		float m_pre_release_anim_time;
 		float m_manacost;
 		hand_mode m_used_hand;
 		RE::SpellItem* m_equip_ability;
@@ -158,7 +157,7 @@ namespace SpellHotbar::casts::CastingController {
 	//Ritual style concentration spell, 2hands and blocked movement
 	class CastingInstanceSpellRitualConcentration : public CastingInstanceSpellConcentration {
 	public:
-		CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot, float pre_release_anim_time);
+		CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot);
 		virtual ~CastingInstanceSpellRitualConcentration() = default;
 
 		virtual bool blocks_movement() const override;
@@ -214,6 +213,9 @@ namespace SpellHotbar::casts::CastingController {
 		bool m_spellproc;
 	};
 
+
+	//While the player stands still the whole body takes the pose of the cast clip, not only the cast arm. Switch for testing.
+	extern bool cast_full_body_when_standing;
 
 	void update_cast(float delta);
 

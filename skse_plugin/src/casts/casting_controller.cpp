@@ -1,17 +1,29 @@
 #include "casting_controller.h"
+#include "cast_behavior_anims.h"
 #include "../logger/logger.h"
 #include "../game_data/game_data.h"
 #include "../input/keybinds.h"
 #include "../rendering/render_manager.h"
 #include "spell_proc.h"
+#include <array>
+#include <atomic>
+#include <cmath>
+#include <numbers>
 
 namespace SpellHotbar::casts::CastingController {
 
 	std::unique_ptr<BaseCastingInstance> current_cast = nullptr;
 
+	bool cast_full_body_when_standing{ true };
+
+	namespace cast_overlay {
+		void stop();
+	}
+
 	void reset_cast() {
 		current_cast->on_reset();
 		current_cast.reset();
+		cast_overlay::stop();
 	}
 
 	//Play sound on actor and return soundhandle
@@ -49,8 +61,6 @@ namespace SpellHotbar::casts::CastingController {
 		m_loop_sound_instance(),
 		m_played_release(false),
 		m_release_anim_time(0.0f),
-		m_played_pre_release(false),
-		m_pre_release_anim_time(0.0f),
 		m_manacost(manacost),
 		m_used_hand(used_hand),
 		m_equip_ability(nullptr),
@@ -137,9 +147,275 @@ namespace SpellHotbar::casts::CastingController {
 		return m_total_casttime + m_gcd;
 	}
 
+	//Events and variable of the custom cast behavior (SpellHotbarCast.hkx), see python_scripts/build_cast_behavior.py
+	constexpr std::string_view cast_behavior_start_event{ "SHB_CastStart"sv };
+	constexpr std::string_view cast_behavior_release_event{ "SHB_CastRelease"sv };
+	constexpr std::string_view cast_behavior_stop_event{ "SHB_CastStop"sv };
+	constexpr std::string_view cast_behavior_active_var{ "SHB_bCasting"sv };
+	constexpr std::string_view cast_behavior_anim_var{ "SHB_iAnim"sv };
+
+	//The graph variable only exists if the behavior patch was applied with Pandora / Nemesis
+	bool check_cast_behavior_installed(RE::PlayerCharacter* pc)
+	{
+		bool is_casting{ false };
+		if (pc->GetGraphVariableBool(cast_behavior_active_var, is_casting)) {
+			return true;
+		}
+
+		static bool warned{ false };
+		if (!warned) {
+			warned = true;
+			logger::error("Graph variable {} not found, the cast behavior patch is missing", cast_behavior_active_var);
+			RE::DebugMessageBox("Spell Hotbar 2: the cast behavior is not installed. Run Pandora Behaviour Engine or Nemesis with the \"Spell Hotbar 2 - Cast Behavior\" patch enabled.");
+		}
+		else {
+			RE::DebugNotification("Spell Hotbar 2: cast behavior patch missing");
+		}
+		return false;
+	}
+
+	bool is_staff_equipped(RE::PlayerCharacter* pc, bool left_hand)
+	{
+		auto form = pc->GetEquippedObject(left_hand);
+		auto weapon = form ? form->As<RE::TESObjectWEAP>() : nullptr;
+		return weapon && weapon->IsStaff();
+	}
+
+	//Maps the animation id of the spell data to the clips of the cast behavior
+	CastAnimSet get_cast_anim_set(RE::PlayerCharacter* pc, const RE::SpellItem* spell, int anim, hand_mode used_hand)
+	{
+		const bool self = spell->GetDelivery() == RE::MagicSystem::Delivery::kSelf;
+		const bool right = used_hand == hand_mode::right_hand;
+		const bool dual = used_hand == hand_mode::dual_hand;
+		const bool staff = !dual && is_staff_equipped(pc, !right);
+
+		switch (anim) {
+		case 2:
+			if (dual) return CastAnimSet::dual_self;
+			return right ? CastAnimSet::self_right : CastAnimSet::self_left;
+		case 1001:
+			if (dual) return CastAnimSet::dual_aimed_conc;
+			if (staff) return right ? CastAnimSet::staff_conc_right : CastAnimSet::staff_conc_left;
+			return right ? CastAnimSet::aimed_conc_right : CastAnimSet::aimed_conc_left;
+		case 1002:
+			if (dual) return CastAnimSet::dual_self_conc;
+			return right ? CastAnimSet::self_conc_right : CastAnimSet::self_conc_left;
+		case 1003:
+			return right ? CastAnimSet::ward_right : CastAnimSet::ward_left;
+		case 10000:
+			return self ? CastAnimSet::ritual_self : CastAnimSet::ritual_aimed;
+		case 10016:
+			return CastAnimSet::dual_aimed;
+		case 10017:
+			return CastAnimSet::dual_self;
+		case 11001:
+		case 11003:
+			return CastAnimSet::dual_aimed_conc;
+		case 11004:
+			return CastAnimSet::dual_self_conc;
+		default:
+			//1 and everything without own clips in the cast behavior
+			if (dual) return CastAnimSet::dual_aimed;
+			if (staff) return right ? CastAnimSet::staff_right : CastAnimSet::staff_left;
+			return right ? CastAnimSet::aimed_right : CastAnimSet::aimed_left;
+		}
+	}
+
+	/*
+	* The cast behavior is layered over the vanilla graph by a blender in 0_master (python_scripts/build_cast_behavior.py), each overlay is an own instance of it.
+	* One overlay per hand drives the cast arm (the upper body for both hands) for the whole cast.
+	* A body overlay with the remaining bones is faded in on top while the player stands still, the whole pose comes from the cast clip then:
+	* weapon stances like two handed or dual wield stand turned to the side and the cast would point there.
+	* The weight variables of the overlays are driven from here, 0 means the overlay is inactive.
+	*/
+	namespace cast_overlay {
+		constexpr std::array<std::string_view, 3> weight_vars{ "SHB_fWeightLeft"sv, "SHB_fWeightRight"sv, "SHB_fWeightBoth"sv };
+		//body overlay that goes with the overlay of the same index, the single hand ones leave the weapon arm to the stance
+		constexpr std::array<std::string_view, 3> body_weight_vars{ "SHB_fWeightBodySingle"sv, "SHB_fWeightBodySingle"sv, "SHB_fWeightBodyBoth"sv };
+		//bone weight the base keeps on the bones of the overlays, has to match python_scripts/build_cast_behavior.py
+		constexpr float base_bone_weight{ 0.001f };
+		constexpr float fade_time{ 0.2f };
+		constexpr float body_fade_time{ 0.25f };
+		//time the behavior graph gets to activate the overlay before the cast counts as interrupted
+		constexpr float activation_grace_time{ 0.3f };
+		//frames between the activation of the body overlay and the event that puts it into the state of the running cast
+		constexpr int body_sync_frames{ 2 };
+
+		size_t index{ 0 };
+		bool wanted{ false };
+		//share of the pose taken by the overlay of the cast, 0-1
+		float blend{ 0.0f };
+		//part of that the body overlay takes on its bones, 0-1
+		float body_blend{ 0.0f };
+		//the cast is past its release event, an overlay that gets active now has to follow
+		bool released{ false };
+		int body_sync_countdown{ 0 };
+		float time_since_start{ 0.0f };
+		//set from the animation event sink
+		std::atomic<bool> stop_requested{ false };
+		std::atomic<bool> release_seen{ false };
+
+		class EventSink : public RE::BSTEventSink<RE::BSAnimationGraphEvent> {
+		public:
+			RE::BSEventNotifyControl ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*) override
+			{
+				if (a_event) {
+					//the release clip ended or the cast was stopped
+					if (a_event->tag == cast_behavior_stop_event) {
+						stop_requested = true;
+					}
+					else if (a_event->tag == cast_behavior_release_event) {
+						release_seen = true;
+					}
+				}
+				return RE::BSEventNotifyControl::kContinue;
+			}
+		};
+		EventSink event_sink;
+
+		size_t get_index(CastAnimSet set)
+		{
+			switch (set) {
+			case CastAnimSet::aimed_right:
+			case CastAnimSet::self_right:
+			case CastAnimSet::aimed_conc_right:
+			case CastAnimSet::self_conc_right:
+			case CastAnimSet::ward_right:
+			case CastAnimSet::staff_right:
+			case CastAnimSet::staff_conc_right:
+				return 1;
+			case CastAnimSet::dual_aimed:
+			case CastAnimSet::dual_self:
+			case CastAnimSet::dual_aimed_conc:
+			case CastAnimSet::dual_self_conc:
+			case CastAnimSet::ritual_aimed:
+			case CastAnimSet::ritual_self:
+				return 2;
+			default:
+				return 0;
+			}
+		}
+
+		//The base keeps base_bone_weight on the bones, so an overlay with this weight gets the given share of the pose
+		float to_weight(float share)
+		{
+			return share >= 0.999f ? 1.0f : std::min(1.0f, base_bone_weight * share / (1.0f - share));
+		}
+
+		void apply(RE::PlayerCharacter* pc)
+		{
+			pc->SetGraphVariableFloat(weight_vars[index], to_weight(blend));
+			pc->SetGraphVariableFloat(body_weight_vars[index], to_weight(blend * body_blend));
+		}
+
+		//The legs of the cast clip stand still: only without movement, and the clip has no sneak pose
+		bool wants_body(RE::PlayerCharacter* pc)
+		{
+			if (!cast_full_body_when_standing || pc->IsSneaking()) {
+				return false;
+			}
+			float speed{ 0.0f };
+			bool in_jump{ false };
+			pc->GetGraphVariableFloat("Speed"sv, speed);
+			pc->GetGraphVariableBool("bInJumpState"sv, in_jump);
+			return speed < 1.0f && !in_jump;
+		}
+
+		void start(RE::PlayerCharacter* pc, CastAnimSet set)
+		{
+			size_t new_index = get_index(set);
+			if (new_index != index && blend > 0.0f) {
+				blend = 0.0f;
+				apply(pc);
+			}
+			index = new_index;
+			if (blend == 0.0f) {
+				//no crossfade at the start, a cast that starts standing comes in with the whole body
+				body_blend = wants_body(pc) ? 1.0f : 0.0f;
+			}
+			wanted = true;
+			released = false;
+			body_sync_countdown = 0;
+			time_since_start = 0.0f;
+			stop_requested = false;
+			release_seen = false;
+			//the sink is only added once per graph, the graphs can be recreated at any time
+			pc->AddAnimationGraphEventSink(&event_sink);
+		}
+
+		void stop()
+		{
+			wanted = false;
+		}
+
+		void update(RE::PlayerCharacter* pc, float delta)
+		{
+			if (release_seen.exchange(false)) {
+				released = true;
+			}
+			if (stop_requested.exchange(false)) {
+				stop();
+			}
+			time_since_start += delta;
+
+			const float old_blend = blend;
+			const float old_body_blend = body_blend;
+			if (wanted) {
+				blend = std::min(1.0f, blend + delta / fade_time);
+				//while the cast fades out the body overlay goes with it
+				const float body_step = delta / body_fade_time;
+				body_blend = wants_body(pc) ? std::min(1.0f, body_blend + body_step) : std::max(0.0f, body_blend - body_step);
+			}
+			else {
+				blend = std::max(0.0f, blend - delta / fade_time);
+			}
+			if (blend != old_blend || body_blend != old_body_blend) {
+				apply(pc);
+			}
+
+			//a body overlay that gets active in the middle of a cast starts in the charge state
+			if (wanted && old_body_blend == 0.0f && body_blend > 0.0f && released) {
+				body_sync_countdown = body_sync_frames;
+			}
+			else if (body_sync_countdown > 0 && --body_sync_countdown == 0 && wanted && released) {
+				pc->NotifyAnimationGraph(cast_behavior_release_event);
+			}
+		}
+	}
+
+	void start_cast_behavior(RE::PlayerCharacter* pc, const RE::SpellItem* spell, int anim, hand_mode used_hand)
+	{
+		CastAnimSet set = get_cast_anim_set(pc, spell, anim, used_hand);
+		pc->SetGraphVariableInt(cast_behavior_anim_var, static_cast<int>(set));
+		cast_overlay::start(pc, set);
+	}
+
+	//Things the player does with the body that end a cast, the overlay only takes the arms
+	bool is_cast_interrupted(RE::PlayerCharacter* pc)
+	{
+		bool is_staggering{ false };
+		pc->GetGraphVariableBool("IsStaggering"sv, is_staggering);
+		return is_staggering || pc->IsAttacking() || pc->IsBlocking() || pc->IsOnMount() || pc->AsActorState()->IsSwimming() || pc->AsActorState()->IsBleedingOut();
+	}
+
+	//Player is in a shout or in the cast behavior
+	bool is_shouting_or_casting(RE::PlayerCharacter* pc)
+	{
+		bool is_shouting{ false };
+		bool is_casting{ false };
+		pc->GetGraphVariableBool("IsShouting"sv, is_shouting);
+		pc->GetGraphVariableBool(cast_behavior_active_var, is_casting);
+		return is_shouting || is_casting;
+	}
+
+	const std::string_view CastingInstance::get_start_anim() const
+	{
+		return cast_behavior_start_event;
+	}
+
 	const std::string_view CastingInstance::get_end_anim() const
 	{
-		return "MT_BreathExhaleShort"sv;
+		return cast_behavior_release_event;
 	}
 
 	const std::string_view BaseCastingInstance::get_start_anim() const
@@ -149,7 +425,7 @@ namespace SpellHotbar::casts::CastingController {
 
 	const std::string_view CastingInstance::get_cancel_anim() const
 	{
-		return "ShoutStop"sv;
+		return cast_behavior_stop_event;
 	}
 
 	void CastingInstance::apply_cast_start_spell(RE::PlayerCharacter* pc)
@@ -187,9 +463,15 @@ namespace SpellHotbar::casts::CastingController {
 
 	bool CastingInstance::is_anim_ok(RE::PlayerCharacter* pc) const
 	{
-		bool is_shouting{ false };
-		pc->GetGraphVariableBool("IsShouting"sv, is_shouting);
-		return is_shouting;
+		if (is_cast_interrupted(pc)) {
+			return false;
+		}
+		if (cast_overlay::time_since_start < cast_overlay::activation_grace_time) {
+			return true;
+		}
+		bool is_casting{ false };
+		pc->GetGraphVariableBool(cast_behavior_active_var, is_casting);
+		return is_casting;
 	}
 
 	RE::BSSoundHandle _play_sound_if_exists(RE::BGSSoundDescriptorForm* snd)
@@ -408,13 +690,7 @@ namespace SpellHotbar::casts::CastingController {
 				stop_charge_sound();
 				GameData::reset_animation_vars();
 				pc->NotifyAnimationGraph(get_cancel_anim());
-			}
-
-			//check for pre_release_anim_time
-			if (m_pre_release_anim_time > 0.0f && !m_played_pre_release && (m_cast_timer + m_pre_release_anim_time >= m_release_anim_time))
-			{
-				m_played_pre_release = true;
-				pc->NotifyAnimationGraph(get_end_anim());
+				cast_overlay::stop();
 			}
 
 		}
@@ -432,15 +708,12 @@ namespace SpellHotbar::casts::CastingController {
 				stop_charge_sound();
 				play_cast_loop_sound();
 				GameData::global_casting_conc_spell->value = 1.0f;
-				if (!m_played_pre_release) {
-					pc->NotifyAnimationGraph(get_end_anim());
-					pc->NotifyAnimationGraph(get_start_anim());
-				}
+				//switches the cast behavior from the charge to the concentration loop
+				pc->NotifyAnimationGraph(get_end_anim());
 			}
 			else if (static_cast<int>(timer_old / loop_timer) < static_cast<int>(m_cast_timer / loop_timer)) {
-				//Check for anim reloop & do loop callbacks
+				//do loop callbacks, the cast behavior loops by itself
 
-				pc->NotifyAnimationGraph(get_start_anim());
 				if (!is_anim_ok(pc)) {
 					//do same exit code as if key was no longer held down, anim got interrupted
 					keydown = false;
@@ -479,6 +752,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				GameData::reset_animation_vars();
 				pc->NotifyAnimationGraph(get_cancel_anim());
+				cast_overlay::stop();
 				play_release_sound();
 				apply_cooldown();
 				consume_items();
@@ -514,6 +788,9 @@ namespace SpellHotbar::casts::CastingController {
 
 	void update_cast(float delta)
 	{
+		if (auto pc = RE::PlayerCharacter::GetSingleton()) {
+			cast_overlay::update(pc, delta);
+		}
 		if (current_cast) {
 			if (!current_cast->casted()) {
 				auto pc = RE::PlayerCharacter::GetSingleton();
@@ -549,6 +826,7 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::set_animtype_global(anim);
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
+				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
 				current_cast = std::make_unique<CastingInstanceSpell>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -570,6 +848,7 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::set_animtype_global(anim);
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
+				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
 				current_cast = std::make_unique<CastingInstanceSpellConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot), cast_info.m_dual_cast);
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
@@ -588,12 +867,11 @@ namespace SpellHotbar::casts::CastingController {
 				bool is_fast_anim = cast_info.m_casttime <= fast_cast_threshold;
 
 				int anim = is_fast_anim ? cast_info.m_animation2 : cast_info.m_animation;
-				float pre_release_anim = GameData::Spell_cast_data::get_ritual_conc_anim_prerelease_time(anim);
-
 				GameData::set_animtype_global(anim);
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
-				current_cast = std::make_unique<CastingInstanceSpellRitualConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot), pre_release_anim);
+				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
+				current_cast = std::make_unique<CastingInstanceSpellRitualConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot));
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -617,6 +895,7 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::set_animtype_global(anim);
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
+				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
 				current_cast = std::make_unique<CastingInstanceRitual>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -630,10 +909,12 @@ namespace SpellHotbar::casts::CastingController {
 		if (can_start_new_cast()) {
 			auto pc = RE::PlayerCharacter::GetSingleton();
 			if (form && pc) {
-				bool is_shouting{ false };
-				pc->GetGraphVariableBool("IsShouting"sv, is_shouting);
+				bool is_shouting = is_shouting_or_casting(pc);
 
 				if (!is_shouting && (form->GetFormType() == RE::FormType::Spell || form->GetFormType() == RE::FormType::Scroll)) {
+					if (!check_cast_behavior_installed(pc)) {
+						return false;
+					}
 					RE::SpellItem* spell = form->As<RE::SpellItem>();
 
 					//check if spell is still known/enough scrolls in inv
@@ -757,8 +1038,7 @@ namespace SpellHotbar::casts::CastingController {
 		if (can_start_new_cast()) {
 			auto pc = RE::PlayerCharacter::GetSingleton();
 			if (form && pc) {
-				bool is_shouting{ false };
-				pc->GetGraphVariableBool("IsShouting"sv, is_shouting);
+				bool is_shouting = is_shouting_or_casting(pc);
 
 				if (!is_shouting && form->GetFormType() == RE::FormType::Shout) {
 
@@ -950,10 +1230,9 @@ namespace SpellHotbar::casts::CastingController {
 		return true;
 	}
 
-	CastingInstanceSpellRitualConcentration::CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot, float pre_release_anim_time)
+	CastingInstanceSpellRitualConcentration::CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot)
 		: CastingInstanceSpellConcentration(spell, casttime, manacost, used_hand, casteffect, spell_proc, keybind, slot)
 	{
-		m_pre_release_anim_time = pre_release_anim_time;
 	}
 
 	bool CastingInstanceSpellRitualConcentration::blocks_movement() const

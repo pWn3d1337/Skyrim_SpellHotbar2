@@ -32,6 +32,5 @@ namespace SpellHotbar::GameData {
         void fill_and_override_from_non_default_values(const Spell_cast_data & other);
 
         static uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2);
-        static float get_ritual_conc_anim_prerelease_time(int anim);
     };
 }
