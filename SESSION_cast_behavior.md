@@ -1,6 +1,6 @@
 # Session handover: custom cast behavior (Pandora / Nemesis)
 
-Written 2026-10-08, branch `flick`. Purpose: continue this work from another PC.
+Written 2026-10-08, branch `v2.1` (branched from `flick` at d3656ff, local only, not pushed). Purpose: continue this work from another PC.
 
 ## Goal
 
@@ -24,13 +24,13 @@ Not tested or not done:
 - The missing-patch message box has not been tested since it was written.
 - `create_fomod_installer.py` was changed but not run.
 
-## Nothing is committed
+## Committed, not pushed
 
-All changes are in the working tree. To move to another PC, commit and push first.
+The work is committed on `v2.1` (813b4c5 and the commit after it). The branch has no upstream yet, push it before switching PCs.
 
 Modified: `skse_plugin/CMakeLists.txt`, `skse_plugin/src/casts/casting_controller.cpp/.h`, `skse_plugin/src/flick/ui/config_tool.cpp`, `skse_plugin/src/game_data/spell_cast_data.cpp/.h`, `python_scripts/create_fomod_installer.py`, `README.md`.
 
-New: `python_scripts/build_cast_behavior.py`, `skse_plugin/src/casts/cast_behavior_anims.h` (generated), `CLAUDE.md` (was untracked before this session and has a new "Cast behavior" section), this file.
+New: `python_scripts/build_cast_behavior.py`, `skse_plugin/src/casts/cast_behavior_anims.h` (generated), `CLAUDE.md` (was untracked before this session and has a new "Cast behavior" section), `copy_release_plugin.bat` (was untracked, used by the work loop), this file.
 
 The generated behavior files are **not** in the repo. They live in the dev mod folder and are rebuilt by the script:
 
