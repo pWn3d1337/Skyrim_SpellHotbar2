@@ -214,6 +214,11 @@ namespace SpellHotbar::GameData {
 
     extern bool individual_shout_cooldowns;
 
+    /*
+    * Dual casting a one handed spell blocks movement, like a ritual spell
+    */
+    extern bool dual_cast_blocks_movement;
+
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
 

@@ -281,6 +281,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                 shout_cds != GameData::individual_shout_cooldowns) {
                 GameData::toggle_individual_shout_cooldowns();
             }
+            checkbox("Dual Casting Blocks Movement", &GameData::dual_cast_blocks_movement);
 
             FUCK::SeparatorText("Oblivion Mode Bar");
             FUCK::SliderFloat("Oblivion Slot Scale", &Bars::oblivion_slot_scale, 0.01F, 5.0F, "%.2f");

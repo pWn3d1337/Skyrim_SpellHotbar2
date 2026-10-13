@@ -607,6 +607,10 @@ namespace SpellHotbar::casts::CastingController {
 
 	bool CastingInstanceRitual::blocks_movement() const
 	{
+		//this instance is also used for dual casts of one handed spells
+		if (!GameData::dual_cast_blocks_movement && !get_spell()->IsTwoHanded()) {
+			return false;
+		}
 		return m_cast_timer >= -0.5f; //!m_casted &&
 	}
 

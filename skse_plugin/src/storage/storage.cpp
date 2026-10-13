@@ -132,6 +132,9 @@ namespace SpellHotbar::Storage {
             a_intfc->WriteRecordData(&menu_anchor, sizeof(uint8_t));
 
             a_intfc->WriteRecordData(&Bars::menu_bar_locked, sizeof(bool));
+
+            //V7: movement while dual casting
+            a_intfc->WriteRecordData(&GameData::dual_cast_blocks_movement, sizeof(bool));
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -533,6 +536,21 @@ namespace SpellHotbar::Storage {
                     else {
                         Bars::menu_bar_locked = read_menu_locked;
                     }
+                }
+
+                if (version >= 7U) { //movement while dual casting
+                    if (!a_intfc->ReadRecordData(&GameData::dual_cast_blocks_movement, sizeof(bool))) {
+                        logger::error("Failed to read dual_cast_blocks_movement!");
+                        break;
+                    }
+                    else {
+#ifdef DEBUG_LOG_SERIALIZATION
+                        logger::info("Loaded GameData::dual_cast_blocks_movement: {}", GameData::dual_cast_blocks_movement);
+#endif
+                    }
+                }
+                else {
+                    GameData::dual_cast_blocks_movement = true;
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

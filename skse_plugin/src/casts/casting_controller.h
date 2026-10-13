@@ -8,7 +8,7 @@ namespace SpellHotbar::casts::CastingController {
 	/**
 	* Casttime at which ritual spells play the fast anim
 	*/
-	constexpr float fast_cast_threshold{ 1.51f };
+	constexpr float fast_cast_threshold{ 1.01f };
 
 	class BaseCastingInstance {
 	public:

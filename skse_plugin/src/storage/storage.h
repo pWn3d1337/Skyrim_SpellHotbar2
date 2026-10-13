@@ -11,7 +11,7 @@ namespace SpellHotbar::Storage {
     * 5 - SpellHotbar2, alpha 0.0.13
     * 6 - SpellHotbar2, the in-menu dock's position, scale, spacing, anchor and lock
     */
-    constexpr uint32_t save_format = 6U;
+    constexpr uint32_t save_format = 7U;
 
     extern std::array<RE::FormID, 12> hotbar_main;
 

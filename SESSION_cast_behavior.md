@@ -17,7 +17,7 @@ Working in game (tested by the user, Pandora only):
 
 Not tested or not done:
 
-- Ritual clips (only play for two-handed spells with cast time above 1.51 s). In the test setup Fire Storm and Blizzard have a shorter cast time and use the dual set.
+- Ritual clips (only play for two-handed spells with cast time above 1.01 s, `fast_cast_threshold`). With the earlier threshold of 1.51 s Fire Storm and Blizzard used the dual set in the test setup.
 - Ritual concentration (anim id 11001) has no ritual set, it maps to the dual concentration set.
 - The 15 thuum-style animations (ids 10001-10015) are not ported, they fall back to the plain aimed / dual set.
 - The patch has never been run through Nemesis itself.
