@@ -10,7 +10,6 @@ namespace SpellHotbar::GameData {
         float casttime;
         int animation; //single hand cast, or slow cast (for ritual spells)
         int animation2; //dual cast or fast cast (for ritual spells)
-        uint16_t casteffectid;
         DefaultIconType overlay_icon;
 
         Spell_cast_data();

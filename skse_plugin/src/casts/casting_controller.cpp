@@ -1,5 +1,6 @@
 #include "casting_controller.h"
 #include "cast_behavior_anims.h"
+#include "cast_art.h"
 #include "../logger/logger.h"
 #include "../game_data/game_data.h"
 #include "../input/keybinds.h"
@@ -53,7 +54,7 @@ namespace SpellHotbar::casts::CastingController {
 	{
 	}
 
-	CastingInstance::CastingInstance(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool is_spell_proc) : BaseCastingInstance(spell, casttime),
+	CastingInstance::CastingInstance(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, bool is_spell_proc) : BaseCastingInstance(spell, casttime),
 		m_charge_sound(nullptr),
 		m_release_sound(nullptr),
 		m_cast_loop_sound(nullptr),
@@ -64,7 +65,6 @@ namespace SpellHotbar::casts::CastingController {
 		m_manacost(manacost),
 		m_used_hand(used_hand),
 		m_equip_ability(nullptr),
-		m_casteffect(casteffect),
 		m_spell_proc(is_spell_proc)
 	{
 		if (m_form && (m_form->GetFormType() == RE::FormType::Spell || m_form->GetFormType() == RE::FormType::Scroll)) {
@@ -441,20 +441,16 @@ namespace SpellHotbar::casts::CastingController {
 			}
 		}
 
-		if (GameData::spellhotbar_castfx_spell) {
-			GameData::update_spell_casting_art_and_time(m_casteffect, static_cast<uint32_t>(std::ceil(m_total_casttime)), m_used_hand);
-			//cast_spell_on_player(GameData::spellhotbar_castfx_spell, 1.0f);
-			pc->AddSpell(GameData::spellhotbar_castfx_spell);
-		}
+		cast_art::start(pc, get_spell(), m_used_hand);
 	}
 
 	void CastingInstance::on_reset()
 	{
 		BaseCastingInstance::on_reset();
-		auto pc = RE::PlayerCharacter::GetSingleton();
-		if (pc) {
-			pc->RemoveSpell(GameData::spellhotbar_castfx_spell);
-		}
+		cast_art::stop();
+		//an interrupted cast (block, attack, stagger) ends here without passing its release
+		stop_charge_sound();
+		stop_cast_loop_sound();
 		if (m_form->GetFormType() == RE::FormType::Spell || m_form->GetFormType() == RE::FormType::Scroll) {
 			RE::SpellItem* spell = m_form->As<RE::SpellItem>();
 			GameData::post_cast_mod_callback(spell);
@@ -541,6 +537,7 @@ namespace SpellHotbar::casts::CastingController {
 
 			if (should_play_release_anim()) {
 				pc->NotifyAnimationGraph(get_end_anim());
+				cast_art::release();
 				set_release_played();
 			}
 
@@ -594,12 +591,12 @@ namespace SpellHotbar::casts::CastingController {
 		m_loop_sound_instance = _play_sound_if_exists(m_cast_loop_sound);
 	}
 
-	CastingInstanceSpell::CastingInstanceSpell(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc)
+	CastingInstanceSpell::CastingInstanceSpell(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, spell_proc)
 	{
 		m_gcd = (used_hand == hand_mode::dual_hand) ? 1.5f : 1.0f;
 	}
 
-	CastingInstanceRitual::CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc)
+	CastingInstanceRitual::CastingInstanceRitual(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, bool spell_proc) : CastingInstance(spell, casttime, manacost, used_hand, spell_proc)
 	{
 		m_release_anim_time = 0.25f;
 		m_gcd = 1.5f;
@@ -614,8 +611,8 @@ namespace SpellHotbar::casts::CastingController {
 		return m_cast_timer >= -0.5f; //!m_casted &&
 	}
 
-	CastingInstanceSpellConcentration::CastingInstanceSpellConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot, bool blocksMovement)
-		: CastingInstance(spell, casttime, manacost, used_hand, casteffect, spell_proc),
+	CastingInstanceSpellConcentration::CastingInstanceSpellConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, bool spell_proc, const Input::KeyBind& keybind, int slot, bool blocksMovement)
+		: CastingInstance(spell, casttime, manacost, used_hand, spell_proc),
 		m_keybind(keybind),
 		m_slot(slot),
 		m_blocks_movement(blocksMovement)
@@ -638,6 +635,7 @@ namespace SpellHotbar::casts::CastingController {
 				m_equip_ability = nullptr;
 			}
 		}
+		cast_art::start(pc, get_spell(), m_used_hand);
 	}
 
 	void CastingInstanceSpellConcentration::on_reset()
@@ -714,6 +712,7 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::global_casting_conc_spell->value = 1.0f;
 				//switches the cast behavior from the charge to the concentration loop
 				pc->NotifyAnimationGraph(get_end_anim());
+				cast_art::release();
 			}
 			else if (static_cast<int>(timer_old / loop_timer) < static_cast<int>(m_cast_timer / loop_timer)) {
 				//do loop callbacks, the cast behavior loops by itself
@@ -794,6 +793,7 @@ namespace SpellHotbar::casts::CastingController {
 	{
 		if (auto pc = RE::PlayerCharacter::GetSingleton()) {
 			cast_overlay::update(pc, delta);
+			cast_art::update(pc, current_cast != nullptr);
 		}
 		if (current_cast) {
 			if (!current_cast->casted()) {
@@ -831,7 +831,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
-				current_cast = std::make_unique<CastingInstanceSpell>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
+				current_cast = std::make_unique<CastingInstanceSpell>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
 			}
@@ -853,7 +853,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
-				current_cast = std::make_unique<CastingInstanceSpellConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot), cast_info.m_dual_cast);
+				current_cast = std::make_unique<CastingInstanceSpellConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_spellproc, keybind, static_cast<int>(slot), cast_info.m_dual_cast && GameData::dual_cast_blocks_movement);
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -875,7 +875,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
-				current_cast = std::make_unique<CastingInstanceSpellRitualConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc, keybind, static_cast<int>(slot));
+				current_cast = std::make_unique<CastingInstanceSpellRitualConcentration>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_spellproc, keybind, static_cast<int>(slot));
 
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
@@ -900,7 +900,7 @@ namespace SpellHotbar::casts::CastingController {
 
 				hand_mode used_hand = GameData::set_weapon_dependent_casting_source(cast_info.m_hand, cast_info.m_dual_cast);
 				start_cast_behavior(pc, cast_info.m_spell, anim, used_hand);
-				current_cast = std::make_unique<CastingInstanceRitual>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_casteffect, cast_info.m_spellproc);
+				current_cast = std::make_unique<CastingInstanceRitual>(cast_info.m_spell, cast_info.m_casttime, cast_info.m_manacost, used_hand, cast_info.m_spellproc);
 				pc->NotifyAnimationGraph(current_cast->get_start_anim());
 				return true;
 			}
@@ -979,7 +979,7 @@ namespace SpellHotbar::casts::CastingController {
 							if (is_spell_proc) {
 								casttime = SpellProc::adjust_casttime(casttime, spell);
 							}
-							CastingInstanceSpellData cast_info{ spell, casttime, manacost, hand, dual_cast, spell_data.animation, spell_data.animation2, spell_data.casteffectid, is_spell_proc};
+							CastingInstanceSpellData cast_info{ spell, casttime, manacost, hand, dual_cast, spell_data.animation, spell_data.animation2, is_spell_proc};
 
 							if (spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration) {
 								if (spell->IsTwoHanded()) {
@@ -1234,8 +1234,8 @@ namespace SpellHotbar::casts::CastingController {
 		return true;
 	}
 
-	CastingInstanceSpellRitualConcentration::CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, uint16_t casteffect, bool spell_proc, const Input::KeyBind& keybind, int slot)
-		: CastingInstanceSpellConcentration(spell, casttime, manacost, used_hand, casteffect, spell_proc, keybind, slot)
+	CastingInstanceSpellRitualConcentration::CastingInstanceSpellRitualConcentration(RE::SpellItem* spell, float casttime, float manacost, hand_mode used_hand, bool spell_proc, const Input::KeyBind& keybind, int slot)
+		: CastingInstanceSpellConcentration(spell, casttime, manacost, used_hand, spell_proc, keybind, slot)
 	{
 	}
 
@@ -1314,8 +1314,8 @@ namespace SpellHotbar::casts::CastingController {
 		return false;
 	}
 
-	CastingInstanceSpellData::CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animation, int animation2, uint16_t casteffect, bool is_spell_proc) :
-		m_spell(spell), m_casttime(casttime), m_manacost(manacost), m_hand(hand), m_dual_cast(dual_cast), m_animation(animation), m_animation2(animation2), m_casteffect(casteffect), m_spellproc(is_spell_proc)
+	CastingInstanceSpellData::CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animation, int animation2, bool is_spell_proc) :
+		m_spell(spell), m_casttime(casttime), m_manacost(manacost), m_hand(hand), m_dual_cast(dual_cast), m_animation(animation), m_animation2(animation2), m_spellproc(is_spell_proc)
 	{
 	}
 

@@ -59,7 +59,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             column_id_Icon,
             column_id_Name,
             column_id_Type,
-            column_id_Effect,
             column_id_GCD,
             column_id_CD,
             column_id_Casttime,
@@ -153,13 +152,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             return data;
         }
 
-        bool compare_cast_effect(const RE::TESForm* lhs, const RE::TESForm* rhs)
-        {
-            auto l_data = _get_spell_data(lhs);
-            auto r_data = _get_spell_data(rhs);
-            return l_data.casteffectid < r_data.casteffectid;
-        }
-
         bool compare_anim(const RE::TESForm* lhs, const RE::TESForm* rhs)
         {
             auto l_data = _get_spell_data(lhs);
@@ -212,9 +204,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                     break;
                 case spell_editor_column_id::column_id_Name:
                     is_less = lhs->GetName() < rhs->GetName();
-                    break;
-                case spell_editor_column_id::column_id_Effect:
-                    is_less = compare_cast_effect(lhs, rhs);
                     break;
                 case spell_editor_column_id::column_id_CD:
                     is_less = compare_cd(lhs, rhs);
@@ -437,7 +426,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             FUCK::TableSetupColumn(translate_id("$COLUMN_ICON").c_str(), CF::kWidthFixed | CF::kNoSort, 0.0f, spell_editor_column_id::column_id_Icon);
             FUCK::TableSetupColumn(translate_id("$COLUMN_NAME").c_str(), CF::kWidthStretch, 0.0f, spell_editor_column_id::column_id_Name);
             FUCK::TableSetupColumn(translate_id("$COLUMN_TYPE").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Type);
-            FUCK::TableSetupColumn(translate_id("$COLUMN_CASTEFFECT").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Effect);
             FUCK::TableSetupColumn(translate_id("$COLUMN_GCD").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_GCD);
             FUCK::TableSetupColumn(translate_id("$COLUMN_CD").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_CD);
             FUCK::TableSetupColumn(translate_id("$COLUMN_CASTTIME").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Casttime);
@@ -515,9 +503,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                 }
 
                 auto data = SpellHotbar::GameData::get_spell_data(item);
-
-                FUCK::TableNextColumn();
-                FUCK::Text("%d", data.casteffectid);
 
                 FUCK::TableNextColumn();
                 FUCK::Text("%.2f", data.gcd);

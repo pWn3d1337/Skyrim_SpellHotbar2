@@ -16,7 +16,6 @@
 namespace SpellHotbar::FlickUi::SpellEditor {
     namespace {
         bool initialized{ false };
-        bool custom_casteffect{ false };
         bool custom_gcd{ false };
         bool custom_cd{ false };
         bool custom_casttime{ false };
@@ -44,7 +43,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             if (!initialized) {
                 auto& dat = data.m_spell_data;
 
-                custom_casteffect = dat.casteffectid != dat_unfilled.casteffectid;
                 custom_gcd = dat.gcd != dat_unfilled.gcd;
                 custom_cd = dat.cooldown != dat_unfilled.cooldown;
                 custom_casttime = dat.casttime != dat_unfilled.casttime;
@@ -58,7 +56,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
         void close()
         {
             initialized = false;
-            custom_casteffect = false;
             custom_gcd = false;
             custom_cd = false;
             custom_casttime = false;
@@ -289,33 +286,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             }
             else {
                 gray_text(translate_c("$QUESTION_MARKS"));
-            }
-            FUCK::PopID();
-
-            row_label(id, translate_c("$CAST_EFFECT"));
-            if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
-                checkbox("##chk_casteffect", &custom_casteffect);
-                FUCK::SameLine();
-
-                if (!custom_casteffect) {
-                    FUCK::BeginDisabled();
-                    dat.casteffectid = a_filled.casteffectid;
-                }
-
-                std::vector<std::string> effects;
-                effects.reserve(GameData::spell_casteffect_art.size());
-                for (const auto& effect_dat : GameData::spell_casteffect_art) {
-                    effects.emplace_back(std::get<2>(effect_dat));
-                }
-                int index = (dat.casteffectid < effects.size()) ? static_cast<int>(dat.casteffectid) : -1;
-                if (combo("##cbo_cast_effect", &index, effects) && index >= 0) {
-                    dat.casteffectid = static_cast<uint16_t>(index);
-                }
-
-                if (!custom_casteffect) FUCK::EndDisabled();
-            }
-            else {
-                gray_text(translate_c("$NO_EFFECT"));
             }
             FUCK::PopID();
 

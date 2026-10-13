@@ -73,14 +73,14 @@ set(source_files src/plugin.cpp
                  src/events/gameloop_hook.cpp
                  src/game_data/spell_data_csv_loader.h
                  src/game_data/spell_data_csv_loader.cpp
-                 src/game_data/spell_casteffect_csv_loader.h
-                 src/game_data/spell_casteffect_csv_loader.cpp
                  src/game_data/csv_loader.h
                  src/game_data/custom_transform_csv_loader.h
                  src/game_data/custom_transform_csv_loader.cpp
                  src/game_data/animation_data_csv_loader.h
                  src/game_data/animation_data_csv_loader.cpp
                  src/casts/cast_behavior_anims.h
+                 src/casts/cast_art.h
+                 src/casts/cast_art.cpp
                  src/casts/casting_controller.h
                  src/casts/casting_controller.cpp
                  src/game_data/keynames_csv_loader.h

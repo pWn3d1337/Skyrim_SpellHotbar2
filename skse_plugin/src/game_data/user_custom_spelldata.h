@@ -15,7 +15,7 @@ namespace SpellHotbar::GameData {
 			casttime =     1 << 2,
 			animation =    1 << 3,
 			animation2 =   1 << 4,
-			casteffectid = 1 << 5,
+			casteffectid = 1 << 5, //no longer written, only read from older saves
 			icon_form =    1 << 6,
 			icon_str =     1 << 7
 		};

@@ -5,12 +5,12 @@
     "package": "Spriggit.Yaml.Skyrim",
     "version": "0.40.1"
   },
-  "note": "YAML trees were imported from the official upstream 0.0.14 ESPs. Git does not carry those binaries; this manifest is the lock that only the listed records changed: three scriptless quests, an unread global and the BattleMage opener power with its effect are removed, and the dual-cast toggle effect keeps its record with the script detached.",
+  "note": "YAML trees were imported from the official upstream 0.0.14 ESPs. Git does not carry those binaries; this manifest is the lock that only the listed records changed: three scriptless quests, an unread global and the BattleMage opener power with its effect are removed, and the dual-cast toggle effect keeps its record with the script detached. Later cut: the dummy cast effects (20 art objects, the cast FX ability and its two magic effects) are removed, hotbar casts show the casting art of the spell itself.",
   "plugins": [
     {
       "filename": "SpellHotbar.esp",
       "source": "plugin-src/SpellHotbar",
-      "record_count": 50
+      "record_count": 27
     },
     {
       "filename": "SpellHotbar_BattleMage.esp",
@@ -71,6 +71,190 @@
       "plugin": "SpellHotbar_BattleMage.esp",
       "form": "000802",
       "editor_id": "SpellHotbar_BattleMerge_OpenPerkTreeEffect",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000816",
+      "editor_id": "SpellHotbar_CastFX_Spell",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000817",
+      "editor_id": "SpellHotbar_CastFX_FireL",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00081B",
+      "editor_id": "SpellHotbar_DestructionFireHandEffect_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00081D",
+      "editor_id": "SpellHotbar_DestructionFireHandEffect_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00081E",
+      "editor_id": "SpellHotbar_CastFX_FireR",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000821",
+      "editor_id": "SpellHotbar_DestructionFrostHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000822",
+      "editor_id": "SpellHotbar_DestructionFrostHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000823",
+      "editor_id": "SpellHotbar_DestructionShockHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000824",
+      "editor_id": "SpellHotbar_DestructionShockHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000825",
+      "editor_id": "SpellHotbar_ConjurationSummonHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000826",
+      "editor_id": "SpellHotbar_ConjurationSummonHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000827",
+      "editor_id": "SpellHotbar_RestorationGoldHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000828",
+      "editor_id": "SpellHotbar_RestorationGoldHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000829",
+      "editor_id": "SpellHotbar_RestorationBlueHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082A",
+      "editor_id": "SpellHotbar_RestorationBlueHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082B",
+      "editor_id": "SpellHotbar_IllusionGreenHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082C",
+      "editor_id": "SpellHotbar_IllusionGreenHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082D",
+      "editor_id": "SpellHotbar_IllusionRedHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082E",
+      "editor_id": "SpellHotbar_IllusionRedHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "00082F",
+      "editor_id": "SpellHotbar_AlterationShieldHandEffect_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000830",
+      "editor_id": "SpellHotbar_AlterationShieldHandEffect_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000831",
+      "editor_id": "SpellHotbar_AlterationGreenHandEffects_L",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000832",
+      "editor_id": "SpellHotbar_AlterationGreenHandEffects_R",
       "changes": [
         "record_removed"
       ]

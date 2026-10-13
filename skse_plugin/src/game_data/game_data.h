@@ -150,7 +150,6 @@ namespace SpellHotbar::GameData {
     extern RE::TESGlobal* global_vampire_lord_equip_mode;
     extern RE::TESGlobal* global_casting_conc_spell;
 
-    extern RE::SpellItem* spellhotbar_castfx_spell;
     extern RE::SpellItem* spellhotbar_unbind_slot;
     extern RE::SpellItem* spellhotbar_toggle_dualcast;
     extern RE::EffectSetting* spellhotbar_spellproc_cd;
@@ -192,7 +191,6 @@ namespace SpellHotbar::GameData {
     extern RE::BGSSoundDescriptorForm* sound_NPCHumanEatSoup;
 
     extern std::unordered_map<RE::FormID, Spell_cast_data> spell_cast_info;
-    extern std::vector<std::tuple<RE::BGSArtObject*, RE::BGSArtObject*, const std::string>> spell_casteffect_art;
 
     extern std::unordered_map<int, Key_Data> key_names;
 
@@ -282,15 +280,6 @@ namespace SpellHotbar::GameData {
 
     DefaultIconType get_fallback_icon_type(RE::TESForm* form);
 
-    void add_casteffect(const std::string& key, RE::BGSArtObject* left_art, RE::BGSArtObject* right_art);
-    /*
-    * Should only be called during spell data loading, otherwise resolution map will be null
-    */
-    size_t get_cast_effect_id(const std::string& key);
-
-    void update_spell_casting_art_and_time(size_t art_index, uint32_t casttime, hand_mode hands);
-
-    //void update_spell_casting_art_and_time(size_t art_index, uint32_t casttime);
 
     /**
      * Get spell at index of current ingame bar

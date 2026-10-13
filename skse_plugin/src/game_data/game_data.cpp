@@ -5,7 +5,6 @@
 #include "../input/keybinds.h"
 #include "../casts/casting_controller.h"
 #include "spell_data_csv_loader.h"
-#include "spell_casteffect_csv_loader.h"
 #include "custom_transform_csv_loader.h"
 #include "animation_data_csv_loader.h"
 #include "keynames_csv_loader.h"
@@ -24,7 +23,6 @@ namespace rj = rapidjson;
 namespace SpellHotbar::GameData {
 
     constexpr std::string_view spell_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\spelldata\\";
-    constexpr std::string_view spell_casteffects_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\effectdata\\";
     constexpr std::string_view custom_transformations_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\transformdata\\";
     constexpr std::string_view animation_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\animationdata\\";
 
@@ -44,7 +42,6 @@ namespace SpellHotbar::GameData {
     RE::TESGlobal* global_casting_timer = nullptr;
     RE::TESGlobal* global_casting_conc_spell = nullptr;
 
-    RE::SpellItem* spellhotbar_castfx_spell = nullptr;
     RE::SpellItem* spellhotbar_unbind_slot = nullptr;
     RE::SpellItem* spellhotbar_toggle_dualcast = nullptr;
     RE::EffectSetting* spellhotbar_spellproc_cd = nullptr;
@@ -93,10 +90,8 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<RE::FormID, User_custom_entry> user_custom_entry_info;
 
-    std::vector<std::tuple<RE::BGSArtObject*, RE::BGSArtObject*, const std::string>> spell_casteffect_art;
     std::unordered_map<RE::FormID, Gametime_cooldown_value> gametime_cooldowns;
 
-    std::unique_ptr<std::unordered_map<std::string, size_t>> spell_effects_key_indices{nullptr};
 
     std::unordered_map<RE::FormID, Transformation_data> custom_transformation_data;
 
@@ -356,7 +351,6 @@ namespace SpellHotbar::GameData {
 
         load_form_from_game(0x820, "SpellHotbar.esp", &global_vampire_lord_equip_mode, "SpellHotbar_VampireLordUseEquipMode", RE::FormType::Global);
 
-        load_form_from_game(0x816, "SpellHotbar.esp", &spellhotbar_castfx_spell, "SpellHotbar_CastFX_Spell", RE::FormType::Spell);
 
         load_form_from_game(0x810, "SpellHotbar.esp", &spellhotbar_unbind_slot, "SpellHotbar_unbind", RE::FormType::Spell);
 
@@ -413,12 +407,9 @@ namespace SpellHotbar::GameData {
         //need to wait for game data beeing available
         RenderManager::load_gamedata_dependant_resources();
 
-        spell_effects_key_indices = std::make_unique<std::unordered_map<std::string, size_t>>();
-        SpellCastEffectCSVLoader::load_spell_casteffects(std::filesystem::path(spell_casteffects_root));
         SpellDataCSVLoader::load_spell_data(std::filesystem::path(spell_data_root));
         AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
 
-        spell_effects_key_indices = nullptr; //no longer need this
 
         //load animation data
         AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
@@ -499,16 +490,12 @@ namespace SpellHotbar::GameData {
         logger::info("Reloading Spell Data...");
         spell_cast_info.clear();
         spell_cd_magiceffect_tracking.clear();
-        spell_casteffect_art.clear();
         animation_names.clear();
 
         load_translations(std::filesystem::path(translation_path));
 
-        spell_effects_key_indices = std::make_unique<std::unordered_map<std::string, size_t>>();
-        SpellCastEffectCSVLoader::load_spell_casteffects(std::filesystem::path(spell_casteffects_root));
         SpellDataCSVLoader::load_spell_data(std::filesystem::path(spell_data_root));
         AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
-        spell_effects_key_indices = nullptr;  // no longer need this
     }
 
     void load_keynames_file()
@@ -1354,73 +1341,6 @@ namespace SpellHotbar::GameData {
     bool Gametime_cooldown_value::is_expired(float current_game_time)
     {
         return readytime <= 0.0f || current_game_time >= readytime;
-    }
-
-    void add_casteffect(const std::string& key, RE::BGSArtObject* left_art, RE::BGSArtObject* right_art) 
-    {
-        spell_casteffect_art.emplace_back(std::make_tuple(left_art, right_art, key));
-        if (spell_effects_key_indices) {
-            spell_effects_key_indices.get()->insert(std::make_pair(key, spell_casteffect_art.size()-1));
-        } else {
-            logger::error("Spell effect key index map is null during load!");
-        }
-    }
-
-    size_t get_cast_effect_id(const std::string& key)
-    {
-        size_t ret{0};
-        if (!key.empty()) {
-            if (spell_effects_key_indices) {
-                if (spell_effects_key_indices.get()->contains(key)) {
-                    ret = spell_effects_key_indices.get()->at(key);
-                }
-                else {
-                    logger::warn("Unknown Casteffect: {}", key);
-                }
-            }
-            else {
-                logger::error("Spell effect key index map is called at incorrect time!");
-            }
-        }
-        return ret;
-    }
-
-    void update_spell_casting_art_and_time(size_t art_index, uint32_t casttime, hand_mode hands) { 
-        if (spellhotbar_castfx_spell)
-        {
-            if (hands == hand_mode::left_hand || hands == hand_mode::dual_hand) {
-                spellhotbar_castfx_spell->effects[0]->effectItem.duration = casttime;
-            }
-            else {
-                spellhotbar_castfx_spell->effects[0]->effectItem.duration = 0;
-            }
-
-            if (hands == hand_mode::right_hand || hands == hand_mode::dual_hand) {
-                spellhotbar_castfx_spell->effects[1]->effectItem.duration = casttime;
-            }
-            else {
-                spellhotbar_castfx_spell->effects[1]->effectItem.duration = 0;
-            }
-            if (art_index >= spell_casteffect_art.size()) {
-                art_index = 0U;
-            }
-
-            const auto& effect = spell_casteffect_art.at(art_index);
-
-            if (hands == hand_mode::left_hand || hands == hand_mode::dual_hand) {
-                spellhotbar_castfx_spell->effects[0]->baseEffect->data.hitEffectArt = std::get<0>(effect);
-            }
-            else {
-                spellhotbar_castfx_spell->effects[0]->baseEffect->data.hitEffectArt = nullptr;
-            }
-
-            if (hands == hand_mode::right_hand || hands == hand_mode::dual_hand) {
-                spellhotbar_castfx_spell->effects[1]->baseEffect->data.hitEffectArt = std::get<1>(effect);
-            }
-            else {
-                spellhotbar_castfx_spell->effects[1]->baseEffect->data.hitEffectArt = nullptr;
-            }
-        }
     }
 
     SlottedSkill get_current_spell_info_in_slot(size_t index) {

@@ -655,6 +655,32 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                 status_message = "Added " + std::to_string(added) + " spell(s).";
             }
 
+            if (FUCK::Button("Add Dual Casting Perks")) {
+                // Read from perkdata/dual_cast_perks.csv, a perk overhaul can point them at other perks
+                RE::BGSPerk* const perks[] = {
+                    GameData::perk_alteration_dual_casting,
+                    GameData::perk_conjuration_dual_casting,
+                    GameData::perk_destruction_dual_casting,
+                    GameData::perk_illusion_dual_casting,
+                    GameData::perk_restoration_dual_casting,
+                };
+                int added{ 0 };
+                int missing{ 0 };
+                for (RE::BGSPerk* perk : perks) {
+                    if (!perk) {
+                        ++missing;
+                    }
+                    else if (!pc->HasPerk(perk)) {
+                        pc->AddPerk(perk);
+                        ++added;
+                    }
+                }
+                status_message = "Added " + std::to_string(added) + " dual casting perk(s).";
+                if (missing > 0) {
+                    status_message += " " + std::to_string(missing) + " not loaded from the perk config.";
+                }
+            }
+
             // Not saved.
             FUCK::SeparatorText("Cast Animation");
             checkbox("Full Body Cast Pose When Standing", &casts::CastingController::cast_full_body_when_standing);

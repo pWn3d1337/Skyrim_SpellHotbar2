@@ -117,9 +117,6 @@ namespace SpellHotbar::SpellDataCSVLoader {
                             data.animation = GameData::chose_default_anim_for_spell(form, anim_var, false);
                             data.animation2 = GameData::chose_default_anim_for_spell(form, anim_var2, true);
 
-                            std::string cast_effect = doc.GetCell<std::string>("Casteffect", i);
-                            data.casteffectid = static_cast<uint16_t>(GameData::get_cast_effect_id(cast_effect));
-
                             if (has_symbol) {
                                 std::string symbol = doc.GetCell<std::string>("Symbol", i);
                                 if (!symbol.empty()) {

@@ -412,7 +412,6 @@ released_files_main_plugin_v2 = [
     (project_root / "build/plugins/SpellHotbar.esp", main_mod_folder),
     # if Path, add relative path to root in zip
     (dev_mod_root / "Interface/SpellHotbar/spell_icons.swf", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "meshes/SpellHotbar/*.nif", (dev_mod_root, main_mod_folder)),
     # cast behavior and its Pandora / Nemesis patch, both written by build_cast_behavior.py
     (dev_mod_root / "meshes/actors/character/behaviors/*.hkx", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "meshes/actors/character/_1stperson/behaviors/*.hkx", (dev_mod_root, main_mod_folder)),
@@ -420,7 +419,6 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "Nemesis_Engine/mod/shbc/info.ini", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/animationdata/*.csv", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/effectdata/vanilla_cast_effects.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/skyrim_symbols_font.ttf", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.dds", (dev_mod_root, main_mod_folder)),

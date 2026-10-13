@@ -38,7 +38,7 @@ There are no unit tests or linters; verification is done in-game. Logs go to `Do
 ### SKSE plugin entry and lifecycle (`src/plugin.cpp`)
 `SKSEPluginLoad` wires everything together:
 - `Bars::init()` — creates hotbars.
-- `kDataLoaded` → `GameData::onDataLoad()` loads all CSV/JSON data from `Data/SKSE/Plugins/SpellHotbar/` (`spelldata/`, `effectdata/`, `animationdata/`, `transformdata/`, `keynames/`, `localization/translation.txt`, `images/`, `perkdata/dual_cast_perks.csv`). Loaders iterate every CSV in their folder, which is how spell packs plug in without code changes. JSON presets (`presets/`, plus user presets under `Documents/My Games/Skyrim Special Edition/SpellHotbar/presets`) are handled by `storage/user_data_io`.
+- `kDataLoaded` → `GameData::onDataLoad()` loads all CSV/JSON data from `Data/SKSE/Plugins/SpellHotbar/` (`spelldata/`, `animationdata/`, `transformdata/`, `keynames/`, `localization/translation.txt`, `images/`, `perkdata/dual_cast_perks.csv`). Loaders iterate every CSV in their folder, which is how spell packs plug in without code changes. JSON presets (`presets/`, plus user presets under `Documents/My Games/Skyrim Special Edition/SpellHotbar/presets`) are handled by `storage/user_data_io`.
 - `GameLoopHook` (`events/gameloop_hook.h`) — per-frame update driving the casting state machine (`casts/casting_controller`).
 - `EventListener` — sinks for action events, spell cast, hit, equip and critical hit events (spell procs, power/shout completion, etc.).
 - `RenderManager::install()` — D3D init + DXGI Present thunk hooks; all HUD bars, the Oblivion-mode bar, spell/potion editors, icon edit dialog, bar dragging window and the Advanced Bind Menu are ImGui draws from here.
@@ -50,7 +50,7 @@ Address-dependent hooks use `REL::RelocationID(SE, AE)` / `REL::VariantID(SE, AE
 
 ### Module map (`skse_plugin/src/`)
 - `bar/` — `hotbars` (global bar settings + `std::unordered_map<uint32_t, Hotbar>` of all bars), `hotbar` (slots per bar), `oblivion_bar`.
-- `casts/` — casting controller (cast timers, GCD/cooldowns, animations, dual cast, concentration, powers/shouts, potions) and `spell_proc` (Battlemage perk procs).
+- `casts/` — casting controller (cast timers, GCD/cooldowns, animations, dual cast, concentration, powers/shouts, potions), `cast_art` (casting art in the hands, see below) and `spell_proc` (Battlemage perk procs).
 - `game_data/` — global game state/config (`GameData` namespace), CSV loaders (all derive from `csv_loader.h`, tab-separated, parsed with rapidcsv), user custom spell data (in-game editor overrides), localization.
 - `input/` — keybinds, modifiers, input modes (Direct Cast / Equip / Oblivion).
 - `rendering/` — texture atlas loading (`texture_csv_loader` reads `images/*.csv` UV tables alongside `.dds`), ImGui windows.
@@ -67,9 +67,12 @@ Spell casts are animated by an own Havok behavior, not by the shout state. `buil
 
 The plugin (`cast_overlay` namespace) sets `SHB_iAnim`, sends `SHB_CastStart/Release/Stop` and drives the weight variables: the arm (or upper body) overlay for the whole cast, a body overlay on top while the player stands still so the whole pose comes from the cast clip. `SHB_bCasting` is the graph's "overlay active" output and doubles as the check that the patch is installed. After changing the script: run it, then run Pandora / Nemesis. `hkxcmd` only reads 32 bit hkx, so the engine output can only be checked by scanning the binary.
 
+### Casting art (`casts/cast_art.cpp`)
+A hotbar cast shows the casting art the game uses for the spell: `castingArt` of its costliest magic effect, applied to the player with `ApplyArtObject` on the magic node of the casting hand (`NPC L MagicNode [LMag]` / `NPC R MagicNode [RMag]`, of the skeleton of the current point of view). The art meshes have an own behavior graph (`meshes/magic/magicbehaviors`, in `Skyrim - Animations.bsa`) that listens to the animation events of a regular cast; `cast_art` sets `bLeftHand` / `bRightHand` / `isCastingDual` on the effect and sends `MLh_SpellAimedStart`, `RitualSpellStart`, `DualMagic_Spell…`, `…ConcentrationStart` at the start and `MLh_/MRh_SpellRelease_Event` at the release, once the graph of the effect is loaded. `ApplyArtObject` does not return the effect (the CommonLib declaration is wrong, the value is not a pointer), it is looked up in `ProcessLists`. A spell without casting art shows nothing. The `Casteffect` column of the spell data belongs to the dummy effect system this replaced (art objects and meshes of it are removed).
+
 ### Asset pipeline (`python_scripts/`, `SWF_Generator/`)
 Spell pack support is data-driven:
-1. `spell_lists2/*.csv` and `spell_lists2/mods/<mod>.csv` (tab-separated: Name, FormID, Plugin, Casteffect, GCD, Cooldown, Casttime, Animation, Animation2, optional Symbol/Shouttext/Ranktext/ScrollID) plus icon PNGs in `vanilla_spell_icons/`, `modded_spell_icons/<mod>/` (matched by normalized spell name) or `*_contributed/`.
+1. `spell_lists2/*.csv` and `spell_lists2/mods/<mod>.csv` (tab-separated: Name, FormID, Plugin, Casteffect (no longer used by the plugin), GCD, Cooldown, Casttime, Animation, Animation2, optional Symbol/Shouttext/Ranktext/ScrollID) plus icon PNGs in `vanilla_spell_icons/`, `modded_spell_icons/<mod>/` (matched by normalized spell name) or `*_contributed/`.
 2. `stitch_icon_atlas.py` (`stitch_mod`, `i4_mod`, etc., toggled by `if redo_all_img or False:` blocks in `__main__`) writes to the dev mod folder: `images/icons_<mod>.dds/.png/.csv` (atlas + UVs), `spelldata/spells_<mod>.csv`, and I4 files (`InventoryInjector/<esp>.json` + `Interface/SpellHotbar/<mod>_icons.swf`).
 3. SWF creation uses `png2swf.exe` (SWFTools) then `SWF_Generator` (Java, JPEXS FFDec lib) jar at `SWF_Generator/out/artifacts/SWF_Generator_jar/SWF_Generator.jar` to rescale and add frame labels.
 

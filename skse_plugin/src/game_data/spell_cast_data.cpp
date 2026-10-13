@@ -3,10 +3,10 @@
 
 namespace SpellHotbar::GameData {
 
-    Spell_cast_data::Spell_cast_data() : gcd(-1.0f), cooldown(-1.0f), casttime(-1.0f), animation(-1), animation2(-1), casteffectid(0U), overlay_icon(GameData::DefaultIconType::UNKNOWN) {};
+    Spell_cast_data::Spell_cast_data() : gcd(-1.0f), cooldown(-1.0f), casttime(-1.0f), animation(-1), animation2(-1), overlay_icon(GameData::DefaultIconType::UNKNOWN) {};
     bool Spell_cast_data::is_empty()
     {
-        return animation <= 0 && animation2 <= 0 && gcd < 0.0f && cooldown < 0.0f && casttime < 0.0f && casteffectid == 0U && overlay_icon == GameData::DefaultIconType::UNKNOWN;
+        return animation <= 0 && animation2 <= 0 && gcd < 0.0f && cooldown < 0.0f && casttime < 0.0f && overlay_icon == GameData::DefaultIconType::UNKNOWN;
     }
 
     void Spell_cast_data::fill_default_values_from_spell(const RE::SpellItem* spell)
@@ -79,8 +79,6 @@ namespace SpellHotbar::GameData {
         if (other.overlay_icon != DefaultIconType::UNKNOWN) {
             overlay_icon = other.overlay_icon;
         }
-
-        casteffectid = other.casteffectid;
 
     }
 
