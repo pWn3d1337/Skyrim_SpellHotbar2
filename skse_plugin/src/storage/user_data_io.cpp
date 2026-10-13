@@ -133,7 +133,7 @@ namespace SpellHotbar::Storage::IO {
         if (individual_shout_cds != GameData::individual_shout_cooldowns) {
             GameData::toggle_individual_shout_cooldowns();
         }
-        GameData::dual_cast_blocks_movement = get_int_or_default(d, "settings.dual_cast_blocks_movement", 1) != 0;
+        GameData::dual_cast_blocks_movement = get_int_or_default(d, "settings.dual_cast_blocks_movement", 0) != 0;
 
         //in-menu dock
         Bars::menu_slot_scale = get_float_or_default(d, "settings.menu_bar.slot_scale", 0.5f);

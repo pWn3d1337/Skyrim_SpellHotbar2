@@ -550,7 +550,7 @@ namespace SpellHotbar::Storage {
                     }
                 }
                 else {
-                    GameData::dual_cast_blocks_movement = true;
+                    GameData::dual_cast_blocks_movement = false;
                 }
 
                 //read num keybinds, make saves compatible when new binds are added
