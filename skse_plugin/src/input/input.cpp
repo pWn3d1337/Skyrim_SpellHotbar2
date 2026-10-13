@@ -708,7 +708,7 @@ namespace SpellHotbar::Input {
             return false;
         }
         const auto* control_map = RE::ControlMap::GetSingleton();
-        if (control_map && (control_map->textEntryCount > 0))
+        if (control_map && (control_map->GetRuntimeData().textEntryCount > 0))
         {
             return false;
         }

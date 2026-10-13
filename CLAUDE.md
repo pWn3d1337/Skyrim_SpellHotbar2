@@ -11,7 +11,7 @@ The repo does **not** contain the full mod: `SpellHotbar.esp`, compiled `.pex`, 
 ## Build
 
 ### SKSE plugin (`skse_plugin/`)
-Requires MSVC (run from a VS x64 Developer prompt), Ninja, and `VCPKG_ROOT` set. Dependencies come from `vcpkg.json` in manifest mode; `commonlibsse-ng` is pinned via the local filesystem registry `CommonLibSSE-NG_fsreg/` (see `vcpkg-configuration.json`).
+Requires MSVC (run from a VS x64 Developer prompt), Ninja, and `VCPKG_ROOT` set. Dependencies come from `vcpkg.json` in manifest mode; `commonlibsse-ng` is pinned via the local filesystem registry `CommonLibSSE-NG_fsreg/` (see `vcpkg-configuration.json`): port `12.1.0` is alandtse's fork (`alandtse/CommonLibSSE-NG`, tag v12.1.0, GPL-3.0-or-later), the older `0.1.x` ports are CharmedBaryon's MIT original. The port also fetches the pinned OpenVR headers / import lib and MinHook's hde64 (the upstream build expects a git submodule and FetchContent). To update: add a port folder with new `REF` / `SHA512`, an entry in `versions/` and a new baseline date. A changed port makes vcpkg rebuild the library (about 10 minutes per preset).
 
 ```
 cd skse_plugin

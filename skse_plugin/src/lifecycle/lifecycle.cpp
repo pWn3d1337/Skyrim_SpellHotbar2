@@ -216,14 +216,14 @@ namespace SpellHotbar::Lifecycle {
         }
 
         auto* skyrim_vm = RE::SkyrimVM::GetSingleton();
-        if (skyrim_vm == nullptr || skyrim_vm->impl == nullptr) {
+        if (skyrim_vm == nullptr || skyrim_vm->GetVMRuntimeData().impl == nullptr) {
             logger::error("Cannot open BattleMage tree: Papyrus VM is unavailable");
             return false;
         }
 
         static const RE::BSFixedString class_name{ "CustomSkills" };
         static const RE::BSFixedString function_name{ "OpenCustomSkillMenu" };
-        const bool csf_present = has_papyrus_static_function(skyrim_vm->impl.get(), class_name, function_name);
+        const bool csf_present = has_papyrus_static_function(skyrim_vm->GetVMRuntimeData().impl.get(), class_name, function_name);
         if (!battlemage_tree_may_dispatch(plugin_loaded, csf_present)) {
             logger::error("Cannot open BattleMage tree: CustomSkills.OpenCustomSkillMenu is unavailable");
             return false;
@@ -231,7 +231,7 @@ namespace SpellHotbar::Lifecycle {
 
         auto* args = RE::MakeFunctionArguments(std::string{ "SpellHotbar_Battlemage" });
         RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> result;
-        const bool dispatched = skyrim_vm->impl->DispatchStaticCall(class_name, function_name, args, result);
+        const bool dispatched = skyrim_vm->GetVMRuntimeData().impl->DispatchStaticCall(class_name, function_name, args, result);
         if (!dispatched) {
             //The VM takes the arguments only on a successful dispatch.
             delete args;

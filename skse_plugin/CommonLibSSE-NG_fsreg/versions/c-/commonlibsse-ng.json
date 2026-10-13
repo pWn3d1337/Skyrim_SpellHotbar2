@@ -11,6 +11,10 @@
     {
       "version": "0.1.2",
       "path": "$/ports/commonlibsse-ng/0.1.2"
+    },
+    {
+      "version": "12.1.0",
+      "path": "$/ports/commonlibsse-ng/12.1.0"
     }
   ]
 }

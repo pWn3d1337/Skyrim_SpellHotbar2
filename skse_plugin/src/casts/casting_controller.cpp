@@ -36,7 +36,7 @@ namespace SpellHotbar::casts::CastingController {
 
 		auto am = RE::BSAudioManager::GetSingleton();
 		if (am) {
-			am->BuildSoundDataFromDescriptor(handle, a_descriptor, 16); // 16 used by https://github.com/D7ry/EldenParry
+			am->GetSoundHandle(handle, a_descriptor, 16); // 16 used by https://github.com/D7ry/EldenParry
 			if (handle.SetPosition(a->data.location)) {
 				handle.SetObjectToFollow(a->Get3D());
 				handle.Play();
@@ -169,7 +169,7 @@ namespace SpellHotbar::casts::CastingController {
 			RE::DebugMessageBox("Spell Hotbar 2: the cast behavior is not installed. Run Pandora Behaviour Engine or Nemesis with the \"Spell Hotbar 2 - Cast Behavior\" patch enabled.");
 		}
 		else {
-			RE::DebugNotification("Spell Hotbar 2: cast behavior patch missing");
+			RE::SendHUDMessage::ShowHUDMessage("Spell Hotbar 2: cast behavior patch missing");
 		}
 		return false;
 	}
@@ -552,7 +552,7 @@ namespace SpellHotbar::casts::CastingController {
 						casts::SpellProc::consume_proc();
 					}
 					apply_cooldown();
-					pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kMagicka, -m_manacost);
+					pc->AsActorValueOwner()->ModActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kMagicka, -m_manacost);
 					consume_items();
 				}
 				set_casted();
@@ -925,14 +925,14 @@ namespace SpellHotbar::casts::CastingController {
 					bool spell_allowed{true};
 					if (form->GetFormType() == RE::FormType::Spell && !pc->HasSpell(spell)) {
 						spell_allowed = false;
-						RE::DebugNotification("Spell is no longer known!");
+						RE::SendHUDMessage::ShowHUDMessage("Spell is no longer known!");
 					}
 					else if (form->GetFormType() == RE::FormType::Spell && !GameData::can_cast_spell_mod_compat(spell)) {
 						spell_allowed = false;
 					}
 					else if (form->GetFormType() == RE::FormType::Scroll && GameData::count_item_in_inv(form->GetFormID()) <= 0) {
 						spell_allowed = false;
-						RE::DebugNotification("No more scrolls left!");
+						RE::SendHUDMessage::ShowHUDMessage("No more scrolls left!");
 					}
 					
 					if (spell_allowed) {
@@ -1029,7 +1029,7 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				else
 				{
-					RE::DebugNotification("No more potions left!");
+					RE::SendHUDMessage::ShowHUDMessage("No more potions left!");
 					return false;
 				}
 			}

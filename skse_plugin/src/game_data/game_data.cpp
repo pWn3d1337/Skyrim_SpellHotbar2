@@ -1787,7 +1787,7 @@ namespace SpellHotbar::GameData {
                      int casts = static_cast<int>(ordinator_global_vancian_magic_count->value);
                      if (has_blood_magic && casts < 0) {
                          float cost = ordinator_global_vancian_magic_blood_magic_cost->value * casts;
-                         pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, cost);
+                         pc->AsActorValueOwner()->ModActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, cost);
                      }
                  }
              }
@@ -1800,7 +1800,7 @@ namespace SpellHotbar::GameData {
                  if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
                     float cost = get_pos_spell_health_cost(spell);
                     if (spell_proc) cost *= 0.5f;
-                    pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
+                    pc->AsActorValueOwner()->ModActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost);
                  }
              }
 
@@ -1847,7 +1847,7 @@ namespace SpellHotbar::GameData {
                      return true;
                  }
                  else {
-                     RE::DebugNotification("No Spell charges left!");
+                     RE::SendHUDMessage::ShowHUDMessage("No Spell charges left!");
                  }
              }
          }
@@ -1989,7 +1989,7 @@ namespace SpellHotbar::GameData {
                  if ((v3 && pos_global_blood_ritual_active->value > 0.0f) || !v3) {
                      float cost = get_pos_spell_health_cost(spell);
                      if (spell_proc) cost *= 0.5f;
-                     pc->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost*update_interval);
+                     pc->AsActorValueOwner()->ModActorValue(RE::ACTOR_VALUE_MODIFIER::kDamage, RE::ActorValue::kHealth, -cost*update_interval);
                  }
 
              }

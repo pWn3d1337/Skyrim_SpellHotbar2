@@ -1,0 +1,42 @@
+{
+  "name": "commonlibsse-ng",
+  "version": "12.1.0",
+  "description": "A reverse engineered resource for developing SKSE plugins, supporting portable plugins that work across AE, SE, and VR. Fork maintained by alandtse.",
+  "homepage": "https://github.com/alandtse/CommonLibSSE-NG",
+  "license": "GPL-3.0-or-later",
+  "supports": "windows & x64",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "directxmath",
+      "version>=": "2025-04-03"
+    },
+    {
+      "name": "directxtk",
+      "version>=": "2025-10-27"
+    },
+    {
+      "name": "fmt",
+      "version>=": "12.1.0"
+    },
+    {
+      "name": "rapidcsv",
+      "version>=": "8.90"
+    },
+    {
+      "name": "spdlog",
+      "version>=": "1.16.0"
+    },
+    {
+      "name": "xbyak",
+      "version>=": "7.28"
+    }
+  ]
+}

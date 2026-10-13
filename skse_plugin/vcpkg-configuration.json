@@ -8,7 +8,7 @@
       {
         "kind": "filesystem",
         "path": "CommonLibSSE-NG_fsreg",
-        "baseline": "2024-12-30",
+        "baseline": "2026-10-13",
         "packages": [
           "commonlibsse-ng"
         ]
