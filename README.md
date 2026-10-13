@@ -161,11 +161,21 @@ Allows the user to have a dedicated menu to slot skills with drag and drop, all 
 [Shadow Spell Package](https://www.nexusmods.com/skyrimspecialedition/mods/13299)  
 [Star Wars Spell Pack](https://www.nexusmods.com/skyrimspecialedition/mods/82637)  
 
+# License
+The source code of Spell Hotbar 2 in this repository (SKSE plugin, Papyrus scripts, Python scripts, SWF generator) is licensed under the [MIT License](LICENSE).
+
+Not covered by it:
+- `skse_plugin/third_party/flick/FUCK_API.h`, the guest header of FLICK, is GPL-3.0, see the [notice](skse_plugin/third_party/flick/NOTICE.md) next to it.
+- Third-party libraries and tools keep their own licenses (see Credits, and the license files in `SWF_Generator/lib`).
+
+**Released binaries are GPL-3.0-or-later.** `SpellHotbar2.dll` statically links [CommonLibSSE-NG](https://github.com/alandtse/CommonLibSSE-NG) (GPL-3.0-or-later with modding and linking exceptions) and contains code of the FLICK header, so the built plugin is a combined work and is distributed under the terms of the GNU General Public License, version 3 or later. The complete source of every release is this repository at the matching version. This does not change the license of the Spell Hotbar 2 source files themselves, they can be reused under MIT.
+
 # Credits
 [Mrowpurr](https://github.com/mrowrpurr) for Tutorials & Templates  
 
 ## SKSE
-[CommonLibSSE-NG](https://github.com/CharmedBaryon/CommonLibSSE-NG)  
+[CommonLibSSE-NG](https://github.com/alandtse/CommonLibSSE-NG) (alandtse's fork, GPL-3.0-or-later)  
+[FLICK](https://github.com/Fuzzlesz/FUCK) (GPL-3.0)  
 [Dear ImGui](https://github.com/ocornut/imgui)  
 [RapidCSV](https://github.com/d99kris/rapidcsv)  
 [RapidJSON](https://rapidjson.org/)   
