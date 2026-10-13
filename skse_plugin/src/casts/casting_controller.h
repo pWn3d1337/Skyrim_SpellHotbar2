@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <optional>
 #include "../input/keybinds.h"
 #include "../bar/hotbar.h"
@@ -27,6 +28,16 @@ namespace SpellHotbar::casts::CastingController {
 		virtual bool update(RE::PlayerCharacter* pc, float delta) = 0;
 
 		virtual bool blocks_movement() const;
+
+		/**
+		* Fill of the castbar, 0-1. Negative: this cast shows no castbar (anymore).
+		*/
+		virtual float get_castbar_progress() const;
+
+		/**
+		* Positions (0-1) of marks on the castbar, negative for none.
+		*/
+		virtual std::array<float, 2> get_castbar_marks() const;
 
 		virtual void on_reset();
 
@@ -81,6 +92,7 @@ namespace SpellHotbar::casts::CastingController {
 		void stop_cast_loop_sound();
 
 		virtual bool is_first_time_update() const;
+		virtual float get_castbar_progress() const override;
 
 		bool should_play_release_anim();
 
@@ -147,6 +159,7 @@ namespace SpellHotbar::casts::CastingController {
 
 		virtual bool has_duration() const;
 		virtual float get_current_gcd_progress() const override;
+		virtual float get_castbar_progress() const override;
 	protected:
 		const Input::KeyBind& m_keybind;
 		int m_slot;
@@ -179,10 +192,22 @@ namespace SpellHotbar::casts::CastingController {
 
 	class CastingInstanceShout : public CastingInstancePower {
 	public:
-		CastingInstanceShout(RE::TESForm* form);
+		CastingInstanceShout(RE::TESForm* form, const Input::KeyBind& keybind);
 		virtual ~CastingInstanceShout() = default;
 		virtual bool reequip_old_power() override;
+		virtual bool update(RE::PlayerCharacter* pc, float delta) override;
+
+		//The bar shows how long the key is held, the marks are the hold times for the second and third word
+		virtual float get_castbar_progress() const override;
+		virtual std::array<float, 2> get_castbar_marks() const override;
 	protected:
+		const Input::KeyBind& m_keybind;
+		float m_hold_time;
+		//hold times of the game for two / three words
+		float m_time_word2;
+		float m_time_word3;
+		//hold time at which the bar is full
+		float m_bar_time;
 	};
 
 	class CastingInstancePotionUse : public BaseCastingInstance {
@@ -233,6 +258,11 @@ namespace SpellHotbar::casts::CastingController {
 	bool is_currently_using_procced_spell();
 
 	float get_current_casttime();
+
+	/**
+	* Data for the castbar. False if there is no cast that shows one.
+	*/
+	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks);
 
 	bool can_start_new_cast();
 

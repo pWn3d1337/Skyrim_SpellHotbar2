@@ -87,6 +87,12 @@ namespace SpellHotbar::Flick {
         unsigned col;
         float px{0.0f};  // font size in pixels; 0 takes the window's default for its kind of text
     };
+    // A rectangle in a flat colour, for HUD parts that have no texture (the castbar).
+    struct DockRect {
+        float x0, y0, x1, y1;
+        unsigned col;
+        float thickness{0.0f};  // 0 fills the rectangle, anything else draws its outline that thick
+    };
     struct DockSlot {
         float x, y, w, h;
         std::string tooltip;  // shown while the mouse is over this rect; empty shows nothing
@@ -121,6 +127,7 @@ namespace SpellHotbar::Flick {
         float text_px{0.0f};  // default size for texts whose px is 0
         float alpha{1.0f}, text_alpha{1.0f};  // the fades this frame was built with, for the probe log
         std::vector<DockImage> images;
+        std::vector<DockRect> rects;  // drawn over the images, below the texts
         std::vector<DockText> texts;
     };
 

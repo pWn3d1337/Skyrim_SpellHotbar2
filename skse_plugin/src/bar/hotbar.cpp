@@ -601,10 +601,47 @@ namespace SpellHotbar
             push_single_skill(layer, skill, slot, geo.slots[i].x, geo.slots[i].y, ctx);
         }
 
-        // The bar's name, centred over the slots, on its own fade, at the host font's own size.
-        const int name_alpha = static_cast<int>(255 * alpha * text_alpha);
-        layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, 0.0f, 3, this->get_name(),
-                                               static_cast<unsigned>(IM_COL32(255, 255, 255, name_alpha)), geo.name_px });
+        float cast_progress{ 0.0f };
+        std::string cast_name;
+        std::array<float, 2> cast_marks{ -1.0f, -1.0f };
+        if (Bars::show_castbar && casts::CastingController::get_castbar(cast_progress, cast_name, cast_marks)) {
+            // The castbar takes the row of the bar's name. Like the health bars of the game: a dark track
+            // with a thin frame and end pieces, the fill grows from the left to the right.
+            const int a = static_cast<int>(255 * alpha);
+            const float px = std::max(1.0f, std::round(screensize_y / 1080.0f));
+            const float width = std::min(geo.width, std::max(geo.icon * 4.0f, geo.width * 0.5f));
+            const float height = std::round(geo.name_px * 0.9f);
+            const float x0 = std::round((geo.width - width) * 0.5f);
+            const float x1 = x0 + width;
+            const float fill = (width - 4.0f * px) * cast_progress;
+
+            layer.rects.push_back({ x0, 0.0f, x1, height, static_cast<unsigned>(IM_COL32(0, 0, 0, a * 150 / 255)) });
+            if (fill > 0.0f) {
+                layer.rects.push_back({ x0 + 2.0f * px, 2.0f * px, x0 + 2.0f * px + fill, height - 2.0f * px,
+                                        static_cast<unsigned>(IM_COL32(46, 92, 190, a * 230 / 255)) });
+            }
+            // Marks, the hold times for the second and third word of a shout
+            for (const float mark : cast_marks) {
+                if (mark > 0.0f && mark < 1.0f) {
+                    const float mx = std::round(x0 + 2.0f * px + (width - 4.0f * px) * mark);
+                    layer.rects.push_back({ mx - px, px, mx + px, height - px, static_cast<unsigned>(IM_COL32(235, 235, 235, a * 230 / 255)) });
+                }
+            }
+            layer.rects.push_back({ x0, 0.0f, x1, height, static_cast<unsigned>(IM_COL32(190, 190, 190, a * 200 / 255)), px });
+            const float cap = 3.0f * px;
+            layer.rects.push_back({ x0 - cap, -px, x0, height + px, static_cast<unsigned>(IM_COL32(215, 215, 215, a * 230 / 255)) });
+            layer.rects.push_back({ x1, -px, x1 + cap, height + px, static_cast<unsigned>(IM_COL32(215, 215, 215, a * 230 / 255)) });
+
+            const float text_px = std::round(height * 0.72f);
+            layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, (height - text_px) * 0.5f, 3, cast_name,
+                                                   static_cast<unsigned>(IM_COL32(255, 255, 255, a)), text_px });
+        }
+        else {
+            // The bar's name, centred over the slots, on its own fade, at the host font's own size.
+            const int name_alpha = static_cast<int>(255 * alpha * text_alpha);
+            layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, 0.0f, 3, this->get_name(),
+                                                   static_cast<unsigned>(IM_COL32(255, 255, 255, name_alpha)), geo.name_px });
+        }
         layer.width = geo.width;
         layer.height = geo.height;
         layer.visible = true;

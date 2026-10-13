@@ -238,6 +238,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
             checkbox("Use Default bar when Sheathed", &Bars::use_default_bar_when_sheathed);
             checkbox("Disable Menu Rendering", &Bars::disable_menu_rendering);
             checkbox("Disable Menu Binding", &Bars::disable_menu_binding);
+            checkbox("Show Castbar", &Bars::show_castbar);
             bool key_icons = Bars::get_use_keybind_icons();
             if (checkbox("Use Key Icons", &key_icons)) {
                 Bars::set_use_keybind_icons(key_icons);

@@ -125,6 +125,7 @@ namespace SpellHotbar::Storage::IO {
         Bars::use_default_bar_when_sheathed = get_int_or_default(d, "settings.use_default_bar_when_sheathed", 0) != 0;
         Bars::disable_menu_rendering = get_int_or_default(d, "settings.disable_menu_rendering", 0) != 0;
         Bars::disable_menu_binding = get_int_or_default(d, "settings.disable_menu_binding", 0) != 0;
+        Bars::show_castbar = get_int_or_default(d, "settings.show_castbar", 1) != 0;
         Bars::disable_non_modifier_bar = get_int_or_default(d, "settings.disable_non_mod_bar", 0) != 0;
         Bars::set_use_keybind_icons(get_int_or_default(d, "settings.use_key_icons", 0) != 0);
 
@@ -314,6 +315,7 @@ namespace SpellHotbar::Storage::IO {
         add_int(d, "settings.use_default_bar_when_sheathed", Bars::use_default_bar_when_sheathed ? 1 : 0);
         add_int(d, "settings.disable_menu_rendering", Bars::disable_menu_rendering ? 1 : 0);
         add_int(d, "settings.disable_menu_binding", Bars::disable_menu_binding ? 1 : 0);
+        add_int(d, "settings.show_castbar", Bars::show_castbar ? 1 : 0);
         add_int(d, "settings.disable_non_mod_bar", Bars::disable_non_modifier_bar ? 1 : 0);
         add_int(d, "settings.use_key_icons", Bars::get_use_keybind_icons() ? 1 : 0);
 

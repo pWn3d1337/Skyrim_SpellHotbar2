@@ -10,8 +10,10 @@ namespace SpellHotbar::Storage {
     * 4 - SpellHotbar2, alpha 0.0.7
     * 5 - SpellHotbar2, alpha 0.0.13
     * 6 - SpellHotbar2, the in-menu dock's position, scale, spacing, anchor and lock
+    * 7 - dual casting blocks movement
+    * 8 - castbar
     */
-    constexpr uint32_t save_format = 7U;
+    constexpr uint32_t save_format = 8U;
 
     extern std::array<RE::FormID, 12> hotbar_main;
 

@@ -494,6 +494,40 @@ namespace SpellHotbar::casts::CastingController {
 		return false;
 	}
 
+	float BaseCastingInstance::get_castbar_progress() const
+	{
+		//powers, shouts and potions have no cast time
+		return -1.0f;
+	}
+
+	std::array<float, 2> BaseCastingInstance::get_castbar_marks() const
+	{
+		return { -1.0f, -1.0f };
+	}
+
+	float CastingInstance::get_castbar_progress() const
+	{
+		if (m_casted || m_total_casttime <= 0.0f) {
+			return -1.0f;
+		}
+		return std::clamp(get_current_casttime() / m_total_casttime, 0.0f, 1.0f);
+	}
+
+	//Fills during the charge. A spell with a duration drains while it runs, one that is held stays full.
+	float CastingInstanceSpellConcentration::get_castbar_progress() const
+	{
+		if (m_casted) {
+			return -1.0f;
+		}
+		if (m_cast_timer < m_release_anim_time) {
+			return m_release_anim_time > 0.0f ? std::clamp(m_cast_timer / m_release_anim_time, 0.0f, 1.0f) : 1.0f;
+		}
+		if (has_duration()) {
+			return std::clamp(1.0f - (m_cast_timer - m_release_anim_time) / m_total_casttime, 0.0f, 1.0f);
+		}
+		return 1.0f;
+	}
+
 	void BaseCastingInstance::on_reset()
 	{
 		//called before cast instance is deleted
@@ -1048,7 +1082,7 @@ namespace SpellHotbar::casts::CastingController {
 
 					if (GameData::individual_shout_cooldowns || pc->GetVoiceRecoveryTime() <= 0.0f) {
 
-						current_cast = std::make_unique<CastingInstanceShout>(form);
+						current_cast = std::make_unique<CastingInstanceShout>(form, keybind);
 						return true;
 					}
 					else {
@@ -1093,6 +1127,22 @@ namespace SpellHotbar::casts::CastingController {
 			}
 		}
 		return false;
+	}
+
+	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks)
+	{
+		if (!current_cast) {
+			return false;
+		}
+		const float p = current_cast->get_castbar_progress();
+		if (p < 0.0f) {
+			return false;
+		}
+		progress = p;
+		marks = current_cast->get_castbar_marks();
+		auto form = current_cast->get_form();
+		name = form ? form->GetName() : "";
+		return true;
 	}
 
 	float get_current_casttime()
@@ -1287,8 +1337,26 @@ namespace SpellHotbar::casts::CastingController {
 		return is_gcd_expired();
 	}
 
-	CastingInstanceShout::CastingInstanceShout(RE::TESForm* form) : CastingInstancePower(form)
+	//hold time of the shout key for the second / third word, game setting with the vanilla value as fallback
+	float get_shout_time_setting(const char* name, float fallback)
 	{
+		if (auto game_settings = RE::GameSettingCollection::GetSingleton()) {
+			if (auto setting = game_settings->GetSetting(name)) {
+				return setting->GetFloat();
+			}
+		}
+		logger::warn("Game setting {} not found, using {}", name, fallback);
+		return fallback;
+	}
+
+	CastingInstanceShout::CastingInstanceShout(RE::TESForm* form, const Input::KeyBind& keybind) : CastingInstancePower(form),
+		m_keybind(keybind),
+		m_hold_time(0.0f),
+		m_time_word2(get_shout_time_setting("fShoutTime1", 0.2f)),
+		m_time_word3(get_shout_time_setting("fShoutTime2", 0.8f))
+	{
+		//the third word sits at 80% of the bar
+		m_bar_time = std::max(m_time_word2, m_time_word3) * 1.25f;
 		m_gcd = 1.5f;
 		if (GameData::individual_shout_cooldowns) {
 			//If cast is allowed to start, individual shout CD must be 0
@@ -1296,6 +1364,35 @@ namespace SpellHotbar::casts::CastingController {
 				GameData::reset_shout_cd();
 			}
 		}
+	}
+
+	bool CastingInstanceShout::update(RE::PlayerCharacter* pc, float delta)
+	{
+		if (!casted() && m_keybind.isDown()) {
+			m_hold_time += delta;
+		}
+		return CastingInstancePower::update(pc, delta);
+	}
+
+	float CastingInstanceShout::get_castbar_progress() const
+	{
+		//the shout is released with the key
+		if (casted() || !m_keybind.isDown() || m_bar_time <= 0.0f) {
+			return -1.0f;
+		}
+		return std::clamp(m_hold_time / m_bar_time, 0.0f, 1.0f);
+	}
+
+	std::array<float, 2> CastingInstanceShout::get_castbar_marks() const
+	{
+		if (m_bar_time <= 0.0f) {
+			return { -1.0f, -1.0f };
+		}
+		//only for the words the shout has
+		const RE::TESShout* shout = m_form ? m_form->As<RE::TESShout>() : nullptr;
+		const bool has_word2 = shout && shout->variations[RE::TESShout::VariationID::kTwo].spell;
+		const bool has_word3 = shout && shout->variations[RE::TESShout::VariationID::kThree].spell;
+		return { has_word2 ? m_time_word2 / m_bar_time : -1.0f, has_word3 ? m_time_word3 / m_bar_time : -1.0f };
 	}
 
 	bool CastingInstanceShout::reequip_old_power()

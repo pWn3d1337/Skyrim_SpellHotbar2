@@ -99,6 +99,16 @@ namespace SpellHotbar::Flick {
                                    ImVec2(img.u0, img.v0), ImVec2(img.u1, img.v1), unpack(img.col));
                 }
 
+                for (const DockRect& r : layer.rects) {
+                    const ImVec2 r0(origin.x + r.x0, origin.y + r.y0);
+                    const ImVec2 r1(origin.x + r.x1, origin.y + r.y1);
+                    if (r.thickness > 0.0f) {
+                        FUCK::DrawRect(r0, r1, unpack(r.col), 0.0f, r.thickness);
+                    } else {
+                        FUCK::DrawRectFilled(r0, r1, unpack(r.col), 0.0f);
+                    }
+                }
+
                 // FLICK's C-ABI has no draw-list text, so text is laid out: park the cursor and
                 // emit. The Dummy below restores the layout extent afterwards.
                 for (const DockText& t : layer.texts) {
