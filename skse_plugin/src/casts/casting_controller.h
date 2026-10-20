@@ -262,7 +262,7 @@ namespace SpellHotbar::casts::CastingController {
 	/**
 	* Data for the castbar. False if there is no cast that shows one.
 	*/
-	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks);
+	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks, const RE::TESForm*& form);
 
 	bool can_start_new_cast();
 

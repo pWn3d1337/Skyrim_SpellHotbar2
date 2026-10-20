@@ -269,6 +269,10 @@ namespace SpellHotbar::GameData {
 
     EquippedType getPlayerEquipmentType();
     bool isVampireLord();
+    /**
+    * Vampire Lord on the ground (melee). Spells can only be equipped while levitating (magic).
+    */
+    bool isVampireLordMeleeForm();
     bool isWerewolf();
     uint32_t isCustomTransform();
     custom_transform_spell_type getCustomTransformCasttype();

@@ -797,6 +797,16 @@ namespace SpellHotbar::GameData {
         if (!pc) return false;
         return (vampire_lord_race != nullptr) && (pc->GetRace() == vampire_lord_race);
     }
+
+    bool isVampireLordMeleeForm()
+    {
+        if (!isVampireLord()) return false;
+        auto* pc = RE::PlayerCharacter::GetSingleton();
+        bool levitating{ false };
+        //graph variable of the vampire lord behavior (actors/vampirelord/behaviors/vampirelord.hkx); unknown -> do not block
+        if (!pc->GetGraphVariableBool("isLevitating"sv, levitating)) return false;
+        return !levitating;
+    }
     bool isWerewolf() {
         auto* pc = RE::PlayerCharacter::GetSingleton();
         if (!pc) return false;

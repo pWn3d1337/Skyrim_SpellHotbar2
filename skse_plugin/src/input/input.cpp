@@ -583,7 +583,24 @@ namespace SpellHotbar::Input {
             return false;
         }
 
-        return !pc->IsOnMount();
+        if (pc->IsOnMount()) {
+            // on horseback: spells cast from the hands (the cast behavior animates the arms over the rider pose), scrolls,
+            // powers and shouts (the game handles those on horseback itself)
+            auto form = RE::TESForm::LookupByID(skill);
+            if (form && (form->GetFormType() == RE::FormType::Scroll || form->GetFormType() == RE::FormType::Shout)) {
+                return true;
+            }
+            auto spell = form ? form->As<RE::SpellItem>() : nullptr;
+            if (!spell) {
+                return false;
+            }
+            const auto type = spell->GetSpellType();
+            if (type == RE::MagicSystem::SpellType::kPower || type == RE::MagicSystem::SpellType::kLesserPower) {
+                return true;
+            }
+            return type == RE::MagicSystem::SpellType::kSpell && spell->GetEquipSlot() != GameData::equip_slot_voice;
+        }
+        return true;
     }
 
     bool allowed_to_cast(RE::FormID skill, bool allow_sprint)

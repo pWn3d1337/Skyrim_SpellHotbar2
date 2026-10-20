@@ -124,7 +124,11 @@ namespace SpellHotbar::Input {
                     }
 
                     RE::SpellItem* spell = form->As<RE::SpellItem>();
-                    if (spell != nullptr) {
+                    if (spell != nullptr && slot != GameData::equip_slot_voice && GameData::isVampireLordMeleeForm()) {
+                        //the melee form of the Vampire Lord has no spells in its hands
+                        SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                    }
+                    else if (spell != nullptr) {
                         if (slot == GameData::equip_slot_both_hand && spell->GetEquipSlot() == GameData::equip_slot_either_hand) {
                             RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, spell, GameData::equip_slot_right_hand);
                             RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, spell, GameData::equip_slot_left_hand);
@@ -232,7 +236,11 @@ namespace SpellHotbar::Input {
             if (skill.formID > 0) {
                 auto form = RE::TESForm::LookupByID(skill.formID);
 
-                if (skill.type == slot_type::spell) {
+                if (skill.type == slot_type::spell && GameData::isVampireLordMeleeForm()) {
+                    //the melee form has no spells in its hands, only while levitating
+                    SpellHotbar::RenderManager::highlight_skill_slot(static_cast<int>(i), 0.5, true);
+                }
+                else if (skill.type == slot_type::spell) {
 
                     RE::BGSEquipSlot* equip_slot = GameData::equip_slot_right_hand;
                     if (skill.hand == left_hand) {

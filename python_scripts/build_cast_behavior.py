@@ -29,6 +29,10 @@ event_cast_stop = "SHB_CastStop"
 event_charge_loop = "SHB_ChargeLoop"
 var_casting = "SHB_bCasting"
 var_anim = "SHB_iAnim"
+# set by the plugin during an aimed hotbar cast on horseback, enables the torso aim modifier in 0_master
+var_mounted_aim = "SHB_bMountedAim"
+# turn limit of the torso aim in degrees, the plugin lowers it to 0 at the end of the cast so the torso turns back smoothly
+var_mounted_aim_limit = "SHB_fMountedAimLimit"
 
 # character property with all bones a cast clip may drive: everything but the root and the camera / look nodes
 full_body_property = "ExcludeRoot+Cam+CamCtrl+Look"
@@ -50,7 +54,24 @@ overlay_weights = {
 new_events = [event_cast_start, event_cast_release, event_cast_stop, event_charge_loop]
 # name, havok type, initial word value
 cast_variables = [(var_casting, "VARIABLE_TYPE_BOOL", 0), (var_anim, "VARIABLE_TYPE_INT32", 0)]
-new_variables = cast_variables + [(name, "VARIABLE_TYPE_REAL", 0) for name in overlay_weights]
+new_variables = cast_variables + [(name, "VARIABLE_TYPE_REAL", 0) for name in overlay_weights] + [(var_mounted_aim, "VARIABLE_TYPE_BOOL", 0), (var_mounted_aim_limit, "VARIABLE_TYPE_REAL", 0)]
+
+# Turns the rider's torso toward the camera during a mounted hotbar cast, a copy of the modifier of mounted bow aiming
+mounted_aim_template = "MC_BSDirectAtModifier_Bow"
+# member of the modifier -> variable of 0_master
+mounted_aim_bindings = [
+    ("onGain", "AimGainOnMounted"),
+    ("offGain", "AimGainOff"),
+    ("directAtCameraX", "camerafromx"),
+    ("directAtCameraY", "camerafromy"),
+    ("directAtCameraZ", "camerafromz"),
+    ("active", "bAimActive"),
+    ("currentHeadingOffset", "AimHeadingCurrent"),
+    ("currentPitchOffset", "AimPitchCurrent"),
+    ("enable", var_mounted_aim),
+    ("limitHeadingDegrees", var_mounted_aim_limit),
+    ("limitPitchDegrees", var_mounted_aim_limit),
+]
 
 # seconds, blend between the states of the cast behavior (charge start -> charge loop -> release)
 transition_blend_time = 0.1
@@ -232,7 +253,7 @@ def character_bone_weights(character_xml: list[str], names: list[str]) -> dict[s
     return result
 
 
-def patch_master(xml: list[str], out_folder: Path, overlay_bones: dict[str, list[float]]):
+def patch_master(xml: list[str], out_folder: Path, overlay_bones: dict[str, list[float]], horse_xml: list[str] | None = None):
     """
     Layers the cast behavior over everything below the root modifier generator, the way vanilla layers shield and spell:
     a blender whose base child nearly gives up the arm bones (weight 0.001) and one overlay child per hand with a variable bound weight.
@@ -321,6 +342,51 @@ def patch_master(xml: list[str], out_folder: Path, overlay_bones: dict[str, list
     ]
     write_node(out_folder, root_id, root)
     print(f"  blender between {root_id} RootModifierGenerator and {base_generator}")
+
+    if horse_xml is not None:
+        # The torso aim: a copy of the mounted bow aim modifier of horsebehavior, appended to the root modifier list so it
+        # turns the spine of the final pose. Enabled by the plugin only for an aimed cast on horseback.
+        template_id = next(re.match(r'\t\t<hkobject name="(#\d+)" class="BSDirectAtModifier"', line).group(1) for line in horse_xml
+                           if 'class="BSDirectAtModifier"' in line
+                           and f'\t\t\t<hkparam name="name">{mounted_aim_template}</hkparam>' in node_lines(horse_xml, re.match(r'\t\t<hkobject name="(#\d+)"', line).group(1)))
+        binding = new_node("hkbVariableBindingSet", "0x338ad4ff", [
+            f'<hkparam name="bindings" numelements="{len(mounted_aim_bindings)}">',
+            *[line for member, variable in mounted_aim_bindings for line in (
+                "\t<hkobject>",
+                f'\t\t<hkparam name="memberPath">{member}</hkparam>',
+                f'\t\t<hkparam name="variableIndex">$variableID[{variable}]$</hkparam>',
+                '\t\t<hkparam name="bitIndex">-1</hkparam>',
+                '\t\t<hkparam name="bindingType">BINDING_TYPE_VARIABLE</hkparam>',
+                "\t</hkobject>",
+            )],
+            "</hkparam>",
+            '<hkparam name="indexOfBindingToEnable">-1</hkparam>',
+        ])
+        template = nemesis_format(node_lines(horse_xml, template_id))
+        params = [line[3:] if line.startswith("\t\t\t") else line for line in template[1:-1]]
+        # an inline vector is one value per line in the node files (targetLocation)
+        expanded = []
+        for line in params:
+            m = re.match(r'(	*)(<hkparam name="\w+">)\(([^)]*)\)</hkparam>$', line)
+            if m:
+                expanded += [m.group(1) + m.group(2), *[m.group(1) + "	" + v for v in m.group(3).split()], m.group(1) + "</hkparam>"]
+            else:
+                expanded.append(line)
+        params = expanded
+        for i, line in enumerate(params):
+            if line.startswith('<hkparam name="variableBindingSet">'):
+                params[i] = f'<hkparam name="variableBindingSet">{binding}</hkparam>'
+            elif line.startswith('<hkparam name="name">'):
+                params[i] = '<hkparam name="name">SHB_MountedAim_DAM</hkparam>'
+        signature = re.search(r'signature="(0x[0-9a-f]+)"', template[0]).group(1)
+        aim = new_node("BSDirectAtModifier", signature, params)
+
+        modifier_list_id = re.search(r">(#\d+)<", next(line for line in root if line.startswith('\t\t\t<hkparam name="modifier">'))).group(1)
+        modifier_list = nemesis_format(node_lines(xml, modifier_list_id))
+        if 'class="hkbModifierList"' not in modifier_list[0]:
+            raise RuntimeError(f"root modifier {modifier_list_id} is no modifier list")
+        write_node(out_folder, modifier_list_id, insert_before_param_end(modifier_list, "modifiers", [f"\t\t\t\t{aim}"]))
+        print(f"  mounted torso aim {aim} (copy of {template_id} {mounted_aim_template}) in {modifier_list_id}")
 
 
 def set_param(lines: list[str], name: str, value: str):
@@ -749,7 +815,9 @@ def build():
                 known = known_animations(character_xml)
             check_anim_sets(known)
             build_cast_behavior(load_vanilla_xml("shout_behavior", tmp, project), tmp / project, mod_root_path / "meshes" / "actors" / "character" / project / "behaviors" / f"{behavior_name}.hkx")
-            patch_master(master_xml, patch_root / project / "0_master", overlay_bones)
+            # the torso aim only matters for the body that is seen, third person
+            horse_xml = None if project else load_vanilla_xml("horsebehavior", tmp, project)
+            patch_master(master_xml, patch_root / project / "0_master", overlay_bones, horse_xml)
 
             # every behavior file of the project has to know the events: a file that does not gets them as invalid id,
             # its state machines react to that and the locomotion drops back to its default state

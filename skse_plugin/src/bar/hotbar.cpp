@@ -556,6 +556,35 @@ namespace SpellHotbar
        return false;
     }
 
+    // Tint of the castbar fill (images/bar_cast.png is grayscale): the magic school of the spell, gray for shouts
+    static ImU32 castbar_color(const RE::TESForm* form, int alpha)
+    {
+        if (form && form->GetFormType() != RE::FormType::Shout) {
+            if (const auto* magic_item = form->As<RE::MagicItem>()) {
+                const RE::Effect* effect = magic_item->GetCostliestEffectItem();
+                if (effect && effect->baseEffect) {
+                    switch (effect->baseEffect->GetMagickSkill()) {
+                    case RE::ActorValue::kAlteration:
+                        return IM_COL32(120, 205, 175, alpha);
+                    case RE::ActorValue::kConjuration:
+                        return IM_COL32(150, 125, 235, alpha);
+                    case RE::ActorValue::kDestruction:
+                        return IM_COL32(240, 105, 55, alpha);
+                    case RE::ActorValue::kIllusion:
+                        return IM_COL32(215, 105, 210, alpha);
+                    case RE::ActorValue::kRestoration:
+                        return IM_COL32(245, 205, 95, alpha);
+                    default:
+                        break;
+                    }
+                }
+            }
+            //no school: the colour of the magicka bar
+            return IM_COL32(85, 135, 235, alpha);
+        }
+        return IM_COL32(200, 200, 200, alpha);
+    }
+
     // The HUD bar as a display list for the FLICK-hosted HUD window. Ported from draw_in_hud:
     // the same three layouts and the same per-slot art, now as positions in pixels relative to
     // the layer's origin.
@@ -604,37 +633,55 @@ namespace SpellHotbar
         float cast_progress{ 0.0f };
         std::string cast_name;
         std::array<float, 2> cast_marks{ -1.0f, -1.0f };
-        if (Bars::show_castbar && casts::CastingController::get_castbar(cast_progress, cast_name, cast_marks)) {
-            // The castbar takes the row of the bar's name. Like the health bars of the game: a dark track
-            // with a thin frame and end pieces, the fill grows from the left to the right.
+        const RE::TESForm* cast_form{ nullptr };
+        if (Bars::show_castbar && casts::CastingController::get_castbar(cast_progress, cast_name, cast_marks, cast_form)) {
+            // The castbar takes the row of the bar's name: the meter frame of the game (images/bar_bg.png) with the fill
+            // in its inner channel, growing from the left to the right.
             const int a = static_cast<int>(255 * alpha);
-            const float px = std::max(1.0f, std::round(screensize_y / 1080.0f));
+            const unsigned white = static_cast<unsigned>(IM_COL32(255, 255, 255, a));
             const float width = std::min(geo.width, std::max(geo.icon * 4.0f, geo.width * 0.5f));
-            const float height = std::round(geo.name_px * 0.9f);
+            const float height = std::round(geo.name_px);
             const float x0 = std::round((geo.width - width) * 0.5f);
             const float x1 = x0 + width;
-            const float fill = (width - 4.0f * px) * cast_progress;
 
-            layer.rects.push_back({ x0, 0.0f, x1, height, static_cast<unsigned>(IM_COL32(0, 0, 0, a * 150 / 255)) });
+            // Measured in the 1024 x 128 texture: the bar uses rows 0-100, the end pieces are 95 px wide
+            // and the inner channel spans x 95-928, y 16-83.
+            constexpr float tex_w{ 1024.0f }, tex_h{ 128.0f }, bar_h{ 101.0f };
+            constexpr float cap_l{ 95.0f }, cap_r{ 928.0f }, chan_t{ 16.0f }, chan_b{ 83.0f };
+            const float s = height / bar_h;
+            const float cap = std::round(cap_l * s);
+            const float v1 = bar_h / tex_h;
+            // three pieces, so the end pieces keep their shape when the bar is stretched
+            auto& images = layer.images;
+            const std::string bg{ "Data/SKSE/Plugins/SpellHotbar/images/bar_bg.png" };
+            images.push_back(Flick::DockImage{ bg, x0, 0.0f, x0 + cap, height, 0.0f, 0.0f, cap_l / tex_w, v1, white });
+            images.push_back(Flick::DockImage{ bg, x0 + cap, 0.0f, x1 - cap, height, cap_l / tex_w, 0.0f, cap_r / tex_w, v1, white });
+            images.push_back(Flick::DockImage{ bg, x1 - cap, 0.0f, x1, height, cap_r / tex_w, 0.0f, 1.0f, v1, white });
+
+            const float chan_x0 = x0 + cap;
+            const float chan_x1 = x1 - cap;
+            const float chan_y0 = std::round(chan_t * s);
+            const float chan_y1 = std::round(chan_b * s);
+            const float fill = (chan_x1 - chan_x0) * cast_progress;
             if (fill > 0.0f) {
-                layer.rects.push_back({ x0 + 2.0f * px, 2.0f * px, x0 + 2.0f * px + fill, height - 2.0f * px,
-                                        static_cast<unsigned>(IM_COL32(46, 92, 190, a * 230 / 255)) });
+                // images/bar_cast.png: grayscale, the fill uses rows 0-68 of the 1024 x 128 texture. Cut, not squeezed:
+                // the visible part of the texture grows with the fill.
+                constexpr float fill_v1{ 69.0f / 128.0f };
+                images.push_back(Flick::DockImage{ "Data/SKSE/Plugins/SpellHotbar/images/bar_cast.png", chan_x0, chan_y0, chan_x0 + fill, chan_y1,
+                                                   0.0f, 0.0f, cast_progress, fill_v1, static_cast<unsigned>(castbar_color(cast_form, a)) });
             }
             // Marks, the hold times for the second and third word of a shout
+            const float px = std::max(1.0f, std::round(screensize_y / 1080.0f));
             for (const float mark : cast_marks) {
                 if (mark > 0.0f && mark < 1.0f) {
-                    const float mx = std::round(x0 + 2.0f * px + (width - 4.0f * px) * mark);
-                    layer.rects.push_back({ mx - px, px, mx + px, height - px, static_cast<unsigned>(IM_COL32(235, 235, 235, a * 230 / 255)) });
+                    const float mx = std::round(chan_x0 + (chan_x1 - chan_x0) * mark);
+                    layer.rects.push_back({ mx - px, chan_y0, mx + px, chan_y1, static_cast<unsigned>(IM_COL32(235, 235, 235, a * 230 / 255)) });
                 }
             }
-            layer.rects.push_back({ x0, 0.0f, x1, height, static_cast<unsigned>(IM_COL32(190, 190, 190, a * 200 / 255)), px });
-            const float cap = 3.0f * px;
-            layer.rects.push_back({ x0 - cap, -px, x0, height + px, static_cast<unsigned>(IM_COL32(215, 215, 215, a * 230 / 255)) });
-            layer.rects.push_back({ x1, -px, x1 + cap, height + px, static_cast<unsigned>(IM_COL32(215, 215, 215, a * 230 / 255)) });
 
-            const float text_px = std::round(height * 0.72f);
-            layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, (height - text_px) * 0.5f, 3, cast_name,
-                                                   static_cast<unsigned>(IM_COL32(255, 255, 255, a)), text_px });
+            const float text_px = std::round((chan_y1 - chan_y0) * 0.95f);
+            layer.texts.push_back(Flick::DockText{ geo.width * 0.5f, std::round((chan_y0 + chan_y1 - text_px) * 0.5f), 3, cast_name,
+                                                   white, text_px });
         }
         else {
             // The bar's name, centred over the slots, on its own fade, at the host font's own size.

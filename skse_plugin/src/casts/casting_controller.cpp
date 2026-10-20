@@ -242,6 +242,8 @@ namespace SpellHotbar::casts::CastingController {
 		constexpr int body_sync_frames{ 2 };
 
 		size_t index{ 0 };
+		//cast on horseback: no body overlay, both hands use the two arm overlays instead of the upper body one
+		bool mounted{ false };
 		bool wanted{ false };
 		//share of the pose taken by the overlay of the cast, 0-1
 		float blend{ 0.0f };
@@ -304,6 +306,12 @@ namespace SpellHotbar::casts::CastingController {
 
 		void apply(RE::PlayerCharacter* pc)
 		{
+			if (mounted && index == 2) {
+				//the spine stays with the rider pose, each arm overlay plays the both hands clip on its arm
+				pc->SetGraphVariableFloat(weight_vars[0], to_weight(blend));
+				pc->SetGraphVariableFloat(weight_vars[1], to_weight(blend));
+				return;
+			}
 			pc->SetGraphVariableFloat(weight_vars[index], to_weight(blend));
 			pc->SetGraphVariableFloat(body_weight_vars[index], to_weight(blend * body_blend));
 		}
@@ -311,7 +319,7 @@ namespace SpellHotbar::casts::CastingController {
 		//The legs of the cast clip stand still: only without movement, and the clip has no sneak pose
 		bool wants_body(RE::PlayerCharacter* pc)
 		{
-			if (!cast_full_body_when_standing || pc->IsSneaking()) {
+			if (!cast_full_body_when_standing || pc->IsSneaking() || mounted) {
 				return false;
 			}
 			float speed{ 0.0f };
@@ -324,11 +332,14 @@ namespace SpellHotbar::casts::CastingController {
 		void start(RE::PlayerCharacter* pc, CastAnimSet set)
 		{
 			size_t new_index = get_index(set);
-			if (new_index != index && blend > 0.0f) {
+			const bool new_mounted = pc->IsOnMount();
+			if ((new_index != index || new_mounted != mounted) && blend > 0.0f) {
 				blend = 0.0f;
+				body_blend = 0.0f;
 				apply(pc);
 			}
 			index = new_index;
+			mounted = new_mounted;
 			if (blend == 0.0f) {
 				//no crossfade at the start, a cast that starts standing comes in with the whole body
 				body_blend = wants_body(pc) ? 1.0f : 0.0f;
@@ -383,6 +394,88 @@ namespace SpellHotbar::casts::CastingController {
 		}
 	}
 
+	/*
+	* On horseback the rider faces where the horse goes and an aimed spell flies that way. Mounted bow aiming solves it with
+	* graph variables the engine reads for the aim of the actor (measured: GetAimHeading = heading - AimHeadingCurrent,
+	* GetAimAngle = -AimPitchCurrent, radians). A mounted hotbar cast sets them to the camera direction.
+	*/
+	namespace mounted_aim {
+		//turn limit of the torso aim while casting, as mounted bow aiming
+		constexpr float limit_degrees{ 90.0f };
+		//time the torso takes to turn back after the cast
+		constexpr float fade_time{ 0.4f };
+
+		bool applied{ false };
+		float fade_left{ 0.0f };
+
+		void apply(RE::PlayerCharacter* pc)
+		{
+			auto camera = RE::PlayerCamera::GetSingleton();
+			if (!camera || !camera->cameraRoot) {
+				return;
+			}
+			const auto& rot = camera->cameraRoot->world.rotate;
+			//forward axis of the camera node
+			const RE::NiPoint3 forward{ rot.entry[0][1], rot.entry[1][1], rot.entry[2][1] };
+			const float camera_yaw = std::atan2(forward.x, forward.y);
+			const float camera_pitch = -std::asin(std::clamp(forward.z, -1.0f, 1.0f));
+			float heading = camera_yaw - pc->data.angle.z;
+			heading = std::remainder(heading, 2.0f * std::numbers::pi_v<float>);
+
+			//turns the torso toward the camera (modifier in the 0_master patch, python_scripts/build_cast_behavior.py)
+			pc->SetGraphVariableBool("SHB_bMountedAim"sv, true);
+			pc->SetGraphVariableFloat("SHB_fMountedAimLimit"sv, limit_degrees);
+			pc->SetGraphVariableBool("bAimActive"sv, true);
+			pc->SetGraphVariableFloat("AimHeadingCurrent"sv, -heading);
+			pc->SetGraphVariableFloat("AimPitchCurrent"sv, -camera_pitch);
+			applied = true;
+			fade_left = 0.0f;
+		}
+
+		void reset(RE::PlayerCharacter* pc)
+		{
+			applied = false;
+			fade_left = 0.0f;
+			pc->SetGraphVariableBool("SHB_bMountedAim"sv, false);
+			pc->SetGraphVariableFloat("SHB_fMountedAimLimit"sv, 0.0f);
+			pc->SetGraphVariableBool("bAimActive"sv, false);
+			pc->SetGraphVariableFloat("AimHeadingCurrent"sv, 0.0f);
+			pc->SetGraphVariableFloat("AimPitchCurrent"sv, 0.0f);
+		}
+
+		//After the cast the turn limit goes down to 0, the torso turns back with it instead of snapping
+		void fade(RE::PlayerCharacter* pc, float delta)
+		{
+			if (!applied) {
+				return;
+			}
+			if (fade_left <= 0.0f) {
+				fade_left = fade_time;
+			}
+			fade_left -= delta;
+			if (fade_left <= 0.0f || !pc->IsOnMount()) {
+				reset(pc);
+			}
+			else {
+				pc->SetGraphVariableFloat("SHB_fMountedAimLimit"sv, limit_degrees * fade_left / fade_time);
+			}
+		}
+
+		//A concentration spell is aimed every frame while it runs
+		void update(RE::PlayerCharacter* pc, const BaseCastingInstance* cast, float delta)
+		{
+			const auto* spell_cast = dynamic_cast<const CastingInstance*>(cast);
+			const bool wanted = spell_cast && !spell_cast->casted() && pc->IsOnMount() && spell_cast->get_spell() &&
+			                    spell_cast->get_spell()->GetDelivery() != RE::MagicSystem::Delivery::kSelf;
+			if (wanted) {
+				apply(pc);
+			}
+			else {
+				fade(pc, delta);
+			}
+		}
+	}
+
 	void start_cast_behavior(RE::PlayerCharacter* pc, const RE::SpellItem* spell, int anim, hand_mode used_hand)
 	{
 		CastAnimSet set = get_cast_anim_set(pc, spell, anim, used_hand);
@@ -395,7 +488,8 @@ namespace SpellHotbar::casts::CastingController {
 	{
 		bool is_staggering{ false };
 		pc->GetGraphVariableBool("IsStaggering"sv, is_staggering);
-		return is_staggering || pc->IsAttacking() || pc->IsBlocking() || pc->IsOnMount() || pc->AsActorState()->IsSwimming() || pc->AsActorState()->IsBleedingOut();
+		//casting on horseback works, mounting or dismounting in the middle of a cast ends it
+		return is_staggering || pc->IsAttacking() || pc->IsBlocking() || pc->IsOnMount() != cast_overlay::mounted || pc->AsActorState()->IsSwimming() || pc->AsActorState()->IsBleedingOut();
 	}
 
 	//Player is in a shout or in the cast behavior
@@ -828,6 +922,7 @@ namespace SpellHotbar::casts::CastingController {
 		if (auto pc = RE::PlayerCharacter::GetSingleton()) {
 			cast_overlay::update(pc, delta);
 			cast_art::update(pc, current_cast != nullptr);
+			mounted_aim::update(pc, current_cast.get(), delta);
 		}
 		if (current_cast) {
 			if (!current_cast->casted()) {
@@ -1129,7 +1224,7 @@ namespace SpellHotbar::casts::CastingController {
 		return false;
 	}
 
-	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks)
+	bool get_castbar(float& progress, std::string& name, std::array<float, 2>& marks, const RE::TESForm*& form)
 	{
 		if (!current_cast) {
 			return false;
@@ -1140,7 +1235,7 @@ namespace SpellHotbar::casts::CastingController {
 		}
 		progress = p;
 		marks = current_cast->get_castbar_marks();
-		auto form = current_cast->get_form();
+		form = current_cast->get_form();
 		name = form ? form->GetName() : "";
 		return true;
 	}
@@ -1265,6 +1360,10 @@ namespace SpellHotbar::casts::CastingController {
 		}
 
 		GameData::pre_cast_mod_callback(spell);
+
+		if (pc->IsOnMount() && !targetSelf) {
+			mounted_aim::apply(pc);
+		}
 
 		playerMagicCaster->CastSpellImmediate(spell, false, target, 1.0f, false, 0.0f, targetSelf ? nullptr : pc);
 

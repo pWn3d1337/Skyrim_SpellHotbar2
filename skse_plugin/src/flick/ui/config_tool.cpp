@@ -653,7 +653,26 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                         ++added;
                     }
                 }
-                status_message = "Added " + std::to_string(added) + " spell(s).";
+                // Shouts with all three words learned and unlocked: Unrelenting Force, Fire Breath
+                constexpr RE::FormID shouts[] = { 0x00013E07, 0x0003F9EA };
+                int shouts_added{ 0 };
+                for (const RE::FormID id : shouts) {
+                    auto* shout = RE::TESForm::LookupByID<RE::TESShout>(id);
+                    if (!shout) {
+                        continue;
+                    }
+                    if (pc->AddShout(shout)) {
+                        ++shouts_added;
+                    }
+                    for (auto& variation : shout->variations) {
+                        if (auto* word = variation.word) {
+                            // what Game.TeachWord does, then unlock it as with a dragon soul
+                            word->formFlags |= RE::TESForm::RecordFlags::kKnown;
+                            pc->UnlockWord(word);
+                        }
+                    }
+                }
+                status_message = "Added " + std::to_string(added) + " spell(s), " + std::to_string(shouts_added) + " shout(s) with all words.";
             }
 
             if (FUCK::Button("Add Dual Casting Perks")) {
@@ -679,6 +698,80 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                 status_message = "Added " + std::to_string(added) + " dual casting perk(s).";
                 if (missing > 0) {
                     status_message += " " + std::to_string(missing) + " not loaded from the perk config.";
+                }
+            }
+
+            // The transformation powers with the spells that go with them, as the old debug quest script added them
+            const auto add_spells = [&](std::initializer_list<std::pair<RE::FormID, std::string_view>> ids, const char* what) {
+                auto* data_handler = RE::TESDataHandler::GetSingleton();
+                std::string added;
+                int missing{ 0 };
+                for (const auto& [id, plugin] : ids) {
+                    auto* spell = data_handler ? data_handler->LookupForm<RE::SpellItem>(id, plugin) : nullptr;
+                    if (!spell) {
+                        ++missing;
+                    }
+                    else if (!pc->HasSpell(spell)) {
+                        pc->AddSpell(spell);
+                        added += (added.empty() ? "" : ", ") + std::string(spell->GetName());
+                    }
+                }
+                status_message = std::string(what) + ": " + (added.empty() ? std::string("nothing new") : "added " + added) + ".";
+                if (missing > 0) {
+                    status_message += " " + std::to_string(missing) + " spell(s) not found.";
+                }
+            };
+            // Perk points of the Dawnguard trees live in globals; all of the tree at once, as if every point was earned
+            const auto max_tree_points = [&](const char* prefix) {
+                const auto global = [](const std::string& name) { return RE::TESForm::LookupByEditorID<RE::TESGlobal>(name); };
+                auto* points = global(std::string(prefix) + "PerkPoints");
+                auto* earned = global(std::string(prefix) + "TotalPerksEarned");
+                auto* max = global(std::string(prefix) + "MaxPerks");
+                if (!points) {
+                    status_message += " Perk point global not found.";
+                    return;
+                }
+                const float max_points = max ? max->value : 11.0f;
+                points->value = max_points;
+                if (earned) {
+                    earned->value = max_points;
+                }
+                status_message += " Perk points: " + std::to_string(static_cast<int>(max_points)) + ".";
+            };
+            if (FUCK::Button("Add Werewolf Power")) {
+                add_spells({ { 0x092C48, "Skyrim.esm" }, { 0x0A1A3E, "Skyrim.esm" } }, "Werewolf");  // Beast Form + its companion spell
+                max_tree_points("DLC1Werewolf");
+            }
+            FUCK::SameLine();
+            if (FUCK::Button("Add Vampire Lord Power")) {
+                add_spells({ { 0x00283B, "Dawnguard.esm" }, { 0x01462A, "Dawnguard.esm" } }, "Vampire Lord");  // Vampire Lord + its companion spell
+                max_tree_points("DLC1Vampire");
+            }
+
+            if (FUCK::Button("Spawn Horse")) {
+                // A generic, non-unique horse of the game: the first NPC of the horse race named "Horse"
+                RE::TESNPC* horse_base{ nullptr };
+                auto* horse_race = RE::TESForm::LookupByEditorID<RE::TESRace>("HorseRace");
+                if (auto* data_handler = RE::TESDataHandler::GetSingleton(); data_handler && horse_race) {
+                    for (RE::TESNPC* npc : data_handler->GetFormArray<RE::TESNPC>()) {
+                        if (npc && npc->GetRace() == horse_race && !npc->IsUnique() && std::string_view(npc->GetName()) == "Horse") {
+                            horse_base = npc;
+                            break;
+                        }
+                    }
+                }
+                if (!horse_base) {
+                    status_message = "No horse found (race HorseRace).";
+                }
+                else if (auto horse = pc->PlaceObjectAtMe(horse_base, false)) {
+                    // three metres in front of the player
+                    const float yaw = pc->GetAngleZ();
+                    const RE::NiPoint3 at = pc->GetPosition() + RE::NiPoint3(std::sin(yaw), std::cos(yaw), 0.0f) * 300.0f;
+                    horse->SetPosition(at);
+                    status_message = std::format("Spawned {} ({:08X}).", horse_base->GetName(), horse_base->GetFormID());
+                }
+                else {
+                    status_message = "Could not place the horse.";
                 }
             }
 

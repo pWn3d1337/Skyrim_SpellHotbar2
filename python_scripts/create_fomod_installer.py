@@ -426,6 +426,9 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_cooldown.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla.dds", (dev_mod_root, main_mod_folder)),
+    # castbar background and fill, PNG only (FLICK draws them), kept in the repo with the generic icons
+    (project_root / "python_scripts/icons/bar_bg.png", main_mod_folder + "SKSE/Plugins/SpellHotbar/images"),
+    (project_root / "python_scripts/icons/bar_cast.png", main_mod_folder + "SKSE/Plugins/SpellHotbar/images"),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_poisons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_poisons.dds", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/icons_vanilla_potions.csv", (dev_mod_root, main_mod_folder)),
