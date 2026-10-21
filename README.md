@@ -106,7 +106,7 @@ Note: chances and timing is configurable in the config tool
 ![#BattleMage_Perks1](docs/images/battlemage_1.jpg) ![#BattleMage_Perks2](docs/images/battlemage_2.jpg)  
 
 ## FLICK hosted UI
-The bind menu, the spell and potion editors, the bar position editor, the in-menu dock and the HUD bars are all windows of [FLICK](https://www.nexusmods.com/skyrimspecialedition/mods/181603) (`FUCK.dll`), which is a hard requirement. The configuration pages are the "Spell Hotbar 2" tool in FLICK's sidebar (F7 by default); there is no SkyUI MCM. The plugin draws nothing itself.
+The bind menu, the spell and potion editors, the bar position editor, the in-menu dock and the HUD bars are all windows of [FLICK](https://www.nexusmods.com/skyrimspecialedition/mods/181603) (`FUCK.dll`, 1.7.0 or newer: the plugin uses FLICK API v7), which is a hard requirement. The configuration pages are the "Spell Hotbar 2" tool in FLICK's sidebar (F7 by default); there is no SkyUI MCM. The plugin draws nothing itself.
 
 There is no Papyrus either. The init quest, the dual-cast toggle effect and the BattleMage perk-tree opener are done by the SKSE plugin (`skse_plugin/src/lifecycle`), the two ESPs carry no scripts, and `SpellHotbar.psc` only declares the plugin's natives for external use. The ESPs are built from `plugin-src/` with `python python_scripts/build_plugins.py` (Spriggit 0.40.1 through `dotnet tool restore`); `plugin-src/provenance.json` locks the trees to the 0.0.14 release with only the listed records removed and the dual-cast effect's script detached.
 

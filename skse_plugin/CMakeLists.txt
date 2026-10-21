@@ -7,11 +7,11 @@ project(SpellHotbar2 VERSION 2.0.10 LANGUAGES CXX)
 set(OUTPUT_FOLDER "" CACHE PATH "Optional mod folder that receives the built SKSE plugin")
 
 
-# FLICK's guest header, vendored from github.com/Fuzzlesz/FUCK. It is still moving upstream --
-# API 4 landed days before this pin -- so track a commit, not HEAD, and let FUCK::Connect()'s own
+# FLICK's guest header, vendored from github.com/Fuzzlesz/FUCK_API. It is still moving upstream --
+# API 7, FLICK 1.7 -- so track a commit, not HEAD, and let FUCK::Connect()'s own
 # version check fail closed against an older installed host.
-set(FLICK_API_CANONICAL_COMMIT "a123c11629da3b86ffd1c8e15081d5d641001ed3")
-set(FLICK_API_CANONICAL_SHA256 "9dc5f80490c9067d2cff98c9104b5e2df15b3af6df421546556ed726166ccefa")
+set(FLICK_API_CANONICAL_COMMIT "bc5280921bee6d8585fe18e14302a8bd9b074692")
+set(FLICK_API_CANONICAL_SHA256 "f5378cca0b86de99c3d466bdda7d9dc3902d3c3cd911540fa75e89361d01b88e")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/third_party/flick/FUCK_API.h" FLICK_API_HEADER)
 # Normalize line endings before hashing, written as CMake escapes rather than literal newlines
 # so no editor or checkout can rewrite them.
