@@ -21,10 +21,61 @@ namespace SpellHotbar::casts::CastingController {
 		void stop();
 	}
 
+	void set_cast_condition_vars(RE::PlayerCharacter* pc, const RE::TESForm* spell, hand_mode used_hand);
+
+	// SKSE mod events of a hotbar spell cast, for compatibility patches of other mods (RegisterForModEvent in Papyrus):
+	//   SpellHotbar_CastStart    the charge begins
+	//   SpellHotbar_CastRelease  the spell is cast (fire and forget) or its channel begins (concentration)
+	//   SpellHotbar_CastStop     the cast is over, strArg "finished" or "interrupted" (ended before the release)
+	// sender is the spell (or scroll), numArg the casting hand: 1 left, 2 right, 3 both. Only spells and scrolls, powers and
+	// shouts play the vanilla shout and send its events. Vanilla animation events are not sent: their listeners look at the
+	// equipped spell, which need not be the one cast from the hotbar.
+	namespace mod_events {
+		RE::TESForm* spell{ nullptr };
+		float hand{ 0.0f };
+		bool released{ false };
+
+		void send(const char* name, const char* arg)
+		{
+			SKSE::ModCallbackEvent event{ name, arg, hand, spell };
+			SKSE::GetModCallbackEventSource()->SendEvent(&event);
+		}
+
+		void start(RE::TESForm* a_spell, hand_mode used_hand)
+		{
+			spell = a_spell;
+			hand = static_cast<float>(used_hand);
+			released = false;
+			send("SpellHotbar_CastStart", "");
+		}
+
+		void release()
+		{
+			if (spell && !released) {
+				released = true;
+				send("SpellHotbar_CastRelease", "");
+			}
+		}
+
+		void stop()
+		{
+			if (spell) {
+				send("SpellHotbar_CastStop", released ? "finished" : "interrupted");
+				spell = nullptr;
+				hand = 0.0f;
+				released = false;
+			}
+		}
+	}
+
 	void reset_cast() {
+		mod_events::stop();
 		current_cast->on_reset();
 		current_cast.reset();
 		cast_overlay::stop();
+		if (auto pc = RE::PlayerCharacter::GetSingleton()) {
+			set_cast_condition_vars(pc, nullptr, hand_mode::auto_hand);
+		}
 	}
 
 	//Play sound on actor and return soundhandle
@@ -153,6 +204,39 @@ namespace SpellHotbar::casts::CastingController {
 	constexpr std::string_view cast_behavior_stop_event{ "SHB_CastStop"sv };
 	constexpr std::string_view cast_behavior_active_var{ "SHB_bCasting"sv };
 	constexpr std::string_view cast_behavior_anim_var{ "SHB_iAnim"sv };
+	//For conditions of animation replacers: the spell of the hotbar cast and its hand, 0 while no hotbar spell is cast
+	constexpr std::string_view cast_spell_var{ "SHB_iCastSpell"sv };
+	constexpr std::string_view cast_plugin_var{ "SHB_iCastPlugin"sv };
+	constexpr std::string_view cast_hand_var{ "SHB_iCastHand"sv };
+
+	int condition_spell_id(const RE::TESForm* form)
+	{
+		const RE::FormID id = form->GetFormID();
+		const auto file = form->GetFile(0);
+		return static_cast<int>(file && file->IsLight() ? id & 0xFFF : id & 0xFFFFFF);
+	}
+
+	int condition_plugin_id(const RE::TESForm* form)
+	{
+		const auto file = form->GetFile(0);
+		if (!file) {
+			return 0;
+		}
+		//FNV-1a of the lower case file name, folded to 24 bits: OAR compares values as float, those hold 24 bits exactly
+		std::uint32_t hash{ 2166136261u };
+		for (const char c : std::string_view(file->GetFilename())) {
+			hash ^= static_cast<std::uint8_t>(std::tolower(static_cast<unsigned char>(c)));
+			hash *= 16777619u;
+		}
+		return static_cast<int>((hash >> 24) ^ (hash & 0xFFFFFF));
+	}
+
+	void set_cast_condition_vars(RE::PlayerCharacter* pc, const RE::TESForm* spell, hand_mode used_hand)
+	{
+		pc->SetGraphVariableInt(cast_spell_var, spell ? condition_spell_id(spell) : 0);
+		pc->SetGraphVariableInt(cast_plugin_var, spell ? condition_plugin_id(spell) : 0);
+		pc->SetGraphVariableInt(cast_hand_var, spell ? static_cast<int>(used_hand) : 0);
+	}
 
 	//The graph variable only exists if the behavior patch was applied with Pandora / Nemesis
 	bool check_cast_behavior_installed(RE::PlayerCharacter* pc)
@@ -480,6 +564,9 @@ namespace SpellHotbar::casts::CastingController {
 	{
 		CastAnimSet set = get_cast_anim_set(pc, spell, anim, used_hand);
 		pc->SetGraphVariableInt(cast_behavior_anim_var, static_cast<int>(set));
+		//before the start event, the replacer checks its conditions when the charge clip activates
+		set_cast_condition_vars(pc, spell, used_hand);
+		mod_events::start(const_cast<RE::SpellItem*>(spell), used_hand);
 		cast_overlay::start(pc, set);
 	}
 
@@ -673,6 +760,7 @@ namespace SpellHotbar::casts::CastingController {
 				stop_charge_sound();
 				play_release_sound();
 				if (cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_spell_proc)) {
+					mod_events::release();
 					if (m_spell_proc) {
 						casts::SpellProc::consume_proc();
 					}
@@ -832,6 +920,7 @@ namespace SpellHotbar::casts::CastingController {
 			if (timer_old < m_release_anim_time) {
 				//first cast update
 				cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_spell_proc, m_manacost);
+				mod_events::release();
 				if (m_spell_proc) {
 					casts::SpellProc::consume_proc();
 				}
@@ -931,6 +1020,9 @@ namespace SpellHotbar::casts::CastingController {
 
 					if (current_cast->update(pc, delta)) {
 						reset_cast();
+					}
+					else if (current_cast->casted()) {
+						mod_events::stop();
 					}
 
 				}

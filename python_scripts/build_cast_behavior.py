@@ -33,6 +33,12 @@ var_anim = "SHB_iAnim"
 var_mounted_aim = "SHB_bMountedAim"
 # turn limit of the torso aim in degrees, the plugin lowers it to 0 at the end of the cast so the torso turns back smoothly
 var_mounted_aim_limit = "SHB_fMountedAimLimit"
+# For conditions of animation replacers (OAR CompareValues with a graph variable), set by the plugin for the whole hotbar
+# spell cast and 0 otherwise: the local form id of the spell (as in its plugin, ESL aware), a 24 bit hash of the plugin's
+# file name and the casting hand (1 left, 2 right, 3 both). The spell edit dialog shows the values of a spell.
+var_cast_spell = "SHB_iCastSpell"
+var_cast_plugin = "SHB_iCastPlugin"
+var_cast_hand = "SHB_iCastHand"
 
 # character property with all bones a cast clip may drive: everything but the root and the camera / look nodes
 full_body_property = "ExcludeRoot+Cam+CamCtrl+Look"
@@ -54,7 +60,7 @@ overlay_weights = {
 new_events = [event_cast_start, event_cast_release, event_cast_stop, event_charge_loop]
 # name, havok type, initial word value
 cast_variables = [(var_casting, "VARIABLE_TYPE_BOOL", 0), (var_anim, "VARIABLE_TYPE_INT32", 0)]
-new_variables = cast_variables + [(name, "VARIABLE_TYPE_REAL", 0) for name in overlay_weights] + [(var_mounted_aim, "VARIABLE_TYPE_BOOL", 0), (var_mounted_aim_limit, "VARIABLE_TYPE_REAL", 0)]
+new_variables = cast_variables + [(name, "VARIABLE_TYPE_REAL", 0) for name in overlay_weights] + [(var_mounted_aim, "VARIABLE_TYPE_BOOL", 0), (var_mounted_aim_limit, "VARIABLE_TYPE_REAL", 0)] + [(name, "VARIABLE_TYPE_INT32", 0) for name in (var_cast_spell, var_cast_plugin, var_cast_hand)]
 
 # Turns the rider's torso toward the camera during a mounted hotbar cast, a copy of the modifier of mounted bow aiming
 mounted_aim_template = "MC_BSDirectAtModifier_Bow"

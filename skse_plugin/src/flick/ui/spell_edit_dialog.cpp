@@ -3,6 +3,7 @@
 #include "spell_editor.h"
 #include "widgets.h"
 #include "../../game_data/localization.h"
+#include "../../casts/casting_controller.h"
 
 // The per-spell override dialog, ported from rendering/spell_edit_dialog.cpp to FLICK.
 // Same rows, same checkbox-gates-the-field shape, same Save/Cancel semantics: Save writes into
@@ -202,6 +203,13 @@ namespace SpellHotbar::FlickUi::SpellEditor {
 
             row_label(id, translate_c("$FORM_ID"));
             gray_textf("%08x", a_form->GetFormID());
+            FUCK::PopID();
+
+            // What an animation replacer's OAR condition compares the graph variables of a hotbar cast with
+            row_label(id, "Anim Condition");
+            gray_text(std::format("SHB_iCastSpell == {}, SHB_iCastPlugin == {}",
+                                  casts::CastingController::condition_spell_id(a_form),
+                                  casts::CastingController::condition_plugin_id(a_form)).c_str());
             FUCK::PopID();
 
             bool is_greater_power{ false };

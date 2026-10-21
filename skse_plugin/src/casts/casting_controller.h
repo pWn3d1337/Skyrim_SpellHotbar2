@@ -11,6 +11,13 @@ namespace SpellHotbar::casts::CastingController {
 	*/
 	constexpr float fast_cast_threshold{ 1.01f };
 
+	/**
+	* Values of the graph variables SHB_iCastSpell / SHB_iCastPlugin while the form is cast from the hotbar, for conditions of
+	* animation replacers: the form id as written in its plugin (ESL aware) and a 24 bit hash of the plugin's file name
+	*/
+	int condition_spell_id(const RE::TESForm* form);
+	int condition_plugin_id(const RE::TESForm* form);
+
 	class BaseCastingInstance {
 	public:
 		BaseCastingInstance(RE::TESForm* form, float casttime);
