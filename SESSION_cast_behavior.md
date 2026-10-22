@@ -1,13 +1,15 @@
 # Session handover: cast behavior and follow-up work
 
-Last updated 2026-10-22, branch `v2.1` (pushed to `origin/v2.1` up to `bc6f832`). Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
+Last updated 2026-10-22, branch `v2.1`, everything pushed to `origin/v2.1`. Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
 
 ## State of the branch
 
-Pushed commits on `v2.1` (newest first):
+Commits on `v2.1` since the cast behavior (newest first), all pushed:
 
 | Commit | Contents |
 |---|---|
+| `88fd8a3` | Clips of a regular cast, custom animation system removed (not tested in game yet) |
+| `4aa8c27` | Unused OAR animation globals 0x815 / 0x834 / 0x838 removed from `SpellHotbar.esp` (provenance: 33 sanctioned changes, record count 24; rebuilt ESP already in the dev mod) |
 | `bc6f832` | Graph variables and SKSE mod events for animation replacers / other mods |
 | `35c34f2` | Config tool laid out as MCM style option tables |
 | `c889467` | FLICK API header v7 (FLICK 1.7.0 now the minimum) |
@@ -19,12 +21,7 @@ Pushed commits on `v2.1` (newest first):
 | `34ce406`, `cf60080` | Dual casting movement option (default off) |
 | `813b4c5` | Cast spells through an own behavior instead of the shout state |
 
-**Uncommitted on this PC (commit and push before switching):**
-
-1. Removal of the custom animation system (see below): `casting_controller.*`, `spell_cast_data.*`, `spell_data_csv_loader.cpp`, `user_custom_spelldata.*`, `game_data.*`, `localization.cpp`, `spell_editor.*`, `spell_edit_dialog.cpp`, `CMakeLists.txt`, deleted `animation_data_csv_loader.*`, `create_fomod_installer.py`, `CLAUDE.md`.
-2. Removal of the unused globals 0x815 / 0x834 / 0x838 from `SpellHotbar.esp`: deleted YAML records in `plugin-src/SpellHotbar/Globals/`, `plugin-src/provenance.json` (3 sanctioned removals, record count 24), `python_scripts/plugin_provenance.py` (33 sanctioned changes). `build_plugins.py` passes; the rebuilt ESP is already in the dev mod.
-
-Neither is tested in game yet.
+Untracked files in the working tree (`releases/`, `python_scripts/tts_workspace/`, nolvus spell list and icons, misc scripts) were never part of this work.
 
 ## Feature status
 
@@ -43,7 +40,7 @@ Tested and working in game (Pandora):
 
 Done, not tested in game:
 
-- **Custom animation system removed** (uncommitted). Every hotbar spell plays the clips a regular cast would: `get_cast_anim_set(pc, spell, used_hand)` picks by two-handed (ritual), casting type, delivery, ward keyword, hand(s) and staff. No cast-time switch any more (`fast_cast_threshold` gone), no Animation / Animation2 in spell data, editor or presets. The CSV columns are ignored; old co-saves are read and the animation values discarded (no save format change); old preset keys `spell_animation(2)` are ignored. Ritual concentration (Lightning Storm) maps to the dual concentration clips (no ritual concentration set in the behavior).
+- **Custom animation system removed** (`88fd8a3`). Every hotbar spell plays the clips a regular cast would: `get_cast_anim_set(pc, spell, used_hand)` picks by two-handed (ritual), casting type, delivery, ward keyword, hand(s) and staff. No cast-time switch any more (`fast_cast_threshold` gone), no Animation / Animation2 in spell data, editor or presets. The CSV columns are ignored; old co-saves are read and the animation values discarded (no save format change); old preset keys `spell_animation(2)` are ignored. Ritual concentration (Lightning Storm) maps to the dual concentration clips (no ritual concentration set in the behavior).
 - Test list: Fireball left/right/dual, Flames, Healing, a ward, Fire Storm with short and long cast time (both ritual now), Lightning Storm, staff, scroll; spell editor and edit dialog open fine.
 
 ## Animation replacers (checked)
@@ -123,7 +120,7 @@ Unchanged from the first version; `CLAUDE.md` ("Cast behavior", "Casting art") h
 
 ## Open items
 
-- Commit and push the uncommitted work above, then test it in game.
+- Test `88fd8a3` (clips of a regular cast) and `4aa8c27` (ESP without the globals) in game.
 - Ritual concentration has no own clip set (uses dual concentration); add one to `anim_sets` if wanted (Pandora run).
 - Test `SHB_iCast*` with a real OAR condition and the mod events with a small Papyrus listener.
 - Thuum-style animations were tried and reverted; not planned.
