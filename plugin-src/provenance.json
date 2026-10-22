@@ -5,12 +5,12 @@
     "package": "Spriggit.Yaml.Skyrim",
     "version": "0.40.1"
   },
-  "note": "YAML trees were imported from the official upstream 0.0.14 ESPs. Git does not carry those binaries; this manifest is the lock that only the listed records changed: three scriptless quests, an unread global and the BattleMage opener power with its effect are removed, and the dual-cast toggle effect keeps its record with the script detached. Later cut: the dummy cast effects (20 art objects, the cast FX ability and its two magic effects) are removed, hotbar casts show the casting art of the spell itself.",
+  "note": "YAML trees were imported from the official upstream 0.0.14 ESPs. Git does not carry those binaries; this manifest is the lock that only the listed records changed: three scriptless quests, an unread global and the BattleMage opener power with its effect are removed, and the dual-cast toggle effect keeps its record with the script detached. Later cut: the dummy cast effects (20 art objects, the cast FX ability and its two magic effects) are removed, hotbar casts show the casting art of the spell itself. Later cut: the three globals of the OAR based cast animations (animation type, cast timer, concentration flag) are removed, hotbar casts play the clips of a regular cast through the cast behavior.",
   "plugins": [
     {
       "filename": "SpellHotbar.esp",
       "source": "plugin-src/SpellHotbar",
-      "record_count": 27
+      "record_count": 24
     },
     {
       "filename": "SpellHotbar_BattleMage.esp",
@@ -255,6 +255,30 @@
       "plugin": "SpellHotbar.esp",
       "form": "000832",
       "editor_id": "SpellHotbar_AlterationGreenHandEffects_R",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000815",
+      "editor_id": "SpellHotbar_SpellAnimationType",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000834",
+      "editor_id": "SpellHotbar_isCastingConcSpell",
+      "changes": [
+        "record_removed"
+      ]
+    },
+    {
+      "plugin": "SpellHotbar.esp",
+      "form": "000838",
+      "editor_id": "SpellHotbar_Casttimer",
       "changes": [
         "record_removed"
       ]

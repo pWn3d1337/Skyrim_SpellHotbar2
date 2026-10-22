@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Prove the Spriggit YAML trees match the sanctioned 0.0.14 cut: five records removed, one VMAD emptied,
-and the 23 records of the dummy cast effects removed."""
+the 23 records of the dummy cast effects and the 3 globals of the OAR cast animations removed."""
 
 from __future__ import annotations
 
@@ -79,8 +79,8 @@ def verify_provenance(root: Path = ROOT) -> None:
         (item["plugin"], item["form"].upper()): item
         for item in manifest["allowed_record_changes"]
     }
-    if len(allowed) != 30:
-        raise RuntimeError("provenance must list exactly 30 sanctioned record changes")
+    if len(allowed) != 33:
+        raise RuntimeError("provenance must list exactly 33 sanctioned record changes")
 
     for plugin in manifest["plugins"]:
         source = root / plugin["source"]
