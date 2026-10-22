@@ -41,7 +41,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
         std::optional<GameData::Spell_cast_data> current_edit_data_unfilled = std::nullopt;
         //currently saved spell info, at start of editing
         std::optional<GameData::Spell_cast_data> current_edit_data_saved = std::nullopt;
-        std::vector<int> list_of_anims;
 
         // The two confirmations, hoisted out of the rows they are asked from.
         bool reset_all_pending{ false };
@@ -62,8 +61,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             column_id_GCD,
             column_id_CD,
             column_id_Casttime,
-            column_id_Anim,
-            column_id_Anim2,
             column_id_Edit,
             column_id_Reset,
 
@@ -135,16 +132,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             }
         }
 
-        void load_anims()
-        {
-            list_of_anims.clear();
-            list_of_anims.reserve(GameData::animation_names.size());
-            for (auto& [k, v] : GameData::animation_names) {
-                list_of_anims.push_back(k);
-            }
-            std::sort(list_of_anims.begin(), list_of_anims.end());
-        }
-
         GameData::Spell_cast_data _get_spell_data(const RE::TESForm* form)
         {
             SpellHotbar::GameData::Spell_cast_data data;
@@ -152,19 +139,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             return data;
         }
 
-        bool compare_anim(const RE::TESForm* lhs, const RE::TESForm* rhs)
-        {
-            auto l_data = _get_spell_data(lhs);
-            auto r_data = _get_spell_data(rhs);
-            return l_data.animation < r_data.animation;
-        }
-
-        bool compare_anim2(const RE::TESForm* lhs, const RE::TESForm* rhs)
-        {
-            auto l_data = _get_spell_data(lhs);
-            auto r_data = _get_spell_data(rhs);
-            return l_data.animation2 < r_data.animation2;
-        }
 
         bool compare_cd(const RE::TESForm* lhs, const RE::TESForm* rhs)
         {
@@ -213,12 +187,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                     break;
                 case spell_editor_column_id::column_id_Casttime:
                     is_less = compare_casttime(lhs, rhs);
-                    break;
-                case spell_editor_column_id::column_id_Anim:
-                    is_less = compare_anim(lhs, rhs);
-                    break;
-                case spell_editor_column_id::column_id_Anim2:
-                    is_less = compare_anim2(lhs, rhs);
                     break;
                 case spell_editor_column_id::column_id_ID:
                 default:
@@ -332,7 +300,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             reset_row_pending = 0;
             reset_row_open = false;
             load_spells();
-            load_anims();
             show_frame.store(true, std::memory_order_relaxed);
         }
     }
@@ -350,7 +317,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
 
         list_of_skills.clear();
         list_of_skills_filtered.clear();
-        list_of_anims.clear();
     }
 
     const char* title()
@@ -429,8 +395,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             FUCK::TableSetupColumn(translate_id("$COLUMN_GCD").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_GCD);
             FUCK::TableSetupColumn(translate_id("$COLUMN_CD").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_CD);
             FUCK::TableSetupColumn(translate_id("$COLUMN_CASTTIME").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Casttime);
-            FUCK::TableSetupColumn(translate_id("$COLUMN_ANIM").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Anim);
-            FUCK::TableSetupColumn(translate_id("$COLUMN_ANIM2").c_str(), CF::kWidthFixed, 0.0f, spell_editor_column_id::column_id_Anim2);
             FUCK::TableSetupColumn(translate_id("$EDIT").c_str(), CF::kWidthFixed | CF::kNoSort, 0.0f, spell_editor_column_id::column_id_Edit);
             FUCK::TableSetupColumn(translate_id("$RESET").c_str(), CF::kWidthFixed | CF::kNoSort, 0.0f, spell_editor_column_id::column_id_Reset);
             FUCK::TableSetupScrollFreeze(0, 1); // Make row always visible
@@ -514,12 +478,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                 FUCK::Text("%.2f", data.casttime);
 
                 FUCK::TableNextColumn();
-                FUCK::Text("%d", data.animation);
-
-                FUCK::TableNextColumn();
-                FUCK::Text("%d", data.animation2);
-
-                FUCK::TableNextColumn();
                 if (FUCK::Button(translate_id("$EDIT").c_str())) {
                     button_edit_clicked = row_n;
                 }
@@ -551,10 +509,5 @@ namespace SpellHotbar::FlickUi::SpellEditor {
         current_edit_data_saved.reset();
         current_edit_data_filled.reset();
         current_edit_data_unfilled.reset();
-    }
-
-    std::vector<int>& get_list_of_anims()
-    {
-        return list_of_anims;
     }
 }

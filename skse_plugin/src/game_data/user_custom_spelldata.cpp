@@ -19,8 +19,6 @@ namespace SpellHotbar::GameData {
 		if (ok && (flags & save_flags::gcd)) ok = serializer->WriteRecordData(&m_spell_data.gcd, sizeof(float));
 		if (ok && (flags & save_flags::cooldown)) ok = serializer->WriteRecordData(&m_spell_data.cooldown, sizeof(float));
 		if (ok && (flags & save_flags::casttime)) ok = serializer->WriteRecordData(&m_spell_data.casttime, sizeof(float));
-		if (ok && (flags & save_flags::animation)) ok = serializer->WriteRecordData(&m_spell_data.animation, sizeof(int));
-		if (ok && (flags & save_flags::animation2)) ok = serializer->WriteRecordData(&m_spell_data.animation2, sizeof(int));
 		if (ok && (flags & save_flags::icon_form)) ok = serializer->WriteRecordData(&m_icon_form, sizeof(RE::FormID));
 						
 		if (ok && (flags & save_flags::icon_str)) {
@@ -61,8 +59,13 @@ namespace SpellHotbar::GameData {
 		if (ok && (flags & save_flags::gcd)) ok = serializer->ReadRecordData(&data.m_spell_data.gcd, sizeof(float));
 		if (ok && (flags & save_flags::cooldown)) ok = serializer->ReadRecordData(&data.m_spell_data.cooldown, sizeof(float));
 		if (ok && (flags & save_flags::casttime)) ok = serializer->ReadRecordData(&data.m_spell_data.casttime, sizeof(float));
-		if (ok && (flags & save_flags::animation)) ok = serializer->ReadRecordData(&data.m_spell_data.animation, sizeof(int));
-		if (ok && (flags & save_flags::animation2)) ok = serializer->ReadRecordData(&data.m_spell_data.animation2, sizeof(int));
+		for (const auto anim_flag : { save_flags::animation, save_flags::animation2 }) {
+			if (ok && (flags & anim_flag)) {
+				//cast animation ids of older versions, a hotbar cast plays the clips of a regular cast now
+				int unused_animation{ 0 };
+				ok = serializer->ReadRecordData(&unused_animation, sizeof(int));
+			}
+		}
 		if (ok && (flags & save_flags::casteffectid)) {
 			//dummy cast effect of older versions, the casting art of the spell itself is used now
 			uint16_t unused_casteffectid{ 0U };
@@ -108,12 +111,6 @@ namespace SpellHotbar::GameData {
 		if (flags & save_flags::casttime) {
 			parent_node.AddMember("spell_casttime", m_spell_data.casttime, doc.GetAllocator());
 		}
-		if (flags & save_flags::animation) {
-			parent_node.AddMember("spell_animation", m_spell_data.animation, doc.GetAllocator());
-		}
-		if (flags & save_flags::animation2) {
-			parent_node.AddMember("spell_animation2", m_spell_data.animation2, doc.GetAllocator());
-		}
 		return true;
 	}
 
@@ -128,12 +125,7 @@ namespace SpellHotbar::GameData {
 		if (node.HasMember("spell_casttime")) {
 			m_spell_data.casttime = node["spell_casttime"].GetFloat();
 		}
-		if (node.HasMember("spell_animation")) {
-			m_spell_data.animation = node["spell_animation"].GetInt();
-		}
-		if (node.HasMember("spell_animation2")) {
-			m_spell_data.animation2 = node["spell_animation2"].GetInt();
-		}
+		//"spell_animation" / "spell_animation2" of older presets are ignored
 		return true;
 	}
 
@@ -150,8 +142,6 @@ namespace SpellHotbar::GameData {
 		if (m_spell_data.gcd > 0.0f) flags |= save_flags::gcd;
 		if (m_spell_data.cooldown > 0.0f) flags |= save_flags::cooldown;
 		if (m_spell_data.casttime > 0.0f) flags |= save_flags::casttime;
-		if (m_spell_data.animation >= 0) flags |= save_flags::animation;
-		if (m_spell_data.animation2 >= 0) flags |= save_flags::animation2;
 		if (m_icon_form > 0) flags |= save_flags::icon_form;
 		if (!m_icon_str.empty()) flags |= save_flags::icon_str;
 
@@ -162,9 +152,7 @@ namespace SpellHotbar::GameData {
 	{
 		return m_spell_data.gcd != other.gcd ||
 			m_spell_data.cooldown != other.cooldown ||
-			m_spell_data.casttime != other.casttime ||
-			m_spell_data.animation != other.animation ||
-			m_spell_data.animation2 != other.animation2;
+			m_spell_data.casttime != other.casttime;
 	}
 
 }

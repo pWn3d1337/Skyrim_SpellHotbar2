@@ -20,8 +20,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
         bool custom_gcd{ false };
         bool custom_cd{ false };
         bool custom_casttime{ false };
-        bool custom_anim{ false };
-        bool custom_anim2{ false };
 
         const ImVec4 col_gray{ 0.498f, 0.498f, 0.498f, 1.0f };
 
@@ -47,8 +45,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                 custom_gcd = dat.gcd != dat_unfilled.gcd;
                 custom_cd = dat.cooldown != dat_unfilled.cooldown;
                 custom_casttime = dat.casttime != dat_unfilled.casttime;
-                custom_anim = dat.animation != dat_unfilled.animation;
-                custom_anim2 = dat.animation2 != dat_unfilled.animation2;
 
                 initialized = true;
             }
@@ -60,8 +56,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             custom_gcd = false;
             custom_cd = false;
             custom_casttime = false;
-            custom_anim = false;
-            custom_anim2 = false;
 
             close_edit_dialog();
         }
@@ -74,42 +68,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
             FUCK::TableNextColumn();
             FUCK::TextUnformatted(label);
             FUCK::TableNextColumn();
-        }
-
-        // The two animation combos are the same widget over the same list; only which field they
-        // write differs.
-        void anim_row(int& anim_value, bool& custom, int dat_filled_value, const char* combo_suffix)
-        {
-            checkbox(std::string("##chk").append(combo_suffix).c_str(), &custom);
-            FUCK::SameLine();
-
-            if (!custom) {
-                FUCK::BeginDisabled();
-                anim_value = dat_filled_value;
-            }
-
-            auto& anims = get_list_of_anims();
-            std::vector<std::string> labels;
-            labels.reserve(anims.size());
-            int index = -1;
-            for (std::size_t n = 0; n < anims.size(); ++n) {
-                const auto it = GameData::animation_names.find(anims[n]);
-                labels.emplace_back(it != GameData::animation_names.end() ? it->second : std::to_string(anims[n]));
-                if (anims[n] == anim_value) {
-                    index = static_cast<int>(n);
-                }
-            }
-
-            // The old combo's label was the raw animation id, so the number stays readable
-            // beside the name the list shows.
-            const std::string label = std::to_string(anim_value) + "##cbo" + combo_suffix;
-            if (combo(label.c_str(), &index, labels) && index >= 0 && index < static_cast<int>(anims.size())) {
-                anim_value = anims[static_cast<std::size_t>(index)];
-            }
-
-            if (!custom) {
-                FUCK::EndDisabled();
-            }
         }
     }
 
@@ -360,24 +318,6 @@ namespace SpellHotbar::FlickUi::SpellEditor {
                     dat.casttime = -1.0f;
                     gray_textf("%.2fs", a_filled.casttime);
                 }
-            }
-            FUCK::PopID();
-
-            row_label(id, translate_c("$ANIMATION"));
-            if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
-                anim_row(dat.animation, custom_anim, a_filled.animation, "_anim");
-            }
-            else {
-                gray_textf("%d", -1);
-            }
-            FUCK::PopID();
-
-            row_label(id, translate_c("$ANIMATION2"));
-            if (spell && spell->GetSpellType() == RE::MagicSystem::SpellType::kSpell) {
-                anim_row(dat.animation2, custom_anim2, a_filled.animation2, "_anim2");
-            }
-            else {
-                gray_textf("%d", -1);
             }
             FUCK::PopID();
 

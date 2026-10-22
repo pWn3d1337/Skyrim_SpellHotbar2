@@ -6,7 +6,6 @@
 #include "../casts/casting_controller.h"
 #include "spell_data_csv_loader.h"
 #include "custom_transform_csv_loader.h"
-#include "animation_data_csv_loader.h"
 #include "keynames_csv_loader.h"
 #include "spell_cast_data.h"
 #include "../input/modes.h"
@@ -24,7 +23,6 @@ namespace SpellHotbar::GameData {
 
     constexpr std::string_view spell_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\spelldata\\";
     constexpr std::string_view custom_transformations_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\transformdata\\";
-    constexpr std::string_view animation_data_root = ".\\data\\SKSE\\Plugins\\SpellHotbar\\animationdata\\";
 
     inline const std::string keynames_csv_path = ".\\data\\SKSE\\Plugins\\SpellHotbar\\keynames\\keynames.csv";
     inline const std::string translation_path = ".\\data\\SKSE\\Plugins\\SpellHotbar\\localization\\translation.txt";
@@ -36,11 +34,8 @@ namespace SpellHotbar::GameData {
     RE::TESRace* vampire_lord_race = nullptr;
     RE::TESRace* werewolf_beast_race = nullptr;
 
-    RE::TESGlobal* global_animation_type = nullptr;
     RE::TESGlobal* global_casting_source = nullptr;
     RE::TESGlobal* global_vampire_lord_equip_mode = nullptr;
-    RE::TESGlobal* global_casting_timer = nullptr;
-    RE::TESGlobal* global_casting_conc_spell = nullptr;
 
     RE::SpellItem* spellhotbar_unbind_slot = nullptr;
     RE::SpellItem* spellhotbar_toggle_dualcast = nullptr;
@@ -97,7 +92,6 @@ namespace SpellHotbar::GameData {
 
     std::unordered_map<int, Key_Data> key_names;
 
-    std::unordered_map<int, std::string> animation_names;
 
     bool key_icons_available{ false };
 
@@ -345,8 +339,6 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x00283A, "Dawnguard.esm", &vampire_lord_race, "Vampire Lord Race", RE::FormType::Race);
         load_form_from_game(0xCDD84, "Skyrim.esm", &werewolf_beast_race, "Werewolf Beast Race", RE::FormType::Race);
 
-        load_form_from_game(0x815, "SpellHotbar.esp", &global_animation_type, "SpellHotbar_SpellAnimationType", RE::FormType::Global);
-
         load_form_from_game(0x835, "SpellHotbar.esp", &global_casting_source, "SpellHotbar_CastingSource", RE::FormType::Global);
 
         load_form_from_game(0x820, "SpellHotbar.esp", &global_vampire_lord_equip_mode, "SpellHotbar_VampireLordUseEquipMode", RE::FormType::Global);
@@ -357,8 +349,6 @@ namespace SpellHotbar::GameData {
         load_form_from_game(0x839, "SpellHotbar.esp", &spellhotbar_toggle_dualcast, "SpellHotbar_ToggleDualCasting", RE::FormType::Spell);
         load_form_from_game(0x83B, "SpellHotbar.esp", &global_spellhotbar_use_dual_casting, "SpellHotbar_UseDualCasting", RE::FormType::Global);
 
-        load_form_from_game(0x838, "SpellHotbar.esp", &global_casting_timer, "SpellHotbar_Casttimer", RE::FormType::Global);
-        load_form_from_game(0x834, "SpellHotbar.esp", &global_casting_conc_spell, "SpellHotbar_isCastingConcSpell", RE::FormType::Global);
         load_form_from_game(0x83E, "SpellHotbar.esp", &spellhotbar_spellproc_cd, "SpellHotbar_SpellProcCD", RE::FormType::MagicEffect);
         load_form_from_game(0x83F, "SpellHotbar.esp", &spellhotbar_apply_spellproc_cd, "SpellHotbar_ApplySpellProcCD", RE::FormType::Spell);
 
@@ -408,11 +398,6 @@ namespace SpellHotbar::GameData {
         RenderManager::load_gamedata_dependant_resources();
 
         SpellDataCSVLoader::load_spell_data(std::filesystem::path(spell_data_root));
-        AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
-
-
-        //load animation data
-        AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
 
         //load custom transformations
         CustomTransformCSVLoader::load_transformations(std::filesystem::path(custom_transformations_root));
@@ -490,12 +475,10 @@ namespace SpellHotbar::GameData {
         logger::info("Reloading Spell Data...");
         spell_cast_info.clear();
         spell_cd_magiceffect_tracking.clear();
-        animation_names.clear();
 
         load_translations(std::filesystem::path(translation_path));
 
         SpellDataCSVLoader::load_spell_data(std::filesystem::path(spell_data_root));
-        AnimationDataCSVLoader::load_anim_data(std::filesystem::path(animation_data_root));
     }
 
     void load_keynames_file()
@@ -1482,12 +1465,6 @@ namespace SpellHotbar::GameData {
          }
          return hasPerk;
      }
-     void set_animtype_global(int value)
-     {
-         if (global_animation_type) {
-             global_animation_type->value = static_cast<float>(value);
-         }
-     }
      hand_mode set_weapon_dependent_casting_source(hand_mode hand, bool dual_cast)
      {
          hand_mode used_hand = hand;
@@ -1531,29 +1508,8 @@ namespace SpellHotbar::GameData {
      }
      void reset_animation_vars()
      {
-         if (global_animation_type) {
-             global_animation_type->value = 0.0f;
-         }
          if (global_casting_source) {
              global_casting_source->value = 0.0f;
-         }
-         if (global_casting_timer) {
-             global_casting_timer->value = 0.0f;
-         }
-         if (global_casting_conc_spell) {
-             global_casting_conc_spell->value = 0.0f;
-         }
-     }
-     void start_cast_timer()
-     {
-         if (global_casting_timer) {
-             global_casting_timer->value = 0.0f;
-         }
-     }
-     void advance_cast_timer(float delta)
-     {
-         if (global_casting_timer) {
-             global_casting_timer->value += delta;
          }
      }
 
@@ -1585,11 +1541,6 @@ namespace SpellHotbar::GameData {
          }
 
          return data;
-     }
-
-     void add_animation_data(const std::string& name, int anim_id)
-     {
-         animation_names.insert_or_assign(anim_id, name);
      }
 
      bool form_has_special_icon(RE::TESForm* form)
@@ -1805,10 +1756,6 @@ namespace SpellHotbar::GameData {
              return cost;
          }
          return 0.0f;
-     }
-
-     uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2) {
-         return Spell_cast_data::chose_default_anim_for_spell(form, anim, anim2);
      }
 
      float get_pos_spell_health_cost(RE::SpellItem* spell) {

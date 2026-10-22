@@ -8,8 +8,6 @@ namespace SpellHotbar::GameData {
         float gcd;
         float cooldown;
         float casttime;
-        int animation; //single hand cast, or slow cast (for ritual spells)
-        int animation2; //dual cast or fast cast (for ritual spells)
         DefaultIconType overlay_icon;
 
         Spell_cast_data();
@@ -29,7 +27,5 @@ namespace SpellHotbar::GameData {
         * override all members by the passed other struct if they are not default
         */
         void fill_and_override_from_non_default_values(const Spell_cast_data & other);
-
-        static uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2);
     };
 }

@@ -418,7 +418,6 @@ released_files_main_plugin_v2 = [
     (dev_mod_root / "Nemesis_Engine/mod/shbc/**/*.txt", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "Nemesis_Engine/mod/shbc/info.ini", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/InventoryInjector/SpellHotbar.json", (dev_mod_root, main_mod_folder)),
-    (dev_mod_root / "SKSE/Plugins/SpellHotbar/animationdata/*.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/fonts/skyrim_symbols_font.ttf", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.csv", (dev_mod_root, main_mod_folder)),
     (dev_mod_root / "SKSE/Plugins/SpellHotbar/images/default_icons.dds", (dev_mod_root, main_mod_folder)),

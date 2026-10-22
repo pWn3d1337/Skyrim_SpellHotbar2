@@ -7,11 +7,6 @@
 namespace SpellHotbar::casts::CastingController {
 
 	/**
-	* Casttime at which ritual spells play the fast anim
-	*/
-	constexpr float fast_cast_threshold{ 1.01f };
-
-	/**
 	* Values of the graph variables SHB_iCastSpell / SHB_iCastPlugin while the form is cast from the hotbar, for conditions of
 	* animation replacers: the form id as written in its plugin (ESL aware) and a 24 bit hash of the plugin's file name
 	*/
@@ -231,15 +226,13 @@ namespace SpellHotbar::casts::CastingController {
 	*/
 	struct CastingInstanceSpellData
 	{
-		CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, int animamtion, int animation2, bool is_spell_proc);
+		CastingInstanceSpellData(RE::SpellItem* spell, float casttime, float manacost, hand_mode hand, bool dual_cast, bool is_spell_proc);
 
 		RE::SpellItem* m_spell;
 		float m_casttime;
 		float m_manacost; 
 		hand_mode m_hand;
 		bool m_dual_cast;
-		int m_animation;
-		int m_animation2;
 		bool m_spellproc;
 	};
 

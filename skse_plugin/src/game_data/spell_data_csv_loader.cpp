@@ -110,12 +110,8 @@ namespace SpellHotbar::SpellDataCSVLoader {
                                 data.cooldown = parse_time(time_str);
                             }
                             data.casttime = doc.GetCell<float>("Casttime", i);
-
-                            int anim_var = std::min(doc.GetCell<int>("Animation", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
-                            int anim_var2 = std::min(doc.GetCell<int>("Animation2", i), static_cast<int>(std::numeric_limits<uint16_t>::max()));
-
-                            data.animation = GameData::chose_default_anim_for_spell(form, anim_var, false);
-                            data.animation2 = GameData::chose_default_anim_for_spell(form, anim_var2, true);
+                            //the Animation / Animation2 columns belong to the old shout based cast animations and are ignored,
+                            //a hotbar cast plays the clips a regular cast of the spell would
 
                             if (has_symbol) {
                                 std::string symbol = doc.GetCell<std::string>("Symbol", i);

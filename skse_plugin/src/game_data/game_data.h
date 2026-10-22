@@ -145,10 +145,8 @@ namespace SpellHotbar::GameData {
         Key_Data(const std::string & short_text, const std::string& long_text, int texture_index);
     };
 
-    extern RE::TESGlobal* global_animation_type;
     extern RE::TESGlobal* global_casting_source;
     extern RE::TESGlobal* global_vampire_lord_equip_mode;
-    extern RE::TESGlobal* global_casting_conc_spell;
 
     extern RE::SpellItem* spellhotbar_unbind_slot;
     extern RE::SpellItem* spellhotbar_toggle_dualcast;
@@ -194,7 +192,6 @@ namespace SpellHotbar::GameData {
 
     extern std::unordered_map<int, Key_Data> key_names;
 
-    extern std::unordered_map<int, std::string> animation_names;
 
     extern std::unordered_map<RE::FormID, GameData::User_custom_spelldata> user_spell_cast_info;
     extern std::unordered_map<RE::FormID, GameData::User_custom_entry> user_custom_entry_info;
@@ -311,20 +308,11 @@ namespace SpellHotbar::GameData {
 
     bool player_can_dualcast_spell(RE::SpellItem* spell);
 
-    void set_animtype_global(int value);
-
     hand_mode set_weapon_dependent_casting_source(hand_mode hand, bool dual_cast);
 
     void reset_animation_vars();
 
-    void start_cast_timer();
-    void advance_cast_timer(float delta);
-
-    uint16_t chose_default_anim_for_spell(const RE::TESForm* form, int anim, bool anim2);
-
     GameData::Spell_cast_data get_spell_data(const RE::TESForm* spell, bool fill_defaults = true, bool include_custom_user_data = true);
-
-    void add_animation_data(const std::string& name, int anim_id);
 
     bool form_has_special_icon(RE::TESForm* form);
 

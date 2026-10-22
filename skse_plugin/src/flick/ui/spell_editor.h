@@ -15,8 +15,7 @@ namespace SpellHotbar::FlickUi::SpellEditor {
     void draw();
 
     // The table half. The dialog half is spell_edit_dialog.cpp; it calls close_edit_dialog()
-    // to return to the table and reads the animation list through get_list_of_anims().
+    // to return to the table.
     void draw_table();
     void close_edit_dialog();
-    std::vector<int>& get_list_of_anims();
 }
