@@ -1,13 +1,16 @@
 # Session handover: cast behavior and follow-up work
 
-Last updated 2026-10-24, branch `v2.1`, the 2026-10-24 commits are local (not pushed). Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
+Last updated 2026-10-24, branch `v2.1`, everything pushed to `origin/v2.1`. Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
 
 ## State of the branch
 
-Commits on `v2.1` since the cast behavior (newest first) (the three 2026-10-24 commits for dock glyphs, ritual concentration and swimming are not in this table):
+Commits on `v2.1` since the cast behavior (newest first), all pushed:
 
 | Commit | Contents |
 |---|---|
+| `6a732e1` | Casting while swimming (option, save format 9), shouts blocked in water |
+| `1ba6a74` | Ritual concentration clips, spell fires on `SHB_CastHold` |
+| `210dd6f` | Installer packs the dock glyphs |
 | `88fd8a3` | Clips of a regular cast, custom animation system removed (not tested in game yet) |
 | `4aa8c27` | Unused OAR animation globals 0x815 / 0x834 / 0x838 removed from `SpellHotbar.esp` (provenance: 33 sanctioned changes, record count 24; rebuilt ESP already in the dev mod) |
 | `bc6f832` | Graph variables and SKSE mod events for animation replacers / other mods |
