@@ -97,6 +97,7 @@ namespace SpellHotbar::GameData {
 
     bool individual_shout_cooldowns{ false };
     bool dual_cast_blocks_movement{ false };
+    bool allow_swim_casting{ true };
     /*
     * Spells that have a magiceffect as cooldown
     */

@@ -138,6 +138,9 @@ namespace SpellHotbar::Storage {
 
             //V8: castbar
             a_intfc->WriteRecordData(&Bars::show_castbar, sizeof(bool));
+
+            //V9: casting while swimming
+            a_intfc->WriteRecordData(&GameData::allow_swim_casting, sizeof(bool));
             //Version end
 
             //write keybinds, make saves compatible when new binds are added
@@ -564,6 +567,16 @@ namespace SpellHotbar::Storage {
                 }
                 else {
                     Bars::show_castbar = true;
+                }
+
+                if (version >= 9U) { //casting while swimming
+                    if (!a_intfc->ReadRecordData(&GameData::allow_swim_casting, sizeof(bool))) {
+                        logger::error("Failed to read allow_swim_casting!");
+                        break;
+                    }
+                }
+                else {
+                    GameData::allow_swim_casting = true;
                 }
 
                 //read num keybinds, make saves compatible when new binds are added

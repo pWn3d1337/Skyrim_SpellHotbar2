@@ -324,6 +324,8 @@ namespace SpellHotbar::casts::CastingController {
 		size_t index{ 0 };
 		//cast on horseback: no body overlay, both hands use the two arm overlays instead of the upper body one
 		bool mounted{ false };
+		//cast while swimming: arms only as on horseback, the body stays in the swim pose
+		bool swimming{ false };
 		bool wanted{ false };
 		//share of the pose taken by the overlay of the cast, 0-1
 		float blend{ 0.0f };
@@ -391,8 +393,8 @@ namespace SpellHotbar::casts::CastingController {
 
 		void apply(RE::PlayerCharacter* pc)
 		{
-			if (mounted && index == 2) {
-				//the spine stays with the rider pose, each arm overlay plays the both hands clip on its arm
+			if ((mounted || swimming) && index == 2) {
+				//the spine stays with the rider / swim pose, each arm overlay plays the both hands clip on its arm
 				pc->SetGraphVariableFloat(weight_vars[0], to_weight(blend));
 				pc->SetGraphVariableFloat(weight_vars[1], to_weight(blend));
 				return;
@@ -404,7 +406,7 @@ namespace SpellHotbar::casts::CastingController {
 		//The legs of the cast clip stand still: only without movement, and the clip has no sneak pose
 		bool wants_body(RE::PlayerCharacter* pc)
 		{
-			if (!cast_full_body_when_standing || pc->IsSneaking() || mounted) {
+			if (!cast_full_body_when_standing || pc->IsSneaking() || mounted || swimming) {
 				return false;
 			}
 			float speed{ 0.0f };
@@ -418,13 +420,15 @@ namespace SpellHotbar::casts::CastingController {
 		{
 			size_t new_index = get_index(set);
 			const bool new_mounted = pc->IsOnMount();
-			if ((new_index != index || new_mounted != mounted) && blend > 0.0f) {
+			const bool new_swimming = pc->AsActorState()->IsSwimming();
+			if ((new_index != index || new_mounted != mounted || new_swimming != swimming) && blend > 0.0f) {
 				blend = 0.0f;
 				body_blend = 0.0f;
 				apply(pc);
 			}
 			index = new_index;
 			mounted = new_mounted;
+			swimming = new_swimming;
 			if (blend == 0.0f) {
 				//no crossfade at the start, a cast that starts standing comes in with the whole body
 				body_blend = wants_body(pc) ? 1.0f : 0.0f;
@@ -584,7 +588,7 @@ namespace SpellHotbar::casts::CastingController {
 		bool is_staggering{ false };
 		pc->GetGraphVariableBool("IsStaggering"sv, is_staggering);
 		//casting on horseback works, mounting or dismounting in the middle of a cast ends it
-		return is_staggering || pc->IsAttacking() || pc->IsBlocking() || pc->IsOnMount() != cast_overlay::mounted || pc->AsActorState()->IsSwimming() || pc->AsActorState()->IsBleedingOut();
+		return is_staggering || pc->IsAttacking() || pc->IsBlocking() || pc->IsOnMount() != cast_overlay::mounted || pc->AsActorState()->IsSwimming() != cast_overlay::swimming || pc->AsActorState()->IsBleedingOut();
 	}
 
 	//Player is in a shout or in the cast behavior

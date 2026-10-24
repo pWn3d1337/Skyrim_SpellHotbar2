@@ -1,10 +1,10 @@
 # Session handover: cast behavior and follow-up work
 
-Last updated 2026-10-22, branch `v2.1`, everything pushed to `origin/v2.1`. Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
+Last updated 2026-10-24, branch `v2.1`, the 2026-10-24 commits are local (not pushed). Purpose: continue this work from another PC. First version written 2026-10-08 for the cast behavior; this rewrite covers everything since.
 
 ## State of the branch
 
-Commits on `v2.1` since the cast behavior (newest first), all pushed:
+Commits on `v2.1` since the cast behavior (newest first) (the three 2026-10-24 commits for dock glyphs, ritual concentration and swimming are not in this table):
 
 | Commit | Contents |
 |---|---|
@@ -38,9 +38,16 @@ Tested and working in game (Pandora):
   - `SHB_iCastSpell` (local form id, ESL aware), `SHB_iCastPlugin` (FNV-1a of the lower case plugin file name folded to 24 bits), `SHB_iCastHand` (1 left, 2 right, 3 both), set for the whole hotbar spell cast. The spell edit dialog shows a spell's values ("Anim Condition" row). For OAR submods: OR `CompareValues` on these with their `IsEquipped…` check.
   - SKSE mod events `SpellHotbar_CastStart`, `SpellHotbar_CastRelease`, `SpellHotbar_CastStop` (sender: spell, numArg: hand, Stop strArg `finished` / `interrupted`), for compatibility patches. Vanilla cast animation events are deliberately not faked (their listeners read the equipped spell).
 
+Added 2026-10-23/24, tested in game (Pandora):
+
+- Ritual concentration (Lightning Storm): anim set `ritual_aimed_conc` as vanilla `RitualSpellAimConcentrationStart` (`RitualSpell_Charge` / `RitualSpell_Ready`, then `RitualSpell_AimRelease` once, then `DMagAimConLoop`). An `AnimSet` may have both release and hold; the release clip raises `SHB_CastHold` at its end and the plugin fires the spell then (1.5 s fallback), so the beam starts when the hands go forward. Self ritual concentration (no vanilla spell) still uses the dual clips.
+- Casting while swimming (option "Cast While Swimming", default on, save format 9, preset key `settings.allow_swim_casting`): arms only as on horseback, surface and underwater; entering or leaving water interrupts. Shouts are blocked in water (the game does not shout while swimming).
+- Dock glyphs (`skse_plugin/scripts/dock_icons.py`, from the FLICK PR) copied into the dev mod and packed by the installer from the repo.
+- This PC: the CMake cache had the 8.3 short path of ninja (`MICROS~2`), which differs per PC; it now holds the long path.
+
 Done, not tested in game:
 
-- **Custom animation system removed** (`88fd8a3`). Every hotbar spell plays the clips a regular cast would: `get_cast_anim_set(pc, spell, used_hand)` picks by two-handed (ritual), casting type, delivery, ward keyword, hand(s) and staff. No cast-time switch any more (`fast_cast_threshold` gone), no Animation / Animation2 in spell data, editor or presets. The CSV columns are ignored; old co-saves are read and the animation values discarded (no save format change); old preset keys `spell_animation(2)` are ignored. Ritual concentration (Lightning Storm) maps to the dual concentration clips (no ritual concentration set in the behavior).
+- **Custom animation system removed** (`88fd8a3`). Every hotbar spell plays the clips a regular cast would: `get_cast_anim_set(pc, spell, used_hand)` picks by two-handed (ritual), casting type, delivery, ward keyword, hand(s) and staff. No cast-time switch any more (`fast_cast_threshold` gone), no Animation / Animation2 in spell data, editor or presets. The CSV columns are ignored; old co-saves are read and the animation values discarded (no save format change); old preset keys `spell_animation(2)` are ignored. Ritual concentration (Lightning Storm) has its own set (see below).
 - Test list: Fireball left/right/dual, Flames, Healing, a ward, Fire Storm with short and long cast time (both ritual now), Lightning Storm, staff, scroll; spell editor and edit dialog open fine.
 
 ## Animation replacers (checked)
@@ -121,10 +128,8 @@ Unchanged from the first version; `CLAUDE.md` ("Cast behavior", "Casting art") h
 ## Open items
 
 - Test `88fd8a3` (clips of a regular cast) and `4aa8c27` (ESP without the globals) in game.
-- Ritual concentration has no own clip set (uses dual concentration); add one to `anim_sets` if wanted (Pandora run).
 - Test `SHB_iCast*` with a real OAR condition and the mod events with a small Papyrus listener.
 - Thuum-style animations were tried and reverted; not planned.
 - Nemesis itself was never run with the patch; the missing-patch message box is untested.
-- Dock glyphs (`unlock/gear/arrow_left/arrow_right.png`) are in the repo `data/.../images/dock` but missing in the dev mod and the installer (log warnings).
 - Possibly use FLICK v7 features (input capture, HUD hidden, key badge combos).
 - Testing tab (`k_testing_tab_enabled` in `config_tool.cpp`) must be off for releases.

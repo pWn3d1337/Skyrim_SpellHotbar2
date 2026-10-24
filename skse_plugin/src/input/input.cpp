@@ -617,7 +617,13 @@ namespace SpellHotbar::Input {
             //Check if player currently is casting, also check staffs
             bool isCasting = pc->IsCasting(nullptr);
 
-            return !(isCasting || (!allow_sprint && as->IsSprinting()) || as->IsSwimming() || inJumpState); //|| bowDrawn);
+            // the game does not shout while swimming
+            bool swim_blocked{ false };
+            if (as->IsSwimming()) {
+                auto form = RE::TESForm::LookupByID(skill);
+                swim_blocked = !GameData::allow_swim_casting || (form && form->GetFormType() == RE::FormType::Shout);
+            }
+            return !(isCasting || (!allow_sprint && as->IsSprinting()) || swim_blocked || inJumpState); //|| bowDrawn);
         }
         else return false;
     }

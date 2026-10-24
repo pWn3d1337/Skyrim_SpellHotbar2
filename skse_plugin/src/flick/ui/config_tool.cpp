@@ -402,6 +402,7 @@ namespace SpellHotbar::FlickUi::ConfigTool {
                     GameData::toggle_individual_shout_cooldowns();
                 }
                 option_checkbox("Dual Casting Blocks Movement", &GameData::dual_cast_blocks_movement);
+                option_checkbox("Cast While Swimming", &GameData::allow_swim_casting);
             }
             end_options();
 

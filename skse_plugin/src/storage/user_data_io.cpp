@@ -135,6 +135,7 @@ namespace SpellHotbar::Storage::IO {
             GameData::toggle_individual_shout_cooldowns();
         }
         GameData::dual_cast_blocks_movement = get_int_or_default(d, "settings.dual_cast_blocks_movement", 0) != 0;
+        GameData::allow_swim_casting = get_int_or_default(d, "settings.allow_swim_casting", 1) != 0;
 
         //in-menu dock
         Bars::menu_slot_scale = get_float_or_default(d, "settings.menu_bar.slot_scale", 0.5f);
@@ -322,6 +323,7 @@ namespace SpellHotbar::Storage::IO {
         add_float(d, "settings.potion_gcd", GameData::potion_gcd);
         add_int(d, "settings.individual_shout_cooldowns", GameData::individual_shout_cooldowns ? 1 : 0);
         add_int(d, "settings.dual_cast_blocks_movement", GameData::dual_cast_blocks_movement ? 1 : 0);
+        add_int(d, "settings.allow_swim_casting", GameData::allow_swim_casting ? 1 : 0);
 
         add_float(d, "settings.menu_bar.slot_scale", Bars::menu_slot_scale);
         add_float(d, "settings.menu_bar.offset_x", RenderManager::scale_from_resolution(Bars::menu_offset_x));

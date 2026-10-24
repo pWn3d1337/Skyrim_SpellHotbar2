@@ -214,6 +214,11 @@ namespace SpellHotbar::GameData {
     */
     extern bool dual_cast_blocks_movement;
 
+    /*
+    * Hotbar casts while swimming, the cast behavior animates the arms over the swim pose
+    */
+    extern bool allow_swim_casting;
+
     void load_from_SKSE_save(SKSE::SerializationInterface* a_intfc);
     void save_to_SKSE_save(SKSE::SerializationInterface* a_intfc);
 
