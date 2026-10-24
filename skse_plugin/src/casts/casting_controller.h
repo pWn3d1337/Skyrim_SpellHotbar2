@@ -166,6 +166,9 @@ namespace SpellHotbar::casts::CastingController {
 		const Input::KeyBind& m_keybind;
 		int m_slot;
 		bool m_blocks_movement;
+		//the anim set plays a release clip before the concentration loop, the spell fires when it ends
+		bool m_fire_on_hold;
+		bool m_fired;
 	};
 
 	//Ritual style concentration spell, 2hands and blocked movement

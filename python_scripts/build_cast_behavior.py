@@ -27,6 +27,8 @@ event_cast_release = "SHB_CastRelease"
 event_cast_stop = "SHB_CastStop"
 # raised by the graph itself when the charge start clip ends
 event_charge_loop = "SHB_ChargeLoop"
+# raised when the release clip of a set with release and hold ends, the plugin fires the spell then
+event_cast_hold = "SHB_CastHold"
 var_casting = "SHB_bCasting"
 var_anim = "SHB_iAnim"
 # set by the plugin during an aimed hotbar cast on horseback, enables the torso aim modifier in 0_master
@@ -57,7 +59,7 @@ overlay_weights = {
     "SHB_fWeightBodyBoth": ([full_body_property], ["UpperBody"]),
 }
 
-new_events = [event_cast_start, event_cast_release, event_cast_stop, event_charge_loop]
+new_events = [event_cast_start, event_cast_release, event_cast_stop, event_charge_loop, event_cast_hold]
 # name, havok type, initial word value
 cast_variables = [(var_casting, "VARIABLE_TYPE_BOOL", 0), (var_anim, "VARIABLE_TYPE_INT32", 0)]
 new_variables = cast_variables + [(name, "VARIABLE_TYPE_REAL", 0) for name in overlay_weights] + [(var_mounted_aim, "VARIABLE_TYPE_BOOL", 0), (var_mounted_aim_limit, "VARIABLE_TYPE_REAL", 0)] + [(name, "VARIABLE_TYPE_INT32", 0) for name in (var_cast_spell, var_cast_plugin, var_cast_hand)]
@@ -94,9 +96,9 @@ class AnimSet:
     charge_start: str
     # looped after charge_start until the release, optional
     charge_loop: str | None = None
-    # played once on release, the cast state is left when it ends
+    # played once on release, the cast state is left when it ends (unless there is a hold clip)
     release: str | None = None
-    # looped on release until the cast is stopped (concentration), used instead of release
+    # looped on release until the cast is stopped (concentration), after the release clip if there is one
     hold: str | None = None
 
 
@@ -123,6 +125,8 @@ anim_sets = [
     AnimSet("dual_self_conc", "DMagPreSelfCon", hold="DMagSelfConLoop"),
     AnimSet("ritual_aimed", "RitualSpell_Charge", "RitualSpell_Ready", "RitualSpell_AimRelease"),
     AnimSet("ritual_self", "RitualSpell_Charge", "RitualSpell_Ready", "RitualSpell_Release"),
+    # as vanilla RitualSpellAimConcentrationStart (Lightning Storm): ritual charge, then the dual concentration loop
+    AnimSet("ritual_aimed_conc", "RitualSpell_Charge", "RitualSpell_Ready", "RitualSpell_AimRelease", "DMagAimConLoop"),
 ]
 
 
@@ -679,7 +683,14 @@ class CastGraphBuilder:
                 ]))
             else:
                 charge.append(self.clip(f"SHB_{s.name}_ChargeStart", s.charge_start, False))
-            if s.hold:
+            if s.hold and s.release:
+                once = self.clip(f"SHB_{s.name}_Release", s.release, False, event_cast_hold)
+                hold = self.clip(f"SHB_{s.name}_Hold", s.hold, True)
+                release.append(self.machine(f"SHB_{s.name}_ReleaseHold", [
+                    self.state(f"SHB_{s.name}_ReleaseState", 0, once, [(event_cast_hold, 1)]),
+                    self.state(f"SHB_{s.name}_HoldState", 1, hold, []),
+                ]))
+            elif s.hold:
                 release.append(self.clip(f"SHB_{s.name}_Hold", s.hold, True))
             else:
                 release.append(self.clip(f"SHB_{s.name}_Release", s.release, False, event_cast_stop))
@@ -713,8 +724,8 @@ def known_animations(xml: list[str]) -> set[str]:
 def check_anim_sets(known: set[str]):
     """All clips have to be animations the character project already knows"""
     for s in anim_sets:
-        if bool(s.release) == bool(s.hold):
-            raise RuntimeError(f"{s.name}: needs either release or hold")
+        if not s.release and not s.hold:
+            raise RuntimeError(f"{s.name}: needs a release or a hold clip")
         for clip in (s.charge_start, s.charge_loop, s.release, s.hold):
             if clip and f"animations\\{clip}.hkx".lower() not in known:
                 raise RuntimeError(f"{s.name}: Animations\\{clip}.hkx is not in the character animation list")

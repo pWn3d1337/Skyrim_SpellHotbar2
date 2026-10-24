@@ -25,5 +25,6 @@ namespace SpellHotbar::casts {
 		dual_self_conc = 17,
 		ritual_aimed = 18,
 		ritual_self = 19,
+		ritual_aimed_conc = 20,
 	};
 }

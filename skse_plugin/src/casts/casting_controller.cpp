@@ -201,6 +201,8 @@ namespace SpellHotbar::casts::CastingController {
 	//Events and variable of the custom cast behavior (SpellHotbarCast.hkx), see python_scripts/build_cast_behavior.py
 	constexpr std::string_view cast_behavior_start_event{ "SHB_CastStart"sv };
 	constexpr std::string_view cast_behavior_release_event{ "SHB_CastRelease"sv };
+	//raised by the graph when the release clip of an anim set with release and hold clips ends
+	constexpr std::string_view cast_behavior_hold_event{ "SHB_CastHold"sv };
 	constexpr std::string_view cast_behavior_stop_event{ "SHB_CastStop"sv };
 	constexpr std::string_view cast_behavior_active_var{ "SHB_bCasting"sv };
 	constexpr std::string_view cast_behavior_anim_var{ "SHB_iAnim"sv };
@@ -282,8 +284,8 @@ namespace SpellHotbar::casts::CastingController {
 		const bool staff = !dual && is_staff_equipped(pc, !right);
 
 		if (spell->IsTwoHanded()) {
-			//the cast behavior has no ritual concentration clips, the dual cast ones are closest
-			if (conc) return self ? CastAnimSet::dual_self_conc : CastAnimSet::dual_aimed_conc;
+			//vanilla only has aimed ritual concentration, the dual cast clips are closest for self
+			if (conc) return self ? CastAnimSet::dual_self_conc : CastAnimSet::ritual_aimed_conc;
 			return self ? CastAnimSet::ritual_self : CastAnimSet::ritual_aimed;
 		}
 		if (conc) {
@@ -334,6 +336,7 @@ namespace SpellHotbar::casts::CastingController {
 		//set from the animation event sink
 		std::atomic<bool> stop_requested{ false };
 		std::atomic<bool> release_seen{ false };
+		std::atomic<bool> hold_seen{ false };
 
 		class EventSink : public RE::BSTEventSink<RE::BSAnimationGraphEvent> {
 		public:
@@ -346,6 +349,9 @@ namespace SpellHotbar::casts::CastingController {
 					}
 					else if (a_event->tag == cast_behavior_release_event) {
 						release_seen = true;
+					}
+					else if (a_event->tag == cast_behavior_hold_event) {
+						hold_seen = true;
 					}
 				}
 				return RE::BSEventNotifyControl::kContinue;
@@ -370,6 +376,7 @@ namespace SpellHotbar::casts::CastingController {
 			case CastAnimSet::dual_self_conc:
 			case CastAnimSet::ritual_aimed:
 			case CastAnimSet::ritual_self:
+			case CastAnimSet::ritual_aimed_conc:
 				return 2;
 			default:
 				return 0;
@@ -428,6 +435,7 @@ namespace SpellHotbar::casts::CastingController {
 			time_since_start = 0.0f;
 			stop_requested = false;
 			release_seen = false;
+			hold_seen = false;
 			//the sink is only added once per graph, the graphs can be recreated at any time
 			pc->AddAnimationGraphEventSink(&event_sink);
 		}
@@ -435,6 +443,12 @@ namespace SpellHotbar::casts::CastingController {
 		void stop()
 		{
 			wanted = false;
+		}
+
+		//the release clip before the hold loop ended since the cast started
+		bool hold_started()
+		{
+			return hold_seen;
 		}
 
 		void update(RE::PlayerCharacter* pc, float delta)
@@ -823,7 +837,9 @@ namespace SpellHotbar::casts::CastingController {
 		: CastingInstance(spell, casttime, manacost, used_hand, spell_proc),
 		m_keybind(keybind),
 		m_slot(slot),
-		m_blocks_movement(blocksMovement)
+		m_blocks_movement(blocksMovement),
+		m_fire_on_hold(get_cast_anim_set(RE::PlayerCharacter::GetSingleton(), spell, used_hand) == CastAnimSet::ritual_aimed_conc),
+		m_fired(false)
 	{
 		m_cast_timer = 0;
 		m_total_casttime = spell->data.castDuration;
@@ -907,9 +923,17 @@ namespace SpellHotbar::casts::CastingController {
 			//charge finished
 
 			constexpr float loop_timer = 0.5f;
+			//fires anyway if the graph does not report the end of the release clip
+			constexpr float hold_timeout = 1.5f;
 
-			if (timer_old < m_release_anim_time) {
+			if (timer_old < m_release_anim_time && m_fire_on_hold) {
+				//switches the cast behavior from the charge to the release clip, the concentration loop follows by itself
+				pc->NotifyAnimationGraph(get_end_anim());
+			}
+
+			if (!m_fired && (!m_fire_on_hold || cast_overlay::hold_started() || m_cast_timer >= m_release_anim_time + hold_timeout)) {
 				//first cast update
+				m_fired = true;
 				cast_spell(get_spell(), m_used_hand == hand_mode::dual_hand, m_spell_proc, m_manacost);
 				mod_events::release();
 				if (m_spell_proc) {
@@ -917,8 +941,10 @@ namespace SpellHotbar::casts::CastingController {
 				}
 				stop_charge_sound();
 				play_cast_loop_sound();
-				//switches the cast behavior from the charge to the concentration loop
-				pc->NotifyAnimationGraph(get_end_anim());
+				if (!m_fire_on_hold) {
+					//switches the cast behavior from the charge to the concentration loop
+					pc->NotifyAnimationGraph(get_end_anim());
+				}
 				cast_art::release();
 			}
 			else if (static_cast<int>(timer_old / loop_timer) < static_cast<int>(m_cast_timer / loop_timer)) {
@@ -928,7 +954,7 @@ namespace SpellHotbar::casts::CastingController {
 					//do same exit code as if key was no longer held down, anim got interrupted
 					keydown = false;
 				}
-				else {
+				else if (m_fired) {
 					RenderManager::highlight_skill_slot(m_slot, loop_timer*2.0f, false);
 					auto spell = m_form->As<RE::SpellItem>();
 					if (spell != nullptr) {
